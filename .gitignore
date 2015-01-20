@@ -12,21 +12,28 @@
 # Editor files
 *.iml
 AmuseApp/.idea
+MyFirstApp/.idea
 *.pro
 *~
 
 # Generated files
 AmuseApp/bin/
 AmuseApp/gen/
+MyFirstApp/bin/
+MyFirstApp/gen/
 
 # Gradle files
 AmuseApp/app/build/
 AmuseApp/build/
 AmuseApp/gradle*
+MyFirstApp/app/build/
+MyFirstApp/build/
+MyFirstApp/gradle*
 *.gradle
 
 # Local configuration file (sdk path, etc)
 AmuseApp/local.properties
+MyFirstApp/local.properties
 
 # Log Files
 *.log
