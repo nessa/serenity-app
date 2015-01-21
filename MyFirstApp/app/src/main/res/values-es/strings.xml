@@ -5,5 +5,6 @@
     <string name="button_send">Enviar</string>
     <string name="action_settings">Configuración</string>
     <string name="title_activity_main">Actividad principal</string>
-    <string name="title_activity_display_message">Mi mensaje</string>
+    <string name="hello_world">Hola mundo</string>
+    <string name="action_search">Buscar</string>
 </resources>

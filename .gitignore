@@ -37,3 +37,6 @@ MyFirstApp/local.properties
 
 # Log Files
 *.log
+
+# Mac OS
+*.DS_Store
