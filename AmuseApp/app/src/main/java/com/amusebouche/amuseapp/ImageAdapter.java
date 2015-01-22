@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -51,6 +52,13 @@ public class ImageAdapter extends BaseAdapter {
             // Get the image to update the content
             ImageView image = (ImageView) layout.findViewById(R.id.recipe_image);
             image.setImageResource(mThumbIds[position]);
+
+            // Save present string in image button
+            // TODO: Save present recipe ID
+            ImageButton imageButton = (ImageButton) layout.findViewById((R.id.fav_button));
+            imageButton.setTag(mStringIds[position]);
+
+            // TODO: Check if present recipe if favorited, and change imagebutton icon
         }
 
 

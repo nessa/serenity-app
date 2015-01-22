@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 
@@ -56,6 +57,10 @@ public class MainActivity extends Activity {
 
     public void search() {
         Log.v("INFO", "Search clicked");
+    }
+
+    public void makeFavorite(View v) {
+        Log.v("INFO", "Favorite " + v.getTag());
     }
 }
 
