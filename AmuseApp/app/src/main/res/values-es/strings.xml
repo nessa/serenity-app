@@ -3,4 +3,6 @@
     <string name="app_name">Amuse App</string>
     <string name="action_settings">Configuración</string>
     <string name="action_search">Buscar</string>
+    <string name="transition_recipe_detail">detalle</string>
+    <string name="title_recipe_detail_activity">Detalle</string>
 </resources>

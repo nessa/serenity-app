@@ -1,9 +1,13 @@
 package com.amusebouche.amuseapp;
 
+import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -39,8 +43,8 @@ public class ImageAdapter extends BaseAdapter {
         View layout = convertView;
         if (convertView == null) {
             layout = mInflater.inflate(R.layout.gridview_cell, null);
-            layout.setLayoutParams(new GridView.LayoutParams(mScreenWidth/2 - 2,
-                mScreenWidth/2 - 2));
+            layout.setLayoutParams(new GridView.LayoutParams(mScreenWidth / 2 - 2,
+                    mScreenWidth / 2 - 2));
 
             /* Get the item in the adapter */
             //MyObject myObject = getItem(position);
@@ -59,9 +63,26 @@ public class ImageAdapter extends BaseAdapter {
             imageButton.setTag(mStringIds[position]);
 
             // TODO: Check if present recipe if favorited, and change imagebutton icon
+
+            // Calling transition from image (to detail image)
+            image.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Get main activity from context
+                    MainActivity x = (MainActivity) mContext;
+                    Intent intent = new Intent(x, RecipeDetailActivity.class);
+                    //String transitionName = getString(R.string.transition_recipe_detail);
+
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                            x,
+                            v, // The view which starts the transition
+                            "detail" // The transitionName of the view we’re transitioning to
+                    );
+                    x.startActivity(intent, options.toBundle());
+
+            }});
+
         }
-
-
 
         return layout;
     }

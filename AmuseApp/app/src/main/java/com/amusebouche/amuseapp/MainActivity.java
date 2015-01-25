@@ -1,6 +1,8 @@
 package com.amusebouche.amuseapp;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ImageButton;
-import android.widget.Toast;
 
 
 public class MainActivity extends Activity {
@@ -29,11 +29,23 @@ public class MainActivity extends Activity {
         GridView gridview = (GridView) findViewById(R.id.gridview);
         gridview.setAdapter(new ImageAdapter(this, screen_width));
 
+        // Calling transition from ImageAdapter
+        /*
         gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                Toast.makeText(MainActivity.this, "" + position, Toast.LENGTH_SHORT).show();
+                Log.v("INFO", "Inside item click");
+                Intent intent = new Intent(MainActivity.this, RecipeDetailActivity.class);
+                String transitionName = getString(R.string.transition_recipe_detail);
+
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                    MainActivity.this,
+                    v, // The view which starts the transition
+                    transitionName // The transitionName of the view we’re transitioning to
+                );
+                MainActivity.this.startActivity(intent, options.toBundle());
             }
         });
+        */
     }
 
 
