@@ -1,17 +1,17 @@
 package com.amusebouche.amuseapp;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
-import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.GridView;
+
+import com.amusebouche.ui.FloatingActionButton;
 
 
 public class MainActivity extends Activity {
@@ -21,6 +21,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.v("INFO", "On create");
+
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -28,6 +30,7 @@ public class MainActivity extends Activity {
 
         GridView gridview = (GridView) findViewById(R.id.gridview);
         gridview.setAdapter(new ImageAdapter(this, screen_width));
+
 
         // Calling transition from ImageAdapter
         /*
@@ -48,6 +51,26 @@ public class MainActivity extends Activity {
         */
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.v("INFO", "On resume");
+
+        FloatingActionButton addButton = new FloatingActionButton.Builder(this)
+                .withDrawable(getResources().getDrawable(R.drawable.ic_add_white_48dp))
+                .withButtonColor(getResources().getColor(R.color.accent))
+                .withGravity(Gravity.BOTTOM | Gravity.RIGHT)
+                .withMargins(0, 0, 16, 16)
+                .create();
+
+        // TODO: If user is logged in, addButton must be visible
+        if (false) {
+            addButton.setVisibility(View.GONE);
+        }
+
+        // TODO: addButton on click must go to create activity
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

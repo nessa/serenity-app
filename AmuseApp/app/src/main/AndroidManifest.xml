@@ -4,6 +4,14 @@
     package="com.amusebouche.amuseapp"
     android:installLocation="preferExternal" >
 
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="21"/>
+    <uses-permission
+        android:name="android.permission.INTERNET" />
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
