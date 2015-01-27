@@ -1,6 +1,5 @@
 package com.amusebouche.amuseapp;
 
-
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,6 +20,16 @@ import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
+/**
+ * Navigation drawer fragment class.
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com
+ *
+ * Android fragment class, part of main activity.
+ * It's used as a lateral menu.
+ *
+ * Related layouts:
+ * - Content: fragment_navigation_drawer.xml, cell_navigation_drawer.xml
+ */
 public class NavigationDrawerFragment extends Fragment {
 
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
@@ -28,6 +37,7 @@ public class NavigationDrawerFragment extends Fragment {
     private NavigationDrawerCallbacks mCallbacks;
     private ActionBarDrawerToggle mDrawerToggle;
     private DrawerLayout mDrawerLayout;
+    // TODO: Create a header
     //private DrawerHeaderView drawerHeaderView;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
@@ -82,16 +92,15 @@ public class NavigationDrawerFragment extends Fragment {
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
-        mDrawerListView = (ListView) inflater.inflate(
-                R.layout.fragment_navigation_drawer, container, false);
-        mDrawerListView
-                .setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view,
-                                            int position, long id) {
-                        selectItem(position);
-                    }
-                });
+
+        mDrawerListView = (ListView) inflater.inflate(R.layout.fragment_navigation_drawer,
+            container, false);
+        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItem(position);
+            }
+        });
         mDrawerListView.setDivider(null);
         mNavigationDrawerAdapter = mNavigationDrawerAdapter == null ?
                 new NavigationDrawerAdapter(getActivity()) : mNavigationDrawerAdapter;
@@ -103,8 +112,7 @@ public class NavigationDrawerFragment extends Fragment {
 
 
     public boolean isDrawerOpen() {
-        return mDrawerLayout != null
-                && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
+        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
     }
 
     public int getNavigationIndexPosition() {
@@ -155,46 +163,6 @@ public class NavigationDrawerFragment extends Fragment {
             }
         };
 
-        /*
-        mDrawerToggle = new ActionBarDrawerToggle(getActivity(), /* Activity que lo contiene *
-                mDrawerLayout, /* Objeto DrawerLayout *
-                R.drawable.ic_add_white_48dp,//ic_navigation_drawer, /* Icono del menú (el de las tres rayitas) *
-                R.string.accept, /* "abrir menu" descripción para accesibilidad *
-                R.string.cancel /* "cerrar menu" descripción para accesibilidad  *
-        ) {
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                if (!isAdded()) {
-                    return;
-                }
-
-                getActivity().invalidateOptionsMenu(); // calls
-                // onPrepareOptionsMenu()
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                if (!isAdded()) {
-                    return;
-                }
-                if (!mUserLearnedDrawer) {
-                    mUserLearnedDrawer = true;
-                    SharedPreferences sp = PreferenceManager
-                            .getDefaultSharedPreferences(getActivity());
-                    sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true)
-                            .apply();
-                }
-                if (getActionBar() != null) {
-                    getActionBar().setTitle(R.string.app_name);//app_name_capital);
-                }
-
-                getActivity().invalidateOptionsMenu(); // calls
-                // onPrepareOptionsMenu()
-            }
-        };*/
-
         if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
             mDrawerLayout.openDrawer(mFragmentContainerView);
         }
@@ -237,19 +205,23 @@ public class NavigationDrawerFragment extends Fragment {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Forward the new configuration the drawer toggle component.
+
+        // Forward the new configuration the drawer toggle component
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        //Si quieres cambiar el menú de opciones hazlo aquí
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
+    }
+
+    public void setDrawerIndicatorEnabled(boolean v) {
+        mDrawerToggle.setDrawerIndicatorEnabled(v);
     }
 
     private ActionBar getActionBar() {

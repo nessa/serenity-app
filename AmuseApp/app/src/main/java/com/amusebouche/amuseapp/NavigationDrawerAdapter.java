@@ -13,6 +13,17 @@ import android.widget.TextView;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Navigation drawer cell adapter class.
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com
+ *
+ * It declares the view of each navigation drawer cells that contains:
+ * - Icon.
+ * - Name.
+ *
+ * Related layouts:
+ * - Content: cell_navigation_drawer.xml
+ */
 public class NavigationDrawerAdapter extends BaseAdapter {
     private List<String> sectionsList;
     private boolean locked = false;
@@ -39,6 +50,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
         return position;
     }
 
+    // TODO: Update this!
     private int getSectionIcon(int position) {
         switch (position) {
             default:
@@ -63,16 +75,18 @@ public class NavigationDrawerAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         DrawerHolder drawerHolder;
-        if(convertView == null) {
+        if (convertView == null) {
             drawerHolder = new DrawerHolder();
             convertView = new DrawerView(mContext);
             drawerHolder.titleTextView = (TextView) convertView.findViewById(R.id.title_text_view);
             drawerHolder.drawer_image = (ImageView) convertView.findViewById(R.id.drawer_image);
             drawerHolder.layout = (RelativeLayout) convertView.findViewById(R.id.drawer_relative);
-            ((DrawerView) convertView).setTag(drawerHolder, sectionsList.get(position), getSectionIcon(position));
+            ((DrawerView) convertView).setTag(drawerHolder, sectionsList.get(position),
+                getSectionIcon(position));
         } else {
             drawerHolder = (DrawerHolder) convertView.getTag();
-            ((DrawerView) convertView).setTag(drawerHolder, sectionsList.get(position), getSectionIcon(position));
+            ((DrawerView) convertView).setTag(drawerHolder, sectionsList.get(position),
+                getSectionIcon(position));
         }
         if (position == 0) {
             ((DrawerView) convertView).setChecked(true);
@@ -120,6 +134,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
         private void highlighCell(boolean checked) {
             Resources resources = getResources();
             if (resources != null) {
+                // TODO: Change color.
                 if (checked) {
                     layout.setBackgroundColor(resources.getColor(R.color.accent));//drawer_selected_color));
                 } else {

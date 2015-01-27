@@ -1,11 +1,7 @@
 package com.amusebouche.amuseapp;
 
-import android.app.ActivityOptions;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.Intent;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
 import android.transition.Fade;
@@ -21,12 +17,24 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class ImageAdapter extends BaseAdapter {
+/**
+ * Gridview cell adapter class.
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com
+ *
+ * It declares the view of each gridview cells that contains:
+ * - Recipe image.
+ * - Recipe name.
+ * - Fav button.
+ *
+ * Related layouts:
+ * - Content: cell_gridview.xml
+ */
+public class GridviewCellAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
     private int mScreenWidth;
 
-    public ImageAdapter(Context c, int screenWidth) {
+    public GridviewCellAdapter(Context c, int screenWidth) {
         mContext = c;
         mScreenWidth = screenWidth;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -45,7 +53,7 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
 
-    // create a new ImageView for each item referenced by the Adapter
+    // Create a new view for each item referenced by the adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         View layout = convertView;
         if (convertView == null) {
@@ -53,10 +61,10 @@ public class ImageAdapter extends BaseAdapter {
             layout.setLayoutParams(new GridView.LayoutParams(mScreenWidth / 2 - 2,
                     mScreenWidth / 2 - 2));
 
-            /* Get the item in the adapter */
+            // Get the item in the adapter
             //MyObject myObject = getItem(position);
 
-            // Get textview to update the string
+            // Get the textview to update the string
             TextView name = (TextView) layout.findViewById(R.id.recipe_name);
             name.setText(mStringIds[position]);
 
@@ -64,7 +72,7 @@ public class ImageAdapter extends BaseAdapter {
             ImageView image = (ImageView) layout.findViewById(R.id.recipe_image);
             image.setImageResource(mThumbIds[position]);
 
-            // Save present string in image button
+            // Save present string into the image button
             // TODO: Save present recipe ID
             ImageButton imageButton = (ImageButton) layout.findViewById((R.id.fav_button));
             imageButton.setTag(mStringIds[position]);
@@ -97,7 +105,7 @@ public class ImageAdapter extends BaseAdapter {
                             .commit();
             }});
 
-            // Calling transition from image (to detail image)
+            // TODO: Calling fav method
             imageButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -18,6 +18,13 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.FrameLayout;
 
+
+/**
+ * Floating action button class.
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com
+ *
+ * Android view class that implements the material design FAB.
+ */
 public class FloatingActionButton extends View {
 
     final static OvershootInterpolator overshootInterpolator = new OvershootInterpolator();
@@ -168,6 +175,9 @@ public class FloatingActionButton extends View {
             return this;
         }
 
+        /**
+         * Add an existing FAB to the specified view.
+         */
         public FloatingActionButton create() {
             final FloatingActionButton button = new FloatingActionButton(activity);
             button.setFloatingActionButtonColor(this.color);
@@ -178,9 +188,12 @@ public class FloatingActionButton extends View {
             return button;
         }
 
-        // The calculation (value * scale + 0.5f) is a widely used to convert to dps to pixel units
-        // based on density scale
-        // see developer.android.com (Supporting Multiple Screen Sizes)
+        /*
+         * The calculation (value * scale + 0.5f) is a widely used to convert to dps to pixel units
+         * based on density scale
+         *
+         * See developer.android.com (Supporting Multiple Screen Sizes)
+         */
         private int convertToPixels(int dp, float scale){
             return (int) (dp * scale + 0.5f) ;
         }
