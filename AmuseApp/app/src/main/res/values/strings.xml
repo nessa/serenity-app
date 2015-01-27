@@ -5,4 +5,6 @@
     <string name="action_search">Search</string>
     <string name="transition_recipe_detail">detail</string>
     <string name="title_recipe_detail_activity">Detail</string>
+    <string name="accept">Accept</string>
+    <string name="cancel">Cancel</string>
 </resources>
