@@ -6,7 +6,6 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,32 +53,41 @@ public class RecipeListFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        mLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_recipe_list, container,
-                false);
+        mLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_recipe_list,
+                container, false);
 
+        // Set gridview parameters
         Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int screen_width = size.x;
+        Point screenSize = new Point();
+        display.getSize(screenSize);
+        int screen_width = screenSize.x;
 
         GridView gridview = (GridView) mLayout.findViewById(R.id.gridview);
         gridview.setAdapter(new GridviewCellAdapter(getActivity(), screen_width));
 
-        // TODO: Reinsert FAB. Needed to use fragment instead of activity.
-        /*
-        FloatingActionButton addButton = new FloatingActionButton.Builder()//this)
-                .withDrawable(getResources().getDrawable(R.drawable.ic_add_white_48dp))
-                .withButtonColor(getResources().getColor(R.color.accent))
-                .withGravity(Gravity.BOTTOM | Gravity.RIGHT)
-                .withMargins(0, 0, 16, 16);
-        //        .create();
+        // Add FAB programatically
+        float scale = getResources().getDisplayMetrics().density;
+        int addButtonSize = FloatingActionButton.convertToPixels(72, scale);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(addButtonSize,
+            addButtonSize);
 
+        FloatingActionButton addButton = new FloatingActionButton(this.getActivity());
+        addButton.setFloatingActionButtonColor(getResources().getColor(R.color.accent));
+        addButton.setFloatingActionButtonDrawable(getResources()
+            .getDrawable(R.drawable.ic_add_white_48dp));
+
+        params.bottomMargin = FloatingActionButton.convertToPixels(20, scale);
+        params.rightMargin = FloatingActionButton.convertToPixels(20, scale);
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+        addButton.setLayoutParams(params);
         mLayout.addView(addButton);
+
         // TODO: If user is logged in, addButton must be visible
         if (false) {
             addButton.setVisibility(View.GONE);
         }
-        */
 
         // TODO: addButton on click must go to create activity
 
@@ -144,8 +152,8 @@ public class RecipeListFragment extends Fragment {
     }
 
     /* Instead of using the action bar method setNavigationMode, we define specifically the
-     * buttons to show. We call this method when the app is created the first time (onResume) and
-     * every time it appears again (onHiddenChange). */
+     * buttons to show. We call this method when the app is created the first time (onResume)
+     * and every time it appears again (onHiddenChange). */
     private void changeActionButton() {
         MainActivity x = (MainActivity) getActivity();
         x.setDrawerIndicatorEnabled(true);

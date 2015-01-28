@@ -32,14 +32,14 @@ public class MainActivity extends Activity implements
 
         // Set up the drawer
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
-                .findFragmentById(R.id.navigation_drawer);
+            .findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+            (DrawerLayout) findViewById(R.id.drawer_layout));
     }
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
+        // Update the main content by replacing fragments
         Fragment fragment;
         String tab = "";
         switch (position) {
@@ -80,7 +80,6 @@ public class MainActivity extends Activity implements
             FragmentTransaction transac = getFragmentManager().beginTransaction().remove(frag);
             transac.commit();*/
         }
-
     }
 
     /* Method needed to change the action bar button by using the navigation drawer fragment. */
