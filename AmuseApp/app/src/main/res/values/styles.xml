@@ -1,8 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="BaseAppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/theme_default_primary</item>
+        <item name="colorPrimaryDark">@color/theme_default_primary_dark</item>
+        <item name="colorAccent">@color/theme_default_accent</item>
+        <item name="colorControlHighlight">@color/theme_default_accent_light</item>
     </style>
 
+    <style name="AppTheme" parent="BaseAppTheme">
+    </style>
+
+    <style name="BaseDetailTheme" parent="BaseAppTheme">
+        <item name="actionBarStyle">@style/DetailActionBar</item>
+        <item name="windowActionBarOverlay">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+    </style>
+
+    <style name="DetailTheme" parent="BaseDetailTheme">
+    </style>
+
+    <style name="DetailActionBar" parent="Widget.AppCompat.Light.ActionBar">
+        <item name="background">@android:color/transparent</item>
+        <item name="homeAsUpIndicator">@drawable/abc_ic_ab_back_mtrl_am_alpha</item>
+        <item name="displayOptions">homeAsUp</item>
+    </style>
 </resources>

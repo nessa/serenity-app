@@ -136,7 +136,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
             if (resources != null) {
                 // TODO: Change color.
                 if (checked) {
-                    layout.setBackgroundColor(resources.getColor(R.color.accent));//drawer_selected_color));
+                    layout.setBackgroundColor(resources.getColor(R.color.theme_default_accent));//drawer_selected_color));
                 } else {
                     layout.setBackgroundColor(resources.getColor(android.R.color.white));
                 }

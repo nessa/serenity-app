@@ -72,7 +72,7 @@ public class RecipeListFragment extends Fragment {
             addButtonSize);
 
         FloatingActionButton addButton = new FloatingActionButton(this.getActivity());
-        addButton.setFloatingActionButtonColor(getResources().getColor(R.color.accent));
+        addButton.setFloatingActionButtonColor(getResources().getColor(R.color.theme_default_accent));
         addButton.setFloatingActionButtonDrawable(getResources()
             .getDrawable(R.drawable.ic_add_white_48dp));
 
