@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.util.Arrays;
 import java.util.List;
 
+
 /**
  * Navigation drawer cell adapter class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
