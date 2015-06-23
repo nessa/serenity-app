@@ -35,15 +35,12 @@ public class MainActivity extends Activity implements
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private Fragment initialFragment;
 
-    private ProgressDialog infoDialog;
-
-    // Recipes JSONArray
-    JSONArray recipes = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         // Set up the drawer
@@ -51,9 +48,6 @@ public class MainActivity extends Activity implements
                 .findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
-
-        // Calling async task to get json
-        new GetRecipes().execute();
     }
 
     @Override
@@ -104,66 +98,6 @@ public class MainActivity extends Activity implements
     /* Method needed to change the action bar button by using the navigation drawer fragment. */
     public void setDrawerIndicatorEnabled(boolean v) {
         mNavigationDrawerFragment.setDrawerIndicatorEnabled(v);
-    }
-
-    /**
-     * Async task class to get json by making HTTP call
-     * */
-    private class GetRecipes extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            // Showing progress dialog
-            infoDialog = new ProgressDialog(MainActivity.this);
-            infoDialog.setMessage("Please wait...");
-            infoDialog.setCancelable(false);
-            infoDialog.show();
-
-        }
-
-        @Override
-        protected Void doInBackground(Void) {
-            // Creating service handler class instance
-            ServiceHandler sh = new ServiceHandler();
-
-            // Making a request to url and getting response
-            String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
-
-            Log.d("Response: ", "> " + jsonStr);
-
-            if (jsonStr != null) {
-                try {
-                    JSONObject jsonObj = new JSONObject(jsonStr);
-
-                    /*
-                     * TODO: Convert JSON into object
-                    Gson gson = new Gson();
-                    JSONConverter obj = gson.fromJson(json, JSONConverter.class);
-                     */
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the url");
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-
-            // Dismiss the progress dialog
-            if (infoDialog.isShowing())
-                infoDialog.dismiss();
-
-            /**
-             * TODO: Updating parsed JSON data (result?) into GridView
-             */
-        }
-
     }
 
 }

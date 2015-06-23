@@ -1,8 +1,10 @@
 package com.amusebouche.amuseapp;
 
+import android.app.ProgressDialog;
 import android.graphics.Point;
 import android.app.Activity;
 import android.app.Fragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -15,7 +17,12 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
+import com.amusebouche.services.ServiceHandler;
 import com.amusebouche.ui.FloatingActionButton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Recipe list fragment class.
@@ -30,6 +37,9 @@ import com.amusebouche.ui.FloatingActionButton;
  */
 public class RecipeListFragment extends Fragment {
     private RelativeLayout mLayout;
+    private ProgressDialog infoDialog;
+    private GridView mGridView;
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -39,6 +49,9 @@ public class RecipeListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Calling async task to get json
+        new GetRecipes().execute();
     }
 
     @Override
@@ -62,8 +75,8 @@ public class RecipeListFragment extends Fragment {
         display.getSize(screenSize);
         int screen_width = screenSize.x;
 
-        GridView gridview = (GridView) mLayout.findViewById(R.id.gridview);
-        gridview.setAdapter(new GridviewCellAdapter(getActivity(), screen_width));
+        mGridView = (GridView) mLayout.findViewById(R.id.gridview);
+        mGridView.setAdapter(new GridviewCellAdapter(getActivity(), screen_width));
 
         // Add FAB programatically
         float scale = getResources().getDisplayMetrics().density;
@@ -157,5 +170,74 @@ public class RecipeListFragment extends Fragment {
     private void changeActionButton() {
         MainActivity x = (MainActivity) getActivity();
         x.setDrawerIndicatorEnabled(true);
+    }
+
+
+
+    /**
+     * Async task class to get json by making HTTP call
+     * */
+    private class GetRecipes extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            Log.d("INFO", "Pre execute");
+
+            // Showe progress dialog
+            MainActivity x = (MainActivity) getActivity();
+            infoDialog = new ProgressDialog(x);
+            infoDialog.setMessage("Please wait...");
+            infoDialog.setCancelable(false);
+            infoDialog.show();
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... result) {
+            Log.d("INFO", "Do in background");
+            // Create service handler class instance
+            ServiceHandler sh = new ServiceHandler();
+
+            // TODO: Check internet connection
+
+            // Make a request to url and getting response
+            String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
+
+            Log.d("Response: ", "> " + jsonStr);
+
+            if (jsonStr != null) {
+                try {
+                    JSONObject jObject = new JSONObject(jsonStr);
+                    JSONArray results = jObject.getJSONArray("results");
+
+                    GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
+                    adapter.setRecipes(results);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Log.e("ServiceHandler", "Couldn't get any data from the url");
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            Log.d("INFO", "post execute");
+
+            // Dismiss the progress dialog
+            if (infoDialog.isShowing())
+                infoDialog.dismiss();
+
+            // Update parsed JSON data (result?) into GridView
+            GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
+            adapter.notifyDataSetChanged();
+
+        }
+
     }
 }

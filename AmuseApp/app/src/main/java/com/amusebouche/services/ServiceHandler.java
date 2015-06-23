@@ -8,6 +8,8 @@ package com.amusebouche.services;
  * Class to handle all HTTP calls. It's responsible for making an HTTP call
  * and getting the response.
  */
+import android.util.Log;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -30,7 +32,7 @@ public class ServiceHandler {
     public final static int GET = 1;
     public final static int POST = 2;
 
-    public final static String host = "https://127.0.0.1/";
+    public final static String host = "http://10.0.240.25:8002/";
 
 
     public ServiceHandler() {
@@ -38,12 +40,17 @@ public class ServiceHandler {
     }
 
     /**
-     * Making service call. By default it won't send any parameters.
+     * Make service call. By default it won't send any parameters.
      * @url URL to make request
      * @method HTTP request method
      * */
     public String makeServiceCall(String url, int method) {
-        return this.makeServiceCall(host + url, method, null);
+        Log.d("INFO", "Make service call 1");
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            return this.makeServiceCall(url, method, null);
+        } else {
+            return this.makeServiceCall(host + url, method, null);
+        }
     }
 
     /**
@@ -53,16 +60,18 @@ public class ServiceHandler {
      * @params HTTP request params
      * */
     public String makeServiceCall(String url, int method, List<NameValuePair> params) {
+        Log.d("INFO", "Make service call 2");
+
         try {
             // HTTP client
             DefaultHttpClient httpClient = new DefaultHttpClient();
             HttpEntity httpEntity = null;
             HttpResponse httpResponse = null;
 
-            // Checking HTTP request method type
+            // Check HTTP request method type
             if (method == POST) {
                 HttpPost httpPost = new HttpPost(host + url);
-                // Adding POST params
+                // Add POST params
                 if (params != null) {
                     httpPost.setEntity(new UrlEncodedFormEntity(params));
                 }
@@ -70,7 +79,7 @@ public class ServiceHandler {
                 httpResponse = httpClient.execute(httpPost);
 
             } else if (method == GET) {
-                // Appending params to URL
+                // Append params to URL
                 if (params != null) {
                     String paramString = URLEncodedUtils
                             .format(params, "utf-8");
@@ -83,7 +92,7 @@ public class ServiceHandler {
 
             }
             httpEntity = httpResponse.getEntity();
-            response = EntityUtils.toString(httpEntity);
+            response = EntityUtils.toString(httpEntity, "UTF-8");
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

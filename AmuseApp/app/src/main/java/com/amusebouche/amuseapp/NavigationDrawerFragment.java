@@ -120,13 +120,17 @@ public class NavigationDrawerFragment extends Fragment {
     }
 
     public void setUp(int fragmentId, DrawerLayout drawerLayout) {
+        Log.d("INFO", "SET UP");
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
         mDrawerLayout.setDrawerShadow(R.drawable.ic_search_white_48dp,//drawer_shadow,
                 GravityCompat.START);
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+
+        // TODO: Fix action bar
+        //ActionBar actionBar = getActivity().getActionBar();
+        //Log.d("INFO", "SET DISPLAY HOME");
+        //actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar.setHomeButtonEnabled(true);
 
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, R.string.accept,
                 R.string.cancel) {
@@ -154,7 +158,9 @@ public class NavigationDrawerFragment extends Fragment {
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true)
                             .apply();
                 }
+
                 if (getActionBar() != null) {
+                    Log.d("INFO", "SET TITLE");
                     getActionBar().setTitle(R.string.app_name);//app_name_capital);
                 }
 
