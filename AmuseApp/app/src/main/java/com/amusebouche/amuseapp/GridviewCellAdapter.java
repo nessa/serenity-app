@@ -22,7 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Random;
+
+import com.amusebouche.data.Recipe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,39 +47,32 @@ public class GridviewCellAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater mInflater;
     private int mScreenWidth;
-    private JSONArray mRecipes;
+    private ArrayList<Recipe> mRecipes;
 
     public GridviewCellAdapter(Context c, int screenWidth) {
         mContext = c;
         mScreenWidth = screenWidth;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mRecipes = new JSONArray();
+        mRecipes = new ArrayList<>();
     }
 
-    public GridviewCellAdapter(Context c, int screenWidth, JSONArray recipes) {
+    public GridviewCellAdapter(Context c, int screenWidth, ArrayList<Recipe> recipes) {
         mContext = c;
         mScreenWidth = screenWidth;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mRecipes = recipes;
     }
 
-    public void setRecipes(JSONArray recipes) {
+    public void setRecipes(ArrayList<Recipe> recipes) {
         mRecipes = recipes;
     }
 
     public int getCount() {
-        return mRecipes.length();
+        return mRecipes.size();
     }
 
-    public JSONObject getItem(int position) {
-        try {
-            return mRecipes.getJSONObject(position);
-        } catch (JSONException e) {
-            e.printStackTrace();
-
-            // Insert error data
-            return new JSONObject();
-        }
+    public Recipe getItem(int position) {
+        return mRecipes.get(position);
     }
 
     public long getItemId(int position) {
@@ -91,31 +87,23 @@ public class GridviewCellAdapter extends BaseAdapter {
             layout.setLayoutParams(new GridView.LayoutParams(mScreenWidth / 2 - 2,
                     mScreenWidth / 2 - 2));
 
-            // Prepare elements
+            // Get the item in the adapter
+            Recipe presentRecipe = getItem(position);
+
+            // Get the textview to update the string
             TextView name = (TextView) layout.findViewById(R.id.recipe_name);
+            name.setText(presentRecipe.getTitle());
+
+            // Get the image to update the content
             ImageView image = (ImageView) layout.findViewById(R.id.recipe_image);
+            new DownloadImageTask(image).execute(presentRecipe.getImage());
+
+            // Save present recipe ID into the button
             ImageButton imageButton = (ImageButton) layout.findViewById((R.id.fav_button));
+            imageButton.setTag(presentRecipe.getId());
 
-            try {
-                // Get the item in the adapter
-                JSONObject presentRecipe = getItem(position);
+            // TODO: Check if present recipe if favorited, and change imagebutton icon
 
-                Log.d("INFO", presentRecipe.getString("title"));
-
-                // Get the textview to update the string
-                name.setText(presentRecipe.getString("title"));
-
-                // Get the image to update the content
-                new DownloadImageTask(image).execute(presentRecipe.getString("image"));
-
-                // Save present recipe ID into the button
-                imageButton.setTag(presentRecipe.getInt("id"));
-
-                // TODO: Check if present recipe if favorited, and change imagebutton icon
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
             // Call transition from image (to detail image)
             image.setOnClickListener(new View.OnClickListener() {
@@ -179,7 +167,7 @@ public class GridviewCellAdapter extends BaseAdapter {
                         InputStream in = new java.net.URL(urlDisplay).openStream();
                         mIcon11 = BitmapFactory.decodeStream(in);
                     } catch (Exception e) {
-                        Log.e("Error", e.getMessage());
+                        Log.e("ERROR", e.getMessage());
                         e.printStackTrace();
                         failed = true;
                     }

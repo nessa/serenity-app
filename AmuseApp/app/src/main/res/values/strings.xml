@@ -14,4 +14,6 @@
     <string name="MY_FAVOURITES">My favourites</string>
     <string name="SETTINGS">Settings</string>
     <string name="INFO">Information</string>
+    <!-- Recipe List fragment class -->
+    <string name="please_wait_message">Please, wait...</string>
 </resources>

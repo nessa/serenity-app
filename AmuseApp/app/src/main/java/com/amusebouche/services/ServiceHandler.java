@@ -1,17 +1,9 @@
 package com.amusebouche.services;
 
 
-/**
- * Service handler class.
- * Author: Noelia Sales <noelia.salesmontes@gmail.com
- *
- * Class to handle all HTTP calls. It's responsible for making an HTTP call
- * and getting the response.
- */
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,6 +21,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 
+/**
+ * Service handler class.
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com
+ *
+ * Class to handle all HTTP calls. It's responsible for making an HTTP call
+ * and getting the response.
+ */
 public class ServiceHandler {
 
     static String response = null;
@@ -48,7 +47,6 @@ public class ServiceHandler {
      * @method HTTP request method
      * */
     public String makeServiceCall(String url, int method) {
-        Log.d("INFO", "Make service call 1");
         if (url.startsWith("http://") || url.startsWith("https://")) {
             return this.makeServiceCall(url, method, null);
         } else {
@@ -81,7 +79,6 @@ public class ServiceHandler {
      * @params HTTP request params
      * */
     public String makeServiceCall(String url, int method, List<NameValuePair> params) {
-        Log.d("INFO", "Make service call 2");
 
         try {
             // HTTP client

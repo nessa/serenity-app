@@ -9,9 +9,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -19,10 +16,13 @@ import android.widget.RelativeLayout;
 
 import com.amusebouche.services.ServiceHandler;
 import com.amusebouche.ui.FloatingActionButton;
+import com.amusebouche.data.Recipe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 /**
  * Recipe list fragment class.
@@ -39,7 +39,7 @@ public class RecipeListFragment extends Fragment {
     private RelativeLayout mLayout;
     private ProgressDialog infoDialog;
     private GridView mGridView;
-
+    private ArrayList<Recipe> mRecipes;
 
     @Override
     public void onAttach(Activity activity) {
@@ -51,7 +51,9 @@ public class RecipeListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         // Calling async task to get json
-        new GetRecipes().execute();
+        if (mRecipes == null) {
+            new GetRecipes().execute();
+        }
     }
 
     @Override
@@ -118,6 +120,7 @@ public class RecipeListFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         //outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+        //outState.putCharSequence("text", mEditText.getText());
     }
 
     @Override
@@ -159,20 +162,17 @@ public class RecipeListFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
 
-            Log.d("INFO", "Pre execute");
-
-            // Showe progress dialog
+            // Show progress dialog
             MainActivity x = (MainActivity) getActivity();
             infoDialog = new ProgressDialog(x);
-            infoDialog.setMessage("Please wait...");
+            infoDialog.setMessage(x.getApplicationContext().getResources()
+                    .getString(R.string.please_wait_message));
             infoDialog.setCancelable(false);
             infoDialog.show();
-
         }
 
         @Override
         protected Void doInBackground(Void... result) {
-            Log.d("INFO", "Do in background");
             // Create service handler class instance
             ServiceHandler sh = new ServiceHandler();
 
@@ -182,15 +182,21 @@ public class RecipeListFragment extends Fragment {
                 // Make a request to url and getting response
                 String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
 
-                Log.d("Response: ", "> " + jsonStr);
+                Log.d("RESPONSE", "> " + jsonStr);
 
                 if (jsonStr != null) {
                     try {
                         JSONObject jObject = new JSONObject(jsonStr);
                         JSONArray results = jObject.getJSONArray("results");
 
+                        mRecipes = new ArrayList<>();
+
+                        for (int i = 0; i < results.length(); i++) {
+                            mRecipes.add(new Recipe(results.getJSONObject(i)));
+                        }
+
                         GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
-                        adapter.setRecipes(results);
+                        adapter.setRecipes(mRecipes);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -198,6 +204,8 @@ public class RecipeListFragment extends Fragment {
                     Log.e("ServiceHandler", "Couldn't get any data from the url");
                 }
             } else {
+                Log.d("INFO", "There's no connection");
+
                 // TODO: Get database recipes??
             }
 
@@ -207,7 +215,6 @@ public class RecipeListFragment extends Fragment {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            Log.d("INFO", "post execute");
 
             // Dismiss the progress dialog
             if (infoDialog.isShowing())
@@ -216,8 +223,6 @@ public class RecipeListFragment extends Fragment {
             // Update parsed JSON data (result?) into GridView
             GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
             adapter.notifyDataSetChanged();
-
         }
-
     }
 }

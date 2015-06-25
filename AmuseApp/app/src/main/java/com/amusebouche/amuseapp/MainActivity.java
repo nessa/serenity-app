@@ -46,7 +46,6 @@ public class MainActivity extends ActionBarActivity implements
 
         // Set up action bar
         ActionBar actionBar = getSupportActionBar();
-        Log.d("INFO", "SET DISPLAY HOME");
         actionBar.setTitle(R.string.app_name);
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeButtonEnabled(true);
