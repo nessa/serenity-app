@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.InputStream;
+import java.util.Random;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -165,15 +166,72 @@ public class GridviewCellAdapter extends BaseAdapter {
         }
 
         protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
+            String urlDisplay = urls[0];
+            Boolean failed = false;
             Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
+
+            if (urlDisplay == "") {
+                failed = true;
+            } else {
+                if (urlDisplay.startsWith("http://") || urlDisplay.startsWith("https://")) {
+                    // Try to get image from URL
+                    try {
+                        InputStream in = new java.net.URL(urlDisplay).openStream();
+                        mIcon11 = BitmapFactory.decodeStream(in);
+                    } catch (Exception e) {
+                        Log.e("Error", e.getMessage());
+                        e.printStackTrace();
+                        failed = true;
+                    }
+                } else {
+                    // TODO: Try to get image from local storage
+                    //File image = new File(sd+filePath, imageName);
+                    //Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath(),bmOptions);
+
+                    // If it fails:
+                    failed = true;
+                }
             }
+
+            if (failed) {
+                // Get a random default image
+                // TODO: Update these images with new ones
+                Random r = new Random();
+                int randomNumber = (r.nextInt(8));
+                int resource;
+
+                switch (randomNumber) {
+                    default:
+                    case 0:
+                        resource = R.drawable.sample_0;
+                        break;
+                    case 1:
+                        resource = R.drawable.sample_1;
+                        break;
+                    case 2:
+                        resource = R.drawable.sample_2;
+                        break;
+                    case 3:
+                        resource = R.drawable.sample_3;
+                        break;
+                    case 4:
+                        resource = R.drawable.sample_4;
+                        break;
+                    case 5:
+                        resource = R.drawable.sample_5;
+                        break;
+                    case 6:
+                        resource = R.drawable.sample_6;
+                        break;
+                    case 7:
+                        resource = R.drawable.sample_7;
+                        break;
+
+                }
+
+                mIcon11 = BitmapFactory.decodeResource(mContext.getResources(), resource);
+            }
+
             return mIcon11;
         }
 

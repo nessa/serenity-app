@@ -1,20 +1,16 @@
 package com.amusebouche.amuseapp;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.support.v4.widget.DrawerLayout;
-import android.app.Activity;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
-import android.os.AsyncTask;
-import android.app.ProgressDialog;
-
-import com.amusebouche.services.ServiceHandler;
 
 /**
  * Main activity class.
@@ -28,13 +24,12 @@ import com.amusebouche.services.ServiceHandler;
  * Related layouts:
  * - Content: activity_main.xml
  */
-public class MainActivity extends Activity implements
+public class MainActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     public static final int PROFILE = 0, RECIPES = 1;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private Fragment initialFragment;
-
 
 
     @Override
@@ -48,6 +43,13 @@ public class MainActivity extends Activity implements
                 .findFragmentById(R.id.navigation_drawer);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        // Set up action bar
+        ActionBar actionBar = getSupportActionBar();
+        Log.d("INFO", "SET DISPLAY HOME");
+        actionBar.setTitle(R.string.app_name);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setHomeButtonEnabled(true);
     }
 
     @Override
@@ -98,6 +100,34 @@ public class MainActivity extends Activity implements
     /* Method needed to change the action bar button by using the navigation drawer fragment. */
     public void setDrawerIndicatorEnabled(boolean v) {
         mNavigationDrawerFragment.setDrawerIndicatorEnabled(v);
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_recipe_list, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                search();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Search will call to another (lateral) fragment.
+     * TODO: Implement this method.
+     */
+    public void search() {
+        Log.v("INFO", "Search clicked");
     }
 
 }

@@ -134,30 +134,6 @@ public class RecipeListFragment extends Fragment {
         super.onDetach();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_recipe_list, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                search();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * Search will call to another (lateral) fragment.
-     * TODO: Implement this method.
-     */
-    public void search() {
-        Log.v("INFO", "Search clicked");
-    }
 
 
     public void makeFavorite(View v) {
@@ -200,25 +176,29 @@ public class RecipeListFragment extends Fragment {
             // Create service handler class instance
             ServiceHandler sh = new ServiceHandler();
 
-            // TODO: Check internet connection
+            // Check internet connection
+            if (sh.checkInternetConnection(getActivity().getApplicationContext())) {
 
-            // Make a request to url and getting response
-            String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
+                // Make a request to url and getting response
+                String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
 
-            Log.d("Response: ", "> " + jsonStr);
+                Log.d("Response: ", "> " + jsonStr);
 
-            if (jsonStr != null) {
-                try {
-                    JSONObject jObject = new JSONObject(jsonStr);
-                    JSONArray results = jObject.getJSONArray("results");
+                if (jsonStr != null) {
+                    try {
+                        JSONObject jObject = new JSONObject(jsonStr);
+                        JSONArray results = jObject.getJSONArray("results");
 
-                    GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
-                    adapter.setRecipes(results);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
+                        adapter.setRecipes(results);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    Log.e("ServiceHandler", "Couldn't get any data from the url");
                 }
             } else {
-                Log.e("ServiceHandler", "Couldn't get any data from the url");
+                // TODO: Get database recipes??
             }
 
             return null;

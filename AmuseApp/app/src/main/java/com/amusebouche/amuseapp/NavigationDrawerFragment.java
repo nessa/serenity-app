@@ -3,7 +3,6 @@ package com.amusebouche.amuseapp;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
@@ -126,12 +125,6 @@ public class NavigationDrawerFragment extends Fragment {
         mDrawerLayout.setDrawerShadow(R.drawable.ic_search_white_48dp,//drawer_shadow,
                 GravityCompat.START);
 
-        // TODO: Fix action bar
-        //ActionBar actionBar = getActivity().getActionBar();
-        //Log.d("INFO", "SET DISPLAY HOME");
-        //actionBar.setDisplayHomeAsUpEnabled(true);
-        //actionBar.setHomeButtonEnabled(true);
-
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, R.string.accept,
                 R.string.cancel) {
             @Override
@@ -157,11 +150,6 @@ public class NavigationDrawerFragment extends Fragment {
                             .getDefaultSharedPreferences(getActivity());
                     sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true)
                             .apply();
-                }
-
-                if (getActionBar() != null) {
-                    Log.d("INFO", "SET TITLE");
-                    getActionBar().setTitle(R.string.app_name);//app_name_capital);
                 }
 
                 getActivity().invalidateOptionsMenu(); // calls
@@ -228,14 +216,5 @@ public class NavigationDrawerFragment extends Fragment {
 
     public void setDrawerIndicatorEnabled(boolean v) {
         mDrawerToggle.setDrawerIndicatorEnabled(v);
-    }
-
-    private ActionBar getActionBar() {
-        if (getActivity() != null) {
-            if (getActivity().getActionBar() != null) {
-                return getActivity().getActionBar();
-            }
-        }
-        return null;
     }
 }

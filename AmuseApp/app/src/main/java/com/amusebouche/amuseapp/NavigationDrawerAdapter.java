@@ -32,7 +32,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
 
     public NavigationDrawerAdapter(Context context) {
         this.mContext = context;
-        String[] sections = {"Perfil", "Placeline", "Mi posición", "Mis vecinos", "SuperYipis", "Ajustes", "Información"};
+        String[] sections = {"RECIPES", "MY_RECIPES", "MY_FAVOURITES", "SETTINGS", "INFO"};
         sectionsList = Arrays.asList(sections);
     }
 
@@ -49,6 +49,23 @@ public class NavigationDrawerAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+
+    private String getSectionString(int position) {
+        switch (position) {
+            default:
+            case 0:
+                return mContext.getResources().getString(R.string.RECIPES);
+            case 1:
+                return mContext.getResources().getString(R.string.MY_RECIPES);
+            case 2:
+                return mContext.getResources().getString(R.string.MY_FAVOURITES);
+            case 3:
+                return mContext.getResources().getString(R.string.SETTINGS);
+            case 4:
+                return mContext.getResources().getString(R.string.INFO);
+        }
     }
 
     // TODO: Update this!
@@ -137,7 +154,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
             if (resources != null) {
                 // TODO: Change color.
                 if (checked) {
-                    layout.setBackgroundColor(resources.getColor(R.color.theme_default_accent));//drawer_selected_color));
+                    layout.setBackgroundColor(resources.getColor(R.color.theme_default_accent));
                 } else {
                     layout.setBackgroundColor(resources.getColor(android.R.color.white));
                 }

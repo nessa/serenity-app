@@ -8,4 +8,10 @@
     <string name="title_recipe_detail_activity">Detail</string>
     <string name="accept">Accept</string>
     <string name="cancel">Cancel</string>
+    <!-- Menu -->
+    <string name="RECIPES">Recipes</string>
+    <string name="MY_RECIPES">My recipes</string>
+    <string name="MY_FAVOURITES">My favourites</string>
+    <string name="SETTINGS">Settings</string>
+    <string name="INFO">Information</string>
 </resources>

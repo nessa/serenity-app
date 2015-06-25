@@ -8,6 +8,9 @@ package com.amusebouche.services;
  * Class to handle all HTTP calls. It's responsible for making an HTTP call
  * and getting the response.
  */
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.io.IOException;
@@ -32,7 +35,7 @@ public class ServiceHandler {
     public final static int GET = 1;
     public final static int POST = 2;
 
-    public final static String host = "http://10.0.240.25:8002/";
+    public final static String host = "http://10.0.240.21:8002/";
 
 
     public ServiceHandler() {
@@ -51,6 +54,24 @@ public class ServiceHandler {
         } else {
             return this.makeServiceCall(host + url, method, null);
         }
+    }
+
+    /**
+     * Check internet connection
+     * @ctx App context
+     * */
+    public Boolean checkInternetConnection(Context ctx) {
+        ConnectivityManager conMgr = (ConnectivityManager)
+                ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo info = conMgr.getActiveNetworkInfo();
+        if (info == null)
+            return false;
+        if (!info.isConnected())
+            return false;
+        if (!info.isAvailable())
+            return false;
+        return true;
     }
 
     /**
