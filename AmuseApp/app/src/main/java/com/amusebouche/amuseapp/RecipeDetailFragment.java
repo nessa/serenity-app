@@ -3,7 +3,6 @@ package com.amusebouche.amuseapp;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,13 +10,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import java.util.Locale;
+import com.amusebouche.data.Recipe;
+import com.squareup.picasso.Picasso;
+
+import java.util.Random;
 
 /**
  * Recipe detail fragment class.
@@ -32,8 +32,7 @@ import java.util.Locale;
  */
 public class RecipeDetailFragment extends Fragment {
     private LinearLayout mLayout;
-    private TextToSpeech mTTS;
-    private EditText mEditText;
+    private Recipe mRecipe;
 
     @Override
     public void onAttach(Activity activity) {
@@ -45,15 +44,14 @@ public class RecipeDetailFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        mTTS = new TextToSpeech(this.getActivity(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if(status != TextToSpeech.ERROR){
-                    Locale locSpanish = new Locale("spa", "ESP");
-                    mTTS.setLanguage(locSpanish);
-                }
+        if (getArguments() != null) {
+            Log.d("INFO", "Set recipe");
+            mRecipe = getArguments().getParcelable("recipe");
+        } else {
+            if (savedInstanceState != null && savedInstanceState.containsKey("recipe")) {
+                mRecipe = savedInstanceState.getParcelable("recipe");
             }
-        });
+        }
     }
 
     @Override
@@ -67,9 +65,6 @@ public class RecipeDetailFragment extends Fragment {
     public void onStop() {
         super.onStop();
 
-        if (mTTS != null){
-            mTTS.shutdown();
-        }
     }
 
     @Override
@@ -87,23 +82,12 @@ public class RecipeDetailFragment extends Fragment {
         mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_recipe_detail,
                 container, false);
 
-        mEditText = (EditText) mLayout.findViewById(R.id.edit_text);
-        Button speechButton = (Button) mLayout.findViewById(R.id.speech_button);
+        ImageView image = (ImageView) mLayout.findViewById(R.id.recipe_image);
+        this.setCellImage(mRecipe.getImage(), image);
 
+        TextView textView = (TextView) mLayout.findViewById(R.id.recipe_name);
+        textView.setText(mRecipe.getTitle());
 
-        // Calling transition from image (to detail image)
-        speechButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CharSequence text = mEditText.getText();
-
-                if (text != "") {
-                    mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-                }
-
-
-            }
-        });
 
         return mLayout;
     }
@@ -158,5 +142,56 @@ public class RecipeDetailFragment extends Fragment {
     private void changeActionButton() {
         MainActivity x = (MainActivity) getActivity();
         x.setDrawerIndicatorEnabled(false);
+    }
+
+
+    /**
+     * Set an image in a image view using the Picasso library.
+     * @param imageName Name of the image. Could be an URL, a file path or an empty string. If it's
+     *                  an empty string, we will set a random sample image.
+     * @param imageView Image view we want to set up.
+     * @see Picasso library: com.squareup.picasso.Picasso
+     */
+    private void setCellImage(String imageName, ImageView imageView) {
+        if (imageName == "") {
+            // Get a random default image
+            // TODO: Update these images with new ones
+            Random r = new Random();
+            int randomNumber = (r.nextInt(8));
+            int resource;
+
+            switch (randomNumber) {
+                default:
+                case 0:
+                    resource = R.drawable.sample_0;
+                    break;
+                case 1:
+                    resource = R.drawable.sample_1;
+                    break;
+                case 2:
+                    resource = R.drawable.sample_2;
+                    break;
+                case 3:
+                    resource = R.drawable.sample_3;
+                    break;
+                case 4:
+                    resource = R.drawable.sample_4;
+                    break;
+                case 5:
+                    resource = R.drawable.sample_5;
+                    break;
+                case 6:
+                    resource = R.drawable.sample_6;
+                    break;
+                case 7:
+                    resource = R.drawable.sample_7;
+                    break;
+
+            }
+
+            Picasso.with(getActivity().getApplicationContext()).load(resource).into(imageView);
+        } else {
+            Picasso.with(getActivity().getApplicationContext()).load(imageName).into(imageView);
+        }
     }
 }

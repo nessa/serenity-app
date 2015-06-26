@@ -1,36 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:gravity="bottom">
-    <!--
-    <ImageView
-        android:id="@+id/recipe_image"
-        android:transitionName="SharedImage"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop" /> -->
-    <!-- inputType: "text", "textEmailAddress", "textUri", "number", "phone" -->
-    <EditText
-        android:id="@+id/edit_text"
+    android:gravity="top">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="Prueba"
-        android:inputType="text" />
-    <!--
-    <TextView
-        android:id="@+id/recipe_name"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:layout_marginLeft="4dp"
-        android:text="Receta"
-        android:textColor="#ffffffff"
-        android:textSize="20sp"
-        android:gravity="center"
-        android:layout_alignParentTop="true" />-->
-    <Button
-        android:id="@+id/speech_button"
-        android:layout_width="fill_parent"
-        android:layout_height="40dp"/>
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:gravity="top">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:background="@color/semi_transparent_primary_dark"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:gravity="top">
+            <ImageView
+                android:id="@+id/recipe_image"
+                android:transitionName="SharedImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop" />
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:orientation="horizontal"
+                android:background="@color/semi_transparent_primary_dark"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:gravity="bottom">
+                <TextView
+                    android:id="@+id/recipe_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="4dp"
+                    android:textColor="#ffffffff"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true" />
+                <ImageButton
+                    android:id="@+id/fav_button"
+                    android:layout_height="48dp"
+                    android:layout_width="48dp"
+                    android:layout_marginRight="2dp"
+                    android:layout_alignParentRight="true"
+                    android:background="@null" />
+            </RelativeLayout>
+        </RelativeLayout>
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:background="@color/semi_transparent_primary_dark"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:gravity="bottom" >
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/ingredients"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:orientation="horizontal"
+                android:background="@color/semi_transparent_primary_dark"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:gravity="bottom" />
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/directions"
+                android:layout_width="match_parent"
+                android:layout_height="50sp"
+                android:orientation="horizontal"
+                android:background="@color/semi_transparent_primary_dark"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:gravity="bottom" />
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>
 </LinearLayout>

@@ -2,10 +2,12 @@ package com.amusebouche.amuseapp;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
 import android.transition.Fade;
 import android.transition.TransitionSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -98,7 +100,7 @@ public class GridviewCellAdapter extends BaseAdapter {
         }
 
         // Get the item in the adapter
-        Recipe presentRecipe = getItem(position);
+        final Recipe presentRecipe = getItem(position);
 
         // Get the textview to update the string
         name = (TextView) cell.findViewById(R.id.recipe_name);
@@ -106,11 +108,13 @@ public class GridviewCellAdapter extends BaseAdapter {
 
         // Get the image to update the content
         image = (ImageView) cell.findViewById(R.id.recipe_image);
+        image.setTag(position);
         this.setCellImage(presentRecipe.getImage(), image);
 
         // Save present recipe ID into the button
         imageButton = (ImageButton) cell.findViewById((R.id.fav_button));
-        imageButton.setTag(presentRecipe.getId());
+        imageButton.setTag(this.getItemId(position));
+
 
         // TODO: Check if present recipe if favorited, and change imagebutton icon
 
@@ -130,6 +134,13 @@ public class GridviewCellAdapter extends BaseAdapter {
                 Fade fade = new Fade();
                 fade.setStartDelay(300);
                 fragment2.setEnterTransition(fade);
+
+                Log.d("INFO", "Vista " + v.getTag());
+                mRecipes.get((int) v.getTag()).printString();
+
+                final Bundle bundle = new Bundle();
+                bundle.putParcelable("recipe", mRecipes.get((int) v.getTag()));
+                fragment2.setArguments(bundle);
 
                 // Get main activity from context
                 MainActivity x = (MainActivity) mContext;

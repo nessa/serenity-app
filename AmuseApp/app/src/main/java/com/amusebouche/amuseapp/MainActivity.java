@@ -80,18 +80,18 @@ public class MainActivity extends ActionBarActivity implements
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
 
-        if (getFragmentManager().findFragmentByTag("detailBack") != null){
+        if (getSupportFragmentManager().findFragmentByTag("detailBack") != null){
             // TODO: Something?
         } else {
             super.onBackPressed();
             return;
         }
-        if (getFragmentManager().getBackStackEntryCount() != 0) {
-            getFragmentManager().popBackStack();
+        if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
+            getSupportFragmentManager().popBackStack();
             /*
             Toast.makeText(getApplicationContext(), "Test", Toast.LENGTH_LONG).show();
-            Fragment frag = getFragmentManager().findFragmentByTag("fragBack");
-            FragmentTransaction transac = getFragmentManager().beginTransaction().remove(frag);
+            Fragment frag = getSupportFragmentManager().findFragmentByTag("fragBack");
+            FragmentTransaction transac = getSupportFragmentManager().beginTransaction().remove(frag);
             transac.commit();*/
         }
     }
