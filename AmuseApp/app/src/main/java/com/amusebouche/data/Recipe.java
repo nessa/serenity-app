@@ -2,6 +2,7 @@ package com.amusebouche.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -305,6 +306,10 @@ public class Recipe implements Parcelable {
      */
     public ArrayList getDirections() {
         return mDirections;
+    }
+
+    public void printString() {
+        Log.d("RECIPE", mId + " " + mTitle);
     }
 
     // Parcelable methods

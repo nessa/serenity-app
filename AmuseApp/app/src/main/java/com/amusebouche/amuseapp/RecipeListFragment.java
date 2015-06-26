@@ -40,6 +40,8 @@ public class RecipeListFragment extends Fragment {
     private ProgressDialog infoDialog;
     private GridView mGridView;
     private ArrayList<Recipe> mRecipes;
+    private Integer mRecipesPage;
+    private Integer mLastGridviewPosition;
 
     @Override
     public void onAttach(Activity activity) {
@@ -49,10 +51,24 @@ public class RecipeListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(getClass().getSimpleName(), "onCreate()");
+
+        // Prevent errors
+        mRecipes = new ArrayList<>();
 
         // Calling async task to get json
-        if (mRecipes == null) {
+        if (savedInstanceState == null || !savedInstanceState.containsKey("recipes")) {
+            mLastGridviewPosition = 0;
             new GetRecipes().execute();
+        } else {
+            mRecipes = savedInstanceState.getParcelableArrayList("recipes");
+            mLastGridviewPosition = savedInstanceState.getInt("last_position");
+
+            Log.d("INFO", "ON CREATE");
+            for (int i = 0; i < mRecipes.size(); i++) {
+                Log.d("INFO", "Valor: "+i);
+                mRecipes.get(i).printString();
+            }
         }
     }
 
@@ -78,18 +94,23 @@ public class RecipeListFragment extends Fragment {
         int screen_width = screenSize.x;
 
         mGridView = (GridView) mLayout.findViewById(R.id.gridview);
-        mGridView.setAdapter(new GridviewCellAdapter(getActivity(), screen_width));
+        mGridView.setAdapter(new GridviewCellAdapter(getActivity(), screen_width, mRecipes));
+
+        if (mLastGridviewPosition != 0) {
+            Log.d("INFO", "GRIDVIEW POSITION");
+            mGridView.smoothScrollToPosition(mLastGridviewPosition);
+        }
 
         // Add FAB programatically
         float scale = getResources().getDisplayMetrics().density;
         int addButtonSize = FloatingActionButton.convertToPixels(72, scale);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(addButtonSize,
-            addButtonSize);
+                addButtonSize);
 
         FloatingActionButton addButton = new FloatingActionButton(this.getActivity());
         addButton.setFloatingActionButtonColor(getResources().getColor(R.color.theme_default_accent));
         addButton.setFloatingActionButtonDrawable(getResources()
-            .getDrawable(R.drawable.ic_add_white_48dp));
+                .getDrawable(R.drawable.ic_add_white_48dp));
 
         params.bottomMargin = FloatingActionButton.convertToPixels(20, scale);
         params.rightMargin = FloatingActionButton.convertToPixels(20, scale);
@@ -117,10 +138,11 @@ public class RecipeListFragment extends Fragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
-        //outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
-        //outState.putCharSequence("text", mEditText.getText());
+        outState.putParcelableArrayList("recipes", mRecipes);
+        outState.putInt("last_position", mGridView.getFirstVisiblePosition());
+        //outState.putInt("present_page", mRecipesPage);
     }
 
     @Override
@@ -181,6 +203,7 @@ public class RecipeListFragment extends Fragment {
 
                 // Make a request to url and getting response
                 String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
+                mRecipesPage = 1;
 
                 Log.d("RESPONSE", "> " + jsonStr);
 
@@ -197,6 +220,11 @@ public class RecipeListFragment extends Fragment {
 
                         GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
                         adapter.setRecipes(mRecipes);
+
+                        if (mLastGridviewPosition != 0) {
+                            Log.d("INFO", "GRIDVIEW POSITION");
+                            mGridView.setSelection(mLastGridviewPosition);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
