@@ -175,45 +175,46 @@ public class GridviewCellAdapter extends BaseAdapter {
      * @see Picasso library: com.squareup.picasso.Picasso
      */
     private void setCellImage(String imageName, ImageView imageView) {
-        if (imageName == "") {
-            // Get a random default image
-            // TODO: Update these images with new ones
-            Random r = new Random();
-            int randomNumber = (r.nextInt(8));
-            int resource;
+        // Get a random default image
+        // TODO: Update these images with new ones
+        Random r = new Random();
+        int randomNumber = (r.nextInt(8));
+        int resource;
 
-            switch (randomNumber) {
-                default:
-                case 0:
-                    resource = R.drawable.sample_0;
-                    break;
-                case 1:
-                    resource = R.drawable.sample_1;
-                    break;
-                case 2:
-                    resource = R.drawable.sample_2;
-                    break;
-                case 3:
-                    resource = R.drawable.sample_3;
-                    break;
-                case 4:
-                    resource = R.drawable.sample_4;
-                    break;
-                case 5:
-                    resource = R.drawable.sample_5;
-                    break;
-                case 6:
-                    resource = R.drawable.sample_6;
-                    break;
-                case 7:
-                    resource = R.drawable.sample_7;
-                    break;
-
-            }
-
-            Picasso.with(mContext).load(resource).into(imageView);
-        } else {
-            Picasso.with(mContext).load(imageName).into(imageView);
+        switch (randomNumber) {
+            default:
+            case 0:
+                resource = R.drawable.sample_0;
+                break;
+            case 1:
+                resource = R.drawable.sample_1;
+                break;
+            case 2:
+                resource = R.drawable.sample_2;
+                break;
+            case 3:
+                resource = R.drawable.sample_3;
+                break;
+            case 4:
+                resource = R.drawable.sample_4;
+                break;
+            case 5:
+                resource = R.drawable.sample_5;
+                break;
+            case 6:
+                resource = R.drawable.sample_6;
+                break;
+            case 7:
+                resource = R.drawable.sample_7;
+                break;
         }
+
+        //Picasso.with(mContext).load(imageName).into(imageView);
+        Picasso.with(mContext).load(imageName)
+                .error(resource)
+                .placeholder(R.drawable.loading_animation)
+                .into(imageView);
+
+
     }
 }
