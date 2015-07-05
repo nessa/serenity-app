@@ -13,7 +13,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-
 /**
  * Recipe class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
@@ -24,6 +23,7 @@ import java.util.Date;
 public class Recipe implements Parcelable {
 
     // Main variables
+    private String mDatabaseId;
     private String mId;
     private String mTitle;
     private String mOwner;
@@ -40,14 +40,63 @@ public class Recipe implements Parcelable {
     private String mSource;
 
     // List variables
-    private ArrayList<Category> mCategories;
-    private ArrayList<Ingredient> mIngredients;
-    private ArrayList<Direction> mDirections;
+    private ArrayList<RecipeCategory> mCategories;
+    private ArrayList<RecipeIngredient> mIngredients;
+    private ArrayList<RecipeDirection> mDirections;
 
     // Constructors
 
     /**
      * Basic recipe contructor
+     *
+     * @param databaseId Database recipe identifier
+     * @param id API recipe identifier
+     * @param title Recipe title
+     * @param owner User that owns this recipe
+     * @param language Recipe language (EN, ES, ...)
+     * @param typeOfDish Recipe dish (DESSERT, MAIN DISH, ...)
+     * @param difficulty Recipe difficulty (HIGH, MEDIUM, HARD)
+     * @param createdTimestamp Recipe date of creation
+     * @param updatedTimestamp Recipe date of update
+     * @param cookingTime Time to cook this recipe
+     * @param image URL/path to the main image
+     * @param totalRating Total rating value for this recipe
+     * @param usersRating Number of users that have rated this recipe
+     * @param servings Number of persons we can serve this recipe (with the given amount of
+     *                 ingredients)
+     * @param source URL to the source of this recipe
+     * @param categories List of categories associated to this recipe. @see Category clas
+     * @param ingredients List of ingredients associated to this recipe. @see Ingredient class
+     * @param directions List of directions associated to this recipe. @see Direction class
+     */
+    public Recipe(String databaseId, String id, String title, String owner, String language,
+                  String typeOfDish, String difficulty, Date createdTimestamp,
+                  Date updatedTimestamp, Float cookingTime, String image, Integer totalRating,
+                  Integer usersRating, Integer servings, String source,
+                  ArrayList<RecipeCategory> categories, ArrayList<RecipeIngredient> ingredients,
+                  ArrayList<RecipeDirection> directions) {
+        this.mDatabaseId = databaseId;
+        this.mId = id;
+        this.mTitle = title;
+        this.mOwner = owner;
+        this.mLanguage = language;
+        this.mTypeOfDish = typeOfDish;
+        this.mDifficulty = difficulty;
+        this.mCreatedTimestamp = createdTimestamp;
+        this.mUpdatedTimestamp = updatedTimestamp;
+        this.mCookingTime = cookingTime;
+        this.mImage = image;
+        this.mTotalRating = totalRating;
+        this.mUsersRating = usersRating;
+        this.mServings = servings;
+        this.mSource = source;
+        this.mCategories = categories;
+        this.mIngredients = ingredients;
+        this.mDirections = directions;
+    }
+
+    /**
+     * Basic recipe contructor without database id
      *
      * @param id Recipe identifier
      * @param title Recipe title
@@ -71,8 +120,9 @@ public class Recipe implements Parcelable {
     public Recipe(String id, String title, String owner, String language, String typeOfDish,
                   String difficulty, Date createdTimestamp, Date updatedTimestamp,
                   Float cookingTime, String image, Integer totalRating, Integer usersRating,
-                  Integer servings, String source, ArrayList<Category> categories,
-                  ArrayList<Ingredient> ingredients, ArrayList<Direction> directions) {
+                  Integer servings, String source, ArrayList<RecipeCategory> categories,
+                  ArrayList<RecipeIngredient> ingredients, ArrayList<RecipeDirection> directions) {
+        this.mDatabaseId = "";
         this.mId = id;
         this.mTitle = title;
         this.mOwner = owner;
@@ -92,6 +142,7 @@ public class Recipe implements Parcelable {
         this.mDirections = directions;
     }
 
+
     /**
      * Special contructor
      *
@@ -101,6 +152,7 @@ public class Recipe implements Parcelable {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
 
         try {
+            this.mDatabaseId = "";
             this.mId = o.getString("id");
             this.mTitle = o.getString("title");
             this.mOwner = o.getString("owner");
@@ -127,13 +179,13 @@ public class Recipe implements Parcelable {
             JSONArray directions = o.getJSONArray("directions");
 
             for (int i = 0; i < categories.length(); i++) {
-                mCategories.add(new Category(categories.getJSONObject(i)));
+                mCategories.add(new RecipeCategory(categories.getJSONObject(i)));
             }
             for (int i = 0; i < ingredients.length(); i++) {
-                mIngredients.add(new Ingredient(ingredients.getJSONObject(i)));
+                mIngredients.add(new RecipeIngredient(ingredients.getJSONObject(i)));
             }
             for (int i = 0; i < directions.length(); i++) {
-                mDirections.add(new Direction(directions.getJSONObject(i)));
+                mDirections.add(new RecipeDirection(directions.getJSONObject(i)));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -147,6 +199,7 @@ public class Recipe implements Parcelable {
      * @param source Parcel source data
      */
     public Recipe(Parcel source){
+        this.mDatabaseId = "";
         this.mId = source.readString();
         this.mTitle = source.readString();
         this.mOwner = source.readString();
@@ -165,12 +218,20 @@ public class Recipe implements Parcelable {
         mCategories = new ArrayList<>();
         mIngredients = new ArrayList<>();
         mDirections = new ArrayList<>();
-        source.readList(this.mCategories, Category.class.getClassLoader());
-        source.readList(this.mIngredients, Ingredient.class.getClassLoader());
-        source.readList(this.mDirections, Direction.class.getClassLoader());
+        source.readList(this.mCategories, RecipeCategory.class.getClassLoader());
+        source.readList(this.mIngredients, RecipeIngredient.class.getClassLoader());
+        source.readList(this.mDirections, RecipeDirection.class.getClassLoader());
     }
 
     // Getters
+
+    /**
+     * Get method for id variable
+     * @return Recipe identifier
+     */
+    public String getDatabaseId() {
+        return mDatabaseId;
+    }
 
     /**
      * Get method for id variable
@@ -308,6 +369,18 @@ public class Recipe implements Parcelable {
         return mDirections;
     }
 
+    // SETTERS
+
+    /**
+     * Get method for id variable
+     * @return Recipe identifier
+     */
+    public void setDatabaseId(String databaseId) {
+        this.mDatabaseId = databaseId;
+    }
+
+
+
     public void printString() {
         Log.d("RECIPE", mId + " " + mTitle);
     }
@@ -362,371 +435,5 @@ public class Recipe implements Parcelable {
             return new Recipe[size];
         }
     };
-
-    /**
-     * Recipe category class.
-     * Author: Noelia Sales <noelia.salesmontes@gmail.com
-     *
-     * Class to contain all recipe categories's data. Needed from recipe class.
-     * @implements Parcelable. Needed to pass this class through intents and bundles.
-     */
-    public class Category implements Parcelable {
-
-        // Main variables
-        private String mName;
-
-        // Constructors
-
-        /**
-         * Basic category constructor
-         * @param name Category name
-         */
-        public Category(String name) {
-            this.mName = name;
-        }
-
-        /**
-         * Special contructor
-         * @param o JSONObject that contains all category information
-         */
-        public Category(JSONObject o) {
-            try {
-                this.mName = o.getString("name");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /**
-         * Parcelable constructor
-         * @param source Parcel source data
-         */
-        public Category(Parcel source){
-            this.mName = source.readString();
-        }
-
-        // Getters
-
-        /**
-         * Get method for name variable
-         * @return Recipe name
-         */
-        public String getName() {
-            return mName;
-        }
-
-
-        // Parcelable methods
-
-        /**
-         * Method used to give additional hints on how to process the received parcel.
-         * @return 0
-         */
-        @Override
-        public int describeContents(){
-            return 0;
-        }
-
-        /**
-         * Output to parcelable data
-         * @param dest Parcelable data to fill with recipe category information
-         * @param flags ...
-         */
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeString(this.mName);
-        }
-
-        /**
-         * Needed to complete parcelable configuration
-         */
-        public final Parcelable.Creator CREATOR = new Parcelable.Creator<Category>() {
-            public Category createFromParcel(Parcel source) {
-                return new Category(source);
-            }
-
-            public Category[] newArray(int size) {
-                return new Category[size];
-            }
-        };
-    }
-
-    /**
-     * Recipe ingredient class.
-     * Author: Noelia Sales <noelia.salesmontes@gmail.com
-     *
-     * Class to contain all recipe ingredient's data. Needed from recipe class.
-     * @implements Parcelable. Needed to pass this class through intents and bundles.
-     */
-    public class Ingredient implements Parcelable {
-
-        // Main variables
-        private Integer mSortNumber;
-        private String mName;
-        private Float mQuantity;
-        private String mMeasurementUnit;
-
-
-        // Constructors
-
-        /**
-         * Basic ingredient constructor
-         * @param sortNumber Ingredient sort number
-         * @param name Ingredient name
-         * @param quantity Ingredient quantity
-         * @param measurementUnit Ingredient measurement unit
-         */
-        public Ingredient(Integer sortNumber, String name, Float quantity,
-                          String measurementUnit) {
-            this.mSortNumber = sortNumber;
-            this.mName = name;
-            this.mQuantity = quantity;
-            this.mMeasurementUnit = measurementUnit;
-        }
-
-        /**
-         * Special contructor
-         * @param o JSONObject that contains all ingredient information
-         */
-        public Ingredient(JSONObject o) {
-            try {
-                this.mSortNumber = o.getInt("sort_number");
-                this.mName = o.getString("name");
-                this.mQuantity = Float.valueOf(o.getString("quantity"));
-                this.mMeasurementUnit = o.getString("measurement_unit");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /**
-         * Parcelable constructor
-         * @param source Parcel source data
-         */
-        public Ingredient(Parcel source){
-            this.mSortNumber = source.readInt();
-            this.mName = source.readString();
-            this.mQuantity = source.readFloat();
-            this.mMeasurementUnit = source.readString();
-        }
-
-        // Getters
-
-        /**
-         * Get method for sortNumber variable
-         * @return Ingredient sort number
-         */
-        public Integer getSortNumber() {
-            return mSortNumber;
-        }
-
-        /**
-         * Get method for name variable
-         * @return Ingredient name
-         */
-        public String getName() {
-            return mName;
-        }
-
-        /**
-         * Get method for quantity variable
-         * @return Ingredient quantity
-         */
-        public Float getQuantity() {
-            return mQuantity;
-        }
-
-        /**
-         * Get method for measurementUnit variable
-         * @return Ingredient measurement unit
-         */
-        public String getMeasurementUnit() {
-            return mMeasurementUnit;
-        }
-
-
-        // Parcelable methods
-
-        /**
-         * Method used to give additional hints on how to process the received parcel.
-         * @return 0
-         */
-        @Override
-        public int describeContents(){
-            return 0;
-        }
-
-        /**
-         * Output to parcelable data
-         * @param dest Parcelable data to fill with recipe ingredient information
-         * @param flags ...
-         */
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.mSortNumber);
-            dest.writeString(this.mName);
-            dest.writeFloat(this.mQuantity);
-            dest.writeString(this.mMeasurementUnit);
-        }
-
-        /**
-         * Needed to complete parcelable configuration
-         */
-        public final Parcelable.Creator CREATOR = new Parcelable.Creator<Ingredient>() {
-            public Ingredient createFromParcel(Parcel source) {
-                return new Ingredient(source);
-            }
-
-            public Ingredient[] newArray(int size) {
-                return new Ingredient[size];
-            }
-        };
-
-    }
-
-    /**
-     * Recipe direction class.
-     * Author: Noelia Sales <noelia.salesmontes@gmail.com
-     *
-     * Class to contain all recipe directions's data. Needed from recipe class.
-     * @implements Parcelable. Needed to pass this class through intents and bundles.
-     */
-    public class Direction implements Parcelable {
-
-        // Main variables
-        private Integer mSortNumber;
-        private String mDescription;
-        private String mImage;
-        private String mVideo;
-        private Float mTime;
-
-        // Constructors
-
-        /**
-         * Basic category constructor
-         * @param sortNumber Direction sort number
-         * @param description Direction description
-         * @param image Direction image
-         * @param video Direction video
-         * @param time Direction time
-         */
-        public Direction(Integer sortNumber, String description, String image, String video,
-                         Float time) {
-            this.mSortNumber = sortNumber;
-            this.mDescription = description;
-            this.mImage = image;
-            this.mVideo = video;
-            this.mTime = time;
-        }
-
-        /**
-         * Special contructor
-         * @param o JSONObject that contains all direction information
-         */
-        public Direction(JSONObject o) {
-            try {
-                this.mSortNumber = o.getInt("sort_number");
-                this.mDescription = o.getString("description");
-                this.mImage = o.getString("image");
-                this.mVideo = o.getString("video");
-                this.mTime = Float.valueOf(o.getString("time"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        /**
-         * Parcelable constructor
-         * @param source Parcel source data
-         */
-        public Direction(Parcel source){
-            this.mSortNumber = source.readInt();
-            this.mDescription = source.readString();
-            this.mImage = source.readString();
-            this.mVideo = source.readString();
-            this.mTime = source.readFloat();
-        }
-
-        // Getters
-
-        /**
-         * Get method for sortNumber variable
-         * @return Direction sort number
-         */
-        public Integer getSortNumber() {
-            return mSortNumber;
-        }
-
-        /**
-         * Get method for description variable
-         * @return Direction description
-         */
-        public String getDescription() {
-            return mDescription;
-        }
-
-        /**
-         * Get method for image variable
-         * @return Direction image
-         */
-        public String getImage() {
-            return mImage;
-        }
-
-        /**
-         * Get method for video variable
-         * @return Direction video
-         */
-        public String getVideo() {
-            return mVideo;
-        }
-
-        /**
-         * Get method for time variable
-         * @return Direction time
-         */
-        public Float getTime() {
-            return mTime;
-        }
-
-
-        // Parcelable methods
-
-        /**
-         * Method used to give additional hints on how to process the received parcel.
-         * @return 0
-         */
-        @Override
-        public int describeContents(){
-            return 0;
-        }
-
-        /**
-         * Output to parcelable data
-         * @param dest Parcelable data to fill with recipe direction information
-         * @param flags ...
-         */
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(this.mSortNumber);
-            dest.writeString(this.mDescription);
-            dest.writeString(this.mImage);
-            dest.writeString(this.mVideo);
-            dest.writeFloat(this.mTime);
-        }
-
-        /**
-         * Needed to complete parcelable configuration
-         */
-        public final Parcelable.Creator CREATOR = new Parcelable.Creator<Direction>() {
-            public Direction createFromParcel(Parcel source) {
-                return new Direction(source);
-            }
-
-            public Direction[] newArray(int size) {
-                return new Direction[size];
-            }
-        };
-    }
 
 }
