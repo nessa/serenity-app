@@ -33,7 +33,7 @@ public class RecipeIngredient implements Parcelable {
      * @param quantity Ingredient quantity
      * @param measurementUnit Ingredient measurement unit
      */
-    public Ingredient(Integer sortNumber, String name, Float quantity,
+    public RecipeIngredient(Integer sortNumber, String name, Float quantity,
                       String measurementUnit) {
         this.mSortNumber = sortNumber;
         this.mName = name;
@@ -45,7 +45,7 @@ public class RecipeIngredient implements Parcelable {
      * Special contructor
      * @param o JSONObject that contains all ingredient information
      */
-    public Ingredient(JSONObject o) {
+    public RecipeIngredient(JSONObject o) {
         try {
             this.mSortNumber = o.getInt("sort_number");
             this.mName = o.getString("name");
@@ -60,7 +60,7 @@ public class RecipeIngredient implements Parcelable {
      * Parcelable constructor
      * @param source Parcel source data
      */
-    public Ingredient(Parcel source){
+    public RecipeIngredient(Parcel source){
         this.mSortNumber = source.readInt();
         this.mName = source.readString();
         this.mQuantity = source.readFloat();
@@ -129,13 +129,13 @@ public class RecipeIngredient implements Parcelable {
     /**
      * Needed to complete parcelable configuration
      */
-    public final Parcelable.Creator CREATOR = new Parcelable.Creator<Ingredient>() {
-        public Ingredient createFromParcel(Parcel source) {
-            return new Ingredient(source);
+    public final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeIngredient>() {
+        public RecipeIngredient createFromParcel(Parcel source) {
+            return new RecipeIngredient(source);
         }
 
-        public Ingredient[] newArray(int size) {
-            return new Ingredient[size];
+        public RecipeIngredient[] newArray(int size) {
+            return new RecipeIngredient[size];
         }
     };
 

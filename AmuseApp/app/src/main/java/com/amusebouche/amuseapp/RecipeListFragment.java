@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.RelativeLayout;
 
+import com.amusebouche.data.DatabaseHelper;
 import com.amusebouche.services.ServiceHandler;
 import com.amusebouche.ui.FloatingActionButton;
 import com.amusebouche.data.Recipe;
@@ -42,6 +43,8 @@ public class RecipeListFragment extends Fragment {
     private ArrayList<Recipe> mRecipes;
     private Integer mRecipesPage;
     private Integer mLastGridviewPosition;
+    private DatabaseHelper mDatabaseHelper;
+    private Boolean mOffline = true;
 
     @Override
     public void onAttach(Activity activity) {
@@ -53,13 +56,21 @@ public class RecipeListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate()");
 
+        // Gets the database helper to access the database for the application
+        mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
+
         // Prevent errors
         mRecipes = new ArrayList<>();
 
         // Calling async task to get json
         if (savedInstanceState == null || !savedInstanceState.containsKey("recipes")) {
             mLastGridviewPosition = 0;
-            new GetRecipes().execute();
+            if (mOffline) {
+                Log.d("INFO", "OFFLINE");
+                mRecipes = mDatabaseHelper.getRecipes();
+            } else {
+                new GetRecipes().execute();
+            }
         } else {
             mRecipes = savedInstanceState.getParcelableArrayList("recipes");
             mLastGridviewPosition = savedInstanceState.getInt("last_position");

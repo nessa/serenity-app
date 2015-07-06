@@ -15,7 +15,7 @@ public class RecipeDirectionContract {
     /**
      * Contains the name of the table to create that contains the directions.
      */
-    public static final String TABLE_NAME = "recipe_direction;
+    public static final String TABLE_NAME = "recipe_direction";
 
     /**
      * Contains the SQL query to use to create the table containing the directions.

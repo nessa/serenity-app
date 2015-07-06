@@ -25,7 +25,7 @@ public class RecipeCategory implements Parcelable {
      * Basic category constructor
      * @param name Category name
      */
-    public Category(String name) {
+    public RecipeCategory(String name) {
         this.mName = name;
     }
 
@@ -33,7 +33,7 @@ public class RecipeCategory implements Parcelable {
      * Special contructor
      * @param o JSONObject that contains all category information
      */
-    public Category(JSONObject o) {
+    public RecipeCategory(JSONObject o) {
         try {
             this.mName = o.getString("name");
         } catch (JSONException e) {
@@ -45,7 +45,7 @@ public class RecipeCategory implements Parcelable {
      * Parcelable constructor
      * @param source Parcel source data
      */
-    public Category(Parcel source){
+    public RecipeCategory(Parcel source){
         this.mName = source.readString();
     }
 
@@ -84,13 +84,13 @@ public class RecipeCategory implements Parcelable {
     /**
      * Needed to complete parcelable configuration
      */
-    public final Parcelable.Creator CREATOR = new Parcelable.Creator<Category>() {
-        public Category createFromParcel(Parcel source) {
-            return new Category(source);
+    public final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeCategory>() {
+        public RecipeCategory createFromParcel(Parcel source) {
+            return new RecipeCategory(source);
         }
 
-        public Category[] newArray(int size) {
-            return new Category[size];
+        public RecipeCategory[] newArray(int size) {
+            return new RecipeCategory[size];
         }
     };
 }

@@ -32,7 +32,7 @@ public class RecipeDirection implements Parcelable {
      * @param video Direction video
      * @param time Direction time
      */
-    public Direction(Integer sortNumber, String description, String image, String video,
+    public RecipeDirection(Integer sortNumber, String description, String image, String video,
                      Float time) {
         this.mSortNumber = sortNumber;
         this.mDescription = description;
@@ -45,7 +45,7 @@ public class RecipeDirection implements Parcelable {
      * Special contructor
      * @param o JSONObject that contains all direction information
      */
-    public Direction(JSONObject o) {
+    public RecipeDirection(JSONObject o) {
         try {
             this.mSortNumber = o.getInt("sort_number");
             this.mDescription = o.getString("description");
@@ -61,7 +61,7 @@ public class RecipeDirection implements Parcelable {
      * Parcelable constructor
      * @param source Parcel source data
      */
-    public Direction(Parcel source){
+    public RecipeDirection(Parcel source){
         this.mSortNumber = source.readInt();
         this.mDescription = source.readString();
         this.mImage = source.readString();
@@ -140,13 +140,13 @@ public class RecipeDirection implements Parcelable {
     /**
      * Needed to complete parcelable configuration
      */
-    public final Parcelable.Creator CREATOR = new Parcelable.Creator<Direction>() {
-        public Direction createFromParcel(Parcel source) {
-            return new Direction(source);
+    public final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeDirection>() {
+        public RecipeDirection createFromParcel(Parcel source) {
+            return new RecipeDirection(source);
         }
 
-        public Direction[] newArray(int size) {
-            return new Direction[size];
+        public RecipeDirection[] newArray(int size) {
+            return new RecipeDirection[size];
         }
     };
 }
