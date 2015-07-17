@@ -22,7 +22,7 @@ public final class RecipeContract {
      * Contains the SQL query to use to create the table containing the projects.
      */
     public static final String SQL_CREATE_TABLE = "CREATE TABLE " + RecipeContract.TABLE_NAME +
-            " ("+ RecipeContract.RecipeEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            " ("+ RecipeContract.RecipeEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + RecipeContract.RecipeEntry.COLUMN_NAME_ID +
             " STRING,"
             + RecipeContract.RecipeEntry.COLUMN_NAME_TITLE +

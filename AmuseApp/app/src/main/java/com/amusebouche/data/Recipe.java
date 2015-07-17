@@ -151,16 +151,33 @@ public class Recipe implements Parcelable {
     public Recipe(JSONObject o) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
 
+        Log.d("JSON", o.toString());
+
         try {
+            if (o.has("id")) {
+                this.mId = o.getString("id");
+            } else {
+                this.mId = "0";
+            }
+
+            if (o.has("created_timestamp")) {
+                this.mCreatedTimestamp = format.parse(o.getString("created_timestamp"));
+            } else {
+                this.mCreatedTimestamp = new Date();
+            }
+
+            if (o.has("updated_timestamp")) {
+                this.mUpdatedTimestamp = format.parse(o.getString("updated_timestamp"));
+            } else {
+                this.mUpdatedTimestamp = new Date();
+            }
+
             this.mDatabaseId = "";
-            this.mId = o.getString("id");
             this.mTitle = o.getString("title");
             this.mOwner = o.getString("owner");
             this.mLanguage = o.getString("language");
             this.mTypeOfDish = o.getString("type_of_dish");
             this.mDifficulty = o.getString("difficulty");
-            this.mCreatedTimestamp = format.parse(o.getString("created_timestamp"));
-            this.mUpdatedTimestamp = format.parse(o.getString("updated_timestamp"));
             this.mCookingTime = Float.parseFloat(o.getString("cooking_time"));
             this.mImage = o.getString("image");
             this.mTotalRating = o.getInt("total_rating");

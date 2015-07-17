@@ -65,19 +65,13 @@ public class RecipeListFragment extends Fragment {
         // Calling async task to get json
         if (savedInstanceState == null || !savedInstanceState.containsKey("recipes")) {
             mLastGridviewPosition = 0;
-            if (mOffline) {
-                Log.d("INFO", "OFFLINE");
-                mRecipes = mDatabaseHelper.getRecipes();
-            } else {
-                new GetRecipes().execute();
-            }
+
+            new GetRecipes().execute();
         } else {
             mRecipes = savedInstanceState.getParcelableArrayList("recipes");
             mLastGridviewPosition = savedInstanceState.getInt("last_position");
 
-            Log.d("INFO", "ON CREATE");
             for (int i = 0; i < mRecipes.size(); i++) {
-                Log.d("INFO", "Valor: "+i);
                 mRecipes.get(i).printString();
             }
         }
@@ -108,7 +102,6 @@ public class RecipeListFragment extends Fragment {
         mGridView.setAdapter(new GridviewCellAdapter(getActivity(), screen_width, mRecipes));
 
         if (mLastGridviewPosition != 0) {
-            Log.d("INFO", "GRIDVIEW POSITION");
             mGridView.smoothScrollToPosition(mLastGridviewPosition);
         }
 
@@ -206,46 +199,57 @@ public class RecipeListFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... result) {
-            // Create service handler class instance
-            ServiceHandler sh = new ServiceHandler();
-
-            // Check internet connection
-            if (sh.checkInternetConnection(getActivity().getApplicationContext())) {
-
-                // Make a request to url and getting response
-                String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
+            if (mOffline) {
                 mRecipesPage = 1;
 
-                Log.d("RESPONSE", "> " + jsonStr);
+                mDatabaseHelper.initializeExampleData();
+                mRecipes = mDatabaseHelper.getRecipes();
 
-                if (jsonStr != null) {
-                    try {
-                        JSONObject jObject = new JSONObject(jsonStr);
-                        JSONArray results = jObject.getJSONArray("results");
+                GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
+                adapter.setRecipes(mRecipes);
 
-                        mRecipes = new ArrayList<>();
-
-                        for (int i = 0; i < results.length(); i++) {
-                            mRecipes.add(new Recipe(results.getJSONObject(i)));
-                        }
-
-                        GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
-                        adapter.setRecipes(mRecipes);
-
-                        if (mLastGridviewPosition != 0) {
-                            Log.d("INFO", "GRIDVIEW POSITION");
-                            mGridView.setSelection(mLastGridviewPosition);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    Log.e("ServiceHandler", "Couldn't get any data from the url");
+                if (mLastGridviewPosition != 0) {
+                    mGridView.setSelection(mLastGridviewPosition);
                 }
             } else {
-                Log.d("INFO", "There's no connection");
+                // Create service handler class instance
+                ServiceHandler sh = new ServiceHandler();
 
-                // TODO: Get database recipes??
+                // Check internet connection
+                if (sh.checkInternetConnection(getActivity().getApplicationContext())) {
+
+                    // Make a request to url and getting response
+                    String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
+                    mRecipesPage = 1;
+
+                    Log.d("RESPONSE", "> " + jsonStr);
+
+                    if (jsonStr != null) {
+                        try {
+                            JSONObject jObject = new JSONObject(jsonStr);
+                            JSONArray results = jObject.getJSONArray("results");
+
+                            mRecipes = new ArrayList<>();
+
+                            for (int i = 0; i < results.length(); i++) {
+                                mRecipes.add(new Recipe(results.getJSONObject(i)));
+                            }
+
+                            GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
+                            adapter.setRecipes(mRecipes);
+
+                            if (mLastGridviewPosition != 0) {
+                                mGridView.setSelection(mLastGridviewPosition);
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Log.e("ServiceHandler", "Couldn't get any data from the url");
+                    }
+                } else {
+                    // TODO: Get database recipes??
+                }
             }
 
             return null;

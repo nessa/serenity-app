@@ -23,7 +23,7 @@ public class RecipeCategoryContract {
     public static final String SQL_CREATE_TABLE = "CREATE TABLE "
             + RecipeCategoryContract.TABLE_NAME + " ("
             + RecipeCategoryContract.RecipeCategoryEntry._ID +
-            " INTEGER PRIMARY KEY AUTOINCREMENT,"
+            " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_RECIPE_ID +
             " STRING,"
             + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME +
