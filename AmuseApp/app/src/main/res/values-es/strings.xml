@@ -16,4 +16,14 @@
     <string name="INFO">Información</string>
     <!-- Recipe List fragment class -->
     <string name="please_wait_message">Por favor, espere...</string>
+    <!-- Recipe detail fragment -->
+    <string name="detail_information_label">Información</string>
+    <string name="detail_ingredients_label">Ingredientes</string>
+    <string name="detail_directions_label">Pasos</string>
+    <string name="detail_type_of_dish_label">Tipo de plato:</string>
+    <string name="detail_difficulty_label">Dificultad:</string>
+    <string name="detail_cooking_time_label">Tiempo de cocinado:</string>
+    <string name="detail_servings_label">Comensales:</string>
+    <string name="detail_source_label">Fuente:</string>
+    <string name="detail_rating_label">Puntuación:</string>
 </resources>

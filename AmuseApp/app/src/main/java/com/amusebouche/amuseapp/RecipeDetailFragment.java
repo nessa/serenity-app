@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.amusebouche.data.Recipe;
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
 import java.util.Random;
 
 /**
@@ -79,15 +80,42 @@ public class RecipeDetailFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
+        Log.d("INFO", "Set view");
+
         mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_recipe_detail,
                 container, false);
 
         ImageView image = (ImageView) mLayout.findViewById(R.id.recipe_image);
         this.setCellImage(mRecipe.getImage(), image);
 
-        TextView textView = (TextView) mLayout.findViewById(R.id.recipe_name);
-        textView.setText(mRecipe.getTitle());
+        TextView nameTextView = (TextView) mLayout.findViewById(R.id.recipe_name);
+        nameTextView.setText(mRecipe.getTitle());
 
+        TextView ownerTextView = (TextView) mLayout.findViewById(R.id.owner_name);
+        ownerTextView.setText(mRecipe.getOwner());
+
+        TextView typeOfDishTextView = (TextView) mLayout.findViewById(R.id.type_of_dish);
+        typeOfDishTextView.setText(mRecipe.getTypeOfDish());
+
+        TextView difficultyTextView = (TextView) mLayout.findViewById(R.id.difficulty);
+        difficultyTextView.setText(mRecipe.getDifficulty());
+
+        TextView cookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
+        cookingTimeTextView.setText(Objects.toString(mRecipe.getCookingTime()));
+
+        TextView servingsTextView = (TextView) mLayout.findViewById(R.id.servings);
+        servingsTextView.setText(Objects.toString(mRecipe.getServings()));
+
+        TextView sourceTextView = (TextView) mLayout.findViewById(R.id.source);
+        sourceTextView.setText(mRecipe.getSource());
+
+        float rating = 0;
+        if (mRecipe.getUsersRating() != 0) {
+            rating = (float)mRecipe.getTotalRating()/ (float)mRecipe.getUsersRating();
+        }
+
+        TextView ratingTextView = (TextView) mLayout.findViewById(R.id.rating);
+        ratingTextView.setText(Objects.toString(rating));
 
         return mLayout;
     }

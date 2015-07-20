@@ -31,10 +31,10 @@
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="50sp"
-                android:orientation="horizontal"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:background="@color/semi_transparent_primary_dark"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
@@ -43,52 +43,311 @@
                     android:id="@+id/recipe_name"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="4dp"
-                    android:textColor="#ffffffff"
+                    android:textColor="@color/negative_text"
                     android:textSize="20sp"
                     android:gravity="center"
-                    android:layout_alignParentTop="true" />
-                <ImageButton
-                    android:id="@+id/fav_button"
-                    android:layout_height="48dp"
-                    android:layout_width="48dp"
-                    android:layout_marginRight="2dp"
-                    android:layout_alignParentRight="true"
-                    android:background="@null" />
-            </RelativeLayout>
+                    android:layout_alignParentTop="true"
+                    android:padding="6dp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/owner_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/negative_text"
+                    android:textSize="14sp"
+                    android:gravity="center"
+                    android:padding="6dp" />
+            </LinearLayout>
         </RelativeLayout>
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/ingredients"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/data"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:orientation="horizontal"
-            android:background="@color/semi_transparent_primary_dark"
+            android:orientation="vertical"
+            android:background="@color/background"
+            android:padding="6dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:gravity="bottom" >
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/information"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/background"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:gravity="bottom">
+
+                <TextView
+                    android:id="@+id/information_label"
+                    android:text="@string/detail_information_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/primary_text"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/detail_type_of_dish_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:orientation="horizontal"
+                    android:background="@color/background"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:gravity="bottom">
+
+                    <TextView
+                        android:id="@+id/type_of_dish_label"
+                        android:text="@string/detail_type_of_dish_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:paddingRight="4dp" />
+                    <TextView
+                        android:id="@+id/type_of_dish"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true" />
+                </LinearLayout>
+
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/detail_difficulty_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:orientation="horizontal"
+                    android:background="@color/background"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:gravity="bottom">
+
+                    <TextView
+                        android:id="@+id/difficulty_label"
+                        android:text="@string/detail_difficulty_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:paddingRight="4dp" />
+                    <TextView
+                        android:id="@+id/difficulty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true" />
+                </LinearLayout>
+
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/detail_cooking_time_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:orientation="horizontal"
+                    android:background="@color/background"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:gravity="bottom">
+
+                    <TextView
+                        android:id="@+id/cooking_time_label"
+                        android:text="@string/detail_cooking_time_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:paddingRight="4dp" />
+                    <TextView
+                        android:id="@+id/cooking_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true" />
+                </LinearLayout>
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/detail_servings_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:orientation="horizontal"
+                    android:background="@color/background"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:gravity="bottom">
+
+                    <TextView
+                        android:id="@+id/servings_label"
+                        android:text="@string/detail_servings_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:paddingRight="4dp" />
+                    <TextView
+                        android:id="@+id/servings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true" />
+                </LinearLayout>
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/detail_source_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:orientation="horizontal"
+                    android:background="@color/background"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:gravity="bottom">
+
+                    <TextView
+                        android:id="@+id/source_label"
+                        android:text="@string/detail_source_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:paddingRight="4dp" />
+                    <TextView
+                        android:id="@+id/source"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true" />
+                </LinearLayout>
+
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/detail_rating_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="50sp"
+                    android:orientation="horizontal"
+                    android:background="@color/background"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
+                    android:gravity="bottom">
+
+                    <TextView
+                        android:id="@+id/rating_label"
+                        android:text="@string/detail_rating_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:paddingRight="4dp" />
+                    <TextView
+                        android:id="@+id/rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/primary_text"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/ingredients"
                 android:layout_width="match_parent"
-                android:layout_height="50sp"
-                android:orientation="horizontal"
-                android:background="@color/semi_transparent_primary_dark"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/background"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
-                android:gravity="bottom" />
+                android:gravity="bottom">
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                <TextView
+                    android:id="@+id/ingredients_label"
+                    android:text="@string/detail_ingredients_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/primary_text"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+
+            </LinearLayout>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/directions"
                 android:layout_width="match_parent"
-                android:layout_height="50sp"
-                android:orientation="horizontal"
-                android:background="@color/semi_transparent_primary_dark"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/background"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentStart="true"
-                android:gravity="bottom" />
-        </RelativeLayout>
+                android:gravity="bottom" >
+
+                <TextView
+                    android:id="@+id/directions_label"
+                    android:text="@string/detail_directions_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textColor="@color/primary_text"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_alignParentTop="true"
+                    android:fontFamily="sans-serif-black"
+                    android:textAllCaps="true" />
+
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@android:color/darker_gray"/>
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
 </LinearLayout>
