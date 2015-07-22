@@ -12,9 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.amusebouche.data.Recipe;
+import com.amusebouche.data.RecipeDirection;
+import com.amusebouche.data.RecipeIngredient;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
@@ -32,7 +35,7 @@ import java.util.Random;
  * - Content: fragment_recipe_detail.xml
  */
 public class RecipeDetailFragment extends Fragment {
-    private LinearLayout mLayout;
+    private ScrollView mLayout;
     private Recipe mRecipe;
 
     @Override
@@ -82,7 +85,7 @@ public class RecipeDetailFragment extends Fragment {
 
         Log.d("INFO", "Set view");
 
-        mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_recipe_detail,
+        mLayout = (ScrollView) inflater.inflate(R.layout.fragment_recipe_detail,
                 container, false);
 
         ImageView image = (ImageView) mLayout.findViewById(R.id.recipe_image);
@@ -116,6 +119,46 @@ public class RecipeDetailFragment extends Fragment {
 
         TextView ratingTextView = (TextView) mLayout.findViewById(R.id.rating);
         ratingTextView.setText(Objects.toString(rating));
+
+        // Ingredients
+        LinearLayout ingredientsLayout = (LinearLayout) mLayout.findViewById(R.id.ingredients);
+
+        for (int i = 0; i < mRecipe.getIngredients().size(); i++) {
+            RecipeIngredient presentIngredient = (RecipeIngredient)mRecipe.getIngredients().get(i);
+
+            LinearLayout ingredientLayout = (LinearLayout) inflater.inflate(
+                    R.layout.fragment_recipe_detail_ingredient, null);
+
+            TextView quantity = (TextView) ingredientLayout.findViewById(R.id.quantity);
+            quantity.setText(Objects.toString(presentIngredient.getQuantity()));
+
+            TextView measurement_unit = (TextView) ingredientLayout.findViewById(R.id.measurement_unit);
+            measurement_unit.setText(presentIngredient.getMeasurementUnit());
+
+            TextView name = (TextView) ingredientLayout.findViewById(R.id.name);
+            name.setText(presentIngredient.getName());
+
+            ingredientsLayout.addView(ingredientLayout);
+        }
+
+        // Directions
+        LinearLayout directionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
+
+        for (int d = 0; d < mRecipe.getDirections().size(); d++) {
+            Log.d("INFO", "direction");
+            RecipeDirection presentDirection = (RecipeDirection)mRecipe.getDirections().get(d);
+
+            LinearLayout directionLayout = (LinearLayout) inflater.inflate(
+                    R.layout.fragment_recipe_detail_direction, null);
+
+            TextView number = (TextView) directionLayout.findViewById(R.id.number);
+            number.setText(Objects.toString(presentDirection.getSortNumber()));
+
+            TextView description = (TextView) directionLayout.findViewById(R.id.description);
+            description.setText(presentDirection.getDescription());
+
+            directionsLayout.addView(directionLayout);
+        }
 
         return mLayout;
     }
