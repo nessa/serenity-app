@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:gravity="top">
+<!-- transitionGroup set to avoid exception:
+     Layer exceeds max. dimensions supported by the GPU -->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:gravity="top"
+    android:transitionGroup="true" >
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="top">
+        android:gravity="top" >
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -21,12 +21,11 @@
             android:layout_weight="1"
             android:orientation="horizontal"
             android:background="@color/semi_transparent_primary_dark"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
             android:gravity="top">
             <ImageView
                 android:id="@+id/recipe_image"
                 android:transitionName="SharedImage"
+                android:contentDescription="@string/image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop" />
@@ -46,7 +45,6 @@
                     android:textColor="@color/negative_text"
                     android:textSize="20sp"
                     android:gravity="center"
-                    android:layout_alignParentTop="true"
                     android:padding="6dp"
                     android:textStyle="bold" />
                 <TextView
@@ -68,8 +66,6 @@
             android:orientation="vertical"
             android:background="@color/background"
             android:padding="6dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
             android:gravity="bottom" >
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -78,8 +74,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/background"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
                 android:gravity="bottom">
 
                 <TextView
@@ -90,7 +84,6 @@
                     android:textColor="@color/primary_text"
                     android:textSize="16sp"
                     android:gravity="center"
-                    android:layout_alignParentTop="true"
                     android:fontFamily="sans-serif-black"
                     android:textAllCaps="true" />
 
@@ -106,8 +99,6 @@
                     android:layout_height="50sp"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
                     android:gravity="bottom">
 
                     <TextView
@@ -119,16 +110,15 @@
                         android:textStyle="bold"
                         android:textSize="20sp"
                         android:gravity="center"
-                        android:layout_alignParentTop="true"
-                        android:paddingRight="4dp" />
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp" />
                     <TextView
                         android:id="@+id/type_of_dish"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
-                        android:gravity="center"
-                        android:layout_alignParentTop="true" />
+                        android:gravity="center" />
                 </LinearLayout>
 
 
@@ -138,8 +128,6 @@
                     android:layout_height="50sp"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
                     android:gravity="bottom">
 
                     <TextView
@@ -151,16 +139,15 @@
                         android:textStyle="bold"
                         android:textSize="20sp"
                         android:gravity="center"
-                        android:layout_alignParentTop="true"
-                        android:paddingRight="4dp" />
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp" />
                     <TextView
                         android:id="@+id/difficulty"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
-                        android:gravity="center"
-                        android:layout_alignParentTop="true" />
+                        android:gravity="center" />
                 </LinearLayout>
 
 
@@ -170,8 +157,6 @@
                     android:layout_height="50sp"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
                     android:gravity="bottom">
 
                     <TextView
@@ -183,16 +168,15 @@
                         android:textStyle="bold"
                         android:textSize="20sp"
                         android:gravity="center"
-                        android:layout_alignParentTop="true"
-                        android:paddingRight="4dp" />
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp" />
                     <TextView
                         android:id="@+id/cooking_time"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
-                        android:gravity="center"
-                        android:layout_alignParentTop="true" />
+                        android:gravity="center" />
                 </LinearLayout>
 
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -201,8 +185,6 @@
                     android:layout_height="50sp"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
                     android:gravity="bottom">
 
                     <TextView
@@ -214,16 +196,15 @@
                         android:textStyle="bold"
                         android:textSize="20sp"
                         android:gravity="center"
-                        android:layout_alignParentTop="true"
-                        android:paddingRight="4dp" />
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp" />
                     <TextView
                         android:id="@+id/servings"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
-                        android:gravity="center"
-                        android:layout_alignParentTop="true" />
+                        android:gravity="center" />
                 </LinearLayout>
 
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -232,8 +213,6 @@
                     android:layout_height="50sp"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
                     android:gravity="bottom">
 
                     <TextView
@@ -245,16 +224,15 @@
                         android:textStyle="bold"
                         android:textSize="20sp"
                         android:gravity="center"
-                        android:layout_alignParentTop="true"
-                        android:paddingRight="4dp" />
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp" />
                     <TextView
                         android:id="@+id/source"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
-                        android:gravity="center"
-                        android:layout_alignParentTop="true" />
+                        android:gravity="center" />
                 </LinearLayout>
 
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -263,8 +241,6 @@
                     android:layout_height="50sp"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentStart="true"
                     android:gravity="bottom">
 
                     <TextView
@@ -276,16 +252,15 @@
                         android:textStyle="bold"
                         android:textSize="20sp"
                         android:gravity="center"
-                        android:layout_alignParentTop="true"
-                        android:paddingRight="4dp" />
+                        android:paddingStart="4dp"
+                        android:paddingEnd="4dp" />
                     <TextView
                         android:id="@+id/rating"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:textColor="@color/primary_text"
                         android:textSize="20sp"
-                        android:gravity="center"
-                        android:layout_alignParentTop="true" />
+                        android:gravity="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -296,8 +271,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/background"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
                 android:gravity="bottom">
 
                 <TextView
@@ -308,7 +281,6 @@
                     android:textColor="@color/primary_text"
                     android:textSize="16sp"
                     android:gravity="center"
-                    android:layout_alignParentTop="true"
                     android:fontFamily="sans-serif-black"
                     android:textAllCaps="true" />
 
@@ -325,8 +297,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/background"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
                 android:gravity="bottom" >
 
                 <TextView
@@ -337,7 +307,6 @@
                     android:textColor="@color/primary_text"
                     android:textSize="16sp"
                     android:gravity="center"
-                    android:layout_alignParentTop="true"
                     android:fontFamily="sans-serif-black"
                     android:textAllCaps="true" />
 
@@ -350,4 +319,3 @@
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
-</LinearLayout>

@@ -111,9 +111,11 @@ public class GridviewCellAdapter extends BaseAdapter {
         image.setTag(position);
         this.setCellImage(presentRecipe.getImage(), image);
 
+        // TODO: Set this!
         // Save present recipe ID into the button
+        /*
         imageButton = (ImageButton) cell.findViewById((R.id.fav_button));
-        imageButton.setTag(this.getItemId(position));
+        imageButton.setTag(this.getItemId(position));*/
 
 
         // TODO: Check if present recipe if favorited, and change imagebutton icon
@@ -154,6 +156,7 @@ public class GridviewCellAdapter extends BaseAdapter {
             }});
 
         // TODO: Call fav method
+        /*
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,7 +165,7 @@ public class GridviewCellAdapter extends BaseAdapter {
                         Toast.LENGTH_LONG);
                 toast.setGravity(Gravity.TOP|Gravity.LEFT, 0, 0);
                 toast.show();
-            }});
+            }});*/
 
         return cell;
     }

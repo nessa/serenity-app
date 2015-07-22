@@ -5,23 +5,24 @@
     android:layout_height="match_parent"
     android:background="@android:color/white"
     android:padding="10dp"
-    android:paddingRight="25dp">
-    <!-- android:contentDescription="@string/title_placeline" -->
+    android:paddingStart="0dp"
+    android:paddingEnd="25dp">
     <ImageView
         android:id="@+id/drawer_image"
+        android:contentDescription="@string/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:src="@drawable/ic_star_white_48dp"
-        android:layout_alignParentLeft="true"/>
+        android:layout_alignParentStart="true" />
     <TextView
         android:id="@+id/title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/drawer_image"
+        android:layout_toEndOf="@+id/drawer_image"
         android:layout_centerVertical="true"
         android:layout_alignBaseline="@+id/drawer_image"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/drawer_text_color" />

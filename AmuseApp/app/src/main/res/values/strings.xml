@@ -17,6 +17,7 @@
     <!-- Recipe List fragment class -->
     <string name="please_wait_message">Please, wait...</string>
     <!-- Recipe detail fragment -->
+    <string name="image">Image</string>
     <string name="detail_information_label">Information</string>
     <string name="detail_ingredients_label">Ingredients</string>
     <string name="detail_directions_label">Directions</string>

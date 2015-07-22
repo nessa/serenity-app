@@ -8,6 +8,7 @@
     <ImageView
         android:id="@+id/recipe_image"
         android:transitionName="SharedImage"
+        android:contentDescription="@string/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
@@ -24,17 +25,19 @@
             android:id="@+id/recipe_name"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             android:textColor="#ffffffff"
             android:textSize="20sp"
             android:gravity="center"
             android:layout_alignParentTop="true" />
+        <!--
         <ImageButton
             android:id="@+id/fav_button"
+            android:contentDescription="@string/image"
             android:layout_height="48dp"
             android:layout_width="48dp"
-            android:layout_marginRight="2dp"
-            android:layout_alignParentRight="true"
-            android:background="@null" />
+            android:layout_marginEnd="2dp"
+            android:layout_alignParentEnd="true"
+            android:background="@null" /> -->
     </RelativeLayout>
 </RelativeLayout>
