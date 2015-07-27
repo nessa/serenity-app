@@ -122,7 +122,7 @@ public class NavigationDrawerFragment extends Fragment {
         Log.d("INFO", "SET UP");
         mFragmentContainerView = getActivity().findViewById(fragmentId);
         mDrawerLayout = drawerLayout;
-        mDrawerLayout.setDrawerShadow(R.drawable.ic_search_white_48dp,//drawer_shadow,
+        mDrawerLayout.setDrawerShadow(R.drawable.lateral_menu_shadow,
                 GravityCompat.START);
 
         mDrawerToggle = new ActionBarDrawerToggle(getActivity(), mDrawerLayout, R.string.accept,
