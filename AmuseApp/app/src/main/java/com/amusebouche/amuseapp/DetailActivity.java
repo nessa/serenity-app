@@ -1,6 +1,7 @@
 package com.amusebouche.amuseapp;
 
 
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -28,11 +29,12 @@ public class DetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Log.d("DETAIL", "DETAIL ACTIVITY ON CREATE");
+
         setContentView(R.layout.activity_detail);
 
-        // Set up action bar
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle("PRUEBA");
+        //ActionBar actionBar = getSupportActionBar();
+        //actionBar.setTitle("PRUEBA");
         //actionBar.setDisplayHomeAsUpEnabled(true);
         //actionBar.setHomeButtonEnabled(true);
     }

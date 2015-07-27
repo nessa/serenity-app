@@ -175,6 +175,7 @@ public class GridviewCellAdapter extends BaseAdapter {
                             .inflateTransition(android.R.transition.explode));
 
                     /*
+
                     setSharedElementReturnTransition(TransitionInflater.from(mContext)
                             .inflateTransition(R.transition.shared_image_transition));
                     setExitTransition(TransitionInflater.from(mContext)
@@ -183,8 +184,10 @@ public class GridviewCellAdapter extends BaseAdapter {
 
                     // Create new fragment to add (Fragment B)
                     Fragment fragment = new RecipeDetailFragment();
-                    fragment.setSharedElementEnterTransition(TransitionInflater.from(mContext).inflateTransition(R.transition.shared_image_transition));
-                    fragment.setEnterTransition(TransitionInflater.from(mContext).inflateTransition(android.R.transition.explode));
+                    fragment.setSharedElementEnterTransition(TransitionInflater.from(mContext)
+                            .inflateTransition(R.transition.shared_image_transition));
+                    fragment.setEnterTransition(TransitionInflater.from(mContext)
+                            .inflateTransition(android.R.transition.explode));
 
                     // Our shared element (in Fragment A) = image
                     //mProductImage   = (ImageView) mLayout.findViewById(R.id.product_detail_image);

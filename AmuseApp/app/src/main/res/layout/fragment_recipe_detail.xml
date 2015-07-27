@@ -1,298 +1,313 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- transitionGroup set to avoid exception:
      Layer exceeds max. dimensions supported by the GPU -->
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:gravity="top"
-    android:transitionGroup="true" >
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="top" >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <ImageView
+        android:id="@+id/recipe_image"
+        android:transitionName="SharedImage"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/flexible_space_image_height"
+        android:scaleType="centerCrop" />
+
+    <View
+        android:id="@+id/overlay"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/flexible_space_image_height"
+        android:background="?attr/colorPrimary" />
+
+    <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:background="@color/semi_transparent_primary_dark"
-            android:gravity="top">
-            <ImageView
-                android:id="@+id/recipe_image"
-                android:transitionName="SharedImage"
-                android:contentDescription="@string/image"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
+                android:layout_height="@dimen/flexible_space_image_height"
+                android:background="@android:color/transparent" />
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/data"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/semi_transparent_primary_dark"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-                android:gravity="bottom">
-                <TextView
-                    android:id="@+id/recipe_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textColor="@color/negative_text"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:padding="6dp"
-                    android:textStyle="bold" />
-                <TextView
-                    android:id="@+id/owner_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textColor="@color/negative_text"
-                    android:textSize="14sp"
-                    android:gravity="center"
-                    android:padding="6dp" />
-            </LinearLayout>
-        </RelativeLayout>
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/data"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:background="@color/background"
-            android:padding="6dp"
-            android:gravity="bottom" >
-
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/information"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:orientation="vertical"
                 android:background="@color/background"
-                android:gravity="bottom">
+                android:padding="6dp"
+                android:gravity="bottom" >
 
-                <TextView
-                    android:id="@+id/information_label"
-                    android:text="@string/detail_information_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textColor="@color/theme_default_primary"
-                    android:textSize="16sp"
-                    android:gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:textAllCaps="true" />
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
-
-
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/detail_type_of_dish_layout"
+                <LinearLayout
+                    android:id="@+id/information"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:background="@color/background"
-                    android:gravity="top">
+                    android:gravity="bottom">
 
-                    <ImageView
-                        android:contentDescription="@string/detail_type_of_dish_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_type_of_dish_24dp"
-                        android:layout_marginEnd="4dp"
-                        android:tint="@color/theme_default_primary" />
                     <TextView
-                        android:id="@+id/type_of_dish"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24sp"
-                        android:textColor="@color/primary_text"
-                        android:textSize="18sp"
-                        android:gravity="center" />
-                </LinearLayout>
-
-
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/detail_difficulty_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/background"
-                    android:gravity="top">
-
-                    <ImageView
-                        android:contentDescription="@string/detail_difficulty_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_extension_black_24dp"
-                        android:layout_marginEnd="4dp"
-                        android:tint="@color/theme_default_primary" />
-                    <TextView
-                        android:id="@+id/difficulty"
+                        android:id="@+id/information_label"
+                        android:text="@string/detail_information_label"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textSize="20sp"
-                        android:gravity="center" />
-                </LinearLayout>
+                        android:textColor="@color/theme_default_primary"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:textAllCaps="true" />
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray"/>
 
 
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/detail_cooking_time_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/background"
-                    android:gravity="top">
-
-                    <ImageView
-                        android:contentDescription="@string/detail_cooking_time_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_access_time_black_24dp"
-                        android:layout_marginEnd="4dp"
-                        android:tint="@color/theme_default_primary" />
-                    <TextView
-                        android:id="@+id/cooking_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textSize="20sp"
-                        android:gravity="center" />
-                </LinearLayout>
-
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/detail_servings_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/background"
-                    android:gravity="top">
-
-                    <ImageView
-                        android:contentDescription="@string/detail_servings_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_group_black_24dp"
-                        android:layout_marginEnd="4dp"
-                        android:tint="@color/theme_default_primary" />
-                    <TextView
-                        android:id="@+id/servings"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textSize="20sp"
-                        android:gravity="center" />
-                </LinearLayout>
-
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/detail_source_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/background"
-                    android:gravity="top">
-
-                    <ImageView
-                        android:contentDescription="@string/detail_source_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_format_align_left_black_24dp"
-                        android:layout_marginEnd="4dp"
-                        android:tint="@color/theme_default_primary" />
-                    <TextView
-                        android:id="@+id/source"
-                        android:layout_width="wrap_content"
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_type_of_dish_layout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/primary_text"
-                        android:autoLink="web"
-                        android:textSize="20sp"
-                        android:gravity="start" />
+                        android:orientation="horizontal"
+                        android:background="@color/background"
+                        android:gravity="top">
+
+                        <ImageView
+                            android:contentDescription="@string/detail_type_of_dish_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_type_of_dish_24dp"
+                            android:layout_marginEnd="4dp"
+                            android:tint="@color/theme_default_primary" />
+                        <TextView
+                            android:id="@+id/type_of_dish"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24sp"
+                            android:textColor="@color/primary_text"
+                            android:textSize="18sp"
+                            android:gravity="center" />
+                    </LinearLayout>
+
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_difficulty_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@color/background"
+                        android:gravity="top">
+
+                        <ImageView
+                            android:contentDescription="@string/detail_difficulty_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_extension_black_24dp"
+                            android:layout_marginEnd="4dp"
+                            android:tint="@color/theme_default_primary" />
+                        <TextView
+                            android:id="@+id/difficulty"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/primary_text"
+                            android:textSize="20sp"
+                            android:gravity="center" />
+                    </LinearLayout>
+
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_cooking_time_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@color/background"
+                        android:gravity="top">
+
+                        <ImageView
+                            android:contentDescription="@string/detail_cooking_time_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_access_time_black_24dp"
+                            android:layout_marginEnd="4dp"
+                            android:tint="@color/theme_default_primary" />
+                        <TextView
+                            android:id="@+id/cooking_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/primary_text"
+                            android:textSize="20sp"
+                            android:gravity="center" />
+                    </LinearLayout>
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_servings_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@color/background"
+                        android:gravity="top">
+
+                        <ImageView
+                            android:contentDescription="@string/detail_servings_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_group_black_24dp"
+                            android:layout_marginEnd="4dp"
+                            android:tint="@color/theme_default_primary" />
+                        <TextView
+                            android:id="@+id/servings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/primary_text"
+                            android:textSize="20sp"
+                            android:gravity="center" />
+                    </LinearLayout>
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_source_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@color/background"
+                        android:gravity="top">
+
+                        <ImageView
+                            android:contentDescription="@string/detail_source_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_format_align_left_black_24dp"
+                            android:layout_marginEnd="4dp"
+                            android:tint="@color/theme_default_primary" />
+                        <TextView
+                            android:id="@+id/source"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/primary_text"
+                            android:autoLink="web"
+                            android:textSize="20sp"
+                            android:gravity="start" />
+                    </LinearLayout>
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_rating_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:background="@color/background"
+                        android:gravity="top">
+
+                        <ImageView
+                            android:contentDescription="@string/detail_rating_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_star_black_24dp"
+                            android:layout_marginEnd="4dp"
+                            android:tint="@color/theme_default_primary" />
+                        <TextView
+                            android:id="@+id/rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/primary_text"
+                            android:textSize="20sp"
+                            android:gravity="center" />
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/detail_rating_layout"
+                    android:id="@+id/ingredients"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:background="@color/background"
                     android:gravity="top">
 
-                    <ImageView
-                        android:contentDescription="@string/detail_rating_label"
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:src="@drawable/ic_star_black_24dp"
-                        android:layout_marginEnd="4dp"
-                        android:tint="@color/theme_default_primary" />
                     <TextView
-                        android:id="@+id/rating"
+                        android:id="@+id/ingredients_label"
+                        android:text="@string/detail_ingredients_label"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textSize="20sp"
-                        android:gravity="center" />
+                        android:textColor="@color/theme_default_primary"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:textAllCaps="true" />
+
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray"/>
+
                 </LinearLayout>
 
-            </LinearLayout>
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:id="@+id/directions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/background"
+                    android:gravity="top" >
 
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/ingredients"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/background"
-                android:gravity="top">
+                    <TextView
+                        android:id="@+id/directions_label"
+                        android:text="@string/detail_directions_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textColor="@color/theme_default_primary"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:fontFamily="sans-serif-black"
+                        android:textAllCaps="true" />
 
-                <TextView
-                    android:id="@+id/ingredients_label"
-                    android:text="@string/detail_ingredients_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textColor="@color/theme_default_primary"
-                    android:textSize="16sp"
-                    android:gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:textAllCaps="true" />
+                    <View
+                        android:layout_width="fill_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray"/>
 
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
-
-            </LinearLayout>
-
-            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/directions"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@color/background"
-                android:gravity="top" >
-
-                <TextView
-                    android:id="@+id/directions_label"
-                    android:text="@string/detail_directions_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:textColor="@color/theme_default_primary"
-                    android:textSize="16sp"
-                    android:gravity="center"
-                    android:fontFamily="sans-serif-black"
-                    android:textAllCaps="true" />
-
-                <View
-                    android:layout_width="fill_parent"
-                    android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"/>
-
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+    </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/margin_standard"
+        android:paddingEnd="@dimen/margin_standard">
+
+        <TextView
+            android:id="@+id/recipe_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:minHeight="?attr/actionBarSize"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/flexible_space_image_height"
+            android:background="@android:color/transparent" />
     </LinearLayout>
-</ScrollView>
+
+    <com.melnykov.fab.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="center"
+        android:src="@drawable/ic_cook_24dp"
+        android:tint="@android:color/white"
+        app:fab_colorNormal="@color/theme_default_accent"
+        app:fab_colorPressed="@color/theme_default_accent" />
+
+</FrameLayout>
