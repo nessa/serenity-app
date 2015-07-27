@@ -2,6 +2,8 @@ package com.amusebouche.amuseapp;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -18,6 +21,7 @@ import android.widget.TextView;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.ui.ImageManager;
 import com.squareup.picasso.Picasso;
 
 import java.util.Objects;
@@ -89,7 +93,7 @@ public class RecipeDetailFragment extends Fragment {
                 container, false);
 
         ImageView image = (ImageView) mLayout.findViewById(R.id.recipe_image);
-        this.setCellImage(mRecipe.getImage(), image);
+        ImageManager.setCellImage(getActivity().getApplicationContext(), mRecipe.getImage(), image);
 
         TextView nameTextView = (TextView) mLayout.findViewById(R.id.recipe_name);
         nameTextView.setText(mRecipe.getTitle());
@@ -98,10 +102,10 @@ public class RecipeDetailFragment extends Fragment {
         ownerTextView.setText(mRecipe.getOwner());
 
         TextView typeOfDishTextView = (TextView) mLayout.findViewById(R.id.type_of_dish);
-        typeOfDishTextView.setText(mRecipe.getTypeOfDish());
+        typeOfDishTextView.setText(this.getTypeOfDish(mRecipe.getTypeOfDish()));
 
         TextView difficultyTextView = (TextView) mLayout.findViewById(R.id.difficulty);
-        difficultyTextView.setText(mRecipe.getDifficulty());
+        difficultyTextView.setText(this.getDifficulty(mRecipe.getDifficulty()));
 
         TextView cookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
         cookingTimeTextView.setText(Objects.toString(mRecipe.getCookingTime()));
@@ -111,6 +115,17 @@ public class RecipeDetailFragment extends Fragment {
 
         TextView sourceTextView = (TextView) mLayout.findViewById(R.id.source);
         sourceTextView.setText(mRecipe.getSource());
+
+        if (mRecipe.getSource().startsWith("http://") || mRecipe.getSource().startsWith("https://")) {
+            sourceTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent launchWebIntent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(mRecipe.getSource()));
+                    startActivity(launchWebIntent);
+                }
+            });
+        }
 
         float rating = 0;
         if (mRecipe.getUsersRating() != 0) {
@@ -156,6 +171,21 @@ public class RecipeDetailFragment extends Fragment {
 
             TextView description = (TextView) directionLayout.findViewById(R.id.description);
             description.setText(presentDirection.getDescription());
+
+            LinearLayout extraLayout = (LinearLayout) directionLayout.findViewById(R.id.extra);
+
+            if (!presentDirection.getImage().equals("")) {
+                ImageView directionImage = new ImageView(extraLayout.getContext());
+                ImageManager.setCellImage(getActivity().getApplicationContext(),
+                        presentDirection.getImage(), directionImage);
+                extraLayout.addView(directionImage);
+            }
+
+            if (presentDirection.getTime() > 0) {
+                Button cronoButton = new Button(extraLayout.getContext());
+                cronoButton.setText(R.string.chronometer);
+                extraLayout.addView(cronoButton);
+            }
 
             directionsLayout.addView(directionLayout);
         }
@@ -215,54 +245,33 @@ public class RecipeDetailFragment extends Fragment {
         x.setDrawerIndicatorEnabled(false);
     }
 
+    private String getTypeOfDish(String code) {
+        switch(code) {
+            case "APPETIZER":
+                return getString(R.string.type_of_dish_appetizer);
+            case "FIRST-COURSE":
+                return getString(R.string.type_of_dish_first_course);
+            case "SECOND-COURSE":
+                return getString(R.string.type_of_dish_second_course);
+            case "MAIN-DISH":
+                return getString(R.string.type_of_dish_main_dish);
+            case "DESSERT":
+                return getString(R.string.type_of_dish_dessert);
+            default:
+            case "OTHER":
+                return getString(R.string.type_of_dish_other);
+        }
+    }
 
-    /**
-     * Set an image in a image view using the Picasso library.
-     * @param imageName Name of the image. Could be an URL, a file path or an empty string. If it's
-     *                  an empty string, we will set a random sample image.
-     * @param imageView Image view we want to set up.
-     * @see Picasso library: com.squareup.picasso.Picasso
-     */
-    private void setCellImage(String imageName, ImageView imageView) {
-        if (imageName == "") {
-            // Get a random default image
-            // TODO: Update these images with new ones
-            Random r = new Random();
-            int randomNumber = (r.nextInt(8));
-            int resource;
-
-            switch (randomNumber) {
-                default:
-                case 0:
-                    resource = R.drawable.sample_0;
-                    break;
-                case 1:
-                    resource = R.drawable.sample_1;
-                    break;
-                case 2:
-                    resource = R.drawable.sample_2;
-                    break;
-                case 3:
-                    resource = R.drawable.sample_3;
-                    break;
-                case 4:
-                    resource = R.drawable.sample_4;
-                    break;
-                case 5:
-                    resource = R.drawable.sample_5;
-                    break;
-                case 6:
-                    resource = R.drawable.sample_6;
-                    break;
-                case 7:
-                    resource = R.drawable.sample_7;
-                    break;
-
-            }
-
-            Picasso.with(getActivity().getApplicationContext()).load(resource).into(imageView);
-        } else {
-            Picasso.with(getActivity().getApplicationContext()).load(imageName).into(imageView);
+    private String getDifficulty(String code) {
+        switch(code) {
+            case "HIGH":
+                return getString(R.string.difficulty_high);
+            case "LOW":
+                return getString(R.string.difficulty_low);
+            default:
+            case "MEDIUM":
+                return getString(R.string.difficulty_medium);
         }
     }
 }

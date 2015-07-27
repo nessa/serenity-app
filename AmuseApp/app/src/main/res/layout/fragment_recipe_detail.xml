@@ -81,7 +81,7 @@
                     android:text="@string/detail_information_label"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:textColor="@color/primary_text"
+                    android:textColor="@color/theme_default_primary"
                     android:textSize="16sp"
                     android:gravity="center"
                     android:fontFamily="sans-serif-black"
@@ -96,28 +96,24 @@
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/detail_type_of_dish_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:gravity="bottom">
+                    android:gravity="top">
 
-                    <TextView
-                        android:id="@+id/type_of_dish_label"
-                        android:text="@string/detail_type_of_dish_label"
+                    <ImageView
+                        android:contentDescription="@string/detail_type_of_dish_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp" />
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_type_of_dish_24dp"
+                        android:layout_marginEnd="4dp"
+                        android:tint="@color/theme_default_primary" />
                     <TextView
                         android:id="@+id/type_of_dish"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="24sp"
                         android:textColor="@color/primary_text"
-                        android:textSize="20sp"
+                        android:textSize="18sp"
                         android:gravity="center" />
                 </LinearLayout>
 
@@ -125,22 +121,18 @@
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/detail_difficulty_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:gravity="bottom">
+                    android:gravity="top">
 
-                    <TextView
-                        android:id="@+id/difficulty_label"
-                        android:text="@string/detail_difficulty_label"
+                    <ImageView
+                        android:contentDescription="@string/detail_difficulty_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp" />
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_extension_black_24dp"
+                        android:layout_marginEnd="4dp"
+                        android:tint="@color/theme_default_primary" />
                     <TextView
                         android:id="@+id/difficulty"
                         android:layout_width="wrap_content"
@@ -154,22 +146,18 @@
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/detail_cooking_time_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:gravity="bottom">
+                    android:gravity="top">
 
-                    <TextView
-                        android:id="@+id/cooking_time_label"
-                        android:text="@string/detail_cooking_time_label"
+                    <ImageView
+                        android:contentDescription="@string/detail_cooking_time_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp" />
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_access_time_black_24dp"
+                        android:layout_marginEnd="4dp"
+                        android:tint="@color/theme_default_primary" />
                     <TextView
                         android:id="@+id/cooking_time"
                         android:layout_width="wrap_content"
@@ -182,22 +170,18 @@
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/detail_servings_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:gravity="bottom">
+                    android:gravity="top">
 
-                    <TextView
-                        android:id="@+id/servings_label"
-                        android:text="@string/detail_servings_label"
+                    <ImageView
+                        android:contentDescription="@string/detail_servings_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp" />
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_group_black_24dp"
+                        android:layout_marginEnd="4dp"
+                        android:tint="@color/theme_default_primary" />
                     <TextView
                         android:id="@+id/servings"
                         android:layout_width="wrap_content"
@@ -210,50 +194,43 @@
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/detail_source_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:gravity="bottom">
+                    android:gravity="top">
 
-                    <TextView
-                        android:id="@+id/source_label"
-                        android:text="@string/detail_source_label"
+                    <ImageView
+                        android:contentDescription="@string/detail_source_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp" />
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_format_align_left_black_24dp"
+                        android:layout_marginEnd="4dp"
+                        android:tint="@color/theme_default_primary" />
                     <TextView
                         android:id="@+id/source"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:textColor="@color/primary_text"
+                        android:autoLink="web"
                         android:textSize="20sp"
-                        android:gravity="center" />
+                        android:gravity="start" />
                 </LinearLayout>
 
                 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                     android:id="@+id/detail_rating_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="50sp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:background="@color/background"
-                    android:gravity="bottom">
+                    android:gravity="top">
 
-                    <TextView
-                        android:id="@+id/rating_label"
-                        android:text="@string/detail_rating_label"
+                    <ImageView
+                        android:contentDescription="@string/detail_rating_label"
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:textColor="@color/primary_text"
-                        android:textStyle="bold"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:paddingStart="4dp"
-                        android:paddingEnd="4dp" />
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_star_black_24dp"
+                        android:layout_marginEnd="4dp"
+                        android:tint="@color/theme_default_primary" />
                     <TextView
                         android:id="@+id/rating"
                         android:layout_width="wrap_content"
@@ -271,14 +248,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/background"
-                android:gravity="bottom">
+                android:gravity="top">
 
                 <TextView
                     android:id="@+id/ingredients_label"
                     android:text="@string/detail_ingredients_label"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:textColor="@color/primary_text"
+                    android:textColor="@color/theme_default_primary"
                     android:textSize="16sp"
                     android:gravity="center"
                     android:fontFamily="sans-serif-black"
@@ -297,14 +274,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@color/background"
-                android:gravity="bottom" >
+                android:gravity="top" >
 
                 <TextView
                     android:id="@+id/directions_label"
                     android:text="@string/detail_directions_label"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:textColor="@color/primary_text"
+                    android:textColor="@color/theme_default_primary"
                     android:textSize="16sp"
                     android:gravity="center"
                     android:fontFamily="sans-serif-black"

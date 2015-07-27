@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="24"
+   height="24"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="ic_type_of_dish_24dp.svg"
+   inkscape:export-filename="/home/nessa/Proyectos/serenity-app/AmuseApp/app/src/main/res/drawable-xxxhdpi/ic_type_of_dish_24dp.png"
+   inkscape:export-xdpi="360"
+   inkscape:export-ydpi="360">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="21.653341"
+     inkscape:cy="15.598194"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1366"
+     inkscape:window-height="702"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-706.28571,-722.79071)">
+    <path
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       d="m 718.28571,724.68654 c -5.64865,0 -10.22917,4.52525 -10.22917,10.10417 0,5.57892 4.58052,10.10417 10.22917,10.10417 5.64865,0 10.22917,-4.52525 10.22917,-10.10417 0,-5.57892 -4.58052,-10.10417 -10.22917,-10.10417 z m 0,2.27084 c 4.37538,0 7.91667,3.51196 7.91667,7.83333 0,4.32137 -3.54129,7.83333 -7.91667,7.83333 -4.37538,0 -7.91667,-3.51196 -7.91667,-7.83333 0,-4.32137 3.54129,-7.83333 7.91667,-7.83333 z m 0,0.33333 c -4.18942,0 -7.58333,3.3623 -7.58333,7.5 0,4.1377 3.39391,7.5 7.58333,7.5 4.18942,0 7.58333,-3.3623 7.58333,-7.5 0,-4.1377 -3.39391,-7.5 -7.58333,-7.5 z"
+       id="path3066"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

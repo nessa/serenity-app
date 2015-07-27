@@ -1,6 +1,7 @@
 package com.amusebouche.amuseapp;
 
 
+import android.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -36,10 +37,20 @@ public class DetailActivity extends ActionBarActivity {
         //actionBar.setHomeButtonEnabled(true);
     }
 
+    /*
     @Override
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
+        FragmentManager fm = getFragmentManager();
+        if (fm.getBackStackEntryCount() > 0) {
+            Log.i("DETAIL", "popping backstack");
+            fm.popBackStack();
+        } else {
+            Log.i("DETAIL", "nothing on backstack, calling super");
+            super.onBackPressed();
+        }
     }
+    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
