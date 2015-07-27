@@ -14,6 +14,10 @@
     <string name="MY_FAVOURITES">Mis favoritas</string>
     <string name="SETTINGS">Configuration</string>
     <string name="INFO">Información</string>
+    <!-- Main activity -->
+    <string name="exit_message">¿Está seguro de que desea salir?</string>
+    <string name="YES">Sí</string>
+    <string name="NO">No</string>
     <!-- Recipe List fragment class -->
     <string name="please_wait_message">Por favor, espere...</string>
     <!-- Recipe detail fragment -->
@@ -27,4 +31,16 @@
     <string name="detail_servings_label">Comensales:</string>
     <string name="detail_source_label">Fuente:</string>
     <string name="detail_rating_label">Puntuación:</string>
+    <string name="chronometer">Cronómetro</string>
+    <!-- Types of dish -->
+    <string name="type_of_dish_appetizer">Entrante</string>
+    <string name="type_of_dish_first_course">Primer plato</string>
+    <string name="type_of_dish_second_course">Segundo plato</string>
+    <string name="type_of_dish_main_dish">Plato principal</string>
+    <string name="type_of_dish_dessert">Postre</string>
+    <string name="type_of_dish_other">Otro</string>
+    <!-- Difficulty -->
+    <string name="difficulty_high">Dificultad alta</string>
+    <string name="difficulty_medium">Dificultad media</string>
+    <string name="difficulty_low">Dificultad baja</string>
 </resources>

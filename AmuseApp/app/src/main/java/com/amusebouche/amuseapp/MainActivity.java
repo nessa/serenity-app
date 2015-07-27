@@ -1,6 +1,9 @@
 package com.amusebouche.amuseapp;
 
 
+import android.app.AlertDialog;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -80,19 +83,37 @@ public class MainActivity extends ActionBarActivity implements
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
 
-        if (getSupportFragmentManager().findFragmentByTag("detailBack") != null){
-            // TODO: Something?
+        FragmentManager fm = getFragmentManager();
+
+        // The first fragment doesn't count (list fragment)
+        if (fm.getBackStackEntryCount() > 1) {
+            Log.i("MAIN", "popping backstack");
+            fm.popBackStack();
         } else {
-            super.onBackPressed();
-            return;
-        }
-        if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
-            getSupportFragmentManager().popBackStack();
-            /*
-            Toast.makeText(getApplicationContext(), "Test", Toast.LENGTH_LONG).show();
-            Fragment frag = getSupportFragmentManager().findFragmentByTag("fragBack");
-            FragmentTransaction transac = getSupportFragmentManager().beginTransaction().remove(frag);
-            transac.commit();*/
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            dialog.dismiss();
+
+                            // Close app
+                            Log.d("INFO", "FINISH");
+                            finish();
+
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            dialog.dismiss();
+                            break;
+                    }
+                }
+            };
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.exit_message))
+                    .setPositiveButton(getString(R.string.YES), dialogClickListener)
+                    .setNegativeButton(getString(R.string.NO), dialogClickListener)
+                    .show();
         }
     }
 

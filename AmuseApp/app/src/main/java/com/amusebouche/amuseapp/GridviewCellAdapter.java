@@ -1,11 +1,15 @@
 package com.amusebouche.amuseapp;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
 import android.transition.Fade;
+import android.transition.TransitionInflater;
 import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -23,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.amusebouche.data.Recipe;
+import com.amusebouche.ui.ImageManager;
 import com.squareup.picasso.Picasso;
 
 
@@ -40,19 +45,21 @@ import com.squareup.picasso.Picasso;
  */
 public class GridviewCellAdapter extends BaseAdapter {
     private Context mContext;
+    private Fragment mFragment;
     private LayoutInflater mInflater;
     private int mScreenWidth;
     private ArrayList<Recipe> mRecipes;
 
-    public GridviewCellAdapter(Context c, int screenWidth) {
+    public GridviewCellAdapter(Context c, Fragment f, int screenWidth) {
         mContext = c;
         mScreenWidth = screenWidth;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mRecipes = new ArrayList<>();
     }
 
-    public GridviewCellAdapter(Context c, int screenWidth, ArrayList<Recipe> recipes) {
+    public GridviewCellAdapter(Context c, Fragment f, int screenWidth, ArrayList<Recipe> recipes) {
         mContext = c;
+        mFragment = f;
         mScreenWidth = screenWidth;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mRecipes = recipes;
@@ -87,7 +94,7 @@ public class GridviewCellAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View cell;
         TextView name;
-        ImageView image;
+        final ImageView image;
         ImageButton imageButton;
 
         // If the view didn't exist, we create a new one
@@ -109,7 +116,7 @@ public class GridviewCellAdapter extends BaseAdapter {
         // Get the image to update the content
         image = (ImageView) cell.findViewById(R.id.recipe_image);
         image.setTag(position);
-        this.setCellImage(presentRecipe.getImage(), image);
+        ImageManager.setCellImage(mContext, presentRecipe.getImage(), image);
 
         // TODO: Set this!
         // Save present recipe ID into the button
@@ -125,6 +132,7 @@ public class GridviewCellAdapter extends BaseAdapter {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 TransitionSet transitionSet = new TransitionSet();
                 transitionSet.addTransition(new ChangeImageTransform());
                 transitionSet.addTransition(new ChangeBounds());
@@ -153,6 +161,49 @@ public class GridviewCellAdapter extends BaseAdapter {
                         .commit();
 
                 // intent.putExtra("recipe", new Recipe(...));
+                */
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Log.d("INFO", "NEWER DEVICE");
+
+                    MainActivity x = (MainActivity) mContext;
+
+
+                    mFragment.setSharedElementReturnTransition(TransitionInflater.from(mContext)
+                            .inflateTransition(R.transition.shared_image_transition));
+                    mFragment.setExitTransition(TransitionInflater.from(mContext)
+                            .inflateTransition(android.R.transition.explode));
+
+                    /*
+                    setSharedElementReturnTransition(TransitionInflater.from(mContext)
+                            .inflateTransition(R.transition.shared_image_transition));
+                    setExitTransition(TransitionInflater.from(mContext)
+                            .inflateTransition(android.R.transition.explode));
+                            */
+
+                    // Create new fragment to add (Fragment B)
+                    Fragment fragment = new RecipeDetailFragment();
+                    fragment.setSharedElementEnterTransition(TransitionInflater.from(mContext).inflateTransition(R.transition.shared_image_transition));
+                    fragment.setEnterTransition(TransitionInflater.from(mContext).inflateTransition(android.R.transition.explode));
+
+                    // Our shared element (in Fragment A) = image
+                    //mProductImage   = (ImageView) mLayout.findViewById(R.id.product_detail_image);
+
+
+                    final Bundle bundle = new Bundle();
+                    bundle.putParcelable("recipe", mRecipes.get((int) v.getTag()));
+                    fragment.setArguments(bundle);
+
+                    // Add Fragment B
+                    x.getFragmentManager().beginTransaction()
+                            .replace(R.id.container, fragment)
+                            .addToBackStack("detailBack")
+                            .addSharedElement(image, "SharedImage")
+                            .commit();
+                } else {
+                    // Code to run on older devices
+                    Log.d("INFO", "OLDER DEVICE");
+                }
             }});
 
         // TODO: Call fav method
@@ -170,54 +221,4 @@ public class GridviewCellAdapter extends BaseAdapter {
         return cell;
     }
 
-    /**
-     * Set an image in a image view using the Picasso library.
-     * @param imageName Name of the image. Could be an URL, a file path or an empty string. If it's
-     *                  an empty string, we will set a random sample image.
-     * @param imageView Image view we want to set up.
-     * @see Picasso library: com.squareup.picasso.Picasso
-     */
-    private void setCellImage(String imageName, ImageView imageView) {
-        // Get a random default image
-        // TODO: Update these images with new ones
-        Random r = new Random();
-        int randomNumber = (r.nextInt(8));
-        int resource;
-
-        switch (randomNumber) {
-            default:
-            case 0:
-                resource = R.drawable.sample_0;
-                break;
-            case 1:
-                resource = R.drawable.sample_1;
-                break;
-            case 2:
-                resource = R.drawable.sample_2;
-                break;
-            case 3:
-                resource = R.drawable.sample_3;
-                break;
-            case 4:
-                resource = R.drawable.sample_4;
-                break;
-            case 5:
-                resource = R.drawable.sample_5;
-                break;
-            case 6:
-                resource = R.drawable.sample_6;
-                break;
-            case 7:
-                resource = R.drawable.sample_7;
-                break;
-        }
-
-        //Picasso.with(mContext).load(imageName).into(imageView);
-        Picasso.with(mContext).load(imageName)
-                .error(resource)
-                .placeholder(R.drawable.loading_animation)
-                .into(imageView);
-
-
-    }
 }

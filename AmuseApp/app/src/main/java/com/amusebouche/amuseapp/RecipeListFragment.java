@@ -99,7 +99,7 @@ public class RecipeListFragment extends Fragment {
         int screen_width = screenSize.x;
 
         mGridView = (GridView) mLayout.findViewById(R.id.gridview);
-        mGridView.setAdapter(new GridviewCellAdapter(getActivity(), screen_width, mRecipes));
+        mGridView.setAdapter(new GridviewCellAdapter(getActivity(), this, screen_width, mRecipes));
 
         if (mLastGridviewPosition != 0) {
             mGridView.smoothScrollToPosition(mLastGridviewPosition);
