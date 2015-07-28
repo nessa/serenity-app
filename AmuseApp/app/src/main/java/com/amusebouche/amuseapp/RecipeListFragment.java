@@ -16,7 +16,7 @@ import android.widget.RelativeLayout;
 
 import com.amusebouche.data.DatabaseHelper;
 import com.amusebouche.services.ServiceHandler;
-import com.amusebouche.ui.FloatingActionButton;
+import com.melnykov.fab.FloatingActionButton;
 import com.amusebouche.data.Recipe;
 
 import org.json.JSONArray;
@@ -105,24 +105,7 @@ public class RecipeListFragment extends Fragment {
             mGridView.smoothScrollToPosition(mLastGridviewPosition);
         }
 
-        // Add FAB programatically
-        float scale = getResources().getDisplayMetrics().density;
-        int addButtonSize = FloatingActionButton.convertToPixels(72, scale);
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(addButtonSize,
-                addButtonSize);
-
-        FloatingActionButton addButton = new FloatingActionButton(this.getActivity());
-        addButton.setFloatingActionButtonColor(getResources().getColor(R.color.theme_default_accent));
-        addButton.setFloatingActionButtonDrawable(getResources()
-                .getDrawable(R.drawable.ic_add_white_48dp));
-
-        params.bottomMargin = FloatingActionButton.convertToPixels(20, scale);
-        params.rightMargin = FloatingActionButton.convertToPixels(20, scale);
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-
-        addButton.setLayoutParams(params);
-        mLayout.addView(addButton);
+        FloatingActionButton addButton = (FloatingActionButton) mLayout.findViewById(R.id.fab);
 
         // TODO: If user is logged in, addButton must be visible
         if (false) {
@@ -145,7 +128,11 @@ public class RecipeListFragment extends Fragment {
     public void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("recipes", mRecipes);
-        outState.putInt("last_position", mGridView.getFirstVisiblePosition());
+
+        // This fails!! Maybe we could add it to shared preferences??
+        //outState.putInt("last_position", mGridView.getFirstVisiblePosition());
+
+
         //outState.putInt("present_page", mRecipesPage);
     }
 

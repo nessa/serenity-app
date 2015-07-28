@@ -63,8 +63,6 @@ public class RecipeDetailFragment extends Fragment
     private Integer mActionBarSize;
     private boolean mFabIsShown;
 
-    private static final float MAX_TEXT_SCALE_DELTA = 0.3f;
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -182,7 +180,7 @@ public class RecipeDetailFragment extends Fragment
         difficultyTextView.setText(this.getDifficulty(mRecipe.getDifficulty()));
 
         TextView cookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
-        cookingTimeTextView.setText(Objects.toString(mRecipe.getCookingTime()));
+        cookingTimeTextView.setText(this.getCookingTime(mRecipe.getCookingTime()));
 
         TextView servingsTextView = (TextView) mLayout.findViewById(R.id.servings);
         servingsTextView.setText(Objects.toString(mRecipe.getServings()));
@@ -219,10 +217,8 @@ public class RecipeDetailFragment extends Fragment
                     R.layout.fragment_recipe_detail_ingredient, mLayout, false);
 
             TextView quantity = (TextView) ingredientLayout.findViewById(R.id.quantity);
-            quantity.setText(Objects.toString(presentIngredient.getQuantity()));
-
-            TextView measurement_unit = (TextView) ingredientLayout.findViewById(R.id.measurement_unit);
-            measurement_unit.setText(presentIngredient.getMeasurementUnit());
+            quantity.setText(this.getIngredientQuantity(presentIngredient.getQuantity(),
+                    presentIngredient.getMeasurementUnit()));
 
             TextView name = (TextView) ingredientLayout.findViewById(R.id.name);
             name.setText(presentIngredient.getName());
@@ -306,10 +302,6 @@ public class RecipeDetailFragment extends Fragment
         super.onDetach();
     }
 
-    public void makeFavorite() {
-        Log.v("INFO", "Favorite X");
-        // TODO: Implement this method.
-    }
 
     /* Instead of using the action bar method setNavigationMode, we define specifically the
      * buttons to show. We call this method when the app is created the first time (onResume) and
@@ -349,12 +341,120 @@ public class RecipeDetailFragment extends Fragment
         }
     }
 
+    private String getCookingTime(float time) {
+        int intTime = (int)time;
+        return Objects.toString(intTime) + " " + getString(R.string.detail_minutes);
+    }
+
+    private String getIngredientQuantity(float quantity, String unit_code) {
+        String q = "", u = "";
+        boolean plural = true;
+
+        if (quantity > 0) {
+            float result = quantity - (int)quantity;
+            if (result != 0) {
+                q = String.format("%.2f", quantity) + " ";
+            } else {
+                q = String.format("%.0f", quantity) + " ";
+            }
+
+            if (quantity <= 1) {
+                plural = false;
+            }
+
+            if (quantity == 0.25) {
+                q = "1/4 ";
+            }
+            if (quantity == 0.5) {
+                q = "1/2 ";
+            }
+            if (quantity == 0.75) {
+                q = "3/4 ";
+            }
+        }
+
+        if (!unit_code.equals("unit")) {
+            switch(unit_code) {
+                case "g":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_g_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_g) + " ";
+                    }
+                    break;
+                case "kg":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_kg_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_kg) + " ";
+                    }
+                    break;
+                case "ml":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_ml_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_ml) + " ";
+                    }
+                    break;
+                case "l":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_l_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_l) + " ";
+                    }
+                    break;
+                case "cup":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_cup_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_cup) + " ";
+                    }
+                    break;
+                case "tsp":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_tsp_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_tsp) + " ";
+                    }
+                    break;
+                case "tbsp":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_tbsp_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_tbsp) + " ";
+                    }
+                    break;
+                case "rasher":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_rasher_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_rasher) + " ";
+                    }
+                    break;
+                default:
+                case "unit":
+                    break;
+            }
+        }
+
+        if (!u.equals("")) {
+            u = u + getString(R.string.measurement_unit_of) + " ";
+        }
+
+        return q + u;
+    }
+
     @Override
     public void onDownMotionEvent() {}
 
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
 
+    }
+
+    public void makeFavorite() {
+        Log.v("INFO", "Favorite X");
+        // TODO: Implement this method.
     }
 
     @Override

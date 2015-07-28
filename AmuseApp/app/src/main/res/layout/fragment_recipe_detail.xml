@@ -53,6 +53,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:background="@color/background"
+                    android:layout_marginTop="20dp"
                     android:gravity="bottom">
 
                     <TextView
@@ -85,6 +86,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_type_of_dish_24dp"
+                            android:layout_marginTop="2dp"
                             android:layout_marginEnd="4dp"
                             android:tint="@color/theme_default_primary" />
                         <TextView
@@ -92,7 +94,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24sp"
                             android:textColor="@color/primary_text"
-                            android:textSize="18sp"
+                            android:textSize="20sp"
                             android:gravity="center" />
                     </LinearLayout>
 
@@ -110,6 +112,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_extension_black_24dp"
+                            android:layout_marginTop="2dp"
                             android:layout_marginEnd="4dp"
                             android:tint="@color/theme_default_primary" />
                         <TextView
@@ -135,6 +138,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_access_time_black_24dp"
+                            android:layout_marginTop="2dp"
                             android:layout_marginEnd="4dp"
                             android:tint="@color/theme_default_primary" />
                         <TextView
@@ -159,6 +163,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_group_black_24dp"
+                            android:layout_marginTop="2dp"
                             android:layout_marginEnd="4dp"
                             android:tint="@color/theme_default_primary" />
                         <TextView
@@ -183,6 +188,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_format_align_left_black_24dp"
+                            android:layout_marginTop="2dp"
                             android:layout_marginEnd="4dp"
                             android:tint="@color/theme_default_primary" />
                         <TextView
@@ -208,6 +214,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_star_black_24dp"
+                            android:layout_marginTop="2dp"
                             android:layout_marginEnd="4dp"
                             android:tint="@color/theme_default_primary" />
                         <TextView
@@ -227,6 +234,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:background="@color/background"
+                    android:layout_marginTop="20dp"
                     android:gravity="top">
 
                     <TextView
@@ -253,6 +261,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:background="@color/background"
+                    android:layout_marginTop="20dp"
                     android:gravity="top" >
 
                     <TextView
