@@ -4,6 +4,7 @@ package com.amusebouche.amuseapp;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
@@ -13,6 +14,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.amusebouche.data.Recipe;
+
+import java.util.ArrayList;
 
 
 /**
@@ -33,6 +38,7 @@ public class MainActivity extends ActionBarActivity implements
     public static final int PROFILE = 0, RECIPES = 1;
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private Fragment initialFragment;
+    private ArrayList<Recipe> mRecipes;
 
 
     @Override
@@ -40,6 +46,9 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        Intent i = getIntent();
+        mRecipes = i.getParcelableArrayListExtra("recipes");
 
         // Set up the drawer
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
@@ -140,6 +149,10 @@ public class MainActivity extends ActionBarActivity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public ArrayList getRecipes() {
+        return mRecipes;
     }
 
     /**

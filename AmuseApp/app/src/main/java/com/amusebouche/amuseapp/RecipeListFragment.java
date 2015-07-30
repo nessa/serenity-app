@@ -66,7 +66,9 @@ public class RecipeListFragment extends Fragment {
         if (savedInstanceState == null || !savedInstanceState.containsKey("recipes")) {
             mLastGridviewPosition = 0;
 
-            new GetRecipes().execute();
+            // Get recipes from main activity
+            MainActivity x = (MainActivity)getActivity();
+            mRecipes = x.getRecipes();
         } else {
             mRecipes = savedInstanceState.getParcelableArrayList("recipes");
             mLastGridviewPosition = savedInstanceState.getInt("last_position");
@@ -164,95 +166,4 @@ public class RecipeListFragment extends Fragment {
         x.setDrawerIndicatorEnabled(true);
     }
 
-
-
-    /**
-     * Async task class to get json by making HTTP call
-     * */
-    private class GetRecipes extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            // Show progress dialog
-            MainActivity x = (MainActivity) getActivity();
-            infoDialog = new ProgressDialog(x);
-            infoDialog.setMessage(x.getApplicationContext().getResources()
-                    .getString(R.string.please_wait_message));
-            infoDialog.setCancelable(false);
-            infoDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... result) {
-            if (mOffline) {
-                mRecipesPage = 1;
-
-                mDatabaseHelper.initializeExampleData();
-                mRecipes = mDatabaseHelper.getRecipes();
-
-                GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
-                adapter.setRecipes(mRecipes);
-
-                if (mLastGridviewPosition != 0) {
-                    mGridView.setSelection(mLastGridviewPosition);
-                }
-            } else {
-                // Create service handler class instance
-                ServiceHandler sh = new ServiceHandler();
-
-                // Check internet connection
-                if (sh.checkInternetConnection(getActivity().getApplicationContext())) {
-
-                    // Make a request to url and getting response
-                    String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
-                    mRecipesPage = 1;
-
-                    Log.d("RESPONSE", "> " + jsonStr);
-
-                    if (jsonStr != null) {
-                        try {
-                            JSONObject jObject = new JSONObject(jsonStr);
-                            JSONArray results = jObject.getJSONArray("results");
-
-                            mRecipes = new ArrayList<>();
-
-                            for (int i = 0; i < results.length(); i++) {
-                                mRecipes.add(new Recipe(results.getJSONObject(i)));
-                            }
-
-                            GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
-                            adapter.setRecipes(mRecipes);
-
-                            if (mLastGridviewPosition != 0) {
-                                mGridView.setSelection(mLastGridviewPosition);
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Log.e("ServiceHandler", "Couldn't get any data from the url");
-                    }
-                } else {
-                    // TODO: Get database recipes??
-                }
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-
-            // Dismiss the progress dialog
-            if (infoDialog.isShowing())
-                infoDialog.dismiss();
-
-            // Update parsed JSON data (result?) into GridView
-            GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
-            adapter.notifyDataSetChanged();
-        }
-    }
 }

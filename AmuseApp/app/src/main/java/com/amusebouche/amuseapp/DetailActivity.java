@@ -35,7 +35,6 @@ public class DetailActivity extends ActionBarActivity {
 
         Intent i = getIntent();
         mRecipe = i.getParcelableExtra("recipe");
-        //mMainImage = i.getStringExtra("image");
 
         setContentView(R.layout.activity_detail);
 
