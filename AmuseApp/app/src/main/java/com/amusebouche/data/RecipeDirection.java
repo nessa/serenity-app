@@ -140,7 +140,7 @@ public class RecipeDirection implements Parcelable {
     /**
      * Needed to complete parcelable configuration
      */
-    public final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeDirection>() {
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeDirection>() {
         public RecipeDirection createFromParcel(Parcel source) {
             return new RecipeDirection(source);
         }

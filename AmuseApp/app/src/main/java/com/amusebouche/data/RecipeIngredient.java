@@ -129,7 +129,7 @@ public class RecipeIngredient implements Parcelable {
     /**
      * Needed to complete parcelable configuration
      */
-    public final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeIngredient>() {
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeIngredient>() {
         public RecipeIngredient createFromParcel(Parcel source) {
             return new RecipeIngredient(source);
         }

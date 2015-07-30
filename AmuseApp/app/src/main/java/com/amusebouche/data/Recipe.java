@@ -443,7 +443,7 @@ public class Recipe implements Parcelable {
     /**
      * Needed to complete parcelable configuration
      */
-    public final Parcelable.Creator CREATOR = new Parcelable.Creator<Recipe>() {
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator<Recipe>() {
         public Recipe createFromParcel(Parcel source) {
             return new Recipe(source);
         }

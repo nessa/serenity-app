@@ -84,7 +84,7 @@ public class RecipeCategory implements Parcelable {
     /**
      * Needed to complete parcelable configuration
      */
-    public final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeCategory>() {
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator<RecipeCategory>() {
         public RecipeCategory createFromParcel(Parcel source) {
             return new RecipeCategory(source);
         }
