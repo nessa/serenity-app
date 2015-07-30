@@ -4,13 +4,22 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.transition.ChangeBounds;
 import android.transition.ChangeImageTransform;
+import android.transition.ChangeTransform;
 import android.transition.Fade;
 import android.transition.TransitionInflater;
 import android.transition.TransitionSet;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,6 +32,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -49,6 +60,8 @@ public class GridviewCellAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private int mScreenWidth;
     private ArrayList<Recipe> mRecipes;
+
+    private String filename = "presentRecipeImage.png";
 
     public GridviewCellAdapter(Context c, Fragment f, int screenWidth) {
         mContext = c;
@@ -132,82 +145,32 @@ public class GridviewCellAdapter extends BaseAdapter {
         image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                TransitionSet transitionSet = new TransitionSet();
-                transitionSet.addTransition(new ChangeImageTransform());
-                transitionSet.addTransition(new ChangeBounds());
-                transitionSet.setDuration(300);
+                // Can't compress a recycled bitmap so we copy it
+                image.buildDrawingCache(true);
+                Bitmap bitmap = image.getDrawingCache(true).copy(Bitmap.Config.RGB_565, false);
+                image.destroyDrawingCache();
 
-                Fragment fragment2 = new RecipeDetailFragment();
-                fragment2.setSharedElementEnterTransition(transitionSet);
-                fragment2.setSharedElementReturnTransition(transitionSet);
-                Fade fade = new Fade();
-                fade.setStartDelay(300);
-                fragment2.setEnterTransition(fade);
+                try {
+                    // Save bitmap into file to prevent transactiontoolargeexception
+                    FileOutputStream stream = mContext.openFileOutput(filename, Context.MODE_PRIVATE);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 
-                Log.d("INFO", "Vista " + v.getTag());
-                mRecipes.get((int) v.getTag()).printString();
+                    // Cleanup
+                    stream.close();
+                    bitmap.recycle();
 
-                final Bundle bundle = new Bundle();
-                bundle.putParcelable("recipe", mRecipes.get((int) v.getTag()));
-                fragment2.setArguments(bundle);
+                    // Send selected recipe to the next activity
+                    Intent i = new Intent(mContext, DetailActivity.class);
+                    i.putExtra("recipe", mRecipes.get((int) v.getTag()));
 
-                // Get main activity from context
-                MainActivity x = (MainActivity) mContext;
-                x.getFragmentManager().beginTransaction()
-                        .replace(R.id.container, fragment2)
-                        .addSharedElement(v, "SharedImage")
-                        .addToBackStack("detailBack")
-                        .commit();
-
-                // intent.putExtra("recipe", new Recipe(...));
-                */
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Log.d("INFO", "NEWER DEVICE");
-
-                    MainActivity x = (MainActivity) mContext;
-
-
-                    mFragment.setSharedElementReturnTransition(TransitionInflater.from(mContext)
-                            .inflateTransition(R.transition.shared_image_transition));
-                    mFragment.setExitTransition(TransitionInflater.from(mContext)
-                            .inflateTransition(android.R.transition.explode));
-
-                    /*
-
-                    setSharedElementReturnTransition(TransitionInflater.from(mContext)
-                            .inflateTransition(R.transition.shared_image_transition));
-                    setExitTransition(TransitionInflater.from(mContext)
-                            .inflateTransition(android.R.transition.explode));
-                            */
-
-                    // Create new fragment to add (Fragment B)
-                    Fragment fragment = new RecipeDetailFragment();
-                    fragment.setSharedElementEnterTransition(TransitionInflater.from(mContext)
-                            .inflateTransition(R.transition.shared_image_transition));
-                    fragment.setEnterTransition(TransitionInflater.from(mContext)
-                            .inflateTransition(android.R.transition.explode));
-
-                    // Our shared element (in Fragment A) = image
-                    //mProductImage   = (ImageView) mLayout.findViewById(R.id.product_detail_image);
-
-
-                    final Bundle bundle = new Bundle();
-                    bundle.putParcelable("recipe", mRecipes.get((int) v.getTag()));
-                    fragment.setArguments(bundle);
-
-                    // Add Fragment B
-                    x.getFragmentManager().beginTransaction()
-                            .replace(R.id.container, fragment)
-                            .addToBackStack("detailBack")
-                            .addSharedElement(image, "SharedImage")
-                            .commit();
-                } else {
-                    // Code to run on older devices
-                    Log.d("INFO", "OLDER DEVICE");
+                    ActivityOptionsCompat options = ActivityOptionsCompat
+                            .makeSceneTransitionAnimation((MainActivity) mContext, image, "SharedImage");
+                    ActivityCompat.startActivity((MainActivity) mContext, i, options.toBundle());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            }});
+            }
+        });
 
         // TODO: Call fav method
         /*

@@ -1,8 +1,8 @@
 package com.amusebouche.amuseapp;
 
 
-import android.app.Activity;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import com.amusebouche.data.Recipe;
 
 
 /**
@@ -24,22 +26,30 @@ import android.view.MenuItem;
  * - Content: activity_detail.xml
  */
 public class DetailActivity extends ActionBarActivity {
+    private Recipe mRecipe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        Log.d("DETAIL", "DETAIL ACTIVITY ON CREATE");
+        Intent i = getIntent();
+        mRecipe = i.getParcelableExtra("recipe");
+        //mMainImage = i.getStringExtra("image");
 
         setContentView(R.layout.activity_detail);
 
-        //ActionBar actionBar = getSupportActionBar();
-        //actionBar.setTitle("PRUEBA");
-        //actionBar.setDisplayHomeAsUpEnabled(true);
-        //actionBar.setHomeButtonEnabled(true);
+        this.setBarTitle(getString(R.string.title_recipe_detail_activity));
     }
 
-    /*
+
+    public Recipe getRecipe() { return mRecipe; }
+
+    public void setBarTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(title);
+    }
+
     @Override
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
@@ -52,7 +62,6 @@ public class DetailActivity extends ActionBarActivity {
             super.onBackPressed();
         }
     }
-    */
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,11 +74,21 @@ public class DetailActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_search:
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_fav:
+                makeFavorite();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    public void makeFavorite() {
+        Log.v("INFO", "Favorite X");
+        // TODO: Implement this method.
     }
 
 }

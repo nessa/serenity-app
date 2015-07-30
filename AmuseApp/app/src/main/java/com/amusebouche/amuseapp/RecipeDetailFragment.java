@@ -3,19 +3,20 @@ package com.amusebouche.amuseapp;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -33,7 +34,9 @@ import com.nineoldandroids.view.ViewHelper;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.melnykov.fab.FloatingActionButton;
+import com.squareup.picasso.Picasso;
 
+import java.io.FileInputStream;
 import java.util.Objects;
 
 /**
@@ -52,6 +55,7 @@ public class RecipeDetailFragment extends Fragment
 
     private FrameLayout mLayout;
     private Recipe mRecipe;
+    private Bitmap mMainImage;
     private View mOverlayView;
     private TextView mRecipeName;
     private ImageView mRecipeImage;
@@ -63,6 +67,8 @@ public class RecipeDetailFragment extends Fragment
     private Integer mActionBarSize;
     private boolean mFabIsShown;
 
+    private String filename = "presentRecipeImage.png";
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -73,16 +79,18 @@ public class RecipeDetailFragment extends Fragment
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        //ActionBarActivity x = (ActionBarActivity)getActivity();
-        //x.getSupportActionBar().hide();
+        // Get recipe from activity
+        DetailActivity x = (DetailActivity)getActivity();
+        mRecipe = x.getRecipe();
 
-        if (getArguments() != null) {
-            Log.d("INFO", "Set recipe");
-            mRecipe = getArguments().getParcelable("recipe");
-        } else {
-            if (savedInstanceState != null && savedInstanceState.containsKey("recipe")) {
-                mRecipe = savedInstanceState.getParcelable("recipe");
-            }
+        // Get image bitmap from file
+        mMainImage = null;
+        try {
+            FileInputStream is = getActivity().openFileInput(filename);
+            mMainImage = BitmapFactory.decodeStream(is);
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -90,13 +98,12 @@ public class RecipeDetailFragment extends Fragment
     public void onResume() {
         super.onResume();
         Log.i(getClass().getSimpleName(), "onResume()");
-        changeActionButton();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
+        Log.i(getClass().getSimpleName(), "onStop()");
     }
 
     @Override
@@ -111,18 +118,20 @@ public class RecipeDetailFragment extends Fragment
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
+        /* TODO: Try to prevent Skipped XX frames! The application may be doing too
+         * much work on its main thread. */
+
+        DetailActivity x = (DetailActivity) getActivity();
+
         mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_recipe_detail,
                 container, false);
 
-
         mRecipeImage = (ImageView) mLayout.findViewById(R.id.recipe_image);
-        ImageManager.setCellImage(getActivity().getApplicationContext(), mRecipe.getImage(), mRecipeImage);
+        mRecipeImage.setImageBitmap(mMainImage);
 
-        ActionBarActivity x = (ActionBarActivity)getActivity();
-        x.getSupportActionBar().setTitle(mRecipe.getTitle());
         mRecipeName = (TextView) mLayout.findViewById(R.id.recipe_name);
         mRecipeName.setText(mRecipe.getTitle());
-        getActivity().setTitle(null);
+        x.setBarTitle(mRecipe.getTitle());
 
         // Set view sizes
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(
@@ -149,7 +158,7 @@ public class RecipeDetailFragment extends Fragment
         int titleTranslationY = maxTitleTranslationY - mActionBarSize;
         ViewHelper.setTranslationY(mRecipeName, titleTranslationY);
 
-        Display display = x.getWindowManager().getDefaultDisplay();
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int windowWidth = size.x;
@@ -230,7 +239,6 @@ public class RecipeDetailFragment extends Fragment
         LinearLayout directionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
 
         for (int d = 0; d < mRecipe.getDirections().size(); d++) {
-            Log.d("INFO", "direction");
             RecipeDirection presentDirection = (RecipeDirection)mRecipe.getDirections().get(d);
 
             LinearLayout directionLayout = (LinearLayout) inflater.inflate(
@@ -273,42 +281,12 @@ public class RecipeDetailFragment extends Fragment
         Log.i(getClass().getSimpleName(), "onHidden()");
         if (!hidden) {
             Log.i(getClass().getSimpleName(), "Not hidden");
-            changeActionButton();
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_recipe_detail, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                getActivity().onBackPressed();
-                return true;
-            case R.id.action_fav:
-                makeFavorite();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-
-    /* Instead of using the action bar method setNavigationMode, we define specifically the
-     * buttons to show. We call this method when the app is created the first time (onResume) and
-     * every time it appears again (onHiddenChange). */
-    private void changeActionButton() {
-        MainActivity x = (MainActivity) getActivity();
-        x.setDrawerIndicatorEnabled(false);
     }
 
     private String getTypeOfDish(String code) {
@@ -450,11 +428,6 @@ public class RecipeDetailFragment extends Fragment
     @Override
     public void onUpOrCancelMotionEvent(ScrollState scrollState) {
 
-    }
-
-    public void makeFavorite() {
-        Log.v("INFO", "Favorite X");
-        // TODO: Implement this method.
     }
 
     @Override

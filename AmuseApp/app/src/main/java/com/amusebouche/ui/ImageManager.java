@@ -9,7 +9,11 @@ import com.squareup.picasso.Picasso;
 import java.util.Random;
 
 /**
- * Created by nessa on 23/07/15.
+ * Image manager class.
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com
+ *
+ * Android support class.
+ * It contains useful methods to manage images.
  */
 public class ImageManager {
 
