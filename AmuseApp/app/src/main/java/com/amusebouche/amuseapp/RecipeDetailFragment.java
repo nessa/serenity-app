@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -131,7 +132,6 @@ public class RecipeDetailFragment extends Fragment
 
         mRecipeName = (TextView) mLayout.findViewById(R.id.recipe_name);
         mRecipeName.setText(mRecipe.getTitle());
-        x.setBarTitle(mRecipe.getTitle());
 
         // Set view sizes
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(
@@ -139,8 +139,8 @@ public class RecipeDetailFragment extends Fragment
         mFlexibleSpaceShowFabOffset = getResources().getDimensionPixelSize(
                 R.dimen.flexible_space_show_fab_offset);
         mFabMargin = getResources().getDimensionPixelSize(R.dimen.margin_standard);
-
-        mActionBarSize = x.getSupportActionBar().getHeight();
+        mActionBarSize = getResources().getDimensionPixelSize(
+                R.dimen.abc_action_bar_default_height_material);
 
         mOverlayView = mLayout.findViewById(R.id.overlay);
         ObservableScrollView scrollView = (ObservableScrollView) mLayout.findViewById(R.id.scroll);
@@ -245,24 +245,52 @@ public class RecipeDetailFragment extends Fragment
                     R.layout.fragment_recipe_detail_direction, mLayout, false);
 
             TextView number = (TextView) directionLayout.findViewById(R.id.number);
-            number.setText(Objects.toString(presentDirection.getSortNumber()));
+            number.setText(getString(R.string.detail_direction_label) + " " +
+                    Objects.toString(presentDirection.getSortNumber()));
 
             TextView description = (TextView) directionLayout.findViewById(R.id.description);
             description.setText(presentDirection.getDescription());
 
             LinearLayout extraLayout = (LinearLayout) directionLayout.findViewById(R.id.extra);
 
-            if (!presentDirection.getImage().equals("")) {
-                ImageView directionImage = new ImageView(extraLayout.getContext());
-                ImageManager.setCellImage(getActivity().getApplicationContext(),
-                        presentDirection.getImage(), directionImage);
-                extraLayout.addView(directionImage);
+            ImageButton directionImageButton = (ImageButton) extraLayout.findViewById(
+                    R.id.showPhoto);
+            ImageButton directionVideoButton = (ImageButton) extraLayout.findViewById(
+                    R.id.showVideo);
+            ImageButton chronometerButton = (ImageButton) extraLayout.findViewById(
+                    R.id.chronometer);
+
+            if (presentDirection.getImage().equals("")) {
+                directionImageButton.setVisibility(View.GONE);
+            } else {
+                directionImageButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("INFO", "CLICK IMAGE BUTTON");
+                    }
+                });
             }
 
-            if (presentDirection.getTime() > 0) {
-                Button cronoButton = new Button(extraLayout.getContext());
-                cronoButton.setText(R.string.chronometer);
-                extraLayout.addView(cronoButton);
+            if (presentDirection.getVideo().equals("")) {
+                directionVideoButton.setVisibility(View.GONE);
+            } else {
+                directionVideoButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("INFO", "CLICK VIDEO BUTTON");
+                    }
+                });
+            }
+
+            if (presentDirection.getTime() == 0) {
+                chronometerButton.setVisibility(View.GONE);
+            } else {
+                chronometerButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Log.d("INFO", "CLICK CHRONO BUTTON");
+                    }
+                });
             }
 
             directionsLayout.addView(directionLayout);

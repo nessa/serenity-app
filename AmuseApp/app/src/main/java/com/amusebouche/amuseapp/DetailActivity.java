@@ -38,7 +38,7 @@ public class DetailActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_detail);
 
-        this.setBarTitle(getString(R.string.title_recipe_detail_activity));
+        this.setBarTitle(mRecipe.getTitle());
     }
 
 

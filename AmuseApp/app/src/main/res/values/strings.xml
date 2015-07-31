@@ -25,6 +25,7 @@
     <string name="detail_information_label">Information</string>
     <string name="detail_ingredients_label">Ingredients</string>
     <string name="detail_directions_label">Directions</string>
+    <string name="detail_direction_label">DIRECTION</string>
     <string name="detail_type_of_dish_label">Type of dish:</string>
     <string name="detail_difficulty_label">Difficulty:</string>
     <string name="detail_cooking_time_label">Cooking time:</string>
