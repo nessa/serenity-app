@@ -11,7 +11,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
