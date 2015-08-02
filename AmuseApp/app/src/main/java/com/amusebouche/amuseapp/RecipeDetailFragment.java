@@ -9,15 +9,14 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Base64;
+import android.speech.tts.TextToSpeech;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -27,7 +26,6 @@ import android.widget.TextView;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
-import com.amusebouche.ui.ImageManager;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.nineoldandroids.view.ViewHelper;
@@ -35,9 +33,9 @@ import com.nineoldandroids.view.ViewHelper;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.melnykov.fab.FloatingActionButton;
-import com.squareup.picasso.Picasso;
 
 import java.io.FileInputStream;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -61,6 +59,7 @@ public class RecipeDetailFragment extends Fragment
     private TextView mRecipeName;
     private ImageView mRecipeImage;
     private FloatingActionButton mFab;
+    private TextToSpeech mTTS;
 
     private Integer mFlexibleSpaceImageHeight;
     private Integer mFlexibleSpaceShowFabOffset;
@@ -99,12 +98,26 @@ public class RecipeDetailFragment extends Fragment
     public void onResume() {
         super.onResume();
         Log.i(getClass().getSimpleName(), "onResume()");
+
+        mTTS = new TextToSpeech(this.getActivity(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    Locale locSpanish = new Locale("spa", "ESP");
+                    mTTS.setLanguage(locSpanish);
+                }
+            }
+        });
     }
 
     @Override
     public void onStop() {
         super.onStop();
         Log.i(getClass().getSimpleName(), "onStop()");
+
+        if (mTTS != null) {
+            mTTS.shutdown();
+        }
     }
 
     @Override
@@ -253,28 +266,59 @@ public class RecipeDetailFragment extends Fragment
 
             LinearLayout extraLayout = (LinearLayout) directionLayout.findViewById(R.id.extra);
 
-            ImageButton directionImageButton = (ImageButton) extraLayout.findViewById(
+            ImageButton readDirectionButton = (ImageButton) extraLayout.findViewById(
+                    R.id.readDescription);
+            ImageButton showDirectionImageButton = (ImageButton) extraLayout.findViewById(
                     R.id.showPhoto);
-            ImageButton directionVideoButton = (ImageButton) extraLayout.findViewById(
+            ImageButton showDirectionVideoButton = (ImageButton) extraLayout.findViewById(
                     R.id.showVideo);
-            ImageButton chronometerButton = (ImageButton) extraLayout.findViewById(
+            ImageButton directionChronometerButton = (ImageButton) extraLayout.findViewById(
                     R.id.chronometer);
 
+
+            readDirectionButton.setTag(d);
+            showDirectionImageButton.setTag(d);
+            showDirectionVideoButton.setTag(d);
+            directionChronometerButton.setTag(d);
+
+            readDirectionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
+                            (int)v.getTag());
+                    CharSequence text = dir.getDescription();
+
+                    if (text != "") {
+                        mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+                    }
+                }
+            });
+
             if (presentDirection.getImage().equals("")) {
-                directionImageButton.setVisibility(View.GONE);
+                showDirectionImageButton.setVisibility(View.GONE);
             } else {
-                directionImageButton.setOnClickListener(new View.OnClickListener() {
+                showDirectionImageButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Log.d("INFO", "CLICK IMAGE BUTTON");
+                        RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
+                                (int)v.getTag());
+
+                        // Send selected recipe to the next activity
+                        Intent i = new Intent(getActivity(), MediaActivity.class);
+                        i.putExtra("mediaType", "IMAGE");
+                        i.putExtra("elementUri", dir.getImage());
+                        i.putExtra("directionNumber", Objects.toString(dir.getSortNumber()));
+
+                        ActivityCompat.startActivity((DetailActivity) getActivity(), i, null);
                     }
                 });
             }
 
             if (presentDirection.getVideo().equals("")) {
-                directionVideoButton.setVisibility(View.GONE);
+                showDirectionVideoButton.setVisibility(View.GONE);
             } else {
-                directionVideoButton.setOnClickListener(new View.OnClickListener() {
+                showDirectionVideoButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Log.d("INFO", "CLICK VIDEO BUTTON");
@@ -283,9 +327,9 @@ public class RecipeDetailFragment extends Fragment
             }
 
             if (presentDirection.getTime() == 0) {
-                chronometerButton.setVisibility(View.GONE);
+                directionChronometerButton.setVisibility(View.GONE);
             } else {
-                chronometerButton.setOnClickListener(new View.OnClickListener() {
+                directionChronometerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Log.d("INFO", "CLICK CHRONO BUTTON");

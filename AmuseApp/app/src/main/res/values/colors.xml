@@ -19,6 +19,7 @@
     <color name="drawer_text_color">#212121</color>
 
     <color name="background">#EFEFEF</color>
+    <color name="dark_background">#212121</color>
     <color name="detail_direction_shadow">#B6B6B6</color>
     <color name="detail_direction_content">#FFFFFF</color>
 </resources>

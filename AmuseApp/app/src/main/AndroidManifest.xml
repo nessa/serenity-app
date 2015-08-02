@@ -38,6 +38,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.amusebouche.amuseapp.MainActivity" />
         </activity>
+        <activity
+            android:name="com.amusebouche.amuseapp.MediaActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.amusebouche.amuseapp.DetailActivity" >
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.amusebouche.amuseapp.DetailActivity" />
+        </activity>
     </application>
 
 </manifest>
