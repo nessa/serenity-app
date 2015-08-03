@@ -63,4 +63,6 @@
     <string name="measurement_unit_tsp_plural">teaspoons</string>
     <string name="measurement_unit_tbsp_plural">tablespoons</string>
     <string name="measurement_unit_rasher_plural">rashers</string>
+    <!-- Speak messages -->
+    <string name="detail_direction_speak_end_of_recipe_message">The recipe is finish. Let\'s eat!</string>
 </resources>

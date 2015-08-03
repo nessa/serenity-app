@@ -49,6 +49,7 @@ public class DetailActivity extends ActionBarActivity {
         actionBar.setTitle(title);
     }
 
+    /*
     @Override
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
@@ -58,6 +59,23 @@ public class DetailActivity extends ActionBarActivity {
             fm.popBackStack();
         } else {
             Log.i("DETAIL", "nothing on backstack, calling super");
+            super.onBackPressed();
+        }
+    }
+    */
+
+    @Override
+    public void onBackPressed() {
+        Log.i(getClass().getSimpleName(), "onBackPressed()");
+
+
+        RecipeDetailFragment frag = (RecipeDetailFragment) getFragmentManager()
+                .findFragmentById(R.id.container);
+
+        // Scroll up before get back (to make transition work perfectly)
+        if (frag.getScrollView().getCurrentScrollY() > 0) {
+            frag.scrollUp();
+        } else {
             super.onBackPressed();
         }
     }

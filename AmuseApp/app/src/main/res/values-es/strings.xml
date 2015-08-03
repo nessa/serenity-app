@@ -63,4 +63,6 @@
     <string name="measurement_unit_tsp_plural">cucharaditas</string>
     <string name="measurement_unit_tbsp_plural">cucharadas</string>
     <string name="measurement_unit_rasher_plural">lonchas</string>
+    <!-- Speak messages -->
+    <string name="detail_direction_speak_end_of_recipe_message">Fin de la receta. !A comer!</string>
 </resources>

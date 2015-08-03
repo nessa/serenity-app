@@ -1,7 +1,10 @@
 package com.amusebouche.amuseapp;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +12,9 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Display;
@@ -34,6 +39,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -52,6 +58,7 @@ public class RecipeDetailFragment extends Fragment
         implements ObservableScrollViewCallbacks {
 
     private FrameLayout mLayout;
+    private ObservableScrollView mScrollView;
     private Recipe mRecipe;
     private Bitmap mMainImage;
     private View mOverlayView;
@@ -59,6 +66,7 @@ public class RecipeDetailFragment extends Fragment
     private ImageView mRecipeImage;
     private FloatingActionButton mFab;
     private TextToSpeech mTTS;
+    private Integer mPresentDescriptionIndex;
 
     private Integer mFlexibleSpaceImageHeight;
     private Integer mFlexibleSpaceShowFabOffset;
@@ -98,6 +106,8 @@ public class RecipeDetailFragment extends Fragment
         super.onResume();
         Log.i(getClass().getSimpleName(), "onResume()");
 
+        mPresentDescriptionIndex = 0;
+
         mTTS = new TextToSpeech(this.getActivity(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -117,6 +127,14 @@ public class RecipeDetailFragment extends Fragment
         if (mTTS != null) {
             mTTS.shutdown();
         }
+    }
+
+    public ObservableScrollView getScrollView() {
+        return mScrollView;
+    }
+
+    public void scrollUp() {
+        mScrollView.smoothScrollTo(0, 0);
     }
 
     @Override
@@ -139,6 +157,8 @@ public class RecipeDetailFragment extends Fragment
         mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_recipe_detail,
                 container, false);
 
+        mScrollView = (ObservableScrollView) mLayout.findViewById(R.id.scroll);
+
         mRecipeImage = (ImageView) mLayout.findViewById(R.id.recipe_image);
         mRecipeImage.setImageBitmap(mMainImage);
 
@@ -158,6 +178,18 @@ public class RecipeDetailFragment extends Fragment
         ObservableScrollView scrollView = (ObservableScrollView) mLayout.findViewById(R.id.scroll);
         scrollView.setScrollViewCallbacks(this);
         mFab = (FloatingActionButton) mLayout.findViewById(R.id.fab);
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (RecipeDetailFragment.this.mRecipe.getDirections().size() > 0) {
+                    mPresentDescriptionIndex = 0;
+                    RecipeDetailFragment.this.readDescription();
+                } else {
+                    Log.d("INFO", "No directions");
+                }
+            }
+        });
 
         // Overlay view transparent
         ViewHelper.setAlpha(mOverlayView, 0);
@@ -255,6 +287,7 @@ public class RecipeDetailFragment extends Fragment
 
             LinearLayout directionLayout = (LinearLayout) inflater.inflate(
                     R.layout.fragment_recipe_detail_direction, mLayout, false);
+            directionLayout.setTag("direction"+d);
 
             TextView number = (TextView) directionLayout.findViewById(R.id.number);
             number.setText(getString(R.string.detail_direction_label) + " " +
@@ -340,6 +373,76 @@ public class RecipeDetailFragment extends Fragment
         }
 
         return mLayout;
+    }
+
+    public void readDescription() {
+        if (mRecipe.getDirections().size() > mPresentDescriptionIndex) {
+            Log.d("INFO", "DIRECTION " + mPresentDescriptionIndex);
+
+            RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
+                    mPresentDescriptionIndex);
+            CharSequence text = dir.getDescription();
+
+            // Move view to direction box
+            final LinearLayout directionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
+            final View directionLayout = (View) mLayout.findViewWithTag("direction" +
+                    mPresentDescriptionIndex);
+
+            // Hide FAB if necessary
+            if (mPresentDescriptionIndex == 0) {
+                this.hideFab();
+            }
+            mScrollView.smoothScrollTo(0, directionsLayout.getTop() + directionLayout.getBottom());
+
+            if (text != "") {
+
+                mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+                    @Override
+                    public void onStart(String utteranceId) {
+                        Log.d("INFO", "START");
+                    }
+
+                    @Override
+                    public void onDone(String utteranceId) {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                // Check chrono
+                                RecipeDetailFragment.this.showChronometer();
+
+                                // Read next description
+                                mPresentDescriptionIndex = mPresentDescriptionIndex + 1;
+                                RecipeDetailFragment.this.readDescription();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onError(String utteranceId) {
+                        Log.e("ERROR", "error on " + utteranceId);
+                    }
+                });
+
+                // Utterance ID is needed to make the listener work
+                mTTS.speak(getString(R.string.detail_direction_label) + " " + dir.getSortNumber() +
+                                ". " + text, TextToSpeech.QUEUE_FLUSH, null,
+                        TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID);
+            }
+
+
+        } else {
+            // No need to make the listener work
+            mTTS.speak(getString(R.string.detail_direction_speak_end_of_recipe_message),
+                    TextToSpeech.QUEUE_FLUSH, null, null);
+        }
+    }
+
+    public void showChronometer() {
+        RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
+
+        if (dir.getTime() > 0) {
+            Log.d("INFO", "CHRONO: "+dir.getTime());
+        }
     }
 
     @Override
