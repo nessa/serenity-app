@@ -25,9 +25,6 @@ import com.amusebouche.ui.ImageManager;
  * - Content: activity_detail.xml
  */
 public class MediaActivity extends ActionBarActivity {
-    private String mMediaType;
-    private String mElementUri;
-    private String mDirectionNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,18 +32,18 @@ public class MediaActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         Intent i = getIntent();
-        mMediaType = i.getStringExtra("mediaType");
-        mElementUri = i.getStringExtra("elementUri");
-        mDirectionNumber = i.getStringExtra("directionNumber");
+        String mediaType = i.getStringExtra("mediaType");
+        String elementUri = i.getStringExtra("elementUri");
+        String directionNumber = i.getStringExtra("directionNumber");
 
         setContentView(R.layout.activity_media);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(getString(R.string.detail_direction_label) + " " + mDirectionNumber);
+        actionBar.setTitle(getString(R.string.detail_direction_label) + " " + directionNumber);
 
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
 
-        if (mMediaType.equals("IMAGE")) {
+        if (mediaType.equals("IMAGE")) {
             ImageView image = new ImageView(this);
             image.setBackgroundColor(getResources().getColor(R.color.dark_background));
             image.setLayoutParams(new LinearLayout.LayoutParams(
@@ -54,11 +51,12 @@ public class MediaActivity extends ActionBarActivity {
                     LinearLayout.LayoutParams.MATCH_PARENT));
             image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-            ImageManager.setCellImage(this, mElementUri, image);
+            ImageManager.setCellImage(this, elementUri, image);
 
             container.addView(image);
         } else {
-            if (mMediaType.equals("VIDEO")) {
+            if (mediaType.equals("VIDEO")) {
+                Log.d("INFO", "VIDEO");
                 // TODO
             }
         }

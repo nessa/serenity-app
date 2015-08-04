@@ -1,27 +1,11 @@
 package com.amusebouche.amuseapp;
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.transition.ChangeBounds;
-import android.transition.ChangeImageTransform;
-import android.transition.ChangeTransform;
-import android.transition.Fade;
-import android.transition.TransitionInflater;
-import android.transition.TransitionSet;
-import android.util.Base64;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,16 +14,12 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Random;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.ui.ImageManager;
-import com.squareup.picasso.Picasso;
 
 
 /**
@@ -116,7 +96,7 @@ public class GridviewCellAdapter extends BaseAdapter {
             cell.setLayoutParams(new GridView.LayoutParams(mScreenWidth / 2 - 2,
                     mScreenWidth / 2 - 2));
         } else {
-            cell = (View)convertView;
+            cell = convertView;
         }
 
         // Get the item in the adapter

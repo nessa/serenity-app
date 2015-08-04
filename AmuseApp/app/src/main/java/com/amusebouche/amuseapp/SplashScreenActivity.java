@@ -1,20 +1,13 @@
 package com.amusebouche.amuseapp;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.graphics.Color;
-import android.graphics.Point;
-import android.graphics.PorterDuff.Mode;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
@@ -22,7 +15,6 @@ import android.widget.ProgressBar;
 import com.amusebouche.data.DatabaseHelper;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.services.ServiceHandler;
-import com.nineoldandroids.view.ViewHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +25,7 @@ public class SplashScreenActivity extends Activity {
     private DatabaseHelper mDatabaseHelper;
     private Boolean mOffline = true;
     private ArrayList<Recipe> mRecipes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +91,7 @@ public class SplashScreenActivity extends Activity {
                         Log.e("ServiceHandler", "Couldn't get any data from the url");
                     }
                 } else {
+                    Log.d("INFO", "ELSE");
                     // TODO: Get database recipes??
                 }
             }
