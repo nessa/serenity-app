@@ -25,4 +25,9 @@
     <style name="DetailTheme" parent="BaseDetailTheme">
         <item name="android:windowContentTransitions">true</item>
     </style>
+
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/right_to_left_enter</item>
+        <item name="android:windowExitAnimation">@anim/right_to_left_exit</item>
+    </style>
 </resources>

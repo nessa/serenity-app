@@ -32,7 +32,6 @@
     <string name="detail_servings_label">Servings:</string>
     <string name="detail_source_label">Source:</string>
     <string name="detail_rating_label">Rating:</string>
-    <string name="chronometer">Chronometer</string>
     <string name="detail_minutes">minutes</string>
     <!-- Types of dish -->
     <string name="type_of_dish_appetizer">Appetizer</string>
@@ -64,8 +63,10 @@
     <string name="measurement_unit_tbsp_plural">tablespoons</string>
     <string name="measurement_unit_rasher_plural">rashers</string>
     <!-- Chronometer -->
+    <string name="detail_chronometer_label">Chronometer</string>
     <string name="detail_chronometer_cancel_button">Cancel</string>
     <string name="detail_chronometer_start_button">Start</string>
+    <string name="detail_chronometer_skip_button">Skip</string>
     <string name="detail_chronometer_hours_initial">h</string>
     <string name="detail_chronometer_minutes_initial">m</string>
     <string name="detail_chronometer_seconds_initial">s</string>

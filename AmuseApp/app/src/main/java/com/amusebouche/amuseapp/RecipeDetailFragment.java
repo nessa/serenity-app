@@ -14,6 +14,7 @@ import android.graphics.Point;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
@@ -72,6 +73,8 @@ public class RecipeDetailFragment extends Fragment
     private ImageView mRecipeImage;
     private FloatingActionButton mFab;
     private TextToSpeech mTTS;
+    private Dialog mChronometerDialog;
+
     private Integer mPresentDescriptionIndex;
     private Integer mChronoHours;
     private Integer mChronoMinutes;
@@ -370,8 +373,6 @@ public class RecipeDetailFragment extends Fragment
             if (presentDirection.getTime() == 0) {
                 directionChronometerButton.setVisibility(View.GONE);
             } else {
-
-
                 directionChronometerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -386,30 +387,25 @@ public class RecipeDetailFragment extends Fragment
                         mChronoMinutes = ((int) time/60 ) % 60;
                         mChronoSeconds = time % 60;
 
-                        final Dialog d = new Dialog(getActivity());
-                        /*d.setTitle(mChronoHours +
-                                getString(R.string.detail_chronometer_hours_initial) + " " +
-                                mChronoMinutes +
-                                getString(R.string.detail_chronometer_minutes_initial) + " " +
-                                mChronoSeconds +
-                                getString(R.string.detail_chronometer_seconds_initial));*/
-                        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        d.setContentView(R.layout.dialog_detail_chronometer_set_time);
+                        final Dialog selectTimeDialog = new Dialog(getActivity());
+                        selectTimeDialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
 
-                        final TextView hoursTextView = (TextView) d.findViewById(R.id.hours);
-                        final TextView minutesTextView = (TextView) d.findViewById(R.id.minutes);
-                        final TextView secondsTextView = (TextView) d.findViewById(R.id.seconds);
+                        selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        selectTimeDialog.setContentView(R.layout.dialog_detail_chronometer_set_time);
+
+                        final TextView hoursTextView = (TextView) selectTimeDialog.findViewById(R.id.hours);
+                        final TextView minutesTextView = (TextView) selectTimeDialog.findViewById(R.id.minutes);
+                        final TextView secondsTextView = (TextView) selectTimeDialog.findViewById(R.id.seconds);
 
                         hoursTextView.setText(mChronoHours + "");
                         minutesTextView.setText(mChronoMinutes + "");
                         secondsTextView.setText(mChronoSeconds + "");
 
-                        final NumberPicker hoursPicker = (NumberPicker) d.findViewById(R.id.hoursPicker);
+                        final NumberPicker hoursPicker = (NumberPicker) selectTimeDialog.findViewById(R.id.hoursPicker);
                         hoursPicker.setMaxValue(10);
                         hoursPicker.setMinValue(0);
                         hoursPicker.setWrapSelectorWheel(false);
                         hoursPicker.setValue(mChronoHours);
-                        //np.setOnValueChangedListener(getActivity());
 
                         hoursPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                             @Override
@@ -419,7 +415,7 @@ public class RecipeDetailFragment extends Fragment
                             }
                         });
 
-                        final NumberPicker minutesPicker = (NumberPicker) d.findViewById(R.id.minutesPicker);
+                        final NumberPicker minutesPicker = (NumberPicker) selectTimeDialog.findViewById(R.id.minutesPicker);
                         minutesPicker.setMaxValue(59);
                         minutesPicker.setMinValue(0);
                         minutesPicker.setWrapSelectorWheel(true);
@@ -433,7 +429,7 @@ public class RecipeDetailFragment extends Fragment
                             }
                         });
 
-                        final NumberPicker secondsPicker = (NumberPicker) d.findViewById(R.id.secondsPicker);
+                        final NumberPicker secondsPicker = (NumberPicker) selectTimeDialog.findViewById(R.id.secondsPicker);
                         secondsPicker.setMaxValue(59);
                         secondsPicker.setMinValue(0);
                         secondsPicker.setWrapSelectorWheel(false);
@@ -447,42 +443,34 @@ public class RecipeDetailFragment extends Fragment
                             }
                         });
 
-                        Button cancelButton = (Button) d.findViewById(R.id.buttonCancel);
-                        Button setButton = (Button) d.findViewById(R.id.buttonSet);
+                        Button cancelButton = (Button) selectTimeDialog.findViewById(R.id.buttonCancel);
+                        Button setButton = (Button) selectTimeDialog.findViewById(R.id.buttonSet);
 
-                        cancelButton.setOnClickListener(new NumberPicker.OnClickListener() {
+                        setButton.setOnClickListener(new Button.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 RecipeDetailFragment.this.mChronoHours = hoursPicker.getValue();
                                 RecipeDetailFragment.this.mChronoMinutes = minutesPicker.getValue();
                                 RecipeDetailFragment.this.mChronoSeconds = secondsPicker.getValue();
-                                d.dismiss();
+
+                                RecipeDetailFragment.this.setChronometer(
+                                        RecipeDetailFragment.this.mChronoHours * 3600 +
+                                                RecipeDetailFragment.this.mChronoMinutes * 60 +
+                                                RecipeDetailFragment.this.mChronoSeconds);
+
+                                selectTimeDialog.dismiss();
+                                RecipeDetailFragment.this.mChronometerDialog.show();
                             }
                         });
 
-                        setButton.setOnClickListener(new NumberPicker.OnClickListener()
-                        {
+                        cancelButton.setOnClickListener(new Button.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                d.dismiss();
+                                selectTimeDialog.dismiss();
                             }
                         });
 
-                        d.show();
-/*
-                        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
-                                new TimePickerDialog.OnTimeSetListener() {
-
-                                    @Override
-                                    public void onTimeSet(TimePicker view, int minutes,
-                                                          int seconds) {
-                                        Log.d("INFO", "CHRONO TIME SET");
-                                        RecipeDetailFragment.this.mChronoMinutes = minutes;
-                                        RecipeDetailFragment.this.mChronoSeconds = seconds;
-                                    }
-                                }, mChronoMinutes, mChronoSeconds, false);
-
-                        timePickerDialog.show();*/
+                        selectTimeDialog.show();
                     }
                 });
             }
@@ -555,11 +543,54 @@ public class RecipeDetailFragment extends Fragment
         }
     }
 
+    public void setChronometer(Integer time) {
+        mChronometerDialog = new Dialog(getActivity());
+        mChronometerDialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
+        mChronometerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mChronometerDialog.setContentView(R.layout.dialog_detail_chronometer);
+
+        Log.d("INFO", time + "");
+
+        final TextView minutesTextView = (TextView) mChronometerDialog.findViewById(R.id.minutes);
+        final TextView secondsTextView = (TextView) mChronometerDialog.findViewById(R.id.seconds);
+        Button skipButton = (Button) mChronometerDialog.findViewById(R.id.buttonSkip);
+
+        minutesTextView.setText(((int) time/60) + "");
+        secondsTextView.setText((time % 60) + "");
+
+        Log.d("INFO", "MINUTES: " + minutesTextView.getText() + "");
+        Log.d("INFO", "SECONDS: " + secondsTextView.getText() + "");
+
+        CountDownTimer countDown =  new CountDownTimer(time * 1000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                Integer m = (int) ((millisUntilFinished/60000)/60);
+                Integer s = (int) (millisUntilFinished/60000) % 60;
+                Log.d("INFO", "S: " + s);
+                minutesTextView.setText(m + "");
+                secondsTextView.setText(s + "S");
+            }
+
+            public void onFinish() {
+                Log.d("INFO", "DONE");
+            }
+        };
+        countDown.start();
+
+        skipButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mChronometerDialog.dismiss();
+            }
+        });
+    }
+
     public void showChronometer() {
         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
 
         if (dir.getTime() > 0) {
             Log.d("INFO", "CHRONO: "+dir.getTime());
+            this.setChronometer((int) dir.getTime().floatValue());
 
 
         }

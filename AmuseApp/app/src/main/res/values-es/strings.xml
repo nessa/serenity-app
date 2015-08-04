@@ -32,7 +32,6 @@
     <string name="detail_servings_label">Comensales:</string>
     <string name="detail_source_label">Fuente:</string>
     <string name="detail_rating_label">Puntuación:</string>
-    <string name="chronometer">Cronómetro</string>
     <string name="detail_minutes">minutes</string>
     <!-- Types of dish -->
     <string name="type_of_dish_appetizer">Entrante</string>
@@ -64,8 +63,10 @@
     <string name="measurement_unit_tbsp_plural">cucharadas</string>
     <string name="measurement_unit_rasher_plural">lonchas</string>
     <!-- Chronometer -->
+    <string name="detail_chronometer_label">Chronometer</string>
     <string name="detail_chronometer_cancel_button">Cancelar</string>
     <string name="detail_chronometer_start_button">Iniciar</string>
+    <string name="detail_chronometer_skip_button">Saltar</string>
     <string name="detail_chronometer_hours_initial">h</string>
     <string name="detail_chronometer_minutes_initial">m</string>
     <string name="detail_chronometer_seconds_initial">s</string>
