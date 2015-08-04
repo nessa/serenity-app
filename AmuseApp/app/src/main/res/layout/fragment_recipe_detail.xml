@@ -70,8 +70,8 @@
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="1dp"
-                        android:background="@android:color/darker_gray"/>
-
+                        android:layout_marginBottom="0dp"
+                        android:background="?android:attr/dividerHorizontal" />
 
                     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                         android:id="@+id/detail_type_of_dish_layout"
@@ -251,7 +251,8 @@
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="1dp"
-                        android:background="@android:color/darker_gray"/>
+                        android:layout_marginBottom="0dp"
+                        android:background="?android:attr/dividerHorizontal" />
 
                 </LinearLayout>
 
@@ -278,7 +279,8 @@
                     <View
                         android:layout_width="fill_parent"
                         android:layout_height="1dp"
-                        android:background="@android:color/darker_gray"/>
+                        android:layout_marginBottom="0dp"
+                        android:background="?android:attr/dividerHorizontal" />
 
                 </LinearLayout>
             </LinearLayout>

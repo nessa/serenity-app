@@ -63,6 +63,12 @@
     <string name="measurement_unit_tsp_plural">teaspoons</string>
     <string name="measurement_unit_tbsp_plural">tablespoons</string>
     <string name="measurement_unit_rasher_plural">rashers</string>
+    <!-- Chronometer -->
+    <string name="detail_chronometer_cancel_button">Cancel</string>
+    <string name="detail_chronometer_start_button">Start</string>
+    <string name="detail_chronometer_hours_initial">h</string>
+    <string name="detail_chronometer_minutes_initial">m</string>
+    <string name="detail_chronometer_seconds_initial">s</string>
     <!-- Speak messages -->
     <string name="detail_direction_speak_end_of_recipe_message">The recipe is finish. Let\'s eat!</string>
 </resources>

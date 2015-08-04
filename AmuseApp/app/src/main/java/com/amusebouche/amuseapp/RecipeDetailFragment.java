@@ -2,8 +2,10 @@ package com.amusebouche.amuseapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,11 +23,15 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeDirection;
@@ -67,6 +73,9 @@ public class RecipeDetailFragment extends Fragment
     private FloatingActionButton mFab;
     private TextToSpeech mTTS;
     private Integer mPresentDescriptionIndex;
+    private Integer mChronoHours;
+    private Integer mChronoMinutes;
+    private Integer mChronoSeconds;
 
     private Integer mFlexibleSpaceImageHeight;
     private Integer mFlexibleSpaceShowFabOffset;
@@ -361,10 +370,119 @@ public class RecipeDetailFragment extends Fragment
             if (presentDirection.getTime() == 0) {
                 directionChronometerButton.setVisibility(View.GONE);
             } else {
+
+
                 directionChronometerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Log.d("INFO", "CLICK CHRONO BUTTON");
+                        RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
+                                (int) v.getTag());
+
+
+                        Integer time = (int)dir.getTime().floatValue();
+
+                        mChronoHours = (int) time/3600;
+                        mChronoMinutes = ((int) time/60 ) % 60;
+                        mChronoSeconds = time % 60;
+
+                        final Dialog d = new Dialog(getActivity());
+                        /*d.setTitle(mChronoHours +
+                                getString(R.string.detail_chronometer_hours_initial) + " " +
+                                mChronoMinutes +
+                                getString(R.string.detail_chronometer_minutes_initial) + " " +
+                                mChronoSeconds +
+                                getString(R.string.detail_chronometer_seconds_initial));*/
+                        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        d.setContentView(R.layout.dialog_detail_chronometer_set_time);
+
+                        final TextView hoursTextView = (TextView) d.findViewById(R.id.hours);
+                        final TextView minutesTextView = (TextView) d.findViewById(R.id.minutes);
+                        final TextView secondsTextView = (TextView) d.findViewById(R.id.seconds);
+
+                        hoursTextView.setText(mChronoHours + "");
+                        minutesTextView.setText(mChronoMinutes + "");
+                        secondsTextView.setText(mChronoSeconds + "");
+
+                        final NumberPicker hoursPicker = (NumberPicker) d.findViewById(R.id.hoursPicker);
+                        hoursPicker.setMaxValue(10);
+                        hoursPicker.setMinValue(0);
+                        hoursPicker.setWrapSelectorWheel(false);
+                        hoursPicker.setValue(mChronoHours);
+                        //np.setOnValueChangedListener(getActivity());
+
+                        hoursPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                RecipeDetailFragment.this.mChronoHours = newVal;
+                                hoursTextView.setText(mChronoHours + "");
+                            }
+                        });
+
+                        final NumberPicker minutesPicker = (NumberPicker) d.findViewById(R.id.minutesPicker);
+                        minutesPicker.setMaxValue(59);
+                        minutesPicker.setMinValue(0);
+                        minutesPicker.setWrapSelectorWheel(true);
+                        minutesPicker.setValue(mChronoMinutes);
+
+                        minutesPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                RecipeDetailFragment.this.mChronoMinutes = newVal;
+                                minutesTextView.setText(mChronoMinutes + "");
+                            }
+                        });
+
+                        final NumberPicker secondsPicker = (NumberPicker) d.findViewById(R.id.secondsPicker);
+                        secondsPicker.setMaxValue(59);
+                        secondsPicker.setMinValue(0);
+                        secondsPicker.setWrapSelectorWheel(false);
+                        secondsPicker.setValue(mChronoSeconds);
+
+                        secondsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                            @Override
+                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                RecipeDetailFragment.this.mChronoSeconds = newVal;
+                                secondsTextView.setText(mChronoSeconds + "");
+                            }
+                        });
+
+                        Button cancelButton = (Button) d.findViewById(R.id.buttonCancel);
+                        Button setButton = (Button) d.findViewById(R.id.buttonSet);
+
+                        cancelButton.setOnClickListener(new NumberPicker.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                RecipeDetailFragment.this.mChronoHours = hoursPicker.getValue();
+                                RecipeDetailFragment.this.mChronoMinutes = minutesPicker.getValue();
+                                RecipeDetailFragment.this.mChronoSeconds = secondsPicker.getValue();
+                                d.dismiss();
+                            }
+                        });
+
+                        setButton.setOnClickListener(new NumberPicker.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v) {
+                                d.dismiss();
+                            }
+                        });
+
+                        d.show();
+/*
+                        TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                                new TimePickerDialog.OnTimeSetListener() {
+
+                                    @Override
+                                    public void onTimeSet(TimePicker view, int minutes,
+                                                          int seconds) {
+                                        Log.d("INFO", "CHRONO TIME SET");
+                                        RecipeDetailFragment.this.mChronoMinutes = minutes;
+                                        RecipeDetailFragment.this.mChronoSeconds = seconds;
+                                    }
+                                }, mChronoMinutes, mChronoSeconds, false);
+
+                        timePickerDialog.show();*/
                     }
                 });
             }
@@ -442,6 +560,8 @@ public class RecipeDetailFragment extends Fragment
 
         if (dir.getTime() > 0) {
             Log.d("INFO", "CHRONO: "+dir.getTime());
+
+
         }
     }
 
