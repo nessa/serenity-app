@@ -7,4 +7,5 @@
     <dimen name="margin_standard">16dp</dimen>
     <dimen name="fab_offset">30dp</dimen>
     <dimen name="flexible_space_show_fab_offset">120dp</dimen>
+    <dimen name="chronometer_bar_size">250dp</dimen>
 </resources>

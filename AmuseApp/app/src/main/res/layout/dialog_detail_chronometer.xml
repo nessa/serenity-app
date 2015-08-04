@@ -21,39 +21,50 @@
 
     </LinearLayout>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:orientation="horizontal" >
+    <RelativeLayout
+        android:layout_width="@dimen/chronometer_bar_size"
+        android:layout_height="@dimen/chronometer_bar_size">
 
-        <TextView
-            android:id="@+id/minutes"
-            android:layout_width="wrap_content"
-            android:layout_height="56dp"
-            android:textSize="36sp"/>
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:progressDrawable="@drawable/circular_progress_bar" />
 
-        <TextView
-            android:text="@string/detail_chronometer_minutes_initial"
-            android:layout_width="wrap_content"
-            android:layout_height="56dp"
-            android:layout_marginEnd="6dp"
-            android:textSize="16sp" />
 
-        <TextView
-            android:id="@+id/seconds"
-            android:layout_width="wrap_content"
-            android:layout_height="56dp"
-            android:textSize="36sp"/>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_centerVertical="true"
+            android:layout_centerHorizontal="true" >
 
-        <TextView
-            android:text="@string/detail_chronometer_seconds_initial"
-            android:layout_width="wrap_content"
-            android:layout_height="56dp"
-            android:textSize="16sp" />
+            <TextView
+                android:id="@+id/minutes"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:textSize="50sp"
+                android:gravity="bottom" />
 
-    </LinearLayout>
+            <TextView
+                android:text="@string/detail_chronometer_colon"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:textSize="50sp"
+                android:gravity="bottom" />
+
+            <TextView
+                android:id="@+id/seconds"
+                android:layout_width="wrap_content"
+                android:layout_height="56dp"
+                android:textSize="50sp"
+                android:gravity="bottom" />
+        </LinearLayout>
+    </RelativeLayout>
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

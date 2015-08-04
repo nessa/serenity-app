@@ -1,12 +1,8 @@
 package com.amusebouche.amuseapp;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.ActivityCompat;
@@ -31,8 +26,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeDirection;
@@ -46,7 +41,6 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.FileInputStream;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -86,8 +80,6 @@ public class RecipeDetailFragment extends Fragment
     private Integer mActionBarSize;
     private boolean mFabIsShown;
 
-    private String filename = "presentRecipeImage.png";
-
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -104,8 +96,9 @@ public class RecipeDetailFragment extends Fragment
 
         // Get image bitmap from file
         mMainImage = null;
+        String FILENAME = "presentRecipeImage.png";
         try {
-            FileInputStream is = getActivity().openFileInput(filename);
+            FileInputStream is = getActivity().openFileInput(FILENAME);
             mMainImage = BitmapFactory.decodeStream(is);
             is.close();
         } catch (Exception e) {
@@ -164,8 +157,6 @@ public class RecipeDetailFragment extends Fragment
         /* TODO: Try to prevent Skipped XX frames! The application may be doing too
          * much work on its main thread. */
 
-        DetailActivity x = (DetailActivity) getActivity();
-
         mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_recipe_detail,
                 container, false);
 
@@ -187,8 +178,7 @@ public class RecipeDetailFragment extends Fragment
                 R.dimen.abc_action_bar_default_height_material);
 
         mOverlayView = mLayout.findViewById(R.id.overlay);
-        ObservableScrollView scrollView = (ObservableScrollView) mLayout.findViewById(R.id.scroll);
-        scrollView.setScrollViewCallbacks(this);
+        mScrollView.setScrollViewCallbacks(this);
         mFab = (FloatingActionButton) mLayout.findViewById(R.id.fab);
 
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -344,7 +334,6 @@ public class RecipeDetailFragment extends Fragment
                 showDirectionImageButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("INFO", "CLICK IMAGE BUTTON");
                         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
                                 (int)v.getTag());
 
@@ -354,7 +343,7 @@ public class RecipeDetailFragment extends Fragment
                         i.putExtra("elementUri", dir.getImage());
                         i.putExtra("directionNumber", Objects.toString(dir.getSortNumber()));
 
-                        ActivityCompat.startActivity((DetailActivity) getActivity(), i, null);
+                        ActivityCompat.startActivity(getActivity(), i, null);
                     }
                 });
             }
@@ -376,20 +365,19 @@ public class RecipeDetailFragment extends Fragment
                 directionChronometerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("INFO", "CLICK CHRONO BUTTON");
                         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
                                 (int) v.getTag());
 
-
+                        // Calc time variables
                         Integer time = (int)dir.getTime().floatValue();
 
-                        mChronoHours = (int) time/3600;
-                        mChronoMinutes = ((int) time/60 ) % 60;
+                        mChronoHours = time/3600;
+                        mChronoMinutes = (time/60 ) % 60;
                         mChronoSeconds = time % 60;
 
+                        // Set dialog attributes
                         final Dialog selectTimeDialog = new Dialog(getActivity());
                         selectTimeDialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
-
                         selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         selectTimeDialog.setContentView(R.layout.dialog_detail_chronometer_set_time);
 
@@ -401,6 +389,7 @@ public class RecipeDetailFragment extends Fragment
                         minutesTextView.setText(mChronoMinutes + "");
                         secondsTextView.setText(mChronoSeconds + "");
 
+                        // Number pickers for hours, minutes and seconds
                         final NumberPicker hoursPicker = (NumberPicker) selectTimeDialog.findViewById(R.id.hoursPicker);
                         hoursPicker.setMaxValue(10);
                         hoursPicker.setMinValue(0);
@@ -443,6 +432,7 @@ public class RecipeDetailFragment extends Fragment
                             }
                         });
 
+                        // Buttons
                         Button cancelButton = (Button) selectTimeDialog.findViewById(R.id.buttonCancel);
                         Button setButton = (Button) selectTimeDialog.findViewById(R.id.buttonSet);
 
@@ -481,17 +471,18 @@ public class RecipeDetailFragment extends Fragment
         return mLayout;
     }
 
+    /**
+     * Make TextToSpeech read the direction given by mPresentDescriptionIndex
+     */
     public void readDescription() {
         if (mRecipe.getDirections().size() > mPresentDescriptionIndex) {
-            Log.d("INFO", "DIRECTION " + mPresentDescriptionIndex);
-
             RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
                     mPresentDescriptionIndex);
             CharSequence text = dir.getDescription();
 
             // Move view to direction box
             final LinearLayout directionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
-            final View directionLayout = (View) mLayout.findViewWithTag("direction" +
+            final View directionLayout = mLayout.findViewWithTag("direction" +
                     mPresentDescriptionIndex);
 
             // Hide FAB if necessary
@@ -543,36 +534,55 @@ public class RecipeDetailFragment extends Fragment
         }
     }
 
+    /**
+     * Set chronometer dialog
+     */
     public void setChronometer(Integer time) {
         mChronometerDialog = new Dialog(getActivity());
         mChronometerDialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
         mChronometerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mChronometerDialog.setContentView(R.layout.dialog_detail_chronometer);
 
-        Log.d("INFO", time + "");
 
         final TextView minutesTextView = (TextView) mChronometerDialog.findViewById(R.id.minutes);
         final TextView secondsTextView = (TextView) mChronometerDialog.findViewById(R.id.seconds);
         Button skipButton = (Button) mChronometerDialog.findViewById(R.id.buttonSkip);
+        final ProgressBar progressBar = (ProgressBar) mChronometerDialog.findViewById(R.id.progressBar);
 
-        minutesTextView.setText(((int) time/60) + "");
+        minutesTextView.setText((time/60) + "");
         secondsTextView.setText((time % 60) + "");
 
-        Log.d("INFO", "MINUTES: " + minutesTextView.getText() + "");
-        Log.d("INFO", "SECONDS: " + secondsTextView.getText() + "");
+        progressBar.setMax(time);
+        progressBar.setProgress(time);
 
         CountDownTimer countDown =  new CountDownTimer(time * 1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                Integer m = (int) ((millisUntilFinished/60000)/60);
-                Integer s = (int) (millisUntilFinished/60000) % 60;
-                Log.d("INFO", "S: " + s);
-                minutesTextView.setText(m + "");
-                secondsTextView.setText(s + "S");
+                progressBar.setProgress((int) (millisUntilFinished/1000));
+
+                Integer m = (int) ((millisUntilFinished/1000)/60);
+                Integer s = (int) (millisUntilFinished/1000) % 60;
+                String mString = m + "";
+                String sString = s + "";
+                if (sString.length() == 1) {
+                    sString = "0" + sString;
+                }
+                minutesTextView.setText(mString + "");
+                secondsTextView.setText(sString + "");
             }
 
             public void onFinish() {
-                Log.d("INFO", "DONE");
+                progressBar.setProgress(0);
+
+                minutesTextView.setText("0");
+                secondsTextView.setText("00");
+
+                // TODO: Pause before dismiss & play an alarm during x seconds
+
+                // Hide dialog
+                mChronometerDialog.dismiss();
+
+                // TODO: Next direction??
             }
         };
         countDown.start();
@@ -589,10 +599,10 @@ public class RecipeDetailFragment extends Fragment
         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
 
         if (dir.getTime() > 0) {
-            Log.d("INFO", "CHRONO: "+dir.getTime());
+            Log.d("INFO", "CHRONO: " + dir.getTime());
             this.setChronometer((int) dir.getTime().floatValue());
 
-
+            // TODO: Show chronometer directly
         }
     }
 

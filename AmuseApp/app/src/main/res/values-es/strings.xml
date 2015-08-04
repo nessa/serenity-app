@@ -63,6 +63,7 @@
     <string name="measurement_unit_tbsp_plural">cucharadas</string>
     <string name="measurement_unit_rasher_plural">lonchas</string>
     <!-- Chronometer -->
+    <string name="detail_chronometer_colon">:</string>
     <string name="detail_chronometer_label">Chronometer</string>
     <string name="detail_chronometer_cancel_button">Cancelar</string>
     <string name="detail_chronometer_start_button">Iniciar</string>

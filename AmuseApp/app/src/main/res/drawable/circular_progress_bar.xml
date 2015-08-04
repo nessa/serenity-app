@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- BACKGROUND -->
+    <item android:id="@android:id/background">
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:innerRadiusRatio="2.3"
+            android:shape="ring"
+            android:thickness="3.8sp" >
+            <solid android:color="@color/chronometer_background" />
+        </shape>
+    </item>
+    <!-- PROGRESS LAYER -->
+    <item android:id="@android:id/progress">
+        <shape
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:useLevel="true"
+            android:innerRadiusRatio="2.3"
+            android:shape="ring"
+            android:thickness="4sp" >
+            <solid android:color="@color/theme_default_primary" />
+        </shape>
+    </item>
+</layer-list>

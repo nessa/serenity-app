@@ -63,6 +63,7 @@
     <string name="measurement_unit_tbsp_plural">tablespoons</string>
     <string name="measurement_unit_rasher_plural">rashers</string>
     <!-- Chronometer -->
+    <string name="detail_chronometer_colon">:</string>
     <string name="detail_chronometer_label">Chronometer</string>
     <string name="detail_chronometer_cancel_button">Cancel</string>
     <string name="detail_chronometer_start_button">Start</string>
