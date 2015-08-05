@@ -26,8 +26,13 @@
         <item name="android:windowContentTransitions">true</item>
     </style>
 
-    <style name="DialogAnimation">
+    <style name="LateralDialogAnimation">
         <item name="android:windowEnterAnimation">@anim/right_to_left_enter</item>
         <item name="android:windowExitAnimation">@anim/right_to_left_exit</item>
+    </style>
+
+    <style name="UpAndDownDialogAnimation">
+        <item name="android:windowEnterAnimation">@anim/bottom_to_center_enter</item>
+        <item name="android:windowExitAnimation">@anim/center_to_bottom_exit</item>
     </style>
 </resources>

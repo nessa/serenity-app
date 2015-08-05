@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -41,6 +45,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -68,6 +73,7 @@ public class RecipeDetailFragment extends Fragment
     private FloatingActionButton mFab;
     private TextToSpeech mTTS;
     private Dialog mChronometerDialog;
+    private Dialog mCommandsDialog;
 
     private Integer mPresentDescriptionIndex;
     private Integer mChronoHours;
@@ -79,6 +85,7 @@ public class RecipeDetailFragment extends Fragment
     private Integer mFabMargin;
     private Integer mActionBarSize;
     private boolean mFabIsShown;
+    private boolean mContinueMode;
 
     @Override
     public void onAttach(Activity activity) {
@@ -185,6 +192,7 @@ public class RecipeDetailFragment extends Fragment
             @Override
             public void onClick(View v) {
                 if (RecipeDetailFragment.this.mRecipe.getDirections().size() > 0) {
+                    mContinueMode = true;
                     mPresentDescriptionIndex = 0;
                     RecipeDetailFragment.this.readDescription();
                 } else {
@@ -318,6 +326,8 @@ public class RecipeDetailFragment extends Fragment
             readDirectionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    mContinueMode = false;
+
                     RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
                             (int)v.getTag());
                     CharSequence text = dir.getDescription();
@@ -377,7 +387,7 @@ public class RecipeDetailFragment extends Fragment
 
                         // Set dialog attributes
                         final Dialog selectTimeDialog = new Dialog(getActivity());
-                        selectTimeDialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
+                        selectTimeDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
                         selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         selectTimeDialog.setContentView(R.layout.dialog_detail_chronometer_set_time);
 
@@ -476,7 +486,7 @@ public class RecipeDetailFragment extends Fragment
      */
     public void readDescription() {
         if (mRecipe.getDirections().size() > mPresentDescriptionIndex) {
-            RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
+            final RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
                     mPresentDescriptionIndex);
             CharSequence text = dir.getDescription();
 
@@ -504,12 +514,14 @@ public class RecipeDetailFragment extends Fragment
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                // Check chrono
-                                RecipeDetailFragment.this.showChronometer();
-
-                                // Read next description
-                                mPresentDescriptionIndex = mPresentDescriptionIndex + 1;
-                                RecipeDetailFragment.this.readDescription();
+                                if (mContinueMode) {
+                                    if (dir.getTime() > 0) {
+                                        RecipeDetailFragment.this.showChronometer();
+                                    } else {
+                                        RecipeDetailFragment.this.setCommandsDialog();
+                                        RecipeDetailFragment.this.mCommandsDialog.show();
+                                    }
+                                }
                             }
                         });
                     }
@@ -528,6 +540,9 @@ public class RecipeDetailFragment extends Fragment
 
 
         } else {
+            // Ended continue mode
+            mContinueMode = false;
+
             // No need to make the listener work
             mTTS.speak(getString(R.string.detail_direction_speak_end_of_recipe_message),
                     TextToSpeech.QUEUE_FLUSH, null, null);
@@ -539,10 +554,9 @@ public class RecipeDetailFragment extends Fragment
      */
     public void setChronometer(Integer time) {
         mChronometerDialog = new Dialog(getActivity());
-        mChronometerDialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
+        mChronometerDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
         mChronometerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mChronometerDialog.setContentView(R.layout.dialog_detail_chronometer);
-
 
         final TextView minutesTextView = (TextView) mChronometerDialog.findViewById(R.id.minutes);
         final TextView secondsTextView = (TextView) mChronometerDialog.findViewById(R.id.seconds);
@@ -579,10 +593,25 @@ public class RecipeDetailFragment extends Fragment
 
                 // TODO: Pause before dismiss & play an alarm during x seconds
 
+                try {
+                    final MediaPlayer player = new MediaPlayer();
+                    AssetFileDescriptor afd = getResources().openRawResourceFd(R.raw.alarm);
+                    player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
+                    afd.close();
+                    player.setAudioStreamType(AudioManager.STREAM_ALARM);
+                    player.prepare();
+                } catch (IOException e) {
+                    Log.d("ERROR", e.getMessage());
+                }
+
                 // Hide dialog
                 mChronometerDialog.dismiss();
 
-                // TODO: Next direction??
+                // Wait for command
+                if (mContinueMode) {
+                    RecipeDetailFragment.this.setCommandsDialog();
+                    RecipeDetailFragment.this.mCommandsDialog.show();
+                }
             }
         };
         countDown.start();
@@ -602,8 +631,61 @@ public class RecipeDetailFragment extends Fragment
             Log.d("INFO", "CHRONO: " + dir.getTime());
             this.setChronometer((int) dir.getTime().floatValue());
 
-            // TODO: Show chronometer directly
+            // Show chronometer directly
+            mChronometerDialog.show();
         }
+    }
+
+
+    /**
+     * Set get commands dialog
+     */
+    public void setCommandsDialog() {
+        mCommandsDialog = new Dialog(getActivity());
+        mCommandsDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
+        mCommandsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mCommandsDialog.setContentView(R.layout.dialog_detail_commands);
+
+        ImageButton repeatButton = (ImageButton) mCommandsDialog.findViewById(R.id.repeat);
+        ImageButton timerButton = (ImageButton) mCommandsDialog.findViewById(R.id.timer);
+        ImageButton nextButton = (ImageButton) mCommandsDialog.findViewById(R.id.next);
+
+        // Disable timer button if there's no time specified
+        RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
+        if (dir.getTime() == 0) {
+            timerButton.setVisibility(View.GONE);
+        }
+
+        repeatButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCommandsDialog.dismiss();
+
+                // Repeat present direction
+                RecipeDetailFragment.this.readDescription();
+            }
+        });
+
+        timerButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCommandsDialog.dismiss();
+
+                // Show timer
+                RecipeDetailFragment.this.showChronometer();
+            }
+        });
+
+        nextButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCommandsDialog.dismiss();
+
+                // Read next direction
+                mPresentDescriptionIndex = mPresentDescriptionIndex + 1;
+                RecipeDetailFragment.this.readDescription();
+            }
+        });
     }
 
     @Override

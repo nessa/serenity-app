@@ -71,6 +71,8 @@
     <string name="detail_chronometer_hours_initial">h</string>
     <string name="detail_chronometer_minutes_initial">m</string>
     <string name="detail_chronometer_seconds_initial">s</string>
+    <!-- Commands -->
+    <string name="detail_commands_listening_message">Listening...</string>
     <!-- Speak messages -->
     <string name="detail_direction_speak_end_of_recipe_message">The recipe is finish. Let\'s eat!</string>
 </resources>
