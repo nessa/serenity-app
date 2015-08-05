@@ -507,7 +507,8 @@ public class RecipeDetailFragment extends Fragment
             if (mPresentDescriptionIndex == 0) {
                 this.hideFab();
             }
-            mScrollView.smoothScrollTo(0, directionsLayout.getTop() + directionLayout.getBottom());
+            mScrollView.smoothScrollTo(0, directionsLayout.getTop() + directionLayout.getTop() +
+                    (int)getResources().getDimension(R.dimen.detail_direction_box_offset));
 
             if (text != "") {
 
@@ -549,7 +550,6 @@ public class RecipeDetailFragment extends Fragment
                                 ". " + text, TextToSpeech.QUEUE_FLUSH, null,
                         TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID);
             }
-
 
         } else {
             // Ended continue mode
