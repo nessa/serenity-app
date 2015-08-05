@@ -3,6 +3,7 @@ package com.amusebouche.amuseapp;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,10 +19,14 @@ import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -634,6 +639,19 @@ public class RecipeDetailFragment extends Fragment
                 }
             }
         });
+
+        mTimerDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+            @Override
+            public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    Log.d("INFO", "KEYCODE BACK");
+                    mCountDownTimer.cancel();
+                    mTimerDialog.dismiss();
+                }
+                return true;
+            }
+        });
     }
 
     public void showTimerDialog() {
@@ -662,6 +680,13 @@ public class RecipeDetailFragment extends Fragment
         ImageButton timerButton = (ImageButton) mCommandsDialog.findViewById(R.id.timer);
         ImageButton nextButton = (ImageButton) mCommandsDialog.findViewById(R.id.next);
 
+        final FloatingActionButton fab = (FloatingActionButton) mCommandsDialog.findViewById(R.id.listeningFab);
+
+        final Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.scale_up);
+        anim.setRepeatMode(Animation.REVERSE);
+        anim.setRepeatCount(Animation.INFINITE);
+        fab.startAnimation(anim);
+
         // Disable timer button if there's no time specified
         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
         if (dir.getTime() == 0) {
@@ -671,6 +696,7 @@ public class RecipeDetailFragment extends Fragment
         repeatButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+                anim.cancel();
                 mCommandsDialog.dismiss();
 
                 // Repeat present direction
@@ -698,6 +724,8 @@ public class RecipeDetailFragment extends Fragment
                 RecipeDetailFragment.this.readDescription();
             }
         });
+
+
 
         mCommandsDialog.show();
     }
