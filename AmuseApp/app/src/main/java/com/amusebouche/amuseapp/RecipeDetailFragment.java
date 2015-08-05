@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Intent;
-import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -23,7 +22,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -45,7 +43,6 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -74,6 +71,7 @@ public class RecipeDetailFragment extends Fragment
     private TextToSpeech mTTS;
     private Dialog mChronometerDialog;
     private Dialog mCommandsDialog;
+    private CountDownTimer mCountDownTimer;
 
     private Integer mPresentDescriptionIndex;
     private Integer mChronoHours;
@@ -96,10 +94,6 @@ public class RecipeDetailFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
-
-        // Get recipe from activity
-        DetailActivity x = (DetailActivity)getActivity();
-        mRecipe = x.getRecipe();
 
         // Get image bitmap from file
         mMainImage = null;
@@ -163,6 +157,10 @@ public class RecipeDetailFragment extends Fragment
 
         /* TODO: Try to prevent Skipped XX frames! The application may be doing too
          * much work on its main thread. */
+
+        // Get recipe from activity
+        DetailActivity x = (DetailActivity)getActivity();
+        mRecipe = x.getRecipe();
 
         mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_recipe_detail,
                 container, false);
@@ -460,6 +458,7 @@ public class RecipeDetailFragment extends Fragment
 
                                 selectTimeDialog.dismiss();
                                 RecipeDetailFragment.this.mChronometerDialog.show();
+                                RecipeDetailFragment.this.mCountDownTimer.start();
                             }
                         });
 
@@ -516,10 +515,14 @@ public class RecipeDetailFragment extends Fragment
                             public void run() {
                                 if (mContinueMode) {
                                     if (dir.getTime() > 0) {
+
+                                        // No need to make the listener work
+                                        mTTS.speak(getString(R.string.detail_direction_speak_start_timer_message),
+                                                TextToSpeech.QUEUE_FLUSH, null, null);
+
                                         RecipeDetailFragment.this.showChronometer();
                                     } else {
-                                        RecipeDetailFragment.this.setCommandsDialog();
-                                        RecipeDetailFragment.this.mCommandsDialog.show();
+                                        RecipeDetailFragment.this.showCommandsDialog();
                                     }
                                 }
                             }
@@ -569,7 +572,7 @@ public class RecipeDetailFragment extends Fragment
         progressBar.setMax(time);
         progressBar.setProgress(time);
 
-        CountDownTimer countDown =  new CountDownTimer(time * 1000, 1000) {
+        mCountDownTimer =  new CountDownTimer(time * 1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 progressBar.setProgress((int) (millisUntilFinished/1000));
@@ -593,33 +596,38 @@ public class RecipeDetailFragment extends Fragment
 
                 // TODO: Pause before dismiss & play an alarm during x seconds
 
-                try {
-                    final MediaPlayer player = new MediaPlayer();
-                    AssetFileDescriptor afd = getResources().openRawResourceFd(R.raw.alarm);
-                    player.setDataSource(afd.getFileDescriptor(), afd.getStartOffset(), afd.getLength());
-                    afd.close();
-                    player.setAudioStreamType(AudioManager.STREAM_ALARM);
-                    player.prepare();
-                } catch (IOException e) {
-                    Log.d("ERROR", e.getMessage());
-                }
+                MediaPlayer mp = MediaPlayer.create(getActivity(), R.raw.alarm);
+                mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
+                mp.start();
 
-                // Hide dialog
-                mChronometerDialog.dismiss();
+                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
-                // Wait for command
-                if (mContinueMode) {
-                    RecipeDetailFragment.this.setCommandsDialog();
-                    RecipeDetailFragment.this.mCommandsDialog.show();
-                }
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        mp.release();
+
+                        // Hide dialog
+                        mChronometerDialog.dismiss();
+
+                        // Wait for command
+                        if (mContinueMode) {
+                            RecipeDetailFragment.this.showCommandsDialog();
+                        }
+                    }
+                });
             }
         };
-        countDown.start();
 
         skipButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mCountDownTimer.cancel();
                 mChronometerDialog.dismiss();
+
+                // Wait for command
+                if (mContinueMode) {
+                    RecipeDetailFragment.this.showCommandsDialog();
+                }
             }
         });
     }
@@ -628,19 +636,19 @@ public class RecipeDetailFragment extends Fragment
         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
 
         if (dir.getTime() > 0) {
-            Log.d("INFO", "CHRONO: " + dir.getTime());
             this.setChronometer((int) dir.getTime().floatValue());
 
             // Show chronometer directly
             mChronometerDialog.show();
+            mCountDownTimer.start();
         }
     }
 
 
     /**
-     * Set get commands dialog
+     * Set and show get commands dialog
      */
-    public void setCommandsDialog() {
+    public void showCommandsDialog() {
         mCommandsDialog = new Dialog(getActivity());
         mCommandsDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
         mCommandsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -686,6 +694,8 @@ public class RecipeDetailFragment extends Fragment
                 RecipeDetailFragment.this.readDescription();
             }
         });
+
+        mCommandsDialog.show();
     }
 
     @Override

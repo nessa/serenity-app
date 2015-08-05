@@ -75,4 +75,5 @@
     <string name="detail_commands_listening_message">Escuchando...</string>
     <!-- Speak messages -->
     <string name="detail_direction_speak_end_of_recipe_message">Fin de la receta. !A comer!</string>
+    <string name="detail_direction_speak_start_timer_message">Iniciando temporizador.</string>
 </resources>

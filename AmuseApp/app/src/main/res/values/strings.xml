@@ -75,4 +75,5 @@
     <string name="detail_commands_listening_message">Listening...</string>
     <!-- Speak messages -->
     <string name="detail_direction_speak_end_of_recipe_message">The recipe is finish. Let\'s eat!</string>
+    <string name="detail_direction_speak_start_timer_message">Starting timer.</string>
 </resources>
