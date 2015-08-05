@@ -83,7 +83,7 @@
                 android:background="@drawable/detail_direction_button" />
 
             <ImageButton
-                android:id="@+id/chronometer"
+                android:id="@+id/timer"
                 android:contentDescription="@string/image"
                 android:src="@drawable/ic_alarm_black_48dp"
                 android:tint="@android:color/white"

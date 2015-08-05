@@ -15,15 +15,15 @@
             android:layout_width="wrap_content"
             android:layout_height="56dp"
             android:layout_marginStart="6dp"
-            android:text="@string/detail_chronometer_label"
+            android:text="@string/detail_timer_label"
             android:textColor="@android:color/white"
             android:textSize="36sp"/>
 
     </LinearLayout>
 
     <RelativeLayout
-        android:layout_width="@dimen/chronometer_bar_size"
-        android:layout_height="@dimen/chronometer_bar_size">
+        android:layout_width="@dimen/timer_bar_size"
+        android:layout_height="@dimen/timer_bar_size">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -51,7 +51,7 @@
                 android:gravity="bottom" />
 
             <TextView
-                android:text="@string/detail_chronometer_colon"
+                android:text="@string/detail_timer_colon"
                 android:layout_width="wrap_content"
                 android:layout_height="56dp"
                 android:textSize="50sp"
@@ -79,7 +79,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:textColor="@color/theme_default_primary_dark"
-            android:text="@string/detail_chronometer_skip_button" />
+            android:text="@string/detail_timer_skip_button" />
 
     </LinearLayout>
 

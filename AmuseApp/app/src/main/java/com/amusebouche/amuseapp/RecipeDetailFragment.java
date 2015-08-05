@@ -69,14 +69,14 @@ public class RecipeDetailFragment extends Fragment
     private ImageView mRecipeImage;
     private FloatingActionButton mFab;
     private TextToSpeech mTTS;
-    private Dialog mChronometerDialog;
+    private Dialog mTimerDialog;
     private Dialog mCommandsDialog;
     private CountDownTimer mCountDownTimer;
 
     private Integer mPresentDescriptionIndex;
-    private Integer mChronoHours;
-    private Integer mChronoMinutes;
-    private Integer mChronoSeconds;
+    private Integer mTimerHours;
+    private Integer mTimerMinutes;
+    private Integer mTimerSeconds;
 
     private Integer mFlexibleSpaceImageHeight;
     private Integer mFlexibleSpaceShowFabOffset;
@@ -312,14 +312,14 @@ public class RecipeDetailFragment extends Fragment
                     R.id.showPhoto);
             ImageButton showDirectionVideoButton = (ImageButton) extraLayout.findViewById(
                     R.id.showVideo);
-            ImageButton directionChronometerButton = (ImageButton) extraLayout.findViewById(
-                    R.id.chronometer);
+            ImageButton directionTimerButton = (ImageButton) extraLayout.findViewById(
+                    R.id.timer);
 
 
             readDirectionButton.setTag(d);
             showDirectionImageButton.setTag(d);
             showDirectionVideoButton.setTag(d);
-            directionChronometerButton.setTag(d);
+            directionTimerButton.setTag(d);
 
             readDirectionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -368,9 +368,9 @@ public class RecipeDetailFragment extends Fragment
             }
 
             if (presentDirection.getTime() == 0) {
-                directionChronometerButton.setVisibility(View.GONE);
+                directionTimerButton.setVisibility(View.GONE);
             } else {
-                directionChronometerButton.setOnClickListener(new View.OnClickListener() {
+                directionTimerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
@@ -379,36 +379,36 @@ public class RecipeDetailFragment extends Fragment
                         // Calc time variables
                         Integer time = (int)dir.getTime().floatValue();
 
-                        mChronoHours = time/3600;
-                        mChronoMinutes = (time/60 ) % 60;
-                        mChronoSeconds = time % 60;
+                        mTimerHours = time/3600;
+                        mTimerMinutes = (time/60 ) % 60;
+                        mTimerSeconds = time % 60;
 
                         // Set dialog attributes
                         final Dialog selectTimeDialog = new Dialog(getActivity());
                         selectTimeDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
                         selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        selectTimeDialog.setContentView(R.layout.dialog_detail_chronometer_set_time);
+                        selectTimeDialog.setContentView(R.layout.dialog_detail_timer_set_time);
 
                         final TextView hoursTextView = (TextView) selectTimeDialog.findViewById(R.id.hours);
                         final TextView minutesTextView = (TextView) selectTimeDialog.findViewById(R.id.minutes);
                         final TextView secondsTextView = (TextView) selectTimeDialog.findViewById(R.id.seconds);
 
-                        hoursTextView.setText(mChronoHours + "");
-                        minutesTextView.setText(mChronoMinutes + "");
-                        secondsTextView.setText(mChronoSeconds + "");
+                        hoursTextView.setText(mTimerHours + "");
+                        minutesTextView.setText(mTimerMinutes + "");
+                        secondsTextView.setText(mTimerSeconds + "");
 
                         // Number pickers for hours, minutes and seconds
                         final NumberPicker hoursPicker = (NumberPicker) selectTimeDialog.findViewById(R.id.hoursPicker);
                         hoursPicker.setMaxValue(10);
                         hoursPicker.setMinValue(0);
                         hoursPicker.setWrapSelectorWheel(false);
-                        hoursPicker.setValue(mChronoHours);
+                        hoursPicker.setValue(mTimerHours);
 
                         hoursPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                RecipeDetailFragment.this.mChronoHours = newVal;
-                                hoursTextView.setText(mChronoHours + "");
+                                RecipeDetailFragment.this.mTimerHours = newVal;
+                                hoursTextView.setText(mTimerHours + "");
                             }
                         });
 
@@ -416,13 +416,13 @@ public class RecipeDetailFragment extends Fragment
                         minutesPicker.setMaxValue(59);
                         minutesPicker.setMinValue(0);
                         minutesPicker.setWrapSelectorWheel(true);
-                        minutesPicker.setValue(mChronoMinutes);
+                        minutesPicker.setValue(mTimerMinutes);
 
                         minutesPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                RecipeDetailFragment.this.mChronoMinutes = newVal;
-                                minutesTextView.setText(mChronoMinutes + "");
+                                RecipeDetailFragment.this.mTimerMinutes = newVal;
+                                minutesTextView.setText(mTimerMinutes + "");
                             }
                         });
 
@@ -430,13 +430,13 @@ public class RecipeDetailFragment extends Fragment
                         secondsPicker.setMaxValue(59);
                         secondsPicker.setMinValue(0);
                         secondsPicker.setWrapSelectorWheel(false);
-                        secondsPicker.setValue(mChronoSeconds);
+                        secondsPicker.setValue(mTimerSeconds);
 
                         secondsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                RecipeDetailFragment.this.mChronoSeconds = newVal;
-                                secondsTextView.setText(mChronoSeconds + "");
+                                RecipeDetailFragment.this.mTimerSeconds = newVal;
+                                secondsTextView.setText(mTimerSeconds + "");
                             }
                         });
 
@@ -447,17 +447,17 @@ public class RecipeDetailFragment extends Fragment
                         setButton.setOnClickListener(new Button.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                RecipeDetailFragment.this.mChronoHours = hoursPicker.getValue();
-                                RecipeDetailFragment.this.mChronoMinutes = minutesPicker.getValue();
-                                RecipeDetailFragment.this.mChronoSeconds = secondsPicker.getValue();
+                                RecipeDetailFragment.this.mTimerHours = hoursPicker.getValue();
+                                RecipeDetailFragment.this.mTimerMinutes = minutesPicker.getValue();
+                                RecipeDetailFragment.this.mTimerSeconds = secondsPicker.getValue();
 
-                                RecipeDetailFragment.this.setChronometer(
-                                        RecipeDetailFragment.this.mChronoHours * 3600 +
-                                                RecipeDetailFragment.this.mChronoMinutes * 60 +
-                                                RecipeDetailFragment.this.mChronoSeconds);
+                                RecipeDetailFragment.this.setTimerDialog(
+                                        RecipeDetailFragment.this.mTimerHours * 3600 +
+                                                RecipeDetailFragment.this.mTimerMinutes * 60 +
+                                                RecipeDetailFragment.this.mTimerSeconds);
 
                                 selectTimeDialog.dismiss();
-                                RecipeDetailFragment.this.mChronometerDialog.show();
+                                RecipeDetailFragment.this.mTimerDialog.show();
                                 RecipeDetailFragment.this.mCountDownTimer.start();
                             }
                         });
@@ -520,7 +520,7 @@ public class RecipeDetailFragment extends Fragment
                                         mTTS.speak(getString(R.string.detail_direction_speak_start_timer_message),
                                                 TextToSpeech.QUEUE_FLUSH, null, null);
 
-                                        RecipeDetailFragment.this.showChronometer();
+                                        RecipeDetailFragment.this.showTimerDialog();
                                     } else {
                                         RecipeDetailFragment.this.showCommandsDialog();
                                     }
@@ -553,18 +553,18 @@ public class RecipeDetailFragment extends Fragment
     }
 
     /**
-     * Set chronometer dialog
+     * Set timer dialog
      */
-    public void setChronometer(Integer time) {
-        mChronometerDialog = new Dialog(getActivity());
-        mChronometerDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
-        mChronometerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        mChronometerDialog.setContentView(R.layout.dialog_detail_chronometer);
+    public void setTimerDialog(Integer time) {
+        mTimerDialog = new Dialog(getActivity());
+        mTimerDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
+        mTimerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mTimerDialog.setContentView(R.layout.dialog_detail_timer);
 
-        final TextView minutesTextView = (TextView) mChronometerDialog.findViewById(R.id.minutes);
-        final TextView secondsTextView = (TextView) mChronometerDialog.findViewById(R.id.seconds);
-        Button skipButton = (Button) mChronometerDialog.findViewById(R.id.buttonSkip);
-        final ProgressBar progressBar = (ProgressBar) mChronometerDialog.findViewById(R.id.progressBar);
+        final TextView minutesTextView = (TextView) mTimerDialog.findViewById(R.id.minutes);
+        final TextView secondsTextView = (TextView) mTimerDialog.findViewById(R.id.seconds);
+        Button skipButton = (Button) mTimerDialog.findViewById(R.id.buttonSkip);
+        final ProgressBar progressBar = (ProgressBar) mTimerDialog.findViewById(R.id.progressBar);
 
         minutesTextView.setText((time/60) + "");
         secondsTextView.setText((time % 60) + "");
@@ -607,7 +607,7 @@ public class RecipeDetailFragment extends Fragment
                         mp.release();
 
                         // Hide dialog
-                        mChronometerDialog.dismiss();
+                        mTimerDialog.dismiss();
 
                         // Wait for command
                         if (mContinueMode) {
@@ -622,7 +622,7 @@ public class RecipeDetailFragment extends Fragment
             @Override
             public void onClick(View v) {
                 mCountDownTimer.cancel();
-                mChronometerDialog.dismiss();
+                mTimerDialog.dismiss();
 
                 // Wait for command
                 if (mContinueMode) {
@@ -632,14 +632,14 @@ public class RecipeDetailFragment extends Fragment
         });
     }
 
-    public void showChronometer() {
+    public void showTimerDialog() {
         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
 
         if (dir.getTime() > 0) {
-            this.setChronometer((int) dir.getTime().floatValue());
+            this.setTimerDialog((int) dir.getTime().floatValue());
 
-            // Show chronometer directly
-            mChronometerDialog.show();
+            // Show timer directly
+            mTimerDialog.show();
             mCountDownTimer.start();
         }
     }
@@ -680,7 +680,7 @@ public class RecipeDetailFragment extends Fragment
                 mCommandsDialog.dismiss();
 
                 // Show timer
-                RecipeDetailFragment.this.showChronometer();
+                RecipeDetailFragment.this.showTimerDialog();
             }
         });
 

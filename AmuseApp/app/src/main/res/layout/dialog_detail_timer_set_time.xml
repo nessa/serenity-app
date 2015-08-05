@@ -20,7 +20,7 @@
             android:textSize="36sp"/>
 
         <TextView
-            android:text="@string/detail_chronometer_hours_initial"
+            android:text="@string/detail_timer_hours_initial"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
             android:layout_marginEnd="6dp"
@@ -35,7 +35,7 @@
             android:textSize="36sp"/>
 
         <TextView
-            android:text="@string/detail_chronometer_minutes_initial"
+            android:text="@string/detail_timer_minutes_initial"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
             android:layout_marginEnd="6dp"
@@ -50,7 +50,7 @@
             android:textSize="36sp"/>
 
         <TextView
-            android:text="@string/detail_chronometer_seconds_initial"
+            android:text="@string/detail_timer_seconds_initial"
             android:layout_width="wrap_content"
             android:layout_height="56dp"
             android:textColor="@android:color/white"
@@ -98,7 +98,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:textColor="@color/theme_default_primary_dark"
-            android:text="@string/detail_chronometer_cancel_button" />
+            android:text="@string/detail_timer_cancel_button" />
 
         <Button
             android:id="@+id/buttonSet"
@@ -107,7 +107,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:textColor="@color/theme_default_primary_dark"
-            android:text="@string/detail_chronometer_start_button" />
+            android:text="@string/detail_timer_start_button" />
 
     </LinearLayout>
 
