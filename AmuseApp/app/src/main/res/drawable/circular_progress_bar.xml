@@ -13,13 +13,17 @@
     </item>
     <!-- PROGRESS LAYER -->
     <item android:id="@android:id/progress">
-        <shape
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:useLevel="true"
-            android:innerRadiusRatio="2.3"
-            android:shape="ring"
-            android:thickness="4sp" >
-            <solid android:color="@color/theme_default_primary" />
-        </shape>
+        <rotate
+            android:fromDegrees="-90"
+            android:toDegrees="-90">
+            <shape
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:useLevel="true"
+                android:innerRadiusRatio="2.3"
+                android:shape="ring"
+                android:thickness="4sp" >
+                <solid android:color="@color/theme_default_primary" />
+            </shape>
+        </rotate>
     </item>
 </layer-list>
