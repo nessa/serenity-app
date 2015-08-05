@@ -8,6 +8,8 @@
     <string name="title_recipe_detail_activity">Detalle</string>
     <string name="accept">Aceptar</string>
     <string name="cancel">Cancelar</string>
+    <!-- Splash screen -->
+    <string name="splash_screen_loading_recipes_message">Cargando recetas...</string>
     <!-- Menu -->
     <string name="RECIPES">Recetas</string>
     <string name="MY_RECIPES">Mis recetas</string>

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.amusebouche.data.DatabaseHelper;
 import com.amusebouche.data.Recipe;
@@ -22,6 +23,7 @@ import org.json.JSONObject;
 
 public class SplashScreenActivity extends Activity {
     private ProgressBar mProgressBar;
+    private TextView mTextView;
     private DatabaseHelper mDatabaseHelper;
     private Boolean mOffline = true;
     private ArrayList<Recipe> mRecipes;
@@ -55,6 +57,9 @@ public class SplashScreenActivity extends Activity {
             super.onPreExecute();
 
             mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+            mTextView = (TextView) findViewById(R.id.text);
+            mTextView.setText(getString(R.string.splash_screen_loading_recipes_message));
         }
 
         @Override
@@ -101,8 +106,7 @@ public class SplashScreenActivity extends Activity {
 
         //Update the progress
         @Override
-        protected void onProgressUpdate(Integer... values)
-        {
+        protected void onProgressUpdate(Integer... values) {
             //set the current progress of the progress dialog
             mProgressBar.setProgress(values[0]);
         }
@@ -113,6 +117,7 @@ public class SplashScreenActivity extends Activity {
 
             // Close the progress dialog
             mProgressBar.setVisibility(View.GONE);
+            mTextView.setVisibility(View.GONE);
 
             // Start the next activity
             Intent mainIntent = new Intent().setClass(
