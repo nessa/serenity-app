@@ -66,19 +66,19 @@
         android:layout_marginEnd="10dp"
         android:orientation="horizontal" >
 
-        <NumberPicker
+        <com.amusebouche.ui.CustomNumberPicker
             android:id="@+id/hoursPicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp" />
 
-        <NumberPicker
+        <com.amusebouche.ui.CustomNumberPicker
             android:id="@+id/minutesPicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp" />
 
-        <NumberPicker
+        <com.amusebouche.ui.CustomNumberPicker
             android:id="@+id/secondsPicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

@@ -34,6 +34,7 @@ import android.widget.TextView;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.ui.CustomNumberPicker;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.nineoldandroids.view.ViewHelper;
@@ -398,7 +399,8 @@ public class RecipeDetailFragment extends Fragment
                         secondsTextView.setText(mTimerSeconds + "");
 
                         // Number pickers for hours, minutes and seconds
-                        final NumberPicker hoursPicker = (NumberPicker) selectTimeDialog.findViewById(R.id.hoursPicker);
+                        final CustomNumberPicker hoursPicker = (CustomNumberPicker)
+                                selectTimeDialog.findViewById(R.id.hoursPicker);
                         hoursPicker.setMaxValue(10);
                         hoursPicker.setMinValue(0);
                         hoursPicker.setWrapSelectorWheel(false);
@@ -412,7 +414,8 @@ public class RecipeDetailFragment extends Fragment
                             }
                         });
 
-                        final NumberPicker minutesPicker = (NumberPicker) selectTimeDialog.findViewById(R.id.minutesPicker);
+                        final CustomNumberPicker minutesPicker = (CustomNumberPicker)
+                                selectTimeDialog.findViewById(R.id.minutesPicker);
                         minutesPicker.setMaxValue(59);
                         minutesPicker.setMinValue(0);
                         minutesPicker.setWrapSelectorWheel(true);
@@ -426,7 +429,8 @@ public class RecipeDetailFragment extends Fragment
                             }
                         });
 
-                        final NumberPicker secondsPicker = (NumberPicker) selectTimeDialog.findViewById(R.id.secondsPicker);
+                        final CustomNumberPicker secondsPicker = (CustomNumberPicker)
+                                selectTimeDialog.findViewById(R.id.secondsPicker);
                         secondsPicker.setMaxValue(59);
                         secondsPicker.setMinValue(0);
                         secondsPicker.setWrapSelectorWheel(false);
