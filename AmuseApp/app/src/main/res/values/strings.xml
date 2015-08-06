@@ -75,7 +75,24 @@
     <string name="detail_timer_seconds_initial">s</string>
     <!-- Commands -->
     <string name="detail_commands_listening_message">Listening...</string>
+    <string name="detail_commands_error_message">Error</string>
+    <string name="detail_commands_success_message">Success</string>
     <!-- Speak messages -->
     <string name="detail_direction_speak_end_of_recipe_message">The recipe is finish. Let\'s eat!</string>
     <string name="detail_direction_speak_start_timer_message">Starting timer.</string>
+    <!-- Voice recognition -->
+    <string name="voice_command_repeat">repeat</string>
+    <string name="voice_command_timer">timer</string>
+    <string name="voice_command_next">next</string>
+    <string name="voice_or">or</string>
+    <string name="voice_error_audio">Audio recording error</string>
+    <string name="voice_error_client">Client side error</string>
+    <string name="voice_error_insufficient_permissions">Insufficient permissions</string>
+    <string name="voice_error_network">Network error</string>
+    <string name="voice_error_network_timeout">Network timeout</string>
+    <string name="voice_error_no_match">No match</string>
+    <string name="voice_error_recognizer_busy">Recognition service is busy</string>
+    <string name="voice_error_server">Error from server</string>
+    <string name="voice_error_speech_timeout">No speech input. Please, say one of these commands:</string>
+    <string name="voice_error_not_understood">Didn\'t understand. Please, say one of these commands:</string>
 </resources>

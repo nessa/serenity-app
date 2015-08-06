@@ -75,7 +75,24 @@
     <string name="detail_timer_seconds_initial">s</string>
     <!-- Commands -->
     <string name="detail_commands_listening_message">Escuchando...</string>
+    <string name="detail_commands_error_message">Error</string>
+    <string name="detail_commands_success_message">Éxito</string>
     <!-- Speak messages -->
     <string name="detail_direction_speak_end_of_recipe_message">Fin de la receta. !A comer!</string>
     <string name="detail_direction_speak_start_timer_message">Iniciando temporizador.</string>
+    <!-- Voice recognition -->
+    <string name="voice_command_repeat">repetir</string>
+    <string name="voice_command_timer">temporizador</string>
+    <string name="voice_command_next">siguiente</string>
+    <string name="voice_or">o</string>
+    <string name="voice_error_audio">Error de grabacion de audio</string>
+    <string name="voice_error_client">Error del lado del cliente</string>
+    <string name="voice_error_insufficient_permissions">Permisos insuficientes</string>
+    <string name="voice_error_network">Error de red</string>
+    <string name="voice_error_network_timeout">Error de tiempo de espera</string>
+    <string name="voice_error_no_match">No hay coincidencia</string>
+    <string name="voice_error_recognizer_busy">El servicio de reconocimiento está ocupado</string>
+    <string name="voice_error_server">Error del servidor</string>
+    <string name="voice_error_speech_timeout">No hay entrada de voz. Por favor, diga uno de estas órdenes:</string>
+    <string name="voice_error_not_understood">No entendí. Por favor, diga uno de estas órdenes:</string>
 </resources>

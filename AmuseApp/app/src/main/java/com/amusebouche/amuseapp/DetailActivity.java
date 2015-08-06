@@ -22,6 +22,7 @@ import com.amusebouche.data.Recipe;
  * - The present fragment that is active.
  *
  * Related layouts:
+ * - Menu: menu_recipe_detail.xml
  * - Content: activity_detail.xml
  */
 public class DetailActivity extends ActionBarActivity {

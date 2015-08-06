@@ -33,7 +33,6 @@ import java.util.ArrayList;
  * It contains a dynamic gridview with recipes (filtered or not).
  *
  * Related layouts:
- * - Menu: menu_recipe_list.xml
  * - Content: fragment_recipe_list.xml
  */
 public class RecipeListFragment extends Fragment {

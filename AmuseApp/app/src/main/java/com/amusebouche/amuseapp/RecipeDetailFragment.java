@@ -14,6 +14,9 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +27,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -49,6 +51,7 @@ import com.github.ksoichiro.android.observablescrollview.ScrollUtils;
 import com.melnykov.fab.FloatingActionButton;
 
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -60,36 +63,48 @@ import java.util.Objects;
  * It contains and shows the recipe detailed information.
  *
  * Related layouts:
- * - Menu: menu_recipe_detail.xml
  * - Content: fragment_recipe_detail.xml
  */
 public class RecipeDetailFragment extends Fragment
         implements ObservableScrollViewCallbacks {
 
-    private FrameLayout mLayout;
-    private ObservableScrollView mScrollView;
+    // Data variables
     private Recipe mRecipe;
     private Bitmap mMainImage;
+    private Integer mPresentDescriptionIndex;
+
+    // Behaviour variables
+    private boolean mFabIsShown;
+    private boolean mContinueMode;
+
+    // Services variables
+    private TextToSpeech mTTS;
+
+    // UI variables
+    private FrameLayout mLayout;
+    private ObservableScrollView mScrollView;
     private View mOverlayView;
     private TextView mRecipeName;
     private ImageView mRecipeImage;
     private FloatingActionButton mFab;
-    private TextToSpeech mTTS;
-    private Dialog mTimerDialog;
-    private Dialog mCommandsDialog;
-    private CountDownTimer mCountDownTimer;
 
-    private Integer mPresentDescriptionIndex;
-    private Integer mTimerHours;
-    private Integer mTimerMinutes;
-    private Integer mTimerSeconds;
-
+    // Calc UI size variables
     private Integer mFlexibleSpaceImageHeight;
     private Integer mFlexibleSpaceShowFabOffset;
     private Integer mFabMargin;
     private Integer mActionBarSize;
-    private boolean mFabIsShown;
-    private boolean mContinueMode;
+
+    // Timer dialog variables
+    private Dialog mTimerDialog;
+    private CountDownTimer mCountDownTimer;
+    private Integer mTimerHours;
+    private Integer mTimerMinutes;
+    private Integer mTimerSeconds;
+
+    // Commands dialog variables
+    private Dialog mCommandsDialog;
+    private SpeechRecognizer mSpeechRecognizer;
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -680,15 +695,18 @@ public class RecipeDetailFragment extends Fragment
         ImageButton timerButton = (ImageButton) mCommandsDialog.findViewById(R.id.timer);
         ImageButton nextButton = (ImageButton) mCommandsDialog.findViewById(R.id.next);
 
-        final FloatingActionButton fab = (FloatingActionButton) mCommandsDialog.findViewById(R.id.listeningFab);
+        final FloatingActionButton fab = (FloatingActionButton)
+                mCommandsDialog.findViewById(R.id.listeningFab);
+
+        final TextView mainText = (TextView) mCommandsDialog.findViewById(R.id.mainText);
+        final TextView errorText = (TextView) mCommandsDialog.findViewById(R.id.errorText);
 
         final Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.scale_up);
         anim.setRepeatMode(Animation.REVERSE);
         anim.setRepeatCount(Animation.INFINITE);
-        fab.startAnimation(anim);
 
         // Disable timer button if there's no time specified
-        RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
+        final RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
         if (dir.getTime() == 0) {
             timerButton.setVisibility(View.GONE);
         }
@@ -696,7 +714,6 @@ public class RecipeDetailFragment extends Fragment
         repeatButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                anim.cancel();
                 mCommandsDialog.dismiss();
 
                 // Repeat present direction
@@ -726,8 +743,222 @@ public class RecipeDetailFragment extends Fragment
         });
 
 
+        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
+
+        final Intent recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "es");
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                getActivity().getPackageName());
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+        // TODO: Fix this! This is not working (it only waits for 5 or 6 seconds)
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 100000);
+
+
+        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
+            @Override
+            public void onBeginningOfSpeech() {}
+
+            @Override
+            public void onBufferReceived(byte[] buffer) {}
+
+            @Override
+            public void onEndOfSpeech() {}
+
+            @Override
+            public void onError(final int errorCode) {
+                Log.d("ERROR", "ON ERROR");
+                // TODO: Fix this! It doesn't execute before wait
+                // Cancel animation and show errors
+                anim.cancel();
+                mainText.setText(getString(R.string.detail_commands_error_message));
+                errorText.setText(getErrorText(errorCode));
+
+                // Wait 5 seconds
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+                            synchronized (this) {
+                                wait(5000);
+                            }
+                        } catch (InterruptedException ex) {
+                            Log.d("ERROR", ex.getMessage());
+                        }
+
+                        Log.d("ERROR", "RELOAD RECOG");
+                        // Restart voice recognizer after waiting 5 seconds
+                        mSpeechRecognizer.startListening(recognizerIntent);
+                    }
+                });
+            }
+
+            @Override
+            public void onEvent(int arg0, Bundle arg1) {}
+
+            @Override
+            public void onPartialResults(Bundle arg0) {}
+
+            @Override
+            public void onReadyForSpeech(Bundle arg0) {
+                // Restart animation and default texts
+                mainText.setText(getString(R.string.detail_commands_listening_message));
+                errorText.setText("");
+                fab.startAnimation(anim);
+            }
+
+            @Override
+            public void onResults(Bundle results) {
+                Log.d("INFO", "ON RESULTS");
+
+                // TODO: Fix this! It doesn't execute before wait
+                // Cancel animation
+                anim.cancel();
+
+                // Get voice results
+                ArrayList<String> matches = results
+                        .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+                if (matches.contains(getString(R.string.voice_command_repeat))) {
+                    Log.d("INFO", "REPEAT");
+
+                    mainText.setText(getString(R.string.detail_commands_success_message));
+
+                    mCommandsDialog.dismiss();
+
+                    // Repeat present direction
+                    RecipeDetailFragment.this.readDescription();
+                } else {
+                    if (matches.contains(getString(R.string.voice_command_next))) {
+                        Log.d("INFO", "NEXT");
+
+                        mainText.setText(getString(R.string.detail_commands_success_message));
+                        mCommandsDialog.dismiss();
+
+                        // Read next direction
+                        mPresentDescriptionIndex = mPresentDescriptionIndex + 1;
+                        RecipeDetailFragment.this.readDescription();
+
+                    } else {
+                        if (matches.contains(getString(R.string.voice_command_timer)) &&
+                                dir.getTime() > 0) {
+                            Log.d("INFO", "TIMER");
+
+                            mainText.setText(getString(R.string.detail_commands_success_message));
+                            mCommandsDialog.dismiss();
+
+                            // Show timer
+                            RecipeDetailFragment.this.showTimerDialog();
+
+                        } else {
+                            mainText.setText(getString(R.string.detail_commands_error_message));
+                            errorText.setText(getString(R.string.voice_error_not_understood));
+
+                            // Wait 5 seconds
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        synchronized (this) {
+                                            wait(5000);
+                                        }
+                                    } catch (InterruptedException ex) {
+                                        Log.d("ERROR", ex.getMessage());
+                                    }
+
+                                    // TODO
+                                    Log.d("INFO", "after waiting 5 seconds");
+
+                                    // Restart voice recognizer
+                                    mSpeechRecognizer.startListening(recognizerIntent);
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onRmsChanged(float rmsdB) {
+            }
+
+            public String getErrorText(int errorCode) {
+                String message;
+                switch (errorCode) {
+                    case SpeechRecognizer.ERROR_AUDIO:
+                        message = getString(R.string.voice_error_audio);
+                        break;
+                    case SpeechRecognizer.ERROR_CLIENT:
+                        message = getString(R.string.voice_error_client);
+                        break;
+                    case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                        message = getString(R.string.voice_error_insufficient_permissions);
+                        break;
+                    case SpeechRecognizer.ERROR_NETWORK:
+                        message = getString(R.string.voice_error_network);
+                        break;
+                    case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                        message = getString(R.string.voice_error_network_timeout);
+                        break;
+                    case SpeechRecognizer.ERROR_NO_MATCH:
+                        message = getString(R.string.voice_error_no_match);
+                        break;
+                    case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                        message = getString(R.string.voice_error_recognizer_busy);
+                        break;
+                    case SpeechRecognizer.ERROR_SERVER:
+                        message = getString(R.string.voice_error_server);
+                        break;
+                    case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                        message = getString(R.string.voice_error_speech_timeout);
+                        if (dir.getTime() > 0) {
+                            message = message + " " + getString(R.string.voice_command_repeat) +
+                                    ", " + getString(R.string.voice_command_timer) + " " +
+                                    getString(R.string.voice_or) + " " +
+                                    getString(R.string.voice_command_next);
+                        } else {
+                            message = message + " " + getString(R.string.voice_command_repeat) +
+                                    " " + getString(R.string.voice_or) + " " +
+                                    getString(R.string.voice_command_next);
+                        }
+                        break;
+                    default:
+                        message = getString(R.string.voice_error_not_understood);
+                        if (dir.getTime() > 0) {
+                            message = message + " " + getString(R.string.voice_command_repeat) +
+                                    ", " + getString(R.string.voice_command_timer) + " " +
+                                    getString(R.string.voice_or) + " " +
+                                    getString(R.string.voice_command_next);
+                        } else {
+                            message = message + " " + getString(R.string.voice_command_repeat) +
+                                    " " + getString(R.string.voice_or) + " " +
+                                    getString(R.string.voice_command_next);
+                        }
+                        break;
+                }
+                return message;
+            }
+        });
+
+
+        mCommandsDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+
+            @Override
+            public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    Log.d("INFO", "KEYCODE BACK");
+                    mSpeechRecognizer.cancel();
+                    mSpeechRecognizer.destroy();
+                    mCommandsDialog.dismiss();
+                }
+                return true;
+            }
+        });
 
         mCommandsDialog.show();
+        mSpeechRecognizer.startListening(recognizerIntent);
     }
 
     @Override

@@ -30,6 +30,7 @@ import java.util.ArrayList;
  * - The present fragment that is active (changed by the navigation drawer).
  *
  * Related layouts:
+ * - Menu: menu_recipe_list.xml
  * - Content: activity_main.xml
  */
 public class MainActivity extends ActionBarActivity implements
