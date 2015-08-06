@@ -1,6 +1,7 @@
 package com.amusebouche.amuseapp;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Point;
 import android.app.Activity;
 import android.app.Fragment;
@@ -11,8 +12,13 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.AbsListView;
 import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.amusebouche.data.DatabaseHelper;
 import com.amusebouche.services.ServiceHandler;
@@ -39,11 +45,25 @@ public class RecipeListFragment extends Fragment {
     private RelativeLayout mLayout;
     private ProgressDialog infoDialog;
     private GridView mGridView;
+    private ProgressBar mProgressBar;
+    private LinearLayout mProgressBarLayout;
     private ArrayList<Recipe> mRecipes;
     private Integer mRecipesPage;
     private Integer mLastGridviewPosition;
     private DatabaseHelper mDatabaseHelper;
     private Boolean mOffline = true;
+
+
+    /**
+     * visibleThreshold – The minimum amount of items to have below your current scroll position, before loading more.
+     currentPage – The current page of data you have loaded
+     previousTotal – The total number of items in the dataset after the last load
+     loading – True if we are still waiting for the last set of data to load.
+     */
+    private int mVisibleThreshold = 5;
+    private int mCurrentPage = 1;
+    private int mPreviousTotal = 0;
+    private boolean mLoading = true;
 
     @Override
     public void onAttach(Activity activity) {
@@ -99,12 +119,45 @@ public class RecipeListFragment extends Fragment {
         display.getSize(screenSize);
         int screen_width = screenSize.x;
 
+        mProgressBar = (ProgressBar) mLayout.findViewById(R.id.progressBar);
+        mProgressBar.setVisibility(View.GONE);
+
         mGridView = (GridView) mLayout.findViewById(R.id.gridview);
         mGridView.setAdapter(new GridviewCellAdapter(getActivity(), this, screen_width, mRecipes));
 
+        mGridView.setOnScrollListener(new GridView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem,
+                                 int visibleItemCount, int totalItemCount) {
+
+                if (mLoading) {
+                    if (totalItemCount > mPreviousTotal) {
+                        mLoading = false;
+                        mPreviousTotal = totalItemCount;
+                        mCurrentPage = mCurrentPage + 1;
+                    }
+                }
+
+                if (!mLoading && (totalItemCount - visibleItemCount) <=
+                        (firstVisibleItem + mVisibleThreshold)) {
+                    // I load the next page of gigs using a background task,
+                    // but you can call any function here.
+                    new GetRecipes().execute();
+                    mLoading = true;
+                }
+            }
+        });
+
+        /*
         if (mLastGridviewPosition != 0) {
             mGridView.smoothScrollToPosition(mLastGridviewPosition);
-        }
+        }*/
 
         FloatingActionButton addButton = (FloatingActionButton) mLayout.findViewById(R.id.fab);
 
@@ -152,6 +205,32 @@ public class RecipeListFragment extends Fragment {
     }
 
 
+    public void setNewRecipes() {
+        final int positionToSave = mGridView.getFirstVisiblePosition();
+        GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
+        adapter.setRecipes(mRecipes);
+
+        mGridView.post(new Runnable() {
+
+            @Override
+            public void run() {
+                mGridView.setSelection(positionToSave);
+            }
+        });
+
+        mGridView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+
+            @Override
+            public boolean onPreDraw() {
+                if (mGridView.getFirstVisiblePosition() == positionToSave) {
+                    mGridView.getViewTreeObserver().removeOnPreDrawListener(this);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
 
     public void makeFavorite(View v) {
         Log.v("INFO", "Favorite " + v.getTag());
@@ -163,6 +242,78 @@ public class RecipeListFragment extends Fragment {
     private void changeActionButton() {
         MainActivity x = (MainActivity) getActivity();
         x.setDrawerIndicatorEnabled(true);
+    }
+
+
+    /**
+     * Async task class to get json by making HTTP call
+     * */
+    private class GetRecipes extends AsyncTask<Void, Integer, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            Log.d("INFO", "PRE EXECUTE");
+
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... result) {
+            if (mOffline) {
+                mDatabaseHelper.initializeExampleData();
+                mRecipes.addAll(mDatabaseHelper.getRecipes(12, mCurrentPage*12));
+            } else {
+                // Create service handler class instance
+                ServiceHandler sh = new ServiceHandler();
+
+                // Check internet connection
+                if (sh.checkInternetConnection(getActivity().getApplicationContext())) {
+
+                    // Make a request to url and getting response
+                    String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
+
+                    Log.d("RESPONSE", "> " + jsonStr);
+
+                    if (jsonStr != null) {
+                        try {
+                            JSONObject jObject = new JSONObject(jsonStr);
+                            JSONArray results = jObject.getJSONArray("results");
+
+                            for (int i = 0; i < results.length(); i++) {
+                                mRecipes.add(new Recipe(results.getJSONObject(i)));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Log.e("ServiceHandler", "Couldn't get any data from the url");
+                    }
+                } else {
+                    Log.d("INFO", "ELSE");
+                    // TODO: Get database recipes??
+                }
+            }
+
+            return null;
+        }
+
+        //Update the progress
+        @Override
+        protected void onProgressUpdate(Integer... values) {
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
+            Log.d("INFO", "POST EXECUTE");
+            GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
+            adapter.notifyDataSetChanged();
+
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 
 }

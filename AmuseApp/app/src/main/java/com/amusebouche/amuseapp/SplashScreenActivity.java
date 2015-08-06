@@ -66,7 +66,7 @@ public class SplashScreenActivity extends Activity {
         protected Void doInBackground(Void... result) {
             if (mOffline) {
                 mDatabaseHelper.initializeExampleData();
-                mRecipes = mDatabaseHelper.getRecipes();
+                mRecipes = mDatabaseHelper.getRecipes(12, 0);
             } else {
                 // Create service handler class instance
                 ServiceHandler sh = new ServiceHandler();
@@ -125,7 +125,7 @@ public class SplashScreenActivity extends Activity {
             mainIntent.putExtra("recipes", mRecipes);
             startActivity(mainIntent);
 
-            // Close the activity so the user won't able to go back this
+            // Close the activity so the user won't be able to go back to this
             // activity pressing Back button
             finish();
         }
