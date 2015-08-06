@@ -33,8 +33,13 @@ public class DetailActivity extends ActionBarActivity {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        Intent i = getIntent();
-        mRecipe = i.getParcelableExtra("recipe");
+        if (savedInstanceState != null) {
+            mRecipe = savedInstanceState.getParcelable("recipe");
+        } else {
+            Intent i = getIntent();
+            mRecipe = i.getParcelableExtra("recipe");
+        }
+
 
         setContentView(R.layout.activity_detail);
 
@@ -49,25 +54,15 @@ public class DetailActivity extends ActionBarActivity {
         actionBar.setTitle(title);
     }
 
-    /*
     @Override
-    public void onBackPressed() {
-        Log.i(getClass().getSimpleName(), "onBackPressed()");
-        FragmentManager fm = getFragmentManager();
-        if (fm.getBackStackEntryCount() > 0) {
-            Log.i("DETAIL", "popping backstack");
-            fm.popBackStack();
-        } else {
-            Log.i("DETAIL", "nothing on backstack, calling super");
-            super.onBackPressed();
-        }
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("recipe", mRecipe);
     }
-    */
 
     @Override
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
-
 
         RecipeDetailFragment frag = (RecipeDetailFragment) getFragmentManager()
                 .findFragmentById(R.id.container);

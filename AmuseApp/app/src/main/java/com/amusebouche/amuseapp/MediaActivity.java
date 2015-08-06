@@ -7,6 +7,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -65,14 +66,17 @@ public class MediaActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
-        FragmentManager fm = getFragmentManager();
-        if (fm.getBackStackEntryCount() > 0) {
-            Log.i("DETAIL", "popping backstack");
-            fm.popBackStack();
-        } else {
-            Log.i("DETAIL", "nothing on backstack, calling super");
-            super.onBackPressed();
-        }
+        super.onBackPressed();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 }

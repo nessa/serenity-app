@@ -300,10 +300,20 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:gravity="center_vertical"
             android:minHeight="?attr/actionBarSize"
+            android:gravity="center_vertical"
             android:textColor="@android:color/white"
             android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/recipe_owner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:gravity="center_vertical"
+            android:minHeight="20dp"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
 
         <View
             android:layout_width="match_parent"

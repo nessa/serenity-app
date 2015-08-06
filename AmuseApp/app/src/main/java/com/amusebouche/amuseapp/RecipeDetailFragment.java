@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -21,7 +20,6 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,7 +72,6 @@ public class RecipeDetailFragment extends Fragment
     private Integer mPresentDescriptionIndex;
 
     // Behaviour variables
-    private boolean mFabIsShown;
     private boolean mContinueMode;
 
     // Services variables
@@ -85,6 +82,7 @@ public class RecipeDetailFragment extends Fragment
     private ObservableScrollView mScrollView;
     private View mOverlayView;
     private TextView mRecipeName;
+    private TextView mRecipeOwner;
     private ImageView mRecipeImage;
     private FloatingActionButton mFab;
 
@@ -106,11 +104,29 @@ public class RecipeDetailFragment extends Fragment
     private SpeechRecognizer mSpeechRecognizer;
 
 
+    // LIFECYCLE METHODS
+
+    /**
+     * Called when a fragment is first attached to its activity.
+     *
+     * @param activity Fragemnt activity (DetailActivity)
+     */
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    /**
+     * Called to do initial creation of a fragment. This is called after onAttach and before
+     * onCreateView.
+     * @param savedInstanceState Saved state (if the fragment is being re-created)
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
@@ -128,6 +144,9 @@ public class RecipeDetailFragment extends Fragment
         }
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -146,6 +165,10 @@ public class RecipeDetailFragment extends Fragment
         });
     }
 
+
+    /**
+     * Called when the Fragment is no longer started.
+     */
     @Override
     public void onStop() {
         super.onStop();
@@ -156,20 +179,33 @@ public class RecipeDetailFragment extends Fragment
         }
     }
 
-    public ObservableScrollView getScrollView() {
-        return mScrollView;
-    }
-
-    public void scrollUp() {
-        mScrollView.smoothScrollTo(0, 0);
-    }
-
+    /**
+     * Called to ask the fragment to save its current dynamic state, so it can later be
+     * reconstructed in a new instance of its process is restarted.
+     * @param outState Bundle in which to place the saved state.
+     */
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
     }
 
+    /**
+     * Called when the fragment is no longer attached to its activity. Called after onDestroy.
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    /**
+     * Called to have the fragment instantiate its user interface view. This will be called between
+     * onCreate and onActivityCreated, onViewStateRestored, onStart().
+     * @param inflater The LayoutInflater object that can be used to inflate views in the fragment,
+     * @param container  This is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If this fragment is being re-constructed from a previous saved
+     *                           state as given here.
+     * @return Return the View for the this fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -194,6 +230,21 @@ public class RecipeDetailFragment extends Fragment
         mRecipeName = (TextView) mLayout.findViewById(R.id.recipe_name);
         mRecipeName.setText(mRecipe.getTitle());
 
+        mRecipeOwner = (TextView) mLayout.findViewById(R.id.recipe_owner);
+        mRecipeOwner.setText(mRecipe.getOwner());
+
+
+        mLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                // This code will position texts and FAB correctly
+                // It must be launched only when the layout was finally drawed
+                RecipeDetailFragment.this.onScrollChanged(
+                        RecipeDetailFragment.this.mScrollView.getCurrentScrollY(), true, false);
+            }
+        });
+
+
         // Set view sizes
         mFlexibleSpaceImageHeight = getResources().getDimensionPixelSize(
                 R.dimen.flexible_space_image_height);
@@ -203,6 +254,8 @@ public class RecipeDetailFragment extends Fragment
         mActionBarSize = getResources().getDimensionPixelSize(
                 R.dimen.abc_action_bar_default_height_material);
 
+
+        // Get UI elements
         mOverlayView = mLayout.findViewById(R.id.overlay);
         mScrollView.setScrollViewCallbacks(this);
         mFab = (FloatingActionButton) mLayout.findViewById(R.id.fab);
@@ -223,36 +276,6 @@ public class RecipeDetailFragment extends Fragment
         // Overlay view transparent
         ViewHelper.setAlpha(mOverlayView, 0);
 
-        // Show and position FAB
-        ViewHelper.setScaleX(mFab, 1);
-        ViewHelper.setScaleY(mFab, 1);
-
-        int maxTitleTranslationY = mFlexibleSpaceImageHeight - mRecipeName.getHeight();
-        int titleTranslationY = maxTitleTranslationY - mActionBarSize;
-        ViewHelper.setTranslationY(mRecipeName, titleTranslationY);
-
-        Display display = getActivity().getWindowManager().getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        int windowWidth = size.x;
-
-        int maxFabTranslationY = mFlexibleSpaceImageHeight - (int)getResources().getDimension(R.dimen.fab_size_normal) / 2;
-        float fabTranslationY = ScrollUtils.getFloat(
-                mFlexibleSpaceImageHeight - (int)getResources().getDimension(R.dimen.fab_size_normal) / 2,
-                mActionBarSize - (int)getResources().getDimension(R.dimen.fab_size_normal) / 2,
-                maxFabTranslationY);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-            FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) mFab.getLayoutParams();
-            lp.leftMargin = windowWidth - mFabMargin -
-                    (int)getResources().getDimension(R.dimen.fab_size_normal);
-            lp.topMargin = (int) fabTranslationY;
-            mFab.requestLayout();
-        } else {
-            ViewHelper.setTranslationX(mFab, windowWidth - mFabMargin -
-                    (int)getResources().getDimension(R.dimen.fab_size_normal));
-            ViewHelper.setTranslationY(mFab, fabTranslationY);
-        }
 
         // Set data
         TextView typeOfDishTextView = (TextView) mLayout.findViewById(R.id.type_of_dish);
@@ -504,6 +527,173 @@ public class RecipeDetailFragment extends Fragment
         return mLayout;
     }
 
+
+    // DATA USER-FRIENDLY
+
+    /**
+     * Translate typeOfDish code to an understandable string
+     * @param code API type of dish code
+     * @return User-friendly string
+     */
+    private String getTypeOfDish(String code) {
+        switch(code) {
+            case "APPETIZER":
+                return getString(R.string.type_of_dish_appetizer);
+            case "FIRST-COURSE":
+                return getString(R.string.type_of_dish_first_course);
+            case "SECOND-COURSE":
+                return getString(R.string.type_of_dish_second_course);
+            case "MAIN-DISH":
+                return getString(R.string.type_of_dish_main_dish);
+            case "DESSERT":
+                return getString(R.string.type_of_dish_dessert);
+            default:
+            case "OTHER":
+                return getString(R.string.type_of_dish_other);
+        }
+    }
+
+    /**
+     * Translate difficulty code to an understandable string
+     * @param code API difficulty code
+     * @return User-friendly string
+     */
+    private String getDifficulty(String code) {
+        switch(code) {
+            case "HIGH":
+                return getString(R.string.difficulty_high);
+            case "LOW":
+                return getString(R.string.difficulty_low);
+            default:
+            case "MEDIUM":
+                return getString(R.string.difficulty_medium);
+        }
+    }
+
+    /**
+     * Translate cookingTime code to an understandable string
+     * @param time Float time
+     * @return User-friendly string
+     */
+    private String getCookingTime(float time) {
+        int minutes = (int)(time/60);
+        int seconds = (int)(time % 60);
+
+        String completeTime = seconds + getString(R.string.detail_seconds);
+        if (minutes > 0) {
+            completeTime = minutes + getString(R.string.detail_minutes) + " " + completeTime;
+        }
+
+        return completeTime;
+    }
+
+    /**
+     * Translate ingredien's quantity code to an understandable string
+     * @param quantity  Float quantity
+     * @param unit_code Code of measurement unit
+     * @return User-friendly string
+     */
+    private String getIngredientQuantity(float quantity, String unit_code) {
+        String q = "", u = "";
+        boolean plural = true;
+
+        if (quantity > 0) {
+            float result = quantity - (int)quantity;
+            if (result != 0) {
+                q = String.format("%.2f", quantity) + " ";
+            } else {
+                q = String.format("%.0f", quantity) + " ";
+            }
+
+            if (quantity <= 1) {
+                plural = false;
+            }
+
+            if (quantity == 0.25) {
+                q = "1/4 ";
+            }
+            if (quantity == 0.5) {
+                q = "1/2 ";
+            }
+            if (quantity == 0.75) {
+                q = "3/4 ";
+            }
+        }
+
+        if (!unit_code.equals("unit")) {
+            switch(unit_code) {
+                case "g":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_g_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_g) + " ";
+                    }
+                    break;
+                case "kg":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_kg_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_kg) + " ";
+                    }
+                    break;
+                case "ml":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_ml_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_ml) + " ";
+                    }
+                    break;
+                case "l":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_l_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_l) + " ";
+                    }
+                    break;
+                case "cup":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_cup_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_cup) + " ";
+                    }
+                    break;
+                case "tsp":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_tsp_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_tsp) + " ";
+                    }
+                    break;
+                case "tbsp":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_tbsp_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_tbsp) + " ";
+                    }
+                    break;
+                case "rasher":
+                    if (plural) {
+                        u = getString(R.string.measurement_unit_rasher_plural) + " ";
+                    } else {
+                        u = getString(R.string.measurement_unit_rasher) + " ";
+                    }
+                    break;
+                default:
+                case "unit":
+                    break;
+            }
+        }
+
+        if (!u.equals("")) {
+            u = u + getString(R.string.measurement_unit_of) + " ";
+        }
+
+        return q + u;
+    }
+
+
+    // TEXT TO SPEECH AND DIALOGS
+
     /**
      * Make TextToSpeech read the direction given by mPresentDescriptionIndex
      */
@@ -518,10 +708,6 @@ public class RecipeDetailFragment extends Fragment
             final View directionLayout = mLayout.findViewWithTag("direction" +
                     mPresentDescriptionIndex);
 
-            // Hide FAB if necessary
-            if (mPresentDescriptionIndex == 0) {
-                this.hideFab();
-            }
             mScrollView.smoothScrollTo(0, directionsLayout.getTop() + directionLayout.getTop() +
                     (int)getResources().getDimension(R.dimen.detail_direction_box_offset));
 
@@ -578,6 +764,7 @@ public class RecipeDetailFragment extends Fragment
 
     /**
      * Set timer dialog
+     * @param time Time to count down
      */
     public void setTimerDialog(Integer time) {
         mTimerDialog = new Dialog(getActivity());
@@ -660,7 +847,6 @@ public class RecipeDetailFragment extends Fragment
             @Override
             public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    Log.d("INFO", "KEYCODE BACK");
                     mCountDownTimer.cancel();
                     mTimerDialog.dismiss();
                 }
@@ -669,6 +855,9 @@ public class RecipeDetailFragment extends Fragment
         });
     }
 
+    /**
+     * Show timer dialog set up in setTimerDialog
+     */
     public void showTimerDialog() {
         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
 
@@ -948,7 +1137,6 @@ public class RecipeDetailFragment extends Fragment
             @Override
             public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    Log.d("INFO", "KEYCODE BACK");
                     mSpeechRecognizer.cancel();
                     mSpeechRecognizer.destroy();
                     mCommandsDialog.dismiss();
@@ -961,163 +1149,15 @@ public class RecipeDetailFragment extends Fragment
         mSpeechRecognizer.startListening(recognizerIntent);
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
+
+    // SCROLL METHODS
+
+    public ObservableScrollView getScrollView() {
+        return mScrollView;
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        Log.i(getClass().getSimpleName(), "onHidden()");
-        if (!hidden) {
-            Log.i(getClass().getSimpleName(), "Not hidden");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-    }
-
-    private String getTypeOfDish(String code) {
-        switch(code) {
-            case "APPETIZER":
-                return getString(R.string.type_of_dish_appetizer);
-            case "FIRST-COURSE":
-                return getString(R.string.type_of_dish_first_course);
-            case "SECOND-COURSE":
-                return getString(R.string.type_of_dish_second_course);
-            case "MAIN-DISH":
-                return getString(R.string.type_of_dish_main_dish);
-            case "DESSERT":
-                return getString(R.string.type_of_dish_dessert);
-            default:
-            case "OTHER":
-                return getString(R.string.type_of_dish_other);
-        }
-    }
-
-    private String getDifficulty(String code) {
-        switch(code) {
-            case "HIGH":
-                return getString(R.string.difficulty_high);
-            case "LOW":
-                return getString(R.string.difficulty_low);
-            default:
-            case "MEDIUM":
-                return getString(R.string.difficulty_medium);
-        }
-    }
-
-    private String getCookingTime(float time) {
-        int intTime = (int)time;
-        return Objects.toString(intTime) + " " + getString(R.string.detail_minutes);
-    }
-
-    private String getIngredientQuantity(float quantity, String unit_code) {
-        String q = "", u = "";
-        boolean plural = true;
-
-        if (quantity > 0) {
-            float result = quantity - (int)quantity;
-            if (result != 0) {
-                q = String.format("%.2f", quantity) + " ";
-            } else {
-                q = String.format("%.0f", quantity) + " ";
-            }
-
-            if (quantity <= 1) {
-                plural = false;
-            }
-
-            if (quantity == 0.25) {
-                q = "1/4 ";
-            }
-            if (quantity == 0.5) {
-                q = "1/2 ";
-            }
-            if (quantity == 0.75) {
-                q = "3/4 ";
-            }
-        }
-
-        if (!unit_code.equals("unit")) {
-            switch(unit_code) {
-                case "g":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_g_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_g) + " ";
-                    }
-                    break;
-                case "kg":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_kg_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_kg) + " ";
-                    }
-                    break;
-                case "ml":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_ml_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_ml) + " ";
-                    }
-                    break;
-                case "l":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_l_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_l) + " ";
-                    }
-                    break;
-                case "cup":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_cup_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_cup) + " ";
-                    }
-                    break;
-                case "tsp":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_tsp_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_tsp) + " ";
-                    }
-                    break;
-                case "tbsp":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_tbsp_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_tbsp) + " ";
-                    }
-                    break;
-                case "rasher":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_rasher_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_rasher) + " ";
-                    }
-                    break;
-                default:
-                case "unit":
-                    break;
-            }
-        }
-
-        if (!u.equals("")) {
-            u = u + getString(R.string.measurement_unit_of) + " ";
-        }
-
-        return q + u;
-    }
-
-    @Override
-    public void onDownMotionEvent() {}
-
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {
-
+    public void scrollUp() {
+        mScrollView.smoothScrollTo(0, 0);
     }
 
     @Override
@@ -1133,13 +1173,19 @@ public class RecipeDetailFragment extends Fragment
         ViewHelper.setAlpha(mOverlayView, ScrollUtils.getFloat((float) scrollY / flexibleRange,
                 0, 1));
 
-        // Move recipe name text
+        // Move recipe text views
         ViewHelper.setPivotX(mRecipeName, 0);
         ViewHelper.setPivotY(mRecipeName, 0);
+        ViewHelper.setPivotX(mRecipeOwner, 0);
+        ViewHelper.setPivotY(mRecipeOwner, 0);
 
-        int maxTitleTranslationY = mFlexibleSpaceImageHeight - mRecipeName.getHeight();
-        int titleTranslationY = maxTitleTranslationY - scrollY;
-        ViewHelper.setTranslationY(mRecipeName, titleTranslationY);
+
+        int maxTextTranslationY = mFlexibleSpaceImageHeight - mRecipeName.getHeight() -
+                mRecipeOwner.getHeight();
+        int textTranslationY = maxTextTranslationY - scrollY;
+
+        ViewHelper.setTranslationY(mRecipeName, textTranslationY);
+        ViewHelper.setTranslationY(mRecipeOwner, textTranslationY);
 
         // Move FAB
         int maxFabTranslationY = mFlexibleSpaceImageHeight - mFab.getHeight() / 2;
@@ -1158,27 +1204,21 @@ public class RecipeDetailFragment extends Fragment
         }
 
         if (fabTranslationY < mFlexibleSpaceShowFabOffset) {
-            hideFab();
+            // Hide FAB
+            mFab.animate().cancel();
+            mFab.animate().scaleX(0).alpha(0).setDuration(150).start();
         } else {
-            showFab();
-        }
-    }
-
-    private void showFab() {
-        if (!mFabIsShown) {
+            // Show FAB
             mFab.animate().cancel();
-            mFab.animate().scaleX(1).scaleY(1).alpha(1).setDuration(200).start();
-
-            mFabIsShown = true;
+            mFab.animate().scaleX(1).scaleY(1).alpha(1).setDuration(150).start();
         }
     }
 
-    private void hideFab() {
-        if (mFabIsShown) {
-            mFab.animate().cancel();
-            mFab.animate().scaleX(0).alpha(0).setDuration(200).start();
+    // Needed to prevent an error
+    @Override
+    public void onDownMotionEvent() {}
 
-            mFabIsShown = false;
-        }
-    }
+    // Needed to prevent an error
+    @Override
+    public void onUpOrCancelMotionEvent(ScrollState scrollState) {}
 }

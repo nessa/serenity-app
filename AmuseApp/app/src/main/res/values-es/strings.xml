@@ -34,7 +34,8 @@
     <string name="detail_servings_label">Comensales:</string>
     <string name="detail_source_label">Fuente:</string>
     <string name="detail_rating_label">Puntuación:</string>
-    <string name="detail_minutes">minutes</string>
+    <string name="detail_minutes">\'</string>
+    <string name="detail_seconds">\'\'</string>
     <!-- Types of dish -->
     <string name="type_of_dish_appetizer">Entrante</string>
     <string name="type_of_dish_first_course">Primer plato</string>
