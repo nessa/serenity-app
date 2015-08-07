@@ -391,6 +391,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+    public Integer countRecipes() {
+        mDatabase = getReadableDatabase();
+
+        String count = "SELECT count(*) FROM " + RecipeContract.TABLE_NAME;
+        Cursor mcursor = mDatabase.rawQuery(count, null);
+        mcursor.moveToFirst();
+
+        return mcursor.getInt(0);
+    }
+
+
     /**
      * Initialize example data to show when the application is first installed.
      */

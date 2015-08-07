@@ -1,7 +1,5 @@
 package com.amusebouche.amuseapp;
 
-import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Point;
 import android.app.Activity;
 import android.app.Fragment;
@@ -12,13 +10,10 @@ import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.amusebouche.data.DatabaseHelper;
 import com.amusebouche.services.ServiceHandler;
@@ -42,34 +37,73 @@ import java.util.ArrayList;
  * - Content: fragment_recipe_list.xml
  */
 public class RecipeListFragment extends Fragment {
-    private RelativeLayout mLayout;
-    private ProgressDialog infoDialog;
-    private GridView mGridView;
-    private ProgressBar mProgressBar;
-    private LinearLayout mProgressBarLayout;
+
+    // Data variables
     private ArrayList<Recipe> mRecipes;
-    private Integer mRecipesPage;
-    private Integer mLastGridviewPosition;
-    private DatabaseHelper mDatabaseHelper;
     private Boolean mOffline = true;
 
+    // UI variables
+    private RelativeLayout mLayout;
+    private GridView mGridView;
+    private ProgressBar mProgressBar;
+
+    // Services variables
+
+    private DatabaseHelper mDatabaseHelper;
+
+
+    // Gridview scroll variables
 
     /**
-     * visibleThreshold – The minimum amount of items to have below your current scroll position, before loading more.
-     currentPage – The current page of data you have loaded
-     previousTotal – The total number of items in the dataset after the last load
-     loading – True if we are still waiting for the last set of data to load.
+     * The minimum amount of items to have below your current scroll position, before loading more.
      */
-    private int mVisibleThreshold = 5;
-    private int mCurrentPage = 1;
+    private int mVisibleThreshold;
+    /**
+     * The current page of data you have loaded
+     */
+    private int mCurrentPage;
+    /**
+     * Number of elements to load in every page
+     */
+    private Integer mLimitPerPage;
+    /**
+     * The total number of items in the dataset after the last load
+     */
     private int mPreviousTotal = 0;
+    /**
+     * True if we are still waiting for the last set of data to load.
+     */
     private boolean mLoading = true;
 
+
+    // LIFECYCLE METHODS
+
+    /**
+     * Called when a fragment is first attached to its activity.
+     *
+     * @param activity Fragemnt activity (DetailActivity)
+     */
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
     }
 
+    /**
+     * Called when the fragment's activity has been created and this fragment's view
+     * hierarchy instantiated.
+     * @param savedInstanceState State of the fragment if it's being re-created.
+     */
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    /**
+     * Called to do initial creation of a fragment. This is called after onAttach and before
+     * onCreateView.
+     * @param savedInstanceState Saved state (if the fragment is being re-created)
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,18 +113,22 @@ public class RecipeListFragment extends Fragment {
         mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
 
         // Prevent errors
-        mRecipes = new ArrayList<>();
+        mRecipes = new ArrayList<Recipe>();
 
         // Calling async task to get json
         if (savedInstanceState == null || !savedInstanceState.containsKey("recipes")) {
-            mLastGridviewPosition = 0;
-
             // Get recipes from main activity
             MainActivity x = (MainActivity)getActivity();
             mRecipes = x.getRecipes();
+            mCurrentPage = x.getCurrentPage();
+            mLimitPerPage = x.getLimitPerPage();
+            mVisibleThreshold = (int) mLimitPerPage / 4;
         } else {
             mRecipes = savedInstanceState.getParcelableArrayList("recipes");
-            mLastGridviewPosition = savedInstanceState.getInt("last_position");
+            mCurrentPage = savedInstanceState.getInt("current_page");
+            mLimitPerPage = savedInstanceState.getInt("limit");
+
+            mVisibleThreshold = (int) mLimitPerPage / 4;
 
             for (int i = 0; i < mRecipes.size(); i++) {
                 mRecipes.get(i).printString();
@@ -98,12 +136,15 @@ public class RecipeListFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
+    /**
+     * Called to have the fragment instantiate its user interface view. This will be called between
+     * onCreate and onActivityCreated, onViewStateRestored, onStart().
+     * @param inflater The LayoutInflater object that can be used to inflate views in the fragment,
+     * @param container  This is the parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState If this fragment is being re-constructed from a previous saved
+     *                           state as given here.
+     * @return Return the View for the this fragment's UI.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -154,10 +195,6 @@ public class RecipeListFragment extends Fragment {
             }
         });
 
-        /*
-        if (mLastGridviewPosition != 0) {
-            mGridView.smoothScrollToPosition(mLastGridviewPosition);
-        }*/
 
         FloatingActionButton addButton = (FloatingActionButton) mLayout.findViewById(R.id.fab);
 
@@ -171,6 +208,9 @@ public class RecipeListFragment extends Fragment {
         return mLayout;
     }
 
+    /**
+     * Called when the fragment is visible to the user and actively running.
+     */
     @Override
     public void onResume() {
         Log.i(getClass().getSimpleName(), "onResume()");
@@ -178,16 +218,16 @@ public class RecipeListFragment extends Fragment {
         changeActionButton();
     }
 
+    /**
+     * Called to ask the fragment to save its current dynamic state, so it can later be
+     * reconstructed in a new instance of its process is restarted.
+     * @param outState Bundle in which to place the saved state.
+     */
     @Override
     public void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putParcelableArrayList("recipes", mRecipes);
-
-        // This fails!! Maybe we could add it to shared preferences??
-        //outState.putInt("last_position", mGridView.getFirstVisiblePosition());
-
-
-        //outState.putInt("present_page", mRecipesPage);
     }
 
     @Override
@@ -205,40 +245,15 @@ public class RecipeListFragment extends Fragment {
     }
 
 
-    public void setNewRecipes() {
-        final int positionToSave = mGridView.getFirstVisiblePosition();
-        GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
-        adapter.setRecipes(mRecipes);
-
-        mGridView.post(new Runnable() {
-
-            @Override
-            public void run() {
-                mGridView.setSelection(positionToSave);
-            }
-        });
-
-        mGridView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-
-            @Override
-            public boolean onPreDraw() {
-                if (mGridView.getFirstVisiblePosition() == positionToSave) {
-                    mGridView.getViewTreeObserver().removeOnPreDrawListener(this);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-    }
-
     public void makeFavorite(View v) {
         Log.v("INFO", "Favorite " + v.getTag());
     }
 
-    /* Instead of using the action bar method setNavigationMode, we define specifically the
+    /**
+     *  Instead of using the action bar method setNavigationMode, we define specifically the
      * buttons to show. We call this method when the app is created the first time (onResume)
-     * and every time it appears again (onHiddenChange). */
+     * and every time it appears again (onHiddenChange).
+     */
     private void changeActionButton() {
         MainActivity x = (MainActivity) getActivity();
         x.setDrawerIndicatorEnabled(true);
@@ -247,14 +262,12 @@ public class RecipeListFragment extends Fragment {
 
     /**
      * Async task class to get json by making HTTP call
-     * */
+     */
     private class GetRecipes extends AsyncTask<Void, Integer, Void> {
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            Log.d("INFO", "PRE EXECUTE");
 
             mProgressBar.setVisibility(View.VISIBLE);
         }
@@ -262,8 +275,7 @@ public class RecipeListFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... result) {
             if (mOffline) {
-                mDatabaseHelper.initializeExampleData();
-                mRecipes.addAll(mDatabaseHelper.getRecipes(12, mCurrentPage*12));
+                mRecipes.addAll(mDatabaseHelper.getRecipes(mLimitPerPage, mCurrentPage * mLimitPerPage));
             } else {
                 // Create service handler class instance
                 ServiceHandler sh = new ServiceHandler();
@@ -273,8 +285,6 @@ public class RecipeListFragment extends Fragment {
 
                     // Make a request to url and getting response
                     String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
-
-                    Log.d("RESPONSE", "> " + jsonStr);
 
                     if (jsonStr != null) {
                         try {
@@ -301,14 +311,13 @@ public class RecipeListFragment extends Fragment {
 
         //Update the progress
         @Override
-        protected void onProgressUpdate(Integer... values) {
-        }
+        protected void onProgressUpdate(Integer... values) {}
 
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            Log.d("INFO", "POST EXECUTE");
+            // Notify the adapter the new elements added
             GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
             adapter.notifyDataSetChanged();
 

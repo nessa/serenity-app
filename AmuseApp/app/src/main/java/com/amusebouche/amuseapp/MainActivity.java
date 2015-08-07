@@ -37,11 +37,22 @@ public class MainActivity extends ActionBarActivity implements
         NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     public static final int PROFILE = 0, RECIPES = 1;
+
+    // Data variables
+    private ArrayList<Recipe> mRecipes;
+    private Integer mCurrentPage;
+    private Integer mLimitPerPage;
+
+    // UI variables
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private Fragment initialFragment;
-    private ArrayList<Recipe> mRecipes;
 
 
+    /**
+     * Called when the activity is starting. This is where most initialization should go.
+     * @param savedInstanceState Data supplied when the activity is being re-initialized
+     *                           after previously being shut down.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +61,8 @@ public class MainActivity extends ActionBarActivity implements
 
         Intent i = getIntent();
         mRecipes = i.getParcelableArrayListExtra("recipes");
+        mCurrentPage = i.getIntExtra("current_page", 0);
+        mLimitPerPage = i.getIntExtra("limit", 0);
 
         // Set up the drawer
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
@@ -64,31 +77,12 @@ public class MainActivity extends ActionBarActivity implements
         actionBar.setHomeButtonEnabled(true);
     }
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // Update the main content by replacing fragments
-        Fragment fragment;
-        String tab = "";
-        switch (position) {
-            /*
-            case PROFILE:
-                fragment = new RecipeListFragment();
-                break;*/
-            default:
-            case RECIPES:
-                tab = "Recipes";
-                initialFragment = new RecipeListFragment();
-                fragment = initialFragment;
-                break;
-        }
-        if (!isFinishing()) {
-            // TODO: Check this code.
-            getFragmentManager().popBackStack();
-            getFragmentManager().beginTransaction().add(R.id.container, fragment)
-                    .addToBackStack("fragBack").commit();
-        }
-    }
 
+    // UI METHODS
+
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
@@ -127,11 +121,42 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
+
+    // NAVIGATION DRAWER METHODS
+
+    @Override
+    public void onNavigationDrawerItemSelected(int position) {
+        // Update the main content by replacing fragments
+        Fragment fragment;
+        String tab = "";
+        switch (position) {
+            /*
+            case PROFILE:
+                fragment = new RecipeListFragment();
+                break;*/
+            default:
+            case RECIPES:
+                tab = "Recipes";
+                initialFragment = new RecipeListFragment();
+                fragment = initialFragment;
+                break;
+        }
+        if (!isFinishing()) {
+            // TODO: Check this code.
+            getFragmentManager().popBackStack();
+            getFragmentManager().beginTransaction().add(R.id.container, fragment)
+                    .addToBackStack("fragBack").commit();
+        }
+    }
+
+
     /* Method needed to change the action bar button by using the navigation drawer fragment. */
     public void setDrawerIndicatorEnabled(boolean v) {
         mNavigationDrawerFragment.setDrawerIndicatorEnabled(v);
     }
 
+
+    // MENU METHODS
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -152,9 +177,23 @@ public class MainActivity extends ActionBarActivity implements
         }
     }
 
-    public ArrayList getRecipes() {
+
+    // GETTERS
+
+    public ArrayList<Recipe> getRecipes() {
         return mRecipes;
     }
+
+    public Integer getCurrentPage() {
+        return mCurrentPage;
+    }
+
+    public Integer getLimitPerPage() {
+        return mLimitPerPage;
+    }
+
+
+    // FUNCTIONALITY METHODS
 
     /**
      * Search will call to another (lateral) fragment.

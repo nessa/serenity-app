@@ -26,8 +26,17 @@ import com.amusebouche.data.Recipe;
  * - Content: activity_detail.xml
  */
 public class DetailActivity extends ActionBarActivity {
+
+    // Data variables
     private Recipe mRecipe;
 
+    // LIFECYCLE METHODS
+
+    /**
+     * Called when the activity is starting. This is where most initialization should go.
+     * @param savedInstanceState Data supplied when the activity is being re-initialized
+     *                           after previously being shut down.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
@@ -43,23 +52,28 @@ public class DetailActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_detail);
 
-        this.setBarTitle(mRecipe.getTitle());
-    }
-
-
-    public Recipe getRecipe() { return mRecipe; }
-
-    public void setBarTitle(String title) {
+        // Set bar title
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(title);
+        actionBar.setTitle(mRecipe.getTitle());
     }
 
+    /**
+     * Called to retrieve per-instance state from an activity before being killed so
+     * the state can be restored in onCreate method.
+     * @param outState Bundle in which to place the saved state.
+     */
     @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
         outState.putParcelable("recipe", mRecipe);
     }
 
+
+    // UI METHODS
+
+    /**
+     * Called when the activity has detected the user's press of the back key.
+     */
     @Override
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
@@ -74,6 +88,9 @@ public class DetailActivity extends ActionBarActivity {
             super.onBackPressed();
         }
     }
+
+
+    // MENU METHODS
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -97,6 +114,12 @@ public class DetailActivity extends ActionBarActivity {
         }
     }
 
+    // GETTERS
+
+    public Recipe getRecipe() { return mRecipe; }
+
+
+    // FUNCTIONALITY METHODS
 
     public void makeFavorite() {
         Log.v("INFO", "Favorite X");

@@ -27,6 +27,8 @@ public class SplashScreenActivity extends Activity {
     private DatabaseHelper mDatabaseHelper;
     private Boolean mOffline = true;
     private ArrayList<Recipe> mRecipes;
+    private Integer mCurrentPage;
+    private Integer mLimitPerPage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,11 @@ public class SplashScreenActivity extends Activity {
 
         // Gets the database helper to access the database for the application
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
+
+        // Set paginate variables
+        mCurrentPage = 0;
+        // TODO: Get this from preferences??
+        mLimitPerPage = 10;
 
         setContentView(R.layout.splash_screen);
 
@@ -65,8 +72,14 @@ public class SplashScreenActivity extends Activity {
         @Override
         protected Void doInBackground(Void... result) {
             if (mOffline) {
-                mDatabaseHelper.initializeExampleData();
-                mRecipes = mDatabaseHelper.getRecipes(12, 0);
+                Integer numberOfRecipes = mDatabaseHelper.countRecipes();
+                Log.d("INFO", "Number of recipes = " + numberOfRecipes);
+                if (numberOfRecipes == 0) {
+                    Log.d("INFO", "Initialize example data");
+                    mDatabaseHelper.initializeExampleData();
+                }
+
+                mRecipes = mDatabaseHelper.getRecipes(mLimitPerPage, mLimitPerPage*mCurrentPage);
             } else {
                 // Create service handler class instance
                 ServiceHandler sh = new ServiceHandler();
@@ -76,8 +89,6 @@ public class SplashScreenActivity extends Activity {
 
                     // Make a request to url and getting response
                     String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
-
-                    Log.d("RESPONSE", "> " + jsonStr);
 
                     if (jsonStr != null) {
                         try {
@@ -123,6 +134,8 @@ public class SplashScreenActivity extends Activity {
             Intent mainIntent = new Intent().setClass(
                     SplashScreenActivity.this, MainActivity.class);
             mainIntent.putExtra("recipes", mRecipes);
+            mainIntent.putExtra("current_page", mCurrentPage);
+            mainIntent.putExtra("limit", mLimitPerPage);
             startActivity(mainIntent);
 
             // Close the activity so the user won't be able to go back to this

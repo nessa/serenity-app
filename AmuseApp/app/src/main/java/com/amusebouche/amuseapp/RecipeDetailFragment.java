@@ -116,6 +116,11 @@ public class RecipeDetailFragment extends Fragment
         super.onAttach(activity);
     }
 
+    /**
+     * Called when the fragment's activity has been created and this fragment's view
+     * hierarchy instantiated.
+     * @param savedInstanceState State of the fragment if it's being re-created.
+     */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
