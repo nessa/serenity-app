@@ -46,6 +46,7 @@ public class RecipeListFragment extends Fragment {
     private RelativeLayout mLayout;
     private GridView mGridView;
     private ProgressBar mProgressBar;
+    private Integer mGridViewHeight;
 
     // Services variables
 
@@ -122,13 +123,13 @@ public class RecipeListFragment extends Fragment {
             mRecipes = x.getRecipes();
             mCurrentPage = x.getCurrentPage();
             mLimitPerPage = x.getLimitPerPage();
-            mVisibleThreshold = (int) mLimitPerPage / 4;
+            mVisibleThreshold = mLimitPerPage / 4;
         } else {
             mRecipes = savedInstanceState.getParcelableArrayList("recipes");
             mCurrentPage = savedInstanceState.getInt("current_page");
             mLimitPerPage = savedInstanceState.getInt("limit");
 
-            mVisibleThreshold = (int) mLimitPerPage / 4;
+            mVisibleThreshold = mLimitPerPage / 4;
 
             for (int i = 0; i < mRecipes.size(); i++) {
                 mRecipes.get(i).printString();
@@ -269,6 +270,8 @@ public class RecipeListFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
 
+            Log.d("INFO", "PRE");
+
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
@@ -309,7 +312,6 @@ public class RecipeListFragment extends Fragment {
             return null;
         }
 
-        //Update the progress
         @Override
         protected void onProgressUpdate(Integer... values) {}
 
