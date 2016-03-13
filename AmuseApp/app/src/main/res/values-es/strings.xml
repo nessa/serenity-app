@@ -85,6 +85,7 @@
     <string name="voice_command_repeat">repetir</string>
     <string name="voice_command_timer">temporizador</string>
     <string name="voice_command_next">siguiente</string>
+    <string name="voice_command_exit">salir</string>
     <string name="voice_or">o</string>
     <string name="voice_error_audio">Error de grabacion de audio</string>
     <string name="voice_error_client">Error del lado del cliente</string>
@@ -94,6 +95,6 @@
     <string name="voice_error_no_match">No hay coincidencia</string>
     <string name="voice_error_recognizer_busy">El servicio de reconocimiento está ocupado</string>
     <string name="voice_error_server">Error del servidor</string>
-    <string name="voice_error_speech_timeout">No hay entrada de voz. Por favor, diga uno de estas órdenes:</string>
-    <string name="voice_error_not_understood">No entendí. Por favor, diga uno de estas órdenes:</string>
+    <string name="voice_error_speech_timeout">No hay entrada de voz. Por favor, diga una de estas órdenes:</string>
+    <string name="voice_error_not_understood">No entendí. Por favor, diga una de estas órdenes:</string>
 </resources>

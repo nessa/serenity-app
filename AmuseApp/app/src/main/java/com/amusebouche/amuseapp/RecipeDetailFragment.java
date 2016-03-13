@@ -56,10 +56,10 @@ import java.util.Objects;
 /**
  * Recipe detail fragment class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
- *
+ * <p/>
  * Android fragment class, part of main activity.
  * It contains and shows the recipe detailed information.
- *
+ * <p/>
  * Related layouts:
  * - Content: fragment_recipe_detail.xml
  */
@@ -72,7 +72,7 @@ public class RecipeDetailFragment extends Fragment
     private Integer mPresentDescriptionIndex;
 
     // Behaviour variables
-    private boolean mContinueMode;
+    private boolean mOngoingMode;
 
     // Services variables
     private TextToSpeech mTTS;
@@ -102,6 +102,8 @@ public class RecipeDetailFragment extends Fragment
     // Commands dialog variables
     private Dialog mCommandsDialog;
     private SpeechRecognizer mSpeechRecognizer;
+    private CountDownTimer mSpeechRecognizerTimer;
+    private boolean mSpeechRecognizerTimerIsRunning;
 
 
     // LIFECYCLE METHODS
@@ -119,6 +121,7 @@ public class RecipeDetailFragment extends Fragment
     /**
      * Called when the fragment's activity has been created and this fragment's view
      * hierarchy instantiated.
+     *
      * @param savedInstanceState State of the fragment if it's being re-created.
      */
     @Override
@@ -130,6 +133,7 @@ public class RecipeDetailFragment extends Fragment
     /**
      * Called to do initial creation of a fragment. This is called after onAttach and before
      * onCreateView.
+     *
      * @param savedInstanceState Saved state (if the fragment is being re-created)
      */
     @Override
@@ -182,11 +186,25 @@ public class RecipeDetailFragment extends Fragment
         if (mTTS != null) {
             mTTS.shutdown();
         }
+
+        if (mSpeechRecognizer != null) {
+            mSpeechRecognizer.cancel();
+            mSpeechRecognizer.destroy();
+        }
+
+        if (mCountDownTimer != null) {
+            mCountDownTimer.cancel();
+        }
+
+        if (mSpeechRecognizerTimer != null) {
+            mSpeechRecognizerTimer.cancel();
+        }
     }
 
     /**
      * Called to ask the fragment to save its current dynamic state, so it can later be
      * reconstructed in a new instance of its process is restarted.
+     *
      * @param outState Bundle in which to place the saved state.
      */
     @Override
@@ -205,8 +223,9 @@ public class RecipeDetailFragment extends Fragment
     /**
      * Called to have the fragment instantiate its user interface view. This will be called between
      * onCreate and onActivityCreated, onViewStateRestored, onStart().
-     * @param inflater The LayoutInflater object that can be used to inflate views in the fragment,
-     * @param container  This is the parent view that the fragment's UI should be attached to.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views in the fragment,
+     * @param container          This is the parent view that the fragment's UI should be attached to.
      * @param savedInstanceState If this fragment is being re-constructed from a previous saved
      *                           state as given here.
      * @return Return the View for the this fragment's UI.
@@ -221,7 +240,7 @@ public class RecipeDetailFragment extends Fragment
          * much work on its main thread. */
 
         // Get recipe from activity
-        DetailActivity x = (DetailActivity)getActivity();
+        DetailActivity x = (DetailActivity) getActivity();
         mRecipe = x.getRecipe();
 
         mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_recipe_detail,
@@ -269,7 +288,7 @@ public class RecipeDetailFragment extends Fragment
             @Override
             public void onClick(View v) {
                 if (RecipeDetailFragment.this.mRecipe.getDirections().size() > 0) {
-                    mContinueMode = true;
+                    mOngoingMode = true;
                     mPresentDescriptionIndex = 0;
                     RecipeDetailFragment.this.readDescription();
                 } else {
@@ -311,7 +330,7 @@ public class RecipeDetailFragment extends Fragment
 
         float rating = 0;
         if (mRecipe.getUsersRating() != 0) {
-            rating = (float)mRecipe.getTotalRating()/ (float)mRecipe.getUsersRating();
+            rating = (float) mRecipe.getTotalRating() / (float) mRecipe.getUsersRating();
         }
 
         TextView ratingTextView = (TextView) mLayout.findViewById(R.id.rating);
@@ -321,7 +340,7 @@ public class RecipeDetailFragment extends Fragment
         LinearLayout ingredientsLayout = (LinearLayout) mLayout.findViewById(R.id.ingredients);
 
         for (int i = 0; i < mRecipe.getIngredients().size(); i++) {
-            RecipeIngredient presentIngredient = (RecipeIngredient)mRecipe.getIngredients().get(i);
+            RecipeIngredient presentIngredient = (RecipeIngredient) mRecipe.getIngredients().get(i);
 
             LinearLayout ingredientLayout = (LinearLayout) inflater.inflate(
                     R.layout.fragment_recipe_detail_ingredient, mLayout, false);
@@ -340,15 +359,15 @@ public class RecipeDetailFragment extends Fragment
         LinearLayout directionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
 
         for (int d = 0; d < mRecipe.getDirections().size(); d++) {
-            RecipeDirection presentDirection = (RecipeDirection)mRecipe.getDirections().get(d);
+            RecipeDirection presentDirection = (RecipeDirection) mRecipe.getDirections().get(d);
 
             LinearLayout directionLayout = (LinearLayout) inflater.inflate(
                     R.layout.fragment_recipe_detail_direction, mLayout, false);
-            directionLayout.setTag("direction"+d);
+            directionLayout.setTag("direction" + d);
 
             TextView number = (TextView) directionLayout.findViewById(R.id.number);
-            number.setText(getString(R.string.detail_direction_label) + " " +
-                    Objects.toString(presentDirection.getSortNumber()));
+            number.setText(String.format("%s %d", getString(R.string.detail_direction_label),
+                    presentDirection.getSortNumber()));
 
             TextView description = (TextView) directionLayout.findViewById(R.id.description);
             description.setText(presentDirection.getDescription());
@@ -373,10 +392,10 @@ public class RecipeDetailFragment extends Fragment
             readDirectionButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mContinueMode = false;
+                    mOngoingMode = false;
 
                     RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
-                            (int)v.getTag());
+                            (int) v.getTag());
                     CharSequence text = dir.getDescription();
 
                     if (text != "") {
@@ -392,7 +411,7 @@ public class RecipeDetailFragment extends Fragment
                     @Override
                     public void onClick(View v) {
                         RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
-                                (int)v.getTag());
+                                (int) v.getTag());
 
                         // Send selected recipe to the next activity
                         Intent i = new Intent(getActivity(), MediaActivity.class);
@@ -426,10 +445,10 @@ public class RecipeDetailFragment extends Fragment
                                 (int) v.getTag());
 
                         // Calc time variables
-                        Integer time = (int)dir.getTime().floatValue();
+                        Integer time = (int) dir.getTime().floatValue();
 
-                        mTimerHours = time/3600;
-                        mTimerMinutes = (time/60 ) % 60;
+                        mTimerHours = time / 3600;
+                        mTimerMinutes = (time / 60) % 60;
                         mTimerSeconds = time % 60;
 
                         // Set dialog attributes
@@ -442,9 +461,9 @@ public class RecipeDetailFragment extends Fragment
                         final TextView minutesTextView = (TextView) selectTimeDialog.findViewById(R.id.minutes);
                         final TextView secondsTextView = (TextView) selectTimeDialog.findViewById(R.id.seconds);
 
-                        hoursTextView.setText(mTimerHours + "");
-                        minutesTextView.setText(mTimerMinutes + "");
-                        secondsTextView.setText(mTimerSeconds + "");
+                        hoursTextView.setText(String.format("%d", mTimerHours));
+                        minutesTextView.setText(String.format("%d", mTimerMinutes));
+                        secondsTextView.setText(String.format("%d", mTimerSeconds));
 
                         // Number pickers for hours, minutes and seconds
                         final CustomNumberPicker hoursPicker = (CustomNumberPicker)
@@ -458,7 +477,7 @@ public class RecipeDetailFragment extends Fragment
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                                 RecipeDetailFragment.this.mTimerHours = newVal;
-                                hoursTextView.setText(mTimerHours + "");
+                                hoursTextView.setText(String.format("%d", mTimerHours));
                             }
                         });
 
@@ -473,7 +492,7 @@ public class RecipeDetailFragment extends Fragment
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                                 RecipeDetailFragment.this.mTimerMinutes = newVal;
-                                minutesTextView.setText(mTimerMinutes + "");
+                                minutesTextView.setText(String.format("%d", mTimerMinutes));
                             }
                         });
 
@@ -488,7 +507,7 @@ public class RecipeDetailFragment extends Fragment
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                                 RecipeDetailFragment.this.mTimerSeconds = newVal;
-                                secondsTextView.setText(mTimerSeconds + "");
+                                secondsTextView.setText(String.format("%d", mTimerSeconds));
                             }
                         });
 
@@ -537,11 +556,12 @@ public class RecipeDetailFragment extends Fragment
 
     /**
      * Translate typeOfDish code to an understandable string
+     *
      * @param code API type of dish code
      * @return User-friendly string
      */
     private String getTypeOfDish(String code) {
-        switch(code) {
+        switch (code) {
             case "APPETIZER":
                 return getString(R.string.type_of_dish_appetizer);
             case "FIRST-COURSE":
@@ -560,11 +580,12 @@ public class RecipeDetailFragment extends Fragment
 
     /**
      * Translate difficulty code to an understandable string
+     *
      * @param code API difficulty code
      * @return User-friendly string
      */
     private String getDifficulty(String code) {
-        switch(code) {
+        switch (code) {
             case "HIGH":
                 return getString(R.string.difficulty_high);
             case "LOW":
@@ -577,12 +598,13 @@ public class RecipeDetailFragment extends Fragment
 
     /**
      * Translate cookingTime code to an understandable string
+     *
      * @param time Float time
      * @return User-friendly string
      */
     private String getCookingTime(float time) {
-        int minutes = (int)(time/60);
-        int seconds = (int)(time % 60);
+        int minutes = (int) (time / 60);
+        int seconds = (int) (time % 60);
 
         String completeTime = seconds + getString(R.string.detail_seconds);
         if (minutes > 0) {
@@ -594,6 +616,7 @@ public class RecipeDetailFragment extends Fragment
 
     /**
      * Translate ingredien's quantity code to an understandable string
+     *
      * @param quantity  Float quantity
      * @param unit_code Code of measurement unit
      * @return User-friendly string
@@ -603,7 +626,7 @@ public class RecipeDetailFragment extends Fragment
         boolean plural = true;
 
         if (quantity > 0) {
-            float result = quantity - (int)quantity;
+            float result = quantity - (int) quantity;
             if (result != 0) {
                 q = String.format("%.2f", quantity) + " ";
             } else {
@@ -626,7 +649,7 @@ public class RecipeDetailFragment extends Fragment
         }
 
         if (!unit_code.equals("unit")) {
-            switch(unit_code) {
+            switch (unit_code) {
                 case "g":
                     if (plural) {
                         u = getString(R.string.measurement_unit_g_plural) + " ";
@@ -700,6 +723,27 @@ public class RecipeDetailFragment extends Fragment
     // TEXT TO SPEECH AND DIALOGS
 
     /**
+     * Exit from 'ongoing mode'
+     */
+    private void exitFromOngoingMode() {
+        mOngoingMode = false;
+
+        if (mSpeechRecognizer != null) {
+            mSpeechRecognizer.cancel();
+            mSpeechRecognizer.destroy();
+        }
+
+        if (mCountDownTimer != null) {
+            mCountDownTimer.cancel();
+        }
+
+        if (mSpeechRecognizerTimer != null) {
+            mSpeechRecognizerTimer.cancel();
+        }
+    }
+
+
+    /**
      * Make TextToSpeech read the direction given by mPresentDescriptionIndex
      */
     public void readDescription() {
@@ -714,7 +758,7 @@ public class RecipeDetailFragment extends Fragment
                     mPresentDescriptionIndex);
 
             mScrollView.smoothScrollTo(0, directionsLayout.getTop() + directionLayout.getTop() +
-                    (int)getResources().getDimension(R.dimen.detail_direction_box_offset));
+                    (int) getResources().getDimension(R.dimen.detail_direction_box_offset));
 
             if (text != "") {
 
@@ -729,7 +773,7 @@ public class RecipeDetailFragment extends Fragment
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (mContinueMode) {
+                                if (mOngoingMode) {
                                     if (dir.getTime() > 0) {
 
                                         // No need to make the listener work
@@ -758,8 +802,8 @@ public class RecipeDetailFragment extends Fragment
             }
 
         } else {
-            // Ended continue mode
-            mContinueMode = false;
+            // Ended ongoing mode
+            exitFromOngoingMode();
 
             // No need to make the listener work
             mTTS.speak(getString(R.string.detail_direction_speak_end_of_recipe_message),
@@ -769,6 +813,7 @@ public class RecipeDetailFragment extends Fragment
 
     /**
      * Set timer dialog
+     *
      * @param time Time to count down
      */
     public void setTimerDialog(Integer time) {
@@ -782,33 +827,33 @@ public class RecipeDetailFragment extends Fragment
         Button skipButton = (Button) mTimerDialog.findViewById(R.id.buttonSkip);
         final ProgressBar progressBar = (ProgressBar) mTimerDialog.findViewById(R.id.progressBar);
 
-        minutesTextView.setText((time/60) + "");
-        secondsTextView.setText((time % 60) + "");
+        minutesTextView.setText(String.format("%d", (time / 60)));
+        secondsTextView.setText(String.format("%d", (time % 60)));
 
         progressBar.setMax(time);
         progressBar.setProgress(time);
 
-        mCountDownTimer =  new CountDownTimer(time * 1000, 1000) {
+        mCountDownTimer = new CountDownTimer(time * 1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                progressBar.setProgress((int) (millisUntilFinished/1000));
+                progressBar.setProgress((int) (millisUntilFinished / 1000));
 
-                Integer m = (int) ((millisUntilFinished/1000)/60);
-                Integer s = (int) (millisUntilFinished/1000) % 60;
+                Integer m = (int) ((millisUntilFinished / 1000) / 60);
+                Integer s = (int) (millisUntilFinished / 1000) % 60;
                 String mString = m + "";
                 String sString = s + "";
                 if (sString.length() == 1) {
                     sString = "0" + sString;
                 }
-                minutesTextView.setText(mString + "");
-                secondsTextView.setText(sString + "");
+                minutesTextView.setText(String.format("%s", mString));
+                secondsTextView.setText(String.format("%s", sString));
             }
 
             public void onFinish() {
                 progressBar.setProgress(0);
 
-                minutesTextView.setText("0");
-                secondsTextView.setText("00");
+                minutesTextView.setText(String.format("%s", "0"));
+                secondsTextView.setText(String.format("%s", "00"));
 
                 // TODO: Pause before dismiss & play an alarm during x seconds
 
@@ -826,7 +871,7 @@ public class RecipeDetailFragment extends Fragment
                         mTimerDialog.dismiss();
 
                         // Wait for command
-                        if (mContinueMode) {
+                        if (mOngoingMode) {
                             RecipeDetailFragment.this.showCommandsDialog();
                         }
                     }
@@ -841,7 +886,7 @@ public class RecipeDetailFragment extends Fragment
                 mTimerDialog.dismiss();
 
                 // Wait for command
-                if (mContinueMode) {
+                if (mOngoingMode) {
                     RecipeDetailFragment.this.showCommandsDialog();
                 }
             }
@@ -940,13 +985,15 @@ public class RecipeDetailFragment extends Fragment
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
 
         final Intent recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        // TODO: Set user language
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "es");
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 getActivity().getPackageName());
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
-        // TODO: Fix this! This is not working (it only waits for 5 or 6 seconds)
+        // This is not working (it waits a random number of seconds)
+        // 'Fixed' with a countdown timer (mSpeechRecognitionTimer)
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 100000);
 
 
@@ -962,52 +1009,62 @@ public class RecipeDetailFragment extends Fragment
 
             @Override
             public void onError(final int errorCode) {
-                Log.d("ERROR", "ON ERROR");
-                // TODO: Fix this! It doesn't execute before wait
                 // Cancel animation and show errors
                 anim.cancel();
                 mainText.setText(getString(R.string.detail_commands_error_message));
                 errorText.setText(getErrorText(errorCode));
 
-                // Wait 5 seconds
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        try {
-                            synchronized (this) {
-                                wait(5000);
-                            }
-                        } catch (InterruptedException ex) {
-                            Log.d("ERROR", ex.getMessage());
-                        }
-
-                        Log.d("ERROR", "RELOAD RECOG");
-                        // Restart voice recognizer after waiting 5 seconds
-                        mSpeechRecognizer.startListening(recognizerIntent);
-                    }
-                });
+                // Restart timer before restart speech recognition
+                restartSpeechRecognizerTimer();
             }
 
             @Override
-            public void onEvent(int arg0, Bundle arg1) {}
+            public void onEvent(int arg0, Bundle arg1) {
+            }
 
             @Override
-            public void onPartialResults(Bundle arg0) {}
+            public void onPartialResults(Bundle arg0) {
+            }
 
             @Override
             public void onReadyForSpeech(Bundle arg0) {
+
                 // Restart animation and default texts
+                String message = getString(R.string.voice_error_not_understood);
+                if (dir.getTime() > 0) {
+                    message = message + " " + getString(R.string.voice_command_repeat) +
+                            ", " + getString(R.string.voice_command_timer) + " " +
+                            getString(R.string.voice_command_next) +
+                            getString(R.string.voice_or) + " " +
+                            getString(R.string.voice_command_exit);
+                } else {
+                    message = message + " " + getString(R.string.voice_command_repeat) +
+                            getString(R.string.voice_command_next) +
+                            " " + getString(R.string.voice_or) + " " +
+                            getString(R.string.voice_command_exit);
+                }
+
                 mainText.setText(getString(R.string.detail_commands_listening_message));
-                errorText.setText("");
+                errorText.setText(message);
                 fab.startAnimation(anim);
+
+
+                // Cancel timer
+                if (mSpeechRecognizerTimer != null) {
+                    mSpeechRecognizerTimer.cancel();
+                    mSpeechRecognizerTimerIsRunning = false;
+                }
             }
 
             @Override
-            public void onResults(Bundle results) {
-                Log.d("INFO", "ON RESULTS");
+            public void onResults(final Bundle results) {
+                boolean keepGoing = false;
 
-                // TODO: Fix this! It doesn't execute before wait
+                // Cancel timer
+                if (mSpeechRecognizerTimer != null) {
+                    mSpeechRecognizerTimer.cancel();
+                }
+
                 // Cancel animation
                 anim.cancel();
 
@@ -1015,62 +1072,99 @@ public class RecipeDetailFragment extends Fragment
                 ArrayList<String> matches = results
                         .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 
-                if (matches.contains(getString(R.string.voice_command_repeat))) {
-                    Log.d("INFO", "REPEAT");
-
-                    mainText.setText(getString(R.string.detail_commands_success_message));
-
-                    mCommandsDialog.dismiss();
-
-                    // Repeat present direction
-                    RecipeDetailFragment.this.readDescription();
-                } else {
-                    if (matches.contains(getString(R.string.voice_command_next))) {
-                        Log.d("INFO", "NEXT");
+                if (matches != null) {
+                    if (matches.contains(getString(R.string.voice_command_repeat))) {
 
                         mainText.setText(getString(R.string.detail_commands_success_message));
                         mCommandsDialog.dismiss();
 
-                        // Read next direction
-                        mPresentDescriptionIndex = mPresentDescriptionIndex + 1;
+                        // Repeat present direction
                         RecipeDetailFragment.this.readDescription();
-
                     } else {
-                        if (matches.contains(getString(R.string.voice_command_timer)) &&
-                                dir.getTime() > 0) {
-                            Log.d("INFO", "TIMER");
+                        if (matches.contains(getString(R.string.voice_command_next))) {
 
                             mainText.setText(getString(R.string.detail_commands_success_message));
                             mCommandsDialog.dismiss();
 
-                            // Show timer
-                            RecipeDetailFragment.this.showTimerDialog();
+                            // Read next direction
+                            mPresentDescriptionIndex = mPresentDescriptionIndex + 1;
+                            RecipeDetailFragment.this.readDescription();
 
                         } else {
-                            mainText.setText(getString(R.string.detail_commands_error_message));
-                            errorText.setText(getString(R.string.voice_error_not_understood));
+                            if (matches.contains(getString(R.string.voice_command_timer)) &&
+                                    dir.getTime() > 0) {
 
-                            // Wait 5 seconds
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        synchronized (this) {
-                                            wait(5000);
-                                        }
-                                    } catch (InterruptedException ex) {
-                                        Log.d("ERROR", ex.getMessage());
-                                    }
+                                mainText.setText(getString(R.string.detail_commands_success_message));
+                                mCommandsDialog.dismiss();
 
-                                    // TODO
-                                    Log.d("INFO", "after waiting 5 seconds");
+                                // Show timer
+                                RecipeDetailFragment.this.showTimerDialog();
 
-                                    // Restart voice recognizer
-                                    mSpeechRecognizer.startListening(recognizerIntent);
+                            } else {
+                                if (!matches.contains(getString(R.string.voice_command_exit))) {
+                                    keepGoing = true;
+                                } else {
+                                    Log.d("INFO", "End of automatic speech");
+                                    exitFromOngoingMode();
                                 }
-                            });
+                            }
                         }
                     }
+                } else {
+                    keepGoing = true;
+                }
+
+                if (keepGoing) {
+                    // Continue waiting for orders
+                    String message = getString(R.string.voice_error_not_understood);
+                    if (dir.getTime() > 0) {
+                        message = message + " " + getString(R.string.voice_command_repeat) +
+                                ", " + getString(R.string.voice_command_timer) + " " +
+                                getString(R.string.voice_command_next) +
+                                getString(R.string.voice_or) + " " +
+                                getString(R.string.voice_command_exit);
+                    } else {
+                        message = message + " " + getString(R.string.voice_command_repeat) +
+                                getString(R.string.voice_command_next) +
+                                " " + getString(R.string.voice_or) + " " +
+                                getString(R.string.voice_command_exit);
+                    }
+
+                    mainText.setText(getString(R.string.detail_commands_error_message));
+                    errorText.setText(message);
+
+                    // Restart timer before restart speech recognition
+                    restartSpeechRecognizerTimer();
+                }
+            }
+
+            /*
+             * Define timer basic methods if it's not setted up
+             * Reload timer if it's not running yet
+             */
+            private void restartSpeechRecognizerTimer() {
+                Log.d("INFO", "after waiting 5 seconds");
+                Log.d("Speech", "onResults: Start a timer");
+                if (mSpeechRecognizerTimer == null) {
+                    mSpeechRecognizerTimer = new CountDownTimer(2000, 500) {
+                        @Override
+                        public void onTick(long l) {
+                            mSpeechRecognizerTimerIsRunning = true;
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            Log.d("Speech", "Timer.onFinish: Timer Finished, Restart recognizer");
+                            mSpeechRecognizer.cancel();
+                            mSpeechRecognizer.startListening(recognizerIntent);
+
+                            mSpeechRecognizerTimerIsRunning = false;
+                        }
+                    };
+                }
+
+                if (!mSpeechRecognizerTimerIsRunning) {
+                    mSpeechRecognizerTimer.start();
                 }
             }
 
@@ -1110,12 +1204,14 @@ public class RecipeDetailFragment extends Fragment
                         if (dir.getTime() > 0) {
                             message = message + " " + getString(R.string.voice_command_repeat) +
                                     ", " + getString(R.string.voice_command_timer) + " " +
+                                    getString(R.string.voice_command_next) +
                                     getString(R.string.voice_or) + " " +
-                                    getString(R.string.voice_command_next);
+                                    getString(R.string.voice_command_exit);
                         } else {
                             message = message + " " + getString(R.string.voice_command_repeat) +
+                                    getString(R.string.voice_command_next) +
                                     " " + getString(R.string.voice_or) + " " +
-                                    getString(R.string.voice_command_next);
+                                    getString(R.string.voice_command_exit);
                         }
                         break;
                     default:
@@ -1123,12 +1219,14 @@ public class RecipeDetailFragment extends Fragment
                         if (dir.getTime() > 0) {
                             message = message + " " + getString(R.string.voice_command_repeat) +
                                     ", " + getString(R.string.voice_command_timer) + " " +
+                                    getString(R.string.voice_command_next) +
                                     getString(R.string.voice_or) + " " +
-                                    getString(R.string.voice_command_next);
+                                    getString(R.string.voice_command_exit);
                         } else {
                             message = message + " " + getString(R.string.voice_command_repeat) +
+                                    getString(R.string.voice_command_next) +
                                     " " + getString(R.string.voice_or) + " " +
-                                    getString(R.string.voice_command_next);
+                                    getString(R.string.voice_command_exit);
                         }
                         break;
                 }

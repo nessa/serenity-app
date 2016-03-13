@@ -85,6 +85,7 @@
     <string name="voice_command_repeat">repeat</string>
     <string name="voice_command_timer">timer</string>
     <string name="voice_command_next">next</string>
+    <string name="voice_command_exit">exit</string>
     <string name="voice_or">or</string>
     <string name="voice_error_audio">Audio recording error</string>
     <string name="voice_error_client">Client side error</string>
