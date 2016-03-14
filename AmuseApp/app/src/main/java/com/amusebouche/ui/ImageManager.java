@@ -64,6 +64,7 @@ public class ImageManager {
         Picasso.with(context).load(imageName)
                 .error(resource)
                 .placeholder(R.drawable.loading_animation)
+                .noFade()
                 .into(imageView);
     }
 }
