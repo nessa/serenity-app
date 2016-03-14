@@ -1,9 +1,12 @@
 package com.amusebouche.ui;
 
 import android.content.Context;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.amusebouche.amuseapp.R;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.Random;
@@ -26,6 +29,20 @@ public class ImageManager {
      * @see Picasso library: com.squareup.picasso.Picasso
      */
     public static void setCellImage(Context context, String imageName, ImageView imageView) {
+        ImageManager.setCellImage(context, imageName, imageView, null);
+
+    }
+
+    /**
+     * Set an image in a image view using the Picasso library.
+     * @param context Context where the image will be set.
+     * @param imageName Name of the image. Could be an URL, a file path or an empty string. If it's
+     *                  an empty string, we will set a random sample image.
+     * @param imageView Image view we want to set up.
+     * @see Picasso library: com.squareup.picasso.Picasso
+     */
+    public static void setCellImage(Context context, String imageName, ImageView imageView,
+                                    final ProgressBar progressBar) {
         // Get a random default image
         // TODO: Update these images with new ones
         Random r = new Random();
@@ -60,11 +77,28 @@ public class ImageManager {
                 break;
         }
 
-        //Picasso.with(mContext).load(imageName).into(imageView);
-        Picasso.with(context).load(imageName)
-                .error(resource)
-                .placeholder(R.drawable.loading_animation)
-                .noFade()
-                .into(imageView);
+
+        if (progressBar == null) {
+            Picasso.with(context)
+                    .load(imageName)
+                    .noFade()
+                    .error(resource)
+                    .into(imageView);
+        } else {
+            Picasso.with(context)
+                    .load(imageName)
+                    .noFade()
+                    .error(resource)
+                    .into(imageView, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            progressBar.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {}
+                    });
+        }
     }
+
 }

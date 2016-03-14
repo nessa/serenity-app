@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.FileOutputStream;
@@ -87,6 +88,7 @@ public class GridviewCellAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View cell;
         TextView name;
+        ProgressBar progressBar;
         final ImageView image;
         ImageButton imageButton;
 
@@ -106,10 +108,13 @@ public class GridviewCellAdapter extends BaseAdapter {
         name = (TextView) cell.findViewById(R.id.recipe_name);
         name.setText(presentRecipe.getTitle());
 
+        progressBar = (ProgressBar) cell.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
+
         // Get the image to update the content
         image = (ImageView) cell.findViewById(R.id.recipe_image);
         image.setTag(position);
-        ImageManager.setCellImage(mContext, presentRecipe.getImage(), image);
+        ImageManager.setCellImage(mContext, presentRecipe.getImage(), image, progressBar);
 
         // TODO: Set this!
         // Save present recipe ID into the button
