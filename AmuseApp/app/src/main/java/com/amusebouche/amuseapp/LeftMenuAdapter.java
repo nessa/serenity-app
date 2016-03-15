@@ -15,7 +15,7 @@ import java.util.List;
 
 
 /**
- * Navigation drawer cell adapter class.
+ * Left menu cell adapter class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  *
  * It declares the view of each navigation drawer cells that contains:
@@ -23,14 +23,14 @@ import java.util.List;
  * - Name.
  *
  * Related layouts:
- * - Content: cell_navigation_drawer.xml
+ * - Content: cell_left_menu
  */
-public class NavigationDrawerAdapter extends BaseAdapter {
+public class LeftMenuAdapter extends BaseAdapter {
     private List<String> sectionsList;
     private boolean locked = false;
     private Context mContext = null;
 
-    public NavigationDrawerAdapter(Context context) {
+    public LeftMenuAdapter(Context context) {
         this.mContext = context;
         String[] sections = {"RECIPES", "MY_RECIPES", "MY_FAVOURITES", "SETTINGS", "INFO"};
         sectionsList = Arrays.asList(sections);
@@ -134,7 +134,7 @@ public class NavigationDrawerAdapter extends BaseAdapter {
 
         public DrawerView(Context context) {
             super(context);
-            inflate(context, R.layout.cell_navigation_drawer, this);
+            inflate(context, R.layout.cell_left_menu, this);
         }
 
         public void setTag(DrawerHolder tag, String title, int imageId) {

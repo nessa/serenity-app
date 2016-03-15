@@ -5,15 +5,20 @@ import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 
 import com.amusebouche.data.Recipe;
 
@@ -26,17 +31,25 @@ import java.util.ArrayList;
  *
  * Main app activity.
  * It has:
- * - The navigation drawer (lateral menu).
- * - The present fragment that is active (changed by the navigation drawer).
+ * - Two navigation drawers:
+ *   + A left lateral menu.
+ *   + A right search view.
+ * - The present fragment that is active (changed by the left navigation drawer).
  *
  * Related layouts:
  * - Menu: menu_recipe_list.xml
  * - Content: activity_main.xml
+ * - Left drawer: drawer_left_menu.xml
+ * - Right drawer: drawer_right_menu.xml
  */
-public class MainActivity extends ActionBarActivity implements
-        NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends ActionBarActivity {
 
-    public static final int PROFILE = 0, RECIPES = 1;
+    private static final int PROFILE = 0, RECIPES = 1;
+    private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
+    private static final String PARCELABLE_RECIPES_KEY = "recipes";
+    private static final String CURRENT_PAGE_KEY = "current_page";
+    private static final String LIMIT_PER_PAGE_KEY = "limit";
+
 
     // Data variables
     private ArrayList<Recipe> mRecipes;
@@ -44,39 +57,180 @@ public class MainActivity extends ActionBarActivity implements
     private Integer mLimitPerPage;
 
     // UI variables
-    private NavigationDrawerFragment mNavigationDrawerFragment;
-    private Fragment initialFragment;
+    private Fragment mInitialFragment;
+
+    // Left drawer
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private ListView mLeftDrawerView;
+    private LeftMenuAdapter mLeftMenuAdapter;
+    private int mCurrentSelectedPosition = 1;
+
+    // Right drawer
+    private LinearLayout mRightDrawerView;
 
 
-    /**
-     * Called when the activity is starting. This is where most initialization should go.
-     * @param savedInstanceState Data supplied when the activity is being re-initialized
-     *                           after previously being shut down.
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
+        // Get data from previous activity
         Intent i = getIntent();
-        mRecipes = i.getParcelableArrayListExtra("recipes");
-        mCurrentPage = i.getIntExtra("current_page", 0);
-        mLimitPerPage = i.getIntExtra("limit", 0);
-
-        // Set up the drawer
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager()
-                .findFragmentById(R.id.navigation_drawer);
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
+        mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
+        mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
 
         // Set up action bar
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(R.string.app_name);
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (mDrawerLayout == null || mLeftDrawerView == null || mRightDrawerView == null || mDrawerToggle == null) {
+            // Configure navigation drawer
+            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+
+            // Set left menu view
+            mLeftDrawerView = (ListView) findViewById(R.id.left_menu);
+            mLeftDrawerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    selectItemInLeftMenu(position);
+                }
+            });
+            mLeftDrawerView.setDivider(null);
+            mLeftMenuAdapter = mLeftMenuAdapter == null ?
+                    new LeftMenuAdapter(this) : mLeftMenuAdapter;
+            mLeftDrawerView.setAdapter(mLeftMenuAdapter);
+
+            selectItemInLeftMenu(mCurrentSelectedPosition);
+
+
+            // Set right search view
+            mRightDrawerView = (LinearLayout) findViewById(R.id.right_search);
+
+
+            mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.accept, R.string.cancel) {
+
+                /** Called when a drawer has settled in a completely closed state. */
+                public void onDrawerClosed(View drawerView) {
+                    if (drawerView.equals(mLeftDrawerView)) {
+                        getSupportActionBar().setTitle(getTitle());
+                        // Call to onPrepareOptionsMenu()
+                        supportInvalidateOptionsMenu();
+                        mDrawerToggle.syncState();
+                    }
+                }
+
+                /** Called when a drawer has settled in a completely open state. */
+                public void onDrawerOpened(View drawerView) {
+                    if (drawerView.equals(mLeftDrawerView)) {
+                        getSupportActionBar().setTitle(getString(R.string.app_name));
+                        // Call to onPrepareOptionsMenu()
+                        supportInvalidateOptionsMenu();
+                        mDrawerToggle.syncState();
+                    }
+                }
+
+                @Override
+                public void onDrawerSlide(View drawerView, float slideOffset) {
+                    /* Avoid normal indicator glyph behaviour.
+                     * This is to avoid glyph movement when opening the right drawer. */
+                    //super.onDrawerSlide(drawerView, slideOffset);
+                }
+            };
+
+            mDrawerLayout.setDrawerListener(mDrawerToggle); // Set the drawer toggle as the DrawerListener
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+
+        // Sync the toggle state after onRestoreInstanceState has occurred
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    // MENU METHODS
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        // If the nav drawer is open, hide action items related to the content view
+        for (int i = 0; i< menu.size(); i++) {
+            menu.getItem(i).setVisible(!mDrawerLayout.isDrawerOpen(mLeftDrawerView));
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+
+    /**
+     *  Inflate the menu items to use them in the action bar
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_recipe_list, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                mDrawerToggle.onOptionsItemSelected(item);
+
+                if (mDrawerLayout.isDrawerOpen(mLeftDrawerView)) {
+                    mDrawerLayout.closeDrawer(mLeftDrawerView);
+                } else {
+                    if(mDrawerLayout.isDrawerOpen(mRightDrawerView)) {
+                        mDrawerLayout.closeDrawer(mRightDrawerView);
+                    }
+
+                    mDrawerLayout.openDrawer(mLeftDrawerView);
+                }
+
+                return true;
+            case R.id.action_search:
+                mDrawerToggle.onOptionsItemSelected(item);
+
+                if (mDrawerLayout.isDrawerOpen(mRightDrawerView)) {
+                    mDrawerLayout.closeDrawer(mRightDrawerView);
+                } else {
+                    if (mDrawerLayout.isDrawerOpen(mLeftDrawerView)) {
+                        mDrawerLayout.closeDrawer(mLeftDrawerView);
+                    }
+
+                    mDrawerLayout.openDrawer(mRightDrawerView);
+                }
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     // UI METHODS
 
@@ -102,7 +256,6 @@ public class MainActivity extends ActionBarActivity implements
                             dialog.dismiss();
 
                             // Close app
-                            Log.d("INFO", "FINISH");
                             finish();
 
                             break;
@@ -124,11 +277,17 @@ public class MainActivity extends ActionBarActivity implements
 
     // NAVIGATION DRAWER METHODS
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
+    public void selectItemInLeftMenu(int position) {
+        mCurrentSelectedPosition = position;
+        if (mLeftDrawerView != null) {
+            mLeftDrawerView.setItemChecked(mCurrentSelectedPosition, true);
+        }
+        if (mDrawerLayout != null && mLeftDrawerView != null) {
+            mDrawerLayout.closeDrawer(mLeftDrawerView);
+        }
+
         // Update the main content by replacing fragments
         Fragment fragment;
-        String tab = "";
         switch (position) {
             /*
             case PROFILE:
@@ -136,44 +295,15 @@ public class MainActivity extends ActionBarActivity implements
                 break;*/
             default:
             case RECIPES:
-                tab = "Recipes";
-                initialFragment = new RecipeListFragment();
-                fragment = initialFragment;
+                mInitialFragment = new RecipeListFragment();
+                fragment = mInitialFragment;
                 break;
         }
+
         if (!isFinishing()) {
-            // TODO: Check this code.
             getFragmentManager().popBackStack();
             getFragmentManager().beginTransaction().add(R.id.container, fragment)
                     .addToBackStack("fragBack").commit();
-        }
-    }
-
-
-    /* Method needed to change the action bar button by using the navigation drawer fragment. */
-    public void setDrawerIndicatorEnabled(boolean v) {
-        mNavigationDrawerFragment.setDrawerIndicatorEnabled(v);
-    }
-
-
-    // MENU METHODS
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_recipe_list, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_search:
-                search();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -191,16 +321,4 @@ public class MainActivity extends ActionBarActivity implements
     public Integer getLimitPerPage() {
         return mLimitPerPage;
     }
-
-
-    // FUNCTIONALITY METHODS
-
-    /**
-     * Search will call to another (lateral) fragment.
-     * TODO: Implement this method.
-     */
-    public void search() {
-        Log.v("INFO", "Search clicked");
-    }
-
 }

@@ -257,7 +257,7 @@ public class RecipeListFragment extends Fragment {
      */
     private void changeActionButton() {
         MainActivity x = (MainActivity) getActivity();
-        x.setDrawerIndicatorEnabled(true);
+        ///x.setDrawerIndicatorEnabled(true);
     }
 
 
