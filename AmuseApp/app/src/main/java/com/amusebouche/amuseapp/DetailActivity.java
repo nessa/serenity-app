@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -45,8 +43,12 @@ public class DetailActivity extends ActionBarActivity {
     private static final String TAB_3 = "third_tab";
     private static final String TAB_4 = "fourth_tab";
 
+    private static final String INTENT_KEY_RECIPE = "recipe";
+    private static final String INTENT_KEY_TAB = "tab";
+
     // Data variables
     private Recipe mRecipe;
+    private Bitmap mMainImage;
     private TabHost mTabs;
     private RatingBar mRatingBar;
 
@@ -62,16 +64,17 @@ public class DetailActivity extends ActionBarActivity {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            mRecipe = savedInstanceState.getParcelable("recipe");
-        } else {
+        // Get saved data
+        String presentTab = TAB_1;
+        if (savedInstanceState == null) {
             Intent i = getIntent();
-            mRecipe = i.getParcelableExtra("recipe");
+            mRecipe = i.getParcelableExtra(INTENT_KEY_RECIPE);
+        } else {
+            mRecipe = savedInstanceState.getParcelable(INTENT_KEY_RECIPE);
+            presentTab = savedInstanceState.getString(INTENT_KEY_TAB);
         }
 
-
         // Get image bitmap from file
-        Bitmap mMainImage = null;
         String FILENAME = "presentRecipeImage.png";
         try {
             FileInputStream is = this.openFileInput(FILENAME);
@@ -82,16 +85,6 @@ public class DetailActivity extends ActionBarActivity {
         }
 
         setContentView(R.layout.activity_detail);
-
-        // Set image
-        ImageView mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
-        mRecipeImage.setImageBitmap(mMainImage);
-
-
-        // Set bar title
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(getString(R.string.detail_information_label));
-
 
         // Set tabs
         mTabs = (TabHost)findViewById(android.R.id.tabhost);
@@ -122,40 +115,24 @@ public class DetailActivity extends ActionBarActivity {
         mTabs.addTab(spec);
 
         // Show first tab at the beginning
-        mTabs.setCurrentTabByTag(TAB_1);
+        mTabs.setCurrentTabByTag(presentTab);
         resetTabColors();
+        resetBarTitle(presentTab);
 
         mTabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             @Override
             public void onTabChanged(String tabId) {
                 mTabs.setCurrentTabByTag(tabId);
                 resetTabColors();
-
-                switch (tabId) {
-                    case TAB_2:
-                        actionBar.setTitle(getString(R.string.detail_ingredients_label));
-                        break;
-                    case TAB_3:
-                        actionBar.setTitle(getString(R.string.detail_directions_label));
-                        break;
-                    case TAB_4:
-                        actionBar.setTitle(getString(R.string.detail_comments_label));
-                        break;
-                    default:
-                    case TAB_1:
-                        actionBar.setTitle(getString(R.string.detail_information_label));
-                        break;
-                }
+                resetBarTitle(tabId);
             }
         });
-
 
         // Set rating bar colors
         mRatingBar = (RatingBar) findViewById(R.id.rating_bar);
         LayerDrawable stars = (LayerDrawable) mRatingBar.getProgressDrawable();
         stars.getDrawable(2).setColorFilter(getResources().getColor(R.color.theme_default_primary),
                 PorterDuff.Mode.SRC_ATOP);
-
     }
 
     private void resetTabColors() {
@@ -176,9 +153,33 @@ public class DetailActivity extends ActionBarActivity {
                 .getColor(android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
+    private void resetBarTitle(String tab) {
+        // Set
+        switch (tab) {
+            case TAB_2:
+                getSupportActionBar().setTitle(getString(R.string.detail_ingredients_label));
+                break;
+            case TAB_3:
+                getSupportActionBar().setTitle(getString(R.string.detail_directions_label));
+                break;
+            case TAB_4:
+                getSupportActionBar().setTitle(getString(R.string.detail_comments_label));
+                break;
+            default:
+            case TAB_1:
+                getSupportActionBar().setTitle(getString(R.string.detail_information_label));
+                break;
+        }
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
+        Log.d("INFO", "ON START");
+
+        // Set image
+        ImageView mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
+        mRecipeImage.setImageBitmap(mMainImage);
 
         // Set name
         TextView mRecipeName = (TextView) findViewById(R.id.recipe_name);
@@ -209,7 +210,9 @@ public class DetailActivity extends ActionBarActivity {
     @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-        outState.putParcelable("recipe", mRecipe);
+
+        outState.putParcelable(INTENT_KEY_RECIPE, mRecipe);
+        outState.putString(INTENT_KEY_TAB, mTabs.getCurrentTabTag());
     }
 
 

@@ -176,7 +176,7 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         return mLayout;
     }
 
-
+    
     // DATA USER-FRIENDLY
 
     /**
