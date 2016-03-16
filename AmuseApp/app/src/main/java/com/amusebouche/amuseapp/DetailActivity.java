@@ -1,24 +1,22 @@
 package com.amusebouche.amuseapp;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -49,9 +47,8 @@ public class DetailActivity extends ActionBarActivity {
 
     // Data variables
     private Recipe mRecipe;
-    private Bitmap mMainImage;
-    private ImageView mRecipeImage;
     private TabHost mTabs;
+    private RatingBar mRatingBar;
 
     // LIFECYCLE METHODS
 
@@ -74,7 +71,7 @@ public class DetailActivity extends ActionBarActivity {
 
 
         // Get image bitmap from file
-        mMainImage = null;
+        Bitmap mMainImage = null;
         String FILENAME = "presentRecipeImage.png";
         try {
             FileInputStream is = this.openFileInput(FILENAME);
@@ -86,37 +83,45 @@ public class DetailActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_detail);
 
-
-        mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
+        // Set image
+        ImageView mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
         mRecipeImage.setImageBitmap(mMainImage);
 
 
+        // Set bar title
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setTitle(getString(R.string.detail_information_label));
+
+
+        // Set tabs
         mTabs = (TabHost)findViewById(android.R.id.tabhost);
         mTabs.setup();
 
-
+        // First tab: information
         TabHost.TabSpec spec = mTabs.newTabSpec(TAB_1);
         spec.setContent(R.id.tab1);
         spec.setIndicator("", getResources().getDrawable(R.drawable.ic_description_32dp));
-
         mTabs.addTab(spec);
 
+        // Second tab: ingredients
         spec = mTabs.newTabSpec(TAB_2);
         spec.setContent(R.id.tab2);
         spec.setIndicator("", getResources().getDrawable(R.drawable.ic_ingredients_32dp));
         mTabs.addTab(spec);
 
+        // Third tab: directions
         spec = mTabs.newTabSpec(TAB_3);
         spec.setContent(R.id.tab3);
         spec.setIndicator("", getResources().getDrawable(R.drawable.ic_cook_32dp));
         mTabs.addTab(spec);
 
+        // Fourth tab: comments (TODO)
         spec = mTabs.newTabSpec(TAB_4);
         spec.setContent(R.id.tab4);
         spec.setIndicator("", getResources().getDrawable(R.drawable.ic_comments_32dp));
         mTabs.addTab(spec);
 
-        // Show first tab
+        // Show first tab at the beginning
         mTabs.setCurrentTabByTag(TAB_1);
         resetTabColors();
 
@@ -125,12 +130,32 @@ public class DetailActivity extends ActionBarActivity {
             public void onTabChanged(String tabId) {
                 mTabs.setCurrentTabByTag(tabId);
                 resetTabColors();
+
+                switch (tabId) {
+                    case TAB_2:
+                        actionBar.setTitle(getString(R.string.detail_ingredients_label));
+                        break;
+                    case TAB_3:
+                        actionBar.setTitle(getString(R.string.detail_directions_label));
+                        break;
+                    case TAB_4:
+                        actionBar.setTitle(getString(R.string.detail_comments_label));
+                        break;
+                    default:
+                    case TAB_1:
+                        actionBar.setTitle(getString(R.string.detail_information_label));
+                        break;
+                }
             }
         });
 
-        // Set bar title
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(mRecipe.getTitle());
+
+        // Set rating bar colors
+        mRatingBar = (RatingBar) findViewById(R.id.rating_bar);
+        LayerDrawable stars = (LayerDrawable) mRatingBar.getProgressDrawable();
+        stars.getDrawable(2).setColorFilter(getResources().getColor(R.color.theme_default_primary),
+                PorterDuff.Mode.SRC_ATOP);
+
     }
 
     private void resetTabColors() {
@@ -154,6 +179,26 @@ public class DetailActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Set name
+        TextView mRecipeName = (TextView) findViewById(R.id.recipe_name);
+        mRecipeName.setText(mRecipe.getTitle());
+
+        // Set user
+        TextView mRecipeOwner = (TextView) findViewById(R.id.recipe_owner);
+        mRecipeOwner.setText(mRecipe.getOwner());
+
+        // Set rating
+        float rating = 0;
+        if (mRecipe.getUsersRating() > 0) {
+            rating = mRecipe.getTotalRating() / mRecipe.getUsersRating();
+        }
+        mRatingBar.setRating(rating);
+
+        // Set number of users
+        TextView mRecipeNumberUsersRating = (TextView) findViewById(R.id.recipe_number_users_rating);
+        mRecipeNumberUsersRating.setText(String.format("(%d %s)", mRecipe.getUsersRating(),
+                getString(R.string.detail_users)));
     }
 
     /**

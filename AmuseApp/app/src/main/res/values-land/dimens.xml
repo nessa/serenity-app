@@ -3,10 +3,12 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="navigation_drawer_width">300dp</dimen>
-    <dimen name="flexible_space_image_height">240dp</dimen>
     <dimen name="margin_standard">16dp</dimen>
     <dimen name="fab_offset">30dp</dimen>
     <dimen name="flexible_space_show_fab_offset">120dp</dimen>
     <dimen name="timer_bar_size">250dp</dimen>
     <dimen name="detail_direction_box_offset">100dp</dimen>
+    <dimen name="detail_image_size">100dp</dimen>
+    <dimen name="detail_image_name_text_size">20sp</dimen>
+    <dimen name="detail_image_user_text_size">16sp</dimen>
 </resources>
