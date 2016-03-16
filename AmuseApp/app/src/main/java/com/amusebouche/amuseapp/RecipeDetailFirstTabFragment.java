@@ -10,9 +10,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amusebouche.data.Recipe;
+import com.amusebouche.data.RecipeCategory;
+import com.amusebouche.data.RecipeIngredient;
 
 import java.util.Objects;
 
@@ -165,18 +168,23 @@ public class RecipeDetailFirstTabFragment extends Fragment {
             });
         }
 
-        float rating = 0;
-        if (mRecipe.getUsersRating() != 0) {
-            rating = (float) mRecipe.getTotalRating() / (float) mRecipe.getUsersRating();
+        // Categories
+        LinearLayout categoriesLayout = (LinearLayout) mLayout.findViewById(R.id.categories);
+
+        for (int i = 0; i < mRecipe.getCategories().size(); i++) {
+            RecipeCategory presentCategory = (RecipeCategory) mRecipe.getCategories().get(i);
+
+            TextView categoryTextView = new TextView(getActivity());
+            // TODO: Translate category name
+            categoryTextView.setText(presentCategory.getName());
+            categoryTextView.setTextColor(getResources().getColor(R.color.primary_text));
+
+            categoriesLayout.addView(categoryTextView);
         }
-
-        TextView ratingTextView = (TextView) mLayout.findViewById(R.id.rating);
-        ratingTextView.setText(Objects.toString(rating));
-
         return mLayout;
     }
 
-    
+
     // DATA USER-FRIENDLY
 
     /**

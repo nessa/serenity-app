@@ -30,12 +30,12 @@
     <string name="detail_directions_label">Directions</string>
     <string name="detail_comments_label">Comments</string>
     <string name="detail_direction_label">DIRECTION</string>
-    <string name="detail_type_of_dish_label">Type of dish:</string>
-    <string name="detail_difficulty_label">Difficulty:</string>
-    <string name="detail_cooking_time_label">Cooking time:</string>
-    <string name="detail_servings_label">Servings:</string>
-    <string name="detail_source_label">Source:</string>
-    <string name="detail_rating_label">Rating:</string>
+    <string name="detail_type_of_dish_label">Type of dish</string>
+    <string name="detail_difficulty_label">Difficulty</string>
+    <string name="detail_cooking_time_label">Cooking time</string>
+    <string name="detail_servings_label">Servings</string>
+    <string name="detail_source_label">Source</string>
+    <string name="detail_categories_label">Categories</string>
     <string name="detail_minutes">\'</string>
     <string name="detail_seconds">\'\'</string>
     <!-- Types of dish -->
