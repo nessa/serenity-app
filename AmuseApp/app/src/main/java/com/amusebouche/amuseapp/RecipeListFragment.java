@@ -1,10 +1,14 @@
 package com.amusebouche.amuseapp;
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.graphics.Point;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -37,6 +41,10 @@ import java.util.ArrayList;
  * - Content: fragment_recipe_list.xml
  */
 public class RecipeListFragment extends Fragment {
+
+    private static final String PARCELABLE_RECIPES_KEY = "recipes";
+    private static final String CURRENT_PAGE_KEY = "current_page";
+    private static final String LIMIT_PER_PAGE_KEY = "limit";
 
     // Data variables
     private ArrayList<Recipe> mRecipes;
@@ -118,6 +126,8 @@ public class RecipeListFragment extends Fragment {
 
         // Calling async task to get json
         if (savedInstanceState == null || !savedInstanceState.containsKey("recipes")) {
+            Log.d("FRAG", "NO SAVED INSTANCE");
+
             // Get recipes from main activity
             MainActivity x = (MainActivity)getActivity();
             mRecipes = x.getRecipes();
@@ -125,15 +135,12 @@ public class RecipeListFragment extends Fragment {
             mLimitPerPage = x.getLimitPerPage();
             mVisibleThreshold = mLimitPerPage / 4;
         } else {
+            Log.d("FRAG", "SAVED INSTANCE");
             mRecipes = savedInstanceState.getParcelableArrayList("recipes");
             mCurrentPage = savedInstanceState.getInt("current_page");
             mLimitPerPage = savedInstanceState.getInt("limit");
 
             mVisibleThreshold = mLimitPerPage / 4;
-
-            for (int i = 0; i < mRecipes.size(); i++) {
-                mRecipes.get(i).printString();
-            }
         }
     }
 
@@ -197,7 +204,22 @@ public class RecipeListFragment extends Fragment {
         });
 
 
-        FloatingActionButton addButton = (FloatingActionButton) mLayout.findViewById(R.id.fab);
+        final FloatingActionButton addButton = (FloatingActionButton) mLayout.findViewById(R.id.fab);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivity a = (MainActivity) getActivity();
+
+                Intent i = new Intent(a, AddActivity.class);
+
+                i.putParcelableArrayListExtra(PARCELABLE_RECIPES_KEY, a.getRecipes());
+                i.putExtra(CURRENT_PAGE_KEY, a.getCurrentPage());
+                i.putExtra(LIMIT_PER_PAGE_KEY, a.getLimitPerPage());
+
+                startActivity(i);
+            }
+        });
 
         // TODO: If user is logged in, addButton must be visible
         if (false) {
@@ -227,8 +249,7 @@ public class RecipeListFragment extends Fragment {
     @Override
     public void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putParcelableArrayList("recipes", mRecipes);
+        outState.putParcelableArrayList(PARCELABLE_RECIPES_KEY, mRecipes);
     }
 
     @Override

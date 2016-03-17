@@ -64,7 +64,11 @@ public class GridviewCellAdapter extends BaseAdapter {
     }
 
     public int getCount() {
-        return mRecipes.size();
+        if (mRecipes != null) {
+            return mRecipes.size();
+        } else {
+            return 0;
+        }
     }
 
     public Recipe getItem(int position) {

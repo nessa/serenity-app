@@ -77,14 +77,29 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         // Get data from previous activity
-        Intent i = getIntent();
-        mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
-        mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
-        mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+        if (savedInstanceState == null) {
+            Intent i = getIntent();
+            mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
+            mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
+            mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+        } else {
+            mRecipes = savedInstanceState.getParcelableArrayList(PARCELABLE_RECIPES_KEY);
+            mCurrentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
+            mLimitPerPage = savedInstanceState.getInt(LIMIT_PER_PAGE_KEY, 0);
+        }
 
         // Set up action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            mRecipes = data.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
+            mCurrentPage = data.getIntExtra(CURRENT_PAGE_KEY, 0);
+            mLimitPerPage = data.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+        }
     }
 
     @Override
@@ -167,6 +182,9 @@ public class MainActivity extends ActionBarActivity {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
+        outState.putParcelableArrayList(PARCELABLE_RECIPES_KEY, mRecipes);
+        outState.getInt(CURRENT_PAGE_KEY, mCurrentPage);
+        outState.getInt(LIMIT_PER_PAGE_KEY, mLimitPerPage);
     }
 
     @Override
@@ -250,7 +268,6 @@ public class MainActivity extends ActionBarActivity {
 
         // The first fragment doesn't count (list fragment)
         if (fm.getBackStackEntryCount() > 1) {
-            Log.i("MAIN", "popping backstack");
             fm.popBackStack();
         } else {
             DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {

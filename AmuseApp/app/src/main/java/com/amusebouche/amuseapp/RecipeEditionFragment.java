@@ -1,9 +1,8 @@
 package com.amusebouche.amuseapp;
 
+
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,33 +10,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
+import com.amusebouche.data.RecipeDirection;
+import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
 
-import java.util.Objects;
+import java.util.ArrayList;
 
 /**
- * Recipe detail first tab fragment class.
+ * Recipe edtion fragment class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  *
- * Android fragment class, part of detail activity.
- * It's used inside a list of tabs.
- * It contains and shows the recipe basic information.
+ * Android fragment class, part of add activity and edit activity.
+ * It contains lots of inputs to edit recipe's data.
  *
  * Related layouts:
- * - Content: fragment_detail_first_tab.xml
+ * - Content: fragment_recipe_edition.xml
  */
-public class RecipeDetailFirstTabFragment extends Fragment {
+public class RecipeEditionFragment extends Fragment {
 
-    // Data variables
+
     private Recipe mRecipe;
-
-    // UI variables
-    private FrameLayout mLayout;
-
+    private LinearLayout mLayout;
 
     // LIFECYCLE METHODS
 
@@ -51,6 +47,7 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         super.onAttach(activity);
     }
 
+
     /**
      * Called when the fragment's activity has been created and this fragment's view
      * hierarchy instantiated.
@@ -62,6 +59,7 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
     }
+
 
     /**
      * Called to do initial creation of a fragment. This is called after onAttach and before
@@ -75,6 +73,7 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
+
 
     /**
      * Called when the fragment is visible to the user and actively running.
@@ -114,6 +113,7 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         super.onDetach();
     }
 
+
     /**
      * Called to have the fragment instantiate its user interface view. This will be called between
      * onCreate and onActivityCreated, onViewStateRestored, onStart().
@@ -130,79 +130,40 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        /* TODO: Try to prevent Skipped XX frames! The application may be doing too
-         * much work on its main thread. */
 
-        // Get recipe from activity
-        DetailActivity x = (DetailActivity) getActivity();
-        mRecipe = x.getRecipe();
-
-        mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_detail_first_tab,
+        mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_recipe_edition,
                 container, false);
 
+        if (getActivity() instanceof AddActivity) {
+            // do something
+            AddActivity x = (AddActivity) getActivity();
 
-        // Set data
-        TextView typeOfDishTextView = (TextView) mLayout.findViewById(R.id.type_of_dish);
-        typeOfDishTextView.setText(getString(UserFriendlyRecipeData.getTypeOfDish(mRecipe.getTypeOfDish())));
-
-        TextView difficultyTextView = (TextView) mLayout.findViewById(R.id.difficulty);
-        difficultyTextView.setText(getString(UserFriendlyRecipeData.getDifficulty(mRecipe.getDifficulty())));
-
-        TextView cookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
-        cookingTimeTextView.setText(this.getCookingTime(mRecipe.getCookingTime()));
-
-        TextView servingsTextView = (TextView) mLayout.findViewById(R.id.servings);
-        servingsTextView.setText(Objects.toString(mRecipe.getServings()));
-
-        TextView sourceTextView = (TextView) mLayout.findViewById(R.id.source);
-        sourceTextView.setText(mRecipe.getSource());
-
-        if (mRecipe.getSource().startsWith("http://") || mRecipe.getSource().startsWith("https://")) {
-            sourceTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent launchWebIntent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(mRecipe.getSource()));
-                    startActivity(launchWebIntent);
-                }
-            });
+            // Create an empty recipe
+            mRecipe = new Recipe(
+                    "",
+                    "",
+                    "",
+                    "", // Set username
+                    "es", // Set preferences language
+                    UserFriendlyRecipeData.getDefaultTypeOfDish(),
+                    UserFriendlyRecipeData.getDefaultDifficulty(),
+                    null,
+                    null,
+                    null,
+                    "",
+                    0,
+                    0,
+                    0,
+                    "",
+                    new ArrayList<RecipeCategory>(),
+                    new ArrayList<RecipeIngredient>(),
+                    new ArrayList<RecipeDirection>());
+        } else {
+            //do something else
+            Log.d("INFO", "ELSE");
         }
 
-        // Categories
-        LinearLayout categoriesLayout = (LinearLayout) mLayout.findViewById(R.id.categories);
-
-        for (int i = 0; i < mRecipe.getCategories().size(); i++) {
-            RecipeCategory presentCategory = (RecipeCategory) mRecipe.getCategories().get(i);
-
-            TextView categoryTextView = new TextView(getActivity());
-            // TODO: Translate category name
-            categoryTextView.setText(presentCategory.getName());
-            categoryTextView.setTextColor(getResources().getColor(R.color.primary_text));
-
-            categoriesLayout.addView(categoryTextView);
-        }
         return mLayout;
-    }
-
-
-    // DATA USER-FRIENDLY
-
-    /**
-     * Translate cookingTime code to an understandable string
-     *
-     * @param time Float time
-     * @return User-friendly string
-     */
-    private String getCookingTime(float time) {
-        int minutes = (int) (time / 60);
-        int seconds = (int) (time % 60);
-
-        String completeTime = seconds + getString(R.string.detail_seconds);
-        if (minutes > 0) {
-            completeTime = minutes + getString(R.string.detail_minutes) + " " + completeTime;
-        }
-
-        return completeTime;
     }
 
 }
