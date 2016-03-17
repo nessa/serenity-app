@@ -36,7 +36,10 @@
     <string name="detail_servings_label">Servings</string>
     <string name="detail_source_label">Source</string>
     <string name="detail_categories_label">Categories</string>
-    <string name="detail_minutes">\'</string>
+    <string name="detail_hour">hour</string>
+    <string name="detail_minute">minute</string>
+    <string name="detail_hours">hours</string>
+    <string name="detail_minutes">minutes</string>
     <string name="detail_seconds">\'\'</string>
     <!-- Types of dish -->
     <string name="type_of_dish_appetizer">Appetizer</string>
@@ -99,4 +102,14 @@
     <string name="voice_error_server">Error from server</string>
     <string name="voice_error_speech_timeout">No speech input. Please, say one of these commands:</string>
     <string name="voice_error_not_understood">Didn\'t understand. Please, say one of these commands:</string>
+
+    <!-- Recipe add activity -->
+    <string name="activity_add_title">New recipe</string>
+    <!-- Recipe edition fragment -->
+    <string name="recipe_edition_title_label">Title</string>
+    <string name="recipe_edition_title_hint">Recipe\'s name</string>
+    <string name="recipe_edition_source_hint">Source</string>
+    <string name="recipe_edition_main_image_label">Image URL</string>
+    <string name="recipe_edition_serving">serving</string>
+    <string name="recipe_edition_servings">servings</string>
 </resources>

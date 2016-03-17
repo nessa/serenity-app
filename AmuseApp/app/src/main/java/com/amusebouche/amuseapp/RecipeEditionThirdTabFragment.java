@@ -3,18 +3,26 @@ package com.amusebouche.amuseapp;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
+import com.woxthebox.draglistview.DragItem;
+import com.woxthebox.draglistview.DragListView;
+
 
 import java.util.ArrayList;
 
@@ -26,15 +34,57 @@ import java.util.ArrayList;
  * It contains lots of inputs to edit recipe's data.
  *
  * Related layouts:
- * - Content: fragment_recipe_edition.xml
+ * - Content: fragment_edition_first_tab.xmlxml
  */
-public class RecipeEditionFragment extends Fragment {
+public class RecipeEditionThirdTabFragment extends Fragment {
 
 
     private Recipe mRecipe;
     private LinearLayout mLayout;
 
+    private ArrayList<String> typesOfDish;
+    private ArrayList<String> difficulties;
+
+    private EditText mTitle;
+    private Spinner mTypeOfDish;
+    private Spinner mDifficulty;
+    private TextView mCookingTimeLabel;
+    private SeekBar mCookingTimeHours;
+    private SeekBar mCookingTimeMinutes;
+    private TextView mServingsLabel;
+    private SeekBar mServings;
+    private DragListView mIngredientsListView;
+
     // LIFECYCLE METHODS
+
+
+    /**
+     * Called to do initial creation of a fragment. This is called after onAttach and before
+     * onCreateView.
+     *
+     * @param savedInstanceState Saved state (if the fragment is being re-created)
+     */
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        Log.i(getClass().getSimpleName(), "onCreate()");
+        super.onCreate(savedInstanceState);
+
+        typesOfDish = new ArrayList<String>();
+        typesOfDish.add(getString(R.string.type_of_dish_appetizer));
+        typesOfDish.add(getString(R.string.type_of_dish_first_course));
+        typesOfDish.add(getString(R.string.type_of_dish_second_course));
+        typesOfDish.add(getString(R.string.type_of_dish_main_dish));
+        typesOfDish.add(getString(R.string.type_of_dish_dessert));
+        typesOfDish.add(getString(R.string.type_of_dish_other));
+
+        difficulties = new ArrayList<String>();
+        difficulties.add(getString(R.string.difficulty_low));
+        difficulties.add(getString(R.string.difficulty_medium));
+        difficulties.add(getString(R.string.difficulty_high));
+
+
+    }
+
 
     /**
      * Called when a fragment is first attached to its activity.
@@ -57,20 +107,6 @@ public class RecipeEditionFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-
-    /**
-     * Called to do initial creation of a fragment. This is called after onAttach and before
-     * onCreateView.
-     *
-     * @param savedInstanceState Saved state (if the fragment is being re-created)
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        Log.i(getClass().getSimpleName(), "onCreate()");
-        super.onCreate(savedInstanceState);
-
     }
 
 
@@ -130,7 +166,7 @@ public class RecipeEditionFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
 
-        mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_recipe_edition,
+        mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_third_tab,
                 container, false);
 
         if (getActivity() instanceof AddActivity) {
@@ -165,4 +201,46 @@ public class RecipeEditionFragment extends Fragment {
         return mLayout;
     }
 
+    private void setCookingTimeLabel() {
+        String time;
+
+        if (mCookingTimeHours.getProgress() > 0) {
+            if (mCookingTimeMinutes.getProgress() > 0) {
+                time = String.format("%d %s - %d %s", mCookingTimeHours.getProgress(),
+                        (mCookingTimeHours.getProgress() == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours),
+                        mCookingTimeMinutes.getProgress(),
+                        (mCookingTimeMinutes.getProgress() == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
+            } else {
+                time = String.format("%d %s", mCookingTimeHours.getProgress(),
+                        (mCookingTimeHours.getProgress() == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours));
+            }
+        } else {
+            time = String.format("%d %s", mCookingTimeMinutes.getProgress(),
+                    (mCookingTimeMinutes.getProgress() == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
+        }
+
+        mCookingTimeLabel.setText(time);
+    }
+
+    private void setServingsLabel() {
+        mServingsLabel.setText(String.format("%d %s", mServings.getProgress() + 1,
+                (mServings.getProgress() == 0) ? getString(R.string.recipe_edition_serving) :
+                        getString(R.string.recipe_edition_servings)));
+
+    }
+
+
+    private static class MyDragItem extends DragItem {
+
+        public MyDragItem(Context context, int layoutId) {
+            super(context, layoutId);
+        }
+
+        @Override
+        public void onBindDragView(View clickedView, View dragView) {
+            CharSequence text = ((TextView) clickedView.findViewById(R.id.text)).getText();
+            ((TextView) dragView.findViewById(R.id.text)).setText(text);
+            dragView.setBackgroundColor(dragView.getResources().getColor(R.color.theme_default_primary));
+        }
+    }
 }

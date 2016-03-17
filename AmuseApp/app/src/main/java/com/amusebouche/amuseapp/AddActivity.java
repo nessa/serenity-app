@@ -6,6 +6,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TabHost;
 
 import com.amusebouche.data.Recipe;
 
@@ -23,15 +25,24 @@ import java.util.ArrayList;
  */
 public class AddActivity extends ActionBarActivity {
 
+    private static final String TAB_1 = "first_tab";
+    private static final String TAB_2 = "second_tab";
+    private static final String TAB_3 = "third_tab";
+
+    private static final String INTENT_KEY_RECIPE = "recipe";
     private static final String PARCELABLE_RECIPES_KEY = "recipes";
     private static final String CURRENT_PAGE_KEY = "current_page";
     private static final String LIMIT_PER_PAGE_KEY = "limit";
+    private static final String INTENT_KEY_TAB = "tab";
 
 
     // Data variables
+    private Recipe mRecipe;
     private ArrayList<Recipe> mRecipes;
     private Integer mCurrentPage;
     private Integer mLimitPerPage;
+
+    private TabHost mTabs;
 
     // LIFECYCLE METHODS
 
@@ -46,20 +57,62 @@ public class AddActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         // Get data from previous activity
+        String presentTab = TAB_1;
         if (savedInstanceState == null) {
             Intent i = getIntent();
+            mRecipe = i.getParcelableExtra(INTENT_KEY_RECIPE);
             mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
             mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
         } else {
+            mRecipe = savedInstanceState.getParcelable(INTENT_KEY_RECIPE);
             mRecipes = savedInstanceState.getParcelableArrayList(PARCELABLE_RECIPES_KEY);
             mCurrentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = savedInstanceState.getInt(LIMIT_PER_PAGE_KEY, 0);
+            presentTab = savedInstanceState.getString(INTENT_KEY_TAB);
         }
 
         overridePendingTransition(R.anim.pull_in_from_left, R.anim.hold);
         setContentView(R.layout.activity_add);
+
+        getSupportActionBar().setTitle(getString(R.string.activity_add_title));
+
+
+        // Set tabs
+        mTabs = (TabHost)findViewById(android.R.id.tabhost);
+        mTabs.setup();
+
+        // First tab: information
+        TabHost.TabSpec spec = mTabs.newTabSpec(TAB_1);
+        spec.setContent(R.id.tab1);
+        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_description_32dp));
+        mTabs.addTab(spec);
+
+        // Second tab: ingredients
+        spec = mTabs.newTabSpec(TAB_2);
+        spec.setContent(R.id.tab2);
+        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_ingredients_32dp));
+        mTabs.addTab(spec);
+
+        // Third tab: directions
+        spec = mTabs.newTabSpec(TAB_3);
+        spec.setContent(R.id.tab3);
+        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_cook_32dp));
+        mTabs.addTab(spec);
+
+        // Show first tab at the beginning
+        mTabs.setCurrentTabByTag(presentTab);
+        resetTabColors();
+
+        mTabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            @Override
+            public void onTabChanged(String tabId) {
+                mTabs.setCurrentTabByTag(tabId);
+                resetTabColors();
+            }
+        });
     }
+
     @Override
     protected void onPause() {
         // Whenever this activity is paused (i.e. looses focus because another activity is started etc)
@@ -82,8 +135,10 @@ public class AddActivity extends ActionBarActivity {
     @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-    }
 
+        outState.putParcelable(INTENT_KEY_RECIPE, mRecipe);
+        outState.putString(INTENT_KEY_TAB, mTabs.getCurrentTabTag());
+    }
 
 
     /**
@@ -106,6 +161,26 @@ public class AddActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+    private void resetTabColors() {
+        for (int i = 0; i < mTabs.getTabWidget().getChildCount(); i++) {
+            // Unselected ones
+            mTabs.getTabWidget().getChildAt(i)
+                    .setBackgroundColor(getResources().getColor(android.R.color.white));
+
+            ImageView iv = (ImageView) mTabs.getTabWidget().getChildAt(i).findViewById(android.R.id.icon);
+            iv.setColorFilter(getResources().getColor(R.color.theme_default_primary), android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+
+        // Selected ones
+        mTabs.getTabWidget().getChildAt(mTabs.getCurrentTab())
+                .setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        ImageView iv = (ImageView) mTabs.getCurrentTabView().findViewById(android.R.id.icon);
+        iv.setColorFilter(getResources()
+                .getColor(android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
+    }
+
 
     /**
      * Send main activity its proper data again

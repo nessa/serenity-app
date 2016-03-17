@@ -4,7 +4,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
-    android:transitionGroup="true" >
+    android:transitionGroup="true"
+    android:background="@color/background" >
 
     <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
         android:id="@+id/scroll"
@@ -20,11 +21,19 @@
             android:background="@color/background"
             android:gravity="top" >
 
-            <Button style="?android:attr/borderlessButtonStyle"
+            <Button
+                android:id="@+id/startSpeakingButton"
+                style="?android:attr/buttonStyleSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Start speaking"
-                android:id="@+id/startSpeakingButton"
+                android:background="@color/theme_default_accent"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
                 android:enabled="true" />
 
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

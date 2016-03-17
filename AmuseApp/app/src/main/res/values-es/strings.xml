@@ -36,7 +36,10 @@
     <string name="detail_servings_label">Comensales</string>
     <string name="detail_source_label">Fuente</string>
     <string name="detail_categories_label">Categorías</string>
-    <string name="detail_minutes">\'</string>
+    <string name="detail_hour">hora</string>
+    <string name="detail_minute">minuto</string>
+    <string name="detail_hours">horas</string>
+    <string name="detail_minutes">minutos</string>
     <string name="detail_seconds">\'\'</string>
     <!-- Types of dish -->
     <string name="type_of_dish_appetizer">Entrante</string>
@@ -99,4 +102,14 @@
     <string name="voice_error_server">Error del servidor</string>
     <string name="voice_error_speech_timeout">No hay entrada de voz. Por favor, diga una de estas órdenes:</string>
     <string name="voice_error_not_understood">No entendí. Por favor, diga una de estas órdenes:</string>
+
+    <!-- Recipe add activity -->
+    <string name="activity_add_title">Nueva receta</string>
+    <!-- Recipe edition fragment -->
+    <string name="recipe_edition_title_label">Title</string>
+    <string name="recipe_edition_title_hint">Nombre de la receta</string>
+    <string name="recipe_edition_source_hint">Fuente</string>
+    <string name="recipe_edition_main_image_label">URL de la imagen</string>
+    <string name="recipe_edition_serving">comensal</string>
+    <string name="recipe_edition_servings">comensales</string>
 </resources>
