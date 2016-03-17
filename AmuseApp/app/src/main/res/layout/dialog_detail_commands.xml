@@ -1,130 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="@dimen/detail_directions_order_dialog_total_height"
     android:background="@color/theme_default_primary"
     android:orientation="vertical" >
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
-        android:padding="20dp"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/mainText"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginStart="6dp"
-            android:layout_marginEnd="50dp"
-            android:textColor="@android:color/white"
-            android:textSize="26sp"
-            android:text="@string/detail_commands_listening_message" />
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_directions_order_dialog_listening_height"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="20dp"
+            android:padding="20dp"
+            android:orientation="horizontal" >
 
-        <com.melnykov.fab.FloatingActionButton
+            <TextView
+                android:id="@+id/mainText"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="50dp"
+                android:textColor="@android:color/white"
+                android:textSize="26sp"
+                android:text="@string/detail_commands_listening_message" />
+
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_directions_order_dialog_message_height"
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/errorText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:text="" />
+
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/detail_directions_order_dialog_icons_height"
+            android:orientation="horizontal"
+            android:layout_marginStart="26dp"
+            android:layout_marginEnd="26dp"
+            android:gravity="top"
+            android:baselineAligned="false" >
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="start" >
+
+                <ImageButton
+                    android:id="@+id/repeat"
+                    android:contentDescription="@string/image"
+                    android:src="@drawable/ic_replay_white_48dp"
+                    android:tint="@color/theme_default_primary"
+                    android:layout_height="50dp"
+                    android:layout_width="50dp"
+                    android:background="@drawable/detail_direction_button_negative" />
+
+            </LinearLayout>
+
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="center" >
+
+                <ImageButton
+                    android:id="@+id/timer"
+                    android:contentDescription="@string/image"
+                    android:src="@drawable/ic_alarm_black_48dp"
+                    android:tint="@color/theme_default_primary"
+                    android:layout_height="50dp"
+                    android:layout_width="50dp"
+                    android:background="@drawable/detail_direction_button_negative" />
+
+            </LinearLayout>
+
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:gravity="end" >
+
+                <ImageButton
+                    android:id="@+id/next"
+                    android:contentDescription="@string/image"
+                    android:src="@drawable/ic_fast_forward_white_48dp"
+                    android:tint="@color/theme_default_primary"
+                    android:layout_height="50dp"
+                    android:layout_width="50dp"
+                    android:background="@drawable/detail_direction_button_negative" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="top|end">
+
+        <com.software.shell.fab.ActionButton
             android:id="@+id/listeningFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="20dp"
             android:layout_marginEnd="16dp"
-            android:scaleType="center"
-            android:padding="40dp"
-            android:src="@drawable/ic_settings_voice_white_48dp"
-            fab:fab_colorRipple="@color/theme_default_accent_light"
-            fab:fab_colorNormal="@color/theme_default_accent"
-            fab:fab_colorPressed="@color/theme_default_accent_dark"
-            fab:fab_type="normal" />
+            fab:type="DEFAULT"
+            fab:image="@drawable/ic_settings_voice_white_48dp"
+            fab:button_colorRipple="@color/theme_default_accent_light"
+            fab:button_color="@color/theme_default_accent"
+            fab:button_colorPressed="@color/theme_default_accent_dark"
+            fab:rippleEffect_enabled="true"
+            fab:shadow_radius="4.0dp"
+            fab:shadow_xOffset="0.5dp"
+            fab:shadow_yOffset="1.0dp"
+            />
 
-    </LinearLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_gravity="center_horizontal"
-        android:padding="20dp"
-        android:orientation="horizontal" >
-
-        <TextView
-            android:id="@+id/errorText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:text="" />
-
-    </LinearLayout>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginStart="26dp"
-        android:layout_marginEnd="26dp"
-        android:layout_marginBottom="30dp"
-        android:gravity="bottom"
-        android:baselineAligned="false" >
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="start" >
-
-            <ImageButton
-                android:id="@+id/repeat"
-                android:contentDescription="@string/image"
-                android:src="@drawable/ic_replay_white_48dp"
-                android:tint="@color/theme_default_primary"
-                android:layout_height="50dp"
-                android:layout_width="50dp"
-                android:background="@drawable/detail_direction_button_negative" />
-
-        </LinearLayout>
-
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center" >
-
-            <ImageButton
-                android:id="@+id/timer"
-                android:contentDescription="@string/image"
-                android:src="@drawable/ic_alarm_black_48dp"
-                android:tint="@color/theme_default_primary"
-                android:layout_height="50dp"
-                android:layout_width="50dp"
-                android:background="@drawable/detail_direction_button_negative" />
-
-        </LinearLayout>
-
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="end" >
-
-            <ImageButton
-                android:id="@+id/next"
-                android:contentDescription="@string/image"
-                android:src="@drawable/ic_fast_forward_white_48dp"
-                android:tint="@color/theme_default_primary"
-                android:layout_height="50dp"
-                android:layout_width="50dp"
-                android:background="@drawable/detail_direction_button_negative" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-</LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

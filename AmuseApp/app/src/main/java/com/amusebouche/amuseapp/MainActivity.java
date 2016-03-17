@@ -57,7 +57,7 @@ public class MainActivity extends ActionBarActivity {
     private Integer mLimitPerPage;
 
     // UI variables
-    private Fragment mInitialFragment;
+    private RecipeListFragment mInitialFragment;
 
     // Left drawer
     private DrawerLayout mDrawerLayout;
@@ -96,6 +96,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
+            Log.d("MAIN", "OK");
             mRecipes = data.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
             mCurrentPage = data.getIntExtra(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = data.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
@@ -318,7 +319,7 @@ public class MainActivity extends ActionBarActivity {
             default:
             case RECIPES:
                 mInitialFragment = new RecipeListFragment();
-                fragment = mInitialFragment;
+                fragment = (Fragment) mInitialFragment;
                 break;
         }
 

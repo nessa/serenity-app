@@ -21,8 +21,8 @@ import android.widget.RelativeLayout;
 
 import com.amusebouche.data.DatabaseHelper;
 import com.amusebouche.services.ServiceHandler;
-import com.melnykov.fab.FloatingActionButton;
 import com.amusebouche.data.Recipe;
+import com.software.shell.fab.ActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +54,7 @@ public class RecipeListFragment extends Fragment {
     private RelativeLayout mLayout;
     private GridView mGridView;
     private ProgressBar mProgressBar;
+    private ActionButton mAddButton;
     private Integer mGridViewHeight;
 
     // Services variables
@@ -204,11 +205,12 @@ public class RecipeListFragment extends Fragment {
         });
 
 
-        final FloatingActionButton addButton = (FloatingActionButton) mLayout.findViewById(R.id.fab);
+        mAddButton = (ActionButton) mLayout.findViewById(R.id.add_button);
 
-        addButton.setOnClickListener(new View.OnClickListener() {
+        mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 MainActivity a = (MainActivity) getActivity();
 
                 Intent i = new Intent(a, AddActivity.class);
@@ -217,18 +219,30 @@ public class RecipeListFragment extends Fragment {
                 i.putExtra(CURRENT_PAGE_KEY, a.getCurrentPage());
                 i.putExtra(LIMIT_PER_PAGE_KEY, a.getLimitPerPage());
 
+
+                mAddButton.hide();
+
                 startActivity(i);
             }
         });
 
         // TODO: If user is logged in, addButton must be visible
-        if (false) {
-            addButton.setVisibility(View.GONE);
+        if (true) {
+            mAddButton.show();
+        } else {
+            mAddButton.setVisibility(View.GONE);
         }
 
         // TODO: addButton on click must go to create activity
 
         return mLayout;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        mAddButton.show();
     }
 
     /**
@@ -238,7 +252,6 @@ public class RecipeListFragment extends Fragment {
     public void onResume() {
         Log.i(getClass().getSimpleName(), "onResume()");
         super.onResume();
-        changeActionButton();
     }
 
     /**

@@ -38,7 +38,7 @@ import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCal
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
-import com.melnykov.fab.FloatingActionButton;
+import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -639,7 +639,7 @@ public class RecipeDetailThirdTabFragment extends Fragment
         ImageButton timerButton = (ImageButton) mCommandsDialog.findViewById(R.id.timer);
         ImageButton nextButton = (ImageButton) mCommandsDialog.findViewById(R.id.next);
 
-        final FloatingActionButton fab = (FloatingActionButton)
+        final ActionButton fab = (ActionButton)
                 mCommandsDialog.findViewById(R.id.listeningFab);
 
         final TextView mainText = (TextView) mCommandsDialog.findViewById(R.id.mainText);

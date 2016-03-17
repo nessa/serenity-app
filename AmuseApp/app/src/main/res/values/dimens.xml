@@ -11,4 +11,9 @@
     <dimen name="detail_image_size">120dp</dimen>
     <dimen name="detail_image_name_text_size">20sp</dimen>
     <dimen name="detail_image_user_text_size">16sp</dimen>
+    <!-- Detail: Directions dialog -->
+    <dimen name="detail_directions_order_dialog_total_height">340dp</dimen>
+    <dimen name="detail_directions_order_dialog_listening_height">140dp</dimen>
+    <dimen name="detail_directions_order_dialog_message_height">100dp</dimen>
+    <dimen name="detail_directions_order_dialog_icons_height">100dp</dimen>
 </resources>
