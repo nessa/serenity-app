@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -199,7 +201,21 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             Log.d("INFO", "ELSE");
         }
 
-        mTitle = (EditText) mLayout.findViewById(R.id.title);
+        mTitle = (EditText) mLayout.findViewById(R.id.recipe_title);
+        mTitle.setText(mRecipe.getTitle());
+
+        if (mTitle.getText().toString().length() == 0) {
+            mTitle.setError(getString(R.string.recipe_edition_error_required));
+        }
+        mTitle.addTextChangedListener(new TextWatcher(){
+            public void afterTextChanged(Editable s) {
+                if (mTitle.getText().toString().length() == 0) {
+                    mTitle.setError(getString(R.string.recipe_edition_error_required));
+                }
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
+            public void onTextChanged(CharSequence s, int start, int before, int count){}
+        });
 
         mTypeOfDish = (Spinner) mLayout.findViewById(R.id.type_of_dish);
         ArrayAdapter<String> typeOfDishSpinnerArrayAdapter = new ArrayAdapter<String>(getActivity(),

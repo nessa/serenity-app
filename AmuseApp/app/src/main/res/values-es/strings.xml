@@ -106,6 +106,7 @@
     <!-- Recipe add activity -->
     <string name="activity_add_title">Nueva receta</string>
     <!-- Recipe edition fragment -->
+    <string name="recipe_edition_error_required">Obligatorio</string>
     <string name="recipe_edition_title_label">Title</string>
     <string name="recipe_edition_title_hint">Nombre de la receta</string>
     <string name="recipe_edition_source_hint">Fuente</string>
