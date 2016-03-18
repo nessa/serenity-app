@@ -102,6 +102,37 @@ public class RecipeIngredient implements Parcelable {
     }
 
 
+    // Setters
+
+    /**
+     * Set method for sortNumber variable
+     */
+    public void setSortNumber(Integer sortNumber) {
+        this.mSortNumber = sortNumber;
+    }
+
+    /**
+     * Set method for name variable
+     */
+    public void setName(String name) {
+        this.mName = name;
+    }
+
+    /**
+     * Set method for quantity variable
+     */
+    public void setQuantity(Float quantity) {
+        this.mQuantity = quantity;
+    }
+
+    /**
+     * Set method for measurementUnit variable
+     */
+    public void setMeasurementUnit(String measurementUnit) {
+        this.mMeasurementUnit = measurementUnit;
+    }
+
+
     // Parcelable methods
 
     /**

@@ -65,6 +65,7 @@
     <string name="difficulty_low">Dificultad baja</string>
     <!--   Measurement units -->
     <string name="measurement_unit_of">de</string>
+    <string name="measurement_unit_unit">unidad</string>
     <string name="measurement_unit_g">gramo</string>
     <string name="measurement_unit_kg">kilogramo</string>
     <string name="measurement_unit_ml">mililitro</string>
@@ -91,6 +92,7 @@
     <string name="detail_timer_minutes_initial">m</string>
     <string name="detail_timer_seconds_initial">s</string>
     <!--   Commands -->
+    <string name="detail_button_start_speaking">Empieza a hablar</string>
     <string name="detail_commands_listening_message">Escuchando...</string>
     <string name="detail_commands_error_message">Error</string>
     <string name="detail_commands_success_message">Éxito</string>
@@ -124,4 +126,8 @@
     <string name="recipe_edition_main_image_label">URL de la imagen</string>
     <string name="recipe_edition_serving">comensal</string>
     <string name="recipe_edition_servings">comensales</string>
+
+    <!--   Ingredients edition fragment -->
+    <string name="recipe_edition_ingredient_name_hint">Ingrediente</string>
+    <string name="recipe_edition_ingredient_quantity_hint">Cantidad</string>
 </resources>

@@ -2,6 +2,7 @@ package com.amusebouche.amuseapp;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -11,23 +12,20 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.view.Window;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.amusebouche.data.Recipe;
-import com.amusebouche.data.RecipeCategory;
-import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
-
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Recipe edtion fragment class.
@@ -41,22 +39,14 @@ import java.util.ArrayList;
  */
 public class RecipeEditionSecondTabFragment extends Fragment {
 
+    private AddActivity mAddActivity;
 
-    private Recipe mRecipe;
-    private LinearLayout mLayout;
+    private ArrayList<String> measurementUnits;
 
-    private ArrayList<String> typesOfDish;
-    private ArrayList<String> difficulties;
+    private ArrayList<Pair<Long, RecipeIngredient>> mItemArray;
 
-    private EditText mTitle;
-    private Spinner mTypeOfDish;
-    private Spinner mDifficulty;
-    private TextView mCookingTimeLabel;
-    private SeekBar mCookingTimeHours;
-    private SeekBar mCookingTimeMinutes;
-    private TextView mServingsLabel;
-    private SeekBar mServings;
-    private DragListView mIngredientsListView;
+
+    private RecipeEditionListAdapter mIngredientsListAdapter;
 
     // LIFECYCLE METHODS
 
@@ -72,20 +62,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        typesOfDish = new ArrayList<String>();
-        typesOfDish.add(getString(R.string.type_of_dish_appetizer));
-        typesOfDish.add(getString(R.string.type_of_dish_first_course));
-        typesOfDish.add(getString(R.string.type_of_dish_second_course));
-        typesOfDish.add(getString(R.string.type_of_dish_main_dish));
-        typesOfDish.add(getString(R.string.type_of_dish_dessert));
-        typesOfDish.add(getString(R.string.type_of_dish_other));
-
-        difficulties = new ArrayList<String>();
-        difficulties.add(getString(R.string.difficulty_low));
-        difficulties.add(getString(R.string.difficulty_medium));
-        difficulties.add(getString(R.string.difficulty_high));
-
-
+        measurementUnits = UserFriendlyRecipeData.getMeasurementUnits(getActivity());
     }
 
 
@@ -169,76 +146,158 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
 
-        mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_second_tab,
+        LinearLayout mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_second_tab,
                 container, false);
 
         if (getActivity() instanceof AddActivity) {
             // do something
-            AddActivity x = (AddActivity) getActivity();
-
-            // Create an empty recipe
-            mRecipe = new Recipe(
-                    "",
-                    "",
-                    "",
-                    "", // Set username
-                    "es", // Set preferences language
-                    UserFriendlyRecipeData.getDefaultTypeOfDish(),
-                    UserFriendlyRecipeData.getDefaultDifficulty(),
-                    null,
-                    null,
-                    null,
-                    "",
-                    0,
-                    0,
-                    0,
-                    "",
-                    new ArrayList<RecipeCategory>(),
-                    new ArrayList<RecipeIngredient>(),
-                    new ArrayList<RecipeDirection>());
+            mAddActivity = (AddActivity) getActivity();
         } else {
             //do something else
             Log.d("INFO", "ELSE");
         }
 
-
         // Test
-        ArrayList<RecipeIngredient> ing = new ArrayList<RecipeIngredient>();
-        ing.add(new RecipeIngredient(1, "garbanzos", Float.valueOf("50"), "g"));
-        ing.add(new RecipeIngredient(2, "chorizo", Float.valueOf("1"), "unit"));
-        ing.add(new RecipeIngredient(3, "aceite de oliva", Float.valueOf("20"), "ml"));
 
-        ArrayList<Pair<Long, RecipeIngredient>> mItemArray = new ArrayList<>();
-        for (int i = 0; i < ing.size(); i++) {
-            RecipeIngredient ri = ing.get(i);
-            mItemArray.add(new Pair<>(Long.valueOf(ri.getSortNumber()), ri));
+        mItemArray = new ArrayList<>();
+
+        if (mAddActivity != null) {
+            for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
+                RecipeIngredient ri = mAddActivity.getRecipe().getIngredients().get(i);
+                mItemArray.add(new Pair<>(Long.valueOf(ri.getSortNumber()), ri));
+            }
         }
 
 
-
-        mIngredientsListView = (DragListView) mLayout.findViewById(R.id.ingredients);
+        DragListView mIngredientsListView = (DragListView) mLayout.findViewById(R.id.ingredients);
         mIngredientsListView.setDragListListener(new DragListView.DragListListener() {
             @Override
-            public void onItemDragStarted(int position) {
-
-            }
+            public void onItemDragStarted(int position) {}
 
             @Override
             public void onItemDragEnded(int fromPosition, int toPosition) {
                 if (fromPosition != toPosition) {
+                    moveIngredientsInRecipe(fromPosition, toPosition);
                 }
             }
         });
         mIngredientsListView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        RecipeEditionListAdapter listAdapter = new RecipeEditionListAdapter(mItemArray,
+        mIngredientsListAdapter = new RecipeEditionListAdapter(mItemArray,
                 R.layout.item_edition_ingredient, R.id.image, false, getActivity());
-        mIngredientsListView.setAdapter(listAdapter, true);
+        mIngredientsListView.setAdapter(mIngredientsListAdapter, true);
         mIngredientsListView.setCanDragHorizontally(false);
         mIngredientsListView.setCustomDragItem(new MyDragItem(getActivity(),
                 R.layout.item_edition_ingredient));
 
 
         return mLayout;
+    }
+
+    public void reloadItems() {
+        mItemArray.clear();
+
+        if (mAddActivity != null) {
+            for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
+                mItemArray.add(new Pair<>(Long.valueOf(mAddActivity.getRecipe().getIngredients().get(i).getSortNumber()),
+                        mAddActivity.getRecipe().getIngredients().get(i)));
+            }
+
+            mIngredientsListAdapter.notifyDataSetChanged();
+        }
+
+    }
+
+    public void showAddDialog() {
+        Log.d("INFO", "SHOW ADD DIALOG");
+        showEditionDialog(-1);
+    }
+
+    private void showEditionDialog(final int position) {
+        Log.d("INFO", "SHOW EDITION DIALOG");
+
+        final Dialog editionDialog = new Dialog(getActivity());
+        editionDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
+        editionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        editionDialog.setContentView(R.layout.dialog_edition_ingredient);
+
+        final TextView nameTextView = (TextView) editionDialog.findViewById(R.id.name);
+        final TextView quantityTextView = (TextView) editionDialog.findViewById(R.id.quantity);
+
+        final Spinner unitsSpinner = (Spinner) editionDialog.findViewById(R.id.measurement_units);
+        ArrayAdapter<String> unitsSpinnerArrayAdapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item, measurementUnits);
+        unitsSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        unitsSpinner.setAdapter(unitsSpinnerArrayAdapter);
+
+        Button cancelButton = (Button) editionDialog.findViewById(R.id.cancel);
+        Button acceptButton = (Button) editionDialog.findViewById(R.id.accept);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editionDialog.dismiss();
+            }
+        });
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editionDialog.dismiss();
+
+                if (nameTextView.getText().toString().length() > 0 &&
+                        quantityTextView.getText().toString().length() > 0) {
+                    if (position > -1) {
+                        // Update existing ingredient
+                        mAddActivity.getRecipe().getIngredients().get(position).setName(nameTextView.getText().toString());
+                        mAddActivity.getRecipe().getIngredients().get(position).setQuantity(
+                                Float.valueOf(quantityTextView.getText().toString()));
+                        mAddActivity.getRecipe().getIngredients().get(position).setMeasurementUnit(
+                                UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
+                                        unitsSpinner.getSelectedItemPosition(), getActivity()));
+
+                    } else {
+
+                        // Add new ingredient
+                        mAddActivity.getRecipe().getIngredients().add(new RecipeIngredient(
+                                mAddActivity.getRecipe().getIngredients().size(),
+                                nameTextView.getText().toString(),
+                                Float.valueOf(quantityTextView.getText().toString()),
+                                UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
+                                        unitsSpinner.getSelectedItemPosition(), getActivity())
+                        ));
+                    }
+
+                    reloadItems();
+                }
+            }
+        });
+
+        if (position > -1) {
+
+            if (mAddActivity != null) {
+                nameTextView.setText(mAddActivity.getRecipe().getIngredients().get(position).getName());
+                quantityTextView.setText(String.format("%f", mAddActivity.getRecipe().getIngredients().get(position).getQuantity()));
+
+            }
+        }
+
+        editionDialog.show();
+    }
+
+    private void moveIngredientsInRecipe(int fromPosition, int toPosition) {
+        if (mAddActivity != null) {
+            if (fromPosition < toPosition) {
+                Collections.rotate(mAddActivity.getRecipe().getIngredients().subList(fromPosition, toPosition + 1), -1);
+            } else {
+                Collections.rotate(mAddActivity.getRecipe().getIngredients().subList(toPosition, fromPosition + 1), +1);
+            }
+
+            for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
+                mAddActivity.getRecipe().getIngredients().get(i).setSortNumber(i);
+            }
+
+            reloadItems();
+        }
     }
 
     private static class MyDragItem extends DragItem {

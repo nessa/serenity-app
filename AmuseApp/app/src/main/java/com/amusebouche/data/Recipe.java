@@ -364,7 +364,7 @@ public class Recipe implements Parcelable {
      * Get method for categories variable
      * @return List of recipe categories
      */
-    public ArrayList getCategories() {
+    public ArrayList<RecipeCategory> getCategories() {
         return mCategories;
     }
 
@@ -372,7 +372,7 @@ public class Recipe implements Parcelable {
      * Get method for ingredients variable
      * @return List of recipe ingredients
      */
-    public ArrayList getIngredients() {
+    public ArrayList<RecipeIngredient> getIngredients() {
         return mIngredients;
     }
 
@@ -380,7 +380,7 @@ public class Recipe implements Parcelable {
      * Get method for directions variable
      * @return List of recipe directions
      */
-    public ArrayList getDirections() {
+    public ArrayList<RecipeDirection> getDirections() {
         return mDirections;
     }
 

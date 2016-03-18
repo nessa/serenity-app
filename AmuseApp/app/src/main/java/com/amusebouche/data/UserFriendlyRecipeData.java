@@ -38,6 +38,21 @@ public class UserFriendlyRecipeData {
             new Pair<>("HIGH", R.string.difficulty_high)
     ));
 
+    // Units data
+
+    private static int mDefaultUnitPosition = 0;
+
+    private static ArrayList<Pair<String, Integer>> mUnits = new ArrayList<>(Arrays.asList(
+            new Pair<>("g", R.string.measurement_unit_g),
+            new Pair<>("kg", R.string.measurement_unit_kg),
+            new Pair<>("ml", R.string.measurement_unit_ml),
+            new Pair<>("l", R.string.measurement_unit_l),
+            new Pair<>("unit", R.string.measurement_unit_unit),
+            new Pair<>("cup", R.string.measurement_unit_cup),
+            new Pair<>("tsp", R.string.measurement_unit_tsp),
+            new Pair<>("tbsp", R.string.measurement_unit_tbsp),
+            new Pair<>("rasher", R.string.measurement_unit_rasher)
+    ));
 
     // TYPES OF DISH
 
@@ -187,6 +202,81 @@ public class UserFriendlyRecipeData {
         }
 
         return c.getString(mDifficulties.get(position).second);
+    }
+
+    // MEASUREMENT UNITS
+
+    /**
+     * Get all measurement units strings
+     *
+     * @param c Context to get the strings
+     * @return Units strings array
+     */
+    public static ArrayList<String> getMeasurementUnits(Context c) {
+        ArrayList<String> units = new ArrayList<>();
+
+        for (int i = 0; i < mUnits.size(); i++) {
+            units.add(c.getString(mUnits.get(i).second));
+        }
+
+        return units;
+    }
+
+    /**
+     * Return the default measuremente unit string
+     *
+     * @return default unit string
+     */
+    public static String getDefaultMeasurementUnit() {
+        return mUnits.get(mDefaultUnitPosition).first;
+    }
+
+    /**
+     * Translate a position integer into a unit code
+     *
+     * @param position API unit code
+     * @return user-friendly unit string
+     */
+    public static String getMeasurementUnitTranslationByPosition(int position, Context c) {
+        return c.getString(mUnits.get(position).second);
+    }
+
+    /**
+     * Get unit position by its code
+     *
+     * @param code API unit code
+     * @return position integer
+     */
+    public static int getMeasurementUnitPosition(String code) {
+        int position = mDefaultUnitPosition;
+
+        for (int i = 0; i < mUnits.size(); i++) {
+            if (mUnits.get(i).first.equals(code)) {
+                position = i;
+                break;
+            }
+        }
+
+        return position;
+    }
+
+    /**
+     * Translate unit code to an understandable string
+     *
+     * @param code API unit code
+     * @return user-friendly unit string
+     */
+    public static String getMeasurementUnitTranslation(String code, Context c) {
+        int position = mDefaultUnitPosition;
+
+        for (int i = 0; i < mUnits.size(); i++) {
+            if (mUnits.get(i).first.equals(code)) {
+                position = i;
+                break;
+            }
+        }
+
+        return c.getString(mUnits.get(position).second);
     }
 
 

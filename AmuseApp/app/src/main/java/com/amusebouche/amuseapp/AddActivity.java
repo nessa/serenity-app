@@ -197,6 +197,9 @@ public class AddActivity extends ActionBarActivity {
             case R.id.action_save:
                 onSaveClicked();
                 return true;
+            case R.id.action_add:
+                onAddClicked();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -247,6 +250,22 @@ public class AddActivity extends ActionBarActivity {
         Log.d("RECIPE TIME", mRecipe.getCookingTime().toString());
         Log.d("RECIPE SERV", mRecipe.getServings().toString());
         Log.d("RECIPE SOURCE", mRecipe.getSource());
+
+        Log.d("RECIPE", "ING");
+        for (int i = 0; i < mRecipe.getIngredients().size(); i++) {
+            Log.d(String.format("%d",
+                            ((RecipeIngredient) (mRecipe.getIngredients().get(i))).getSortNumber()),
+                    ((RecipeIngredient) (mRecipe.getIngredients().get(i))).getName());
+        }
+    }
+
+    public void onAddClicked() {
+        if (!mTabs.getCurrentTabTag().equals(TAB_2)) {
+            mTabs.setCurrentTabByTag(TAB_2);
+        }
+
+        RecipeEditionSecondTabFragment secondFragment = (RecipeEditionSecondTabFragment) getFragmentManager().findFragmentById(R.id.fragment2);
+        secondFragment.showAddDialog();
     }
 
 }
