@@ -1,5 +1,6 @@
 package com.amusebouche.amuseapp;
 
+import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.data.UserFriendlyRecipeData;
 import com.woxthebox.draglistview.DragItemAdapter;
 
 import java.util.ArrayList;
@@ -14,15 +17,19 @@ import java.util.ArrayList;
 /**
  * Created by noelia on 17/03/16.
  */
-public class RecipeEditionListAdapter extends DragItemAdapter<Pair<Long, String>, RecipeEditionListAdapter.ViewHolder> {
+public class RecipeEditionListAdapter extends DragItemAdapter<Pair<Long, RecipeIngredient>,
+        RecipeEditionListAdapter.ViewHolder> {
 
     private int mLayoutId;
     private int mGrabHandleId;
+    private Context mContext;
 
-    public RecipeEditionListAdapter(ArrayList<Pair<Long, String>> list, int layoutId, int grabHandleId, boolean dragOnLongPress) {
+    public RecipeEditionListAdapter(ArrayList<Pair<Long, RecipeIngredient>> list, int layoutId,
+                                    int grabHandleId, boolean dragOnLongPress, Context c) {
         super(dragOnLongPress);
         mLayoutId = layoutId;
         mGrabHandleId = grabHandleId;
+        mContext = c;
         setHasStableIds(true);
         setItemList(list);
     }
@@ -36,9 +43,13 @@ public class RecipeEditionListAdapter extends DragItemAdapter<Pair<Long, String>
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         super.onBindViewHolder(holder, position);
-        String text = mItemList.get(position).second;
-        holder.mText.setText(text);
-        holder.itemView.setTag(text);
+
+        RecipeIngredient i = mItemList.get(position).second;
+
+        holder.mNameTextView.setText(i.getName());
+        holder.mQuantityTextView.setText(UserFriendlyRecipeData.getIngredientQuantity(i.getQuantity(),
+                i.getMeasurementUnit(), mContext));
+        holder.itemView.setTag(i.getName());
     }
 
     @Override
@@ -46,12 +57,16 @@ public class RecipeEditionListAdapter extends DragItemAdapter<Pair<Long, String>
         return mItemList.get(position).first;
     }
 
-    public class ViewHolder extends DragItemAdapter<Pair<Long, String>, RecipeEditionListAdapter.ViewHolder>.ViewHolder {
-        public TextView mText;
+    public class ViewHolder extends DragItemAdapter<Pair<Long, RecipeIngredient>,
+            RecipeEditionListAdapter.ViewHolder>.ViewHolder {
+
+        public TextView mNameTextView;
+        public TextView mQuantityTextView;
 
         public ViewHolder(final View itemView) {
             super(itemView, mGrabHandleId);
-            mText = (TextView) itemView.findViewById(R.id.text);
+            mNameTextView = (TextView) itemView.findViewById(R.id.name);
+            mQuantityTextView = (TextView) itemView.findViewById(R.id.quantity);
         }
 
         @Override

@@ -26,7 +26,7 @@
                 android:textSize="@dimen/edition_label_text_size"
                 android:textStyle="bold"
                 android:text="@string/recipe_edition_title_label" />
-            <EditText android:id="@+id/recipe_title"
+            <EditText android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/recipe_edition_title_hint"

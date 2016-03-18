@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Amuse Bouche</string>
+
+    <!-- Generic -->
+    <string name="accept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+
+    <!-- Menu -->
     <string name="action_settings">Configuración</string>
     <string name="action_search">Buscar</string>
     <string name="action_fav">Favorito</string>
-    <string name="transition_recipe_detail">detalle</string>
-    <string name="title_recipe_detail_activity">Detalle</string>
-    <string name="accept">Aceptar</string>
-    <string name="cancel">Cancelar</string>
+    <string name="action_save">Guardar</string>
+
     <!-- Splash screen -->
     <string name="splash_screen_loading_recipes_message">Cargando recetas...</string>
-    <!-- Menu -->
+
+    <!-- Transitions -->
+    <string name="transition_recipe_detail">detalle</string>
+
+    <!-- Lateral menu -->
     <string name="RECIPES">Recetas</string>
     <string name="MY_RECIPES">Mis recetas</string>
     <string name="MY_FAVOURITES">Mis favoritas</string>
     <string name="SETTINGS">Configuration</string>
     <string name="INFO">Información</string>
+
     <!-- Main activity -->
     <string name="exit_message">¿Está seguro de que desea salir?</string>
     <string name="YES">Sí</string>
     <string name="NO">No</string>
-    <!-- Recipe List fragment class -->
+    <!--   Recipe List fragment class -->
     <string name="please_wait_message">Por favor, espere...</string>
-    <!-- Recipe detail fragment -->
+
+    <!-- Detail activity -->
+    <!--   Recipe detail fragment -->
     <string name="image">Imagen</string>
     <string name="detail_users">usuarios</string>
     <string name="detail_information_label">Información</string>
@@ -41,18 +52,18 @@
     <string name="detail_hours">horas</string>
     <string name="detail_minutes">minutos</string>
     <string name="detail_seconds">\'\'</string>
-    <!-- Types of dish -->
+    <!--   Types of dish -->
     <string name="type_of_dish_appetizer">Entrante</string>
     <string name="type_of_dish_first_course">Primer plato</string>
     <string name="type_of_dish_second_course">Segundo plato</string>
     <string name="type_of_dish_main_dish">Plato principal</string>
     <string name="type_of_dish_dessert">Postre</string>
     <string name="type_of_dish_other">Otro</string>
-    <!-- Difficulty -->
+    <!--   Difficulty -->
     <string name="difficulty_high">Dificultad alta</string>
     <string name="difficulty_medium">Dificultad media</string>
     <string name="difficulty_low">Dificultad baja</string>
-    <!-- Measurement units -->
+    <!--   Measurement units -->
     <string name="measurement_unit_of">de</string>
     <string name="measurement_unit_g">gramo</string>
     <string name="measurement_unit_kg">kilogramo</string>
@@ -70,7 +81,7 @@
     <string name="measurement_unit_tsp_plural">cucharaditas</string>
     <string name="measurement_unit_tbsp_plural">cucharadas</string>
     <string name="measurement_unit_rasher_plural">lonchas</string>
-    <!-- Timer -->
+    <!--   Timer -->
     <string name="detail_timer_colon">:</string>
     <string name="detail_timer_label">Temporizador</string>
     <string name="detail_timer_cancel_button">Cancelar</string>
@@ -79,7 +90,7 @@
     <string name="detail_timer_hours_initial">h</string>
     <string name="detail_timer_minutes_initial">m</string>
     <string name="detail_timer_seconds_initial">s</string>
-    <!-- Commands -->
+    <!--   Commands -->
     <string name="detail_commands_listening_message">Escuchando...</string>
     <string name="detail_commands_error_message">Error</string>
     <string name="detail_commands_success_message">Éxito</string>
@@ -105,7 +116,7 @@
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">Nueva receta</string>
-    <!-- Recipe edition fragment -->
+    <!--   Recipe edition fragment -->
     <string name="recipe_edition_error_required">Obligatorio</string>
     <string name="recipe_edition_title_label">Title</string>
     <string name="recipe_edition_title_hint">Nombre de la receta</string>

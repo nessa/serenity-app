@@ -3,7 +3,6 @@ package com.amusebouche.amuseapp;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -11,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -18,13 +18,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.amusebouche.data.Recipe;
-import com.amusebouche.data.RecipeCategory;
-import com.amusebouche.data.RecipeDirection;
-import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
-import com.woxthebox.draglistview.DragItem;
-import com.woxthebox.draglistview.DragListView;
 
 
 import java.util.ArrayList;
@@ -41,14 +35,13 @@ import java.util.ArrayList;
  */
 public class RecipeEditionFirstTabFragment extends Fragment {
 
-
-    private Recipe mRecipe;
-    private LinearLayout mLayout;
+    private AddActivity mAddActivity;
 
     private ArrayList<String> typesOfDish;
     private ArrayList<String> difficulties;
 
     private EditText mTitle;
+    private EditText mImage;
     private Spinner mTypeOfDish;
     private Spinner mDifficulty;
     private TextView mCookingTimeLabel;
@@ -56,7 +49,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
     private SeekBar mCookingTimeMinutes;
     private TextView mServingsLabel;
     private SeekBar mServings;
-    private DragListView mIngredientsListView;
+    private EditText mSource;
 
     // LIFECYCLE METHODS
 
@@ -72,20 +65,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        typesOfDish = new ArrayList<String>();
-        typesOfDish.add(getString(R.string.type_of_dish_appetizer));
-        typesOfDish.add(getString(R.string.type_of_dish_first_course));
-        typesOfDish.add(getString(R.string.type_of_dish_second_course));
-        typesOfDish.add(getString(R.string.type_of_dish_main_dish));
-        typesOfDish.add(getString(R.string.type_of_dish_dessert));
-        typesOfDish.add(getString(R.string.type_of_dish_other));
-
-        difficulties = new ArrayList<String>();
-        difficulties.add(getString(R.string.difficulty_low));
-        difficulties.add(getString(R.string.difficulty_medium));
-        difficulties.add(getString(R.string.difficulty_high));
-
-
+        typesOfDish = UserFriendlyRecipeData.getTypes(getActivity());
+        difficulties = UserFriendlyRecipeData.getDifficulties(getActivity());
     }
 
 
@@ -169,79 +150,101 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
 
-        mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_first_tab,
+        LinearLayout mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_first_tab,
                 container, false);
 
         if (getActivity() instanceof AddActivity) {
             // do something
-            AddActivity x = (AddActivity) getActivity();
-
-            // Create an empty recipe
-            mRecipe = new Recipe(
-                    "",
-                    "",
-                    "",
-                    "", // Set username
-                    "es", // Set preferences language
-                    UserFriendlyRecipeData.getDefaultTypeOfDish(),
-                    UserFriendlyRecipeData.getDefaultDifficulty(),
-                    null,
-                    null,
-                    null,
-                    "",
-                    0,
-                    0,
-                    0,
-                    "",
-                    new ArrayList<RecipeCategory>(),
-                    new ArrayList<RecipeIngredient>(),
-                    new ArrayList<RecipeDirection>());
+            mAddActivity = (AddActivity) getActivity();
         } else {
             //do something else
             Log.d("INFO", "ELSE");
         }
 
-        mTitle = (EditText) mLayout.findViewById(R.id.recipe_title);
-        mTitle.setText(mRecipe.getTitle());
+        // Title
+        mTitle = (EditText) mLayout.findViewById(R.id.title);
 
-        if (mTitle.getText().toString().length() == 0) {
-            mTitle.setError(getString(R.string.recipe_edition_error_required));
-        }
-        mTitle.addTextChangedListener(new TextWatcher(){
+        mTitle.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                if (mTitle.getText().toString().length() == 0) {
-                    mTitle.setError(getString(R.string.recipe_edition_error_required));
+                if (mAddActivity != null) {
+                    mAddActivity.getRecipe().setTitle(mTitle.getText().toString());
                 }
+
+                checkTitleValidation();
             }
-            public void beforeTextChanged(CharSequence s, int start, int count, int after){}
-            public void onTextChanged(CharSequence s, int start, int before, int count){}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
         });
 
+        // Image
+        mImage = (EditText) mLayout.findViewById(R.id.image);
+
+        mImage.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                if (mAddActivity != null) {
+                    mAddActivity.getRecipe().setImage(mImage.getText().toString());
+                }
+
+                checkTitleValidation();
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        // Type of dish
         mTypeOfDish = (Spinner) mLayout.findViewById(R.id.type_of_dish);
-        ArrayAdapter<String> typeOfDishSpinnerArrayAdapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> typeOfDishSpinnerArrayAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, typesOfDish);
         typeOfDishSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mTypeOfDish.setAdapter(typeOfDishSpinnerArrayAdapter);
-        ///mTypeOfDish.setSelection();
 
+        mTypeOfDish.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (mAddActivity != null) {
+                    mAddActivity.getRecipe().setTypeOfDish(
+                            UserFriendlyRecipeData.getTypeOfDishTranslationByPosition(position, getActivity()));
+                }
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {}
+        });
+
+        // Difficulty
         mDifficulty = (Spinner) mLayout.findViewById(R.id.difficulty);
-        ArrayAdapter<String> difficultySpinnerArrayAdapter = new ArrayAdapter<String>(getActivity(),
+        ArrayAdapter<String> difficultySpinnerArrayAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, difficulties);
         difficultySpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mDifficulty.setAdapter(difficultySpinnerArrayAdapter);
-        ///mDifficulty.setSelection();
 
+        mDifficulty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                if (mAddActivity != null) {
+                    mAddActivity.getRecipe().setDifficulty(
+                            UserFriendlyRecipeData.getDifficultyTranslationByPosition(position, getActivity()));
+                }
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {}
+        });
+
+        // Cooking time
         mCookingTimeLabel = (TextView) mLayout.findViewById(R.id.cooking_time);
         mCookingTimeHours = (SeekBar) mLayout.findViewById(R.id.cooking_time_hours);
         mCookingTimeMinutes = (SeekBar) mLayout.findViewById(R.id.cooking_time_minutes);
-        setCookingTimeLabel();
 
         SeekBar.OnSeekBarChangeListener cookingTimeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 setCookingTimeLabel();
+
+                if (mAddActivity != null) {
+                    mAddActivity.getRecipe().setCookingTime(mCookingTimeHours.getProgress() * 60.0F +
+                        mCookingTimeMinutes.getProgress());
+                }
             }
 
             @Override
@@ -254,28 +257,70 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         mCookingTimeHours.setOnSeekBarChangeListener(cookingTimeListener);
         mCookingTimeMinutes.setOnSeekBarChangeListener(cookingTimeListener);
 
-
+        // Servings
         // On saving recipe: servings = mServings.getProgress + 1
         mServingsLabel = (TextView) mLayout.findViewById(R.id.servings_label);
         mServings = (SeekBar) mLayout.findViewById(R.id.servings);
-        setServingsLabel();
 
         mServings.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 setServingsLabel();
+
+                if (mAddActivity != null) {
+                    mAddActivity.getRecipe().setServings(mServings.getProgress() + 1);
+                }
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
+            public void onStartTrackingTouch(SeekBar seekBar) {}
 
             @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
+            public void onStopTrackingTouch(SeekBar seekBar) {}
         });
 
+        mSource = (EditText) mLayout.findViewById(R.id.source);
+
+        mSource.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                if (mAddActivity != null) {
+                    mAddActivity.getRecipe().setSource(mSource.getText().toString());
+                }
+
+                checkTitleValidation();
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+
+        // Set initial data
+        if (mAddActivity != null) {
+            mTitle.setText(mAddActivity.getRecipe().getTitle());
+            mImage.setText(mAddActivity.getRecipe().getImage());
+            mTypeOfDish.setSelection(UserFriendlyRecipeData.getTypeOfDishPosition(mAddActivity.getRecipe().getTypeOfDish()));
+            mDifficulty.setSelection(UserFriendlyRecipeData.getDifficultyPosition(mAddActivity.getRecipe().getDifficulty()));
+            mCookingTimeHours.setProgress(mAddActivity.getRecipe().getCookingTime().intValue() / 60);
+            mCookingTimeMinutes.setProgress(mAddActivity.getRecipe().getCookingTime().intValue() % 60);
+            mServings.setProgress((mAddActivity.getRecipe().getServings() > 0) ?
+                    mAddActivity.getRecipe().getServings() - 1 : 0);
+            mSource.setText(mAddActivity.getRecipe().getSource());
+        }
+
+        // Check initial data
+        checkTitleValidation();
+        setCookingTimeLabel();
+        setServingsLabel();
+
         return mLayout;
+    }
+
+    private void checkTitleValidation() {
+        if (mTitle.getText().toString().length() == 0) {
+            mTitle.setError(getString(R.string.recipe_edition_error_required));
+        }
     }
 
     private void setCookingTimeLabel() {
@@ -306,18 +351,4 @@ public class RecipeEditionFirstTabFragment extends Fragment {
 
     }
 
-
-    private static class MyDragItem extends DragItem {
-
-        public MyDragItem(Context context, int layoutId) {
-            super(context, layoutId);
-        }
-
-        @Override
-        public void onBindDragView(View clickedView, View dragView) {
-            CharSequence text = ((TextView) clickedView.findViewById(R.id.text)).getText();
-            ((TextView) dragView.findViewById(R.id.text)).setText(text);
-            dragView.setBackgroundColor(dragView.getResources().getColor(R.color.theme_default_primary));
-        }
-    }
 }

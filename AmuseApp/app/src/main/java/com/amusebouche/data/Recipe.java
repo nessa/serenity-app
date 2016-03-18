@@ -204,9 +204,7 @@ public class Recipe implements Parcelable {
             for (int i = 0; i < directions.length(); i++) {
                 mDirections.add(new RecipeDirection(directions.getJSONObject(i)));
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
+        } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
     }
@@ -389,13 +387,61 @@ public class Recipe implements Parcelable {
     // SETTERS
 
     /**
-     * Get method for id variable
-     * @return Recipe identifier
+     * Set method for id variable
      */
     public void setDatabaseId(String databaseId) {
         this.mDatabaseId = databaseId;
     }
 
+    /**
+     * Set method for title variable
+     */
+    public void setTitle(String title) {
+        this.mTitle = title;
+    }
+
+    /**
+     * Set method for typeOfDish variable
+     */
+    public void setTypeOfDish(String typeOfDish) {
+        this.mTypeOfDish = typeOfDish;
+    }
+
+    /**
+     * Set method for difficulty variable
+     */
+    public void setDifficulty(String difficulty) {
+        this.mDifficulty = difficulty;
+    }
+
+
+    /**
+     * Set method for cookingTime variable
+     */
+    public void setCookingTime(Float cookingTime) {
+        this.mCookingTime = cookingTime;
+    }
+
+    /**
+     * Set method for servings variable
+     */
+    public void setServings(Integer servings) {
+        this.mServings = servings;
+    }
+
+    /**
+     * Get method for source variable
+     */
+    public void setSource(String source) {
+        this.mSource = source;
+    }
+
+    /**
+     * Set method for image variable
+     */
+    public void setImage(String image) {
+        this.mImage = image;
+    }
 
 
     public void printString() {

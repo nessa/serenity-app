@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.data.UserFriendlyRecipeData;
 
 
 /**
@@ -145,8 +146,8 @@ public class RecipeDetailSecondTabFragment extends Fragment {
                     R.layout.fragment_recipe_detail_ingredient, mLayout, false);
 
             TextView quantity = (TextView) ingredientLayout.findViewById(R.id.quantity);
-            quantity.setText(this.getIngredientQuantity(presentIngredient.getQuantity(),
-                    presentIngredient.getMeasurementUnit()));
+            quantity.setText(UserFriendlyRecipeData.getIngredientQuantity(presentIngredient.getQuantity(),
+                    presentIngredient.getMeasurementUnit(), getActivity()));
 
             TextView name = (TextView) ingredientLayout.findViewById(R.id.name);
             name.setText(presentIngredient.getName());
@@ -157,111 +158,4 @@ public class RecipeDetailSecondTabFragment extends Fragment {
         return mLayout;
     }
 
-
-    // DATA USER-FRIENDLY
-
-    /**
-     * Translate ingredient's quantity code to an understandable string
-     *
-     * @param quantity  Float quantity
-     * @param unit_code Code of measurement unit
-     * @return User-friendly string
-     */
-    private String getIngredientQuantity(float quantity, String unit_code) {
-        String q = "", u = "";
-        boolean plural = true;
-
-        if (quantity > 0) {
-            float result = quantity - (int) quantity;
-            if (result != 0) {
-                q = String.format("%.2f", quantity) + " ";
-            } else {
-                q = String.format("%.0f", quantity) + " ";
-            }
-
-            if (quantity <= 1) {
-                plural = false;
-            }
-
-            if (quantity == 0.25) {
-                q = "1/4 ";
-            }
-            if (quantity == 0.5) {
-                q = "1/2 ";
-            }
-            if (quantity == 0.75) {
-                q = "3/4 ";
-            }
-        }
-
-        if (!unit_code.equals("unit")) {
-            switch (unit_code) {
-                case "g":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_g_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_g) + " ";
-                    }
-                    break;
-                case "kg":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_kg_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_kg) + " ";
-                    }
-                    break;
-                case "ml":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_ml_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_ml) + " ";
-                    }
-                    break;
-                case "l":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_l_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_l) + " ";
-                    }
-                    break;
-                case "cup":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_cup_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_cup) + " ";
-                    }
-                    break;
-                case "tsp":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_tsp_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_tsp) + " ";
-                    }
-                    break;
-                case "tbsp":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_tbsp_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_tbsp) + " ";
-                    }
-                    break;
-                case "rasher":
-                    if (plural) {
-                        u = getString(R.string.measurement_unit_rasher_plural) + " ";
-                    } else {
-                        u = getString(R.string.measurement_unit_rasher) + " ";
-                    }
-                    break;
-                default:
-                case "unit":
-                    break;
-            }
-        }
-
-        if (!u.equals("")) {
-            u = u + getString(R.string.measurement_unit_of) + " ";
-        }
-
-        return q + u;
-    }
 }

@@ -143,10 +143,10 @@ public class RecipeDetailFirstTabFragment extends Fragment {
 
         // Set data
         TextView typeOfDishTextView = (TextView) mLayout.findViewById(R.id.type_of_dish);
-        typeOfDishTextView.setText(getString(UserFriendlyRecipeData.getTypeOfDish(mRecipe.getTypeOfDish())));
+        typeOfDishTextView.setText(UserFriendlyRecipeData.getTypeOfDishTranslation(mRecipe.getTypeOfDish(), getActivity()));
 
         TextView difficultyTextView = (TextView) mLayout.findViewById(R.id.difficulty);
-        difficultyTextView.setText(getString(UserFriendlyRecipeData.getDifficulty(mRecipe.getDifficulty())));
+        difficultyTextView.setText(UserFriendlyRecipeData.getDifficultyTranslation(mRecipe.getDifficulty(), getActivity()));
 
         TextView cookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
         cookingTimeTextView.setText(this.getCookingTime(mRecipe.getCookingTime()));

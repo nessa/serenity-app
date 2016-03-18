@@ -5,11 +5,17 @@ import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TabHost;
 
 import com.amusebouche.data.Recipe;
+import com.amusebouche.data.RecipeCategory;
+import com.amusebouche.data.RecipeDirection;
+import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.data.UserFriendlyRecipeData;
 
 import java.util.ArrayList;
 
@@ -60,10 +66,30 @@ public class AddActivity extends ActionBarActivity {
         String presentTab = TAB_1;
         if (savedInstanceState == null) {
             Intent i = getIntent();
-            mRecipe = i.getParcelableExtra(INTENT_KEY_RECIPE);
             mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
             mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+
+            // Create an empty recipe
+            mRecipe = new Recipe(
+                    "",
+                    "",
+                    "",
+                    "", // Set username
+                    "es", // Set preferences language
+                    UserFriendlyRecipeData.getDefaultTypeOfDish(),
+                    UserFriendlyRecipeData.getDefaultDifficulty(),
+                    null,
+                    null,
+                    0.0F,
+                    "",
+                    0,
+                    0,
+                    1,
+                    "",
+                    new ArrayList<RecipeCategory>(),
+                    new ArrayList<RecipeIngredient>(),
+                    new ArrayList<RecipeDirection>());
         } else {
             mRecipe = savedInstanceState.getParcelable(INTENT_KEY_RECIPE);
             mRecipes = savedInstanceState.getParcelableArrayList(PARCELABLE_RECIPES_KEY);
@@ -150,12 +176,26 @@ public class AddActivity extends ActionBarActivity {
         super.onBackPressed();
     }
 
+    /**
+     *  Inflate the menu items to use them in the action bar
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_recipe_add, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 saveData();
                 super.onBackPressed();
+                return true;
+            case R.id.action_save:
+                onSaveClicked();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -192,6 +232,21 @@ public class AddActivity extends ActionBarActivity {
         intent.putExtra(LIMIT_PER_PAGE_KEY, mLimitPerPage);
 
         setResult(RESULT_OK, intent);
+    }
+
+    public Recipe getRecipe() {
+        return mRecipe;
+    }
+
+    public void onSaveClicked() {
+        Log.d("INFO", "SAVE CLICKED");
+        Log.d("RECIPE TITLE", mRecipe.getTitle());
+        Log.d("RECIPE IMAGEN", mRecipe.getImage());
+        Log.d("RECIPE TIPO", mRecipe.getTypeOfDish());
+        Log.d("RECIPE DIF", mRecipe.getDifficulty());
+        Log.d("RECIPE TIME", mRecipe.getCookingTime().toString());
+        Log.d("RECIPE SERV", mRecipe.getServings().toString());
+        Log.d("RECIPE SOURCE", mRecipe.getSource());
     }
 
 }

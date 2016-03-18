@@ -23,5 +23,7 @@
     <dimen name="edition_basic_margin_top">10dp</dimen>
     <dimen name="edition_label_text_size">18sp</dimen>
     <dimen name="edition_hours_text_size">22sp</dimen>
+    <dimen name="edition_cell_primary_text">22sp</dimen>
+    <dimen name="edition_cell_secondary_text">16sp</dimen>
 
 </resources>

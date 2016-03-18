@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -202,15 +203,15 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
 
         // Test
-        /*
         ArrayList<RecipeIngredient> ing = new ArrayList<RecipeIngredient>();
         ing.add(new RecipeIngredient(1, "garbanzos", Float.valueOf("50"), "g"));
         ing.add(new RecipeIngredient(2, "chorizo", Float.valueOf("1"), "unit"));
-        ing.add(new RecipeIngredient(2, "aceite de oliva", Float.valueOf("20"), "ml"));*/
+        ing.add(new RecipeIngredient(3, "aceite de oliva", Float.valueOf("20"), "ml"));
 
-        ArrayList<Pair<Long, String>> mItemArray = new ArrayList<>();
-        for (int i = 0; i < 40; i++) {
-            mItemArray.add(new Pair<>(Long.valueOf(i), "Item " + i));
+        ArrayList<Pair<Long, RecipeIngredient>> mItemArray = new ArrayList<>();
+        for (int i = 0; i < ing.size(); i++) {
+            RecipeIngredient ri = ing.get(i);
+            mItemArray.add(new Pair<>(Long.valueOf(ri.getSortNumber()), ri));
         }
 
 
@@ -230,54 +231,32 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         });
         mIngredientsListView.setLayoutManager(new LinearLayoutManager(getActivity()));
         RecipeEditionListAdapter listAdapter = new RecipeEditionListAdapter(mItemArray,
-                R.layout.item_edition_ingredient, R.id.image, false);
+                R.layout.item_edition_ingredient, R.id.image, false, getActivity());
         mIngredientsListView.setAdapter(listAdapter, true);
         mIngredientsListView.setCanDragHorizontally(false);
-        mIngredientsListView.setCustomDragItem(new MyDragItem(getActivity(), R.layout.item_edition_ingredient));
+        mIngredientsListView.setCustomDragItem(new MyDragItem(getActivity(),
+                R.layout.item_edition_ingredient));
 
 
         return mLayout;
     }
 
-    private void setCookingTimeLabel() {
-        String time;
-
-        if (mCookingTimeHours.getProgress() > 0) {
-            if (mCookingTimeMinutes.getProgress() > 0) {
-                time = String.format("%d %s - %d %s", mCookingTimeHours.getProgress(),
-                        (mCookingTimeHours.getProgress() == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours),
-                        mCookingTimeMinutes.getProgress(),
-                        (mCookingTimeMinutes.getProgress() == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
-            } else {
-                time = String.format("%d %s", mCookingTimeHours.getProgress(),
-                        (mCookingTimeHours.getProgress() == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours));
-            }
-        } else {
-            time = String.format("%d %s", mCookingTimeMinutes.getProgress(),
-                    (mCookingTimeMinutes.getProgress() == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
-        }
-
-        mCookingTimeLabel.setText(time);
-    }
-
-    private void setServingsLabel() {
-        mServingsLabel.setText(String.format("%d %s", mServings.getProgress() + 1,
-                (mServings.getProgress() == 0) ? getString(R.string.recipe_edition_serving) :
-                        getString(R.string.recipe_edition_servings)));
-
-    }
-
-
     private static class MyDragItem extends DragItem {
+
+        private Context mContext;
 
         public MyDragItem(Context context, int layoutId) {
             super(context, layoutId);
+            mContext = context;
         }
 
         @Override
         public void onBindDragView(View clickedView, View dragView) {
-            CharSequence text = ((TextView) clickedView.findViewById(R.id.text)).getText();
-            ((TextView) dragView.findViewById(R.id.text)).setText(text);
+            ((TextView) dragView.findViewById(R.id.name)).setText(((TextView) clickedView.findViewById(R.id.name)).getText());
+            ((TextView) dragView.findViewById(R.id.quantity)).setText(((TextView) clickedView.findViewById(R.id.quantity)).getText());
+
+            ((TextView) dragView.findViewById(R.id.name)).setTextColor(mContext.getResources().getColor(android.R.color.white));
+            ((TextView) dragView.findViewById(R.id.quantity)).setTextColor(mContext.getResources().getColor(android.R.color.white));
             dragView.setBackgroundColor(dragView.getResources().getColor(R.color.theme_default_primary));
         }
     }

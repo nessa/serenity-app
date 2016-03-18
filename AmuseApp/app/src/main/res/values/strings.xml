@@ -1,28 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Amuse Bouche</string>
+
+    <!-- Generic -->
+    <string name="accept">Accept</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Menu -->
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
     <string name="action_fav">Favourite</string>
-    <string name="transition_recipe_detail">detail</string>
-    <string name="title_recipe_detail_activity">Detail</string>
-    <string name="accept">Accept</string>
-    <string name="cancel">Cancel</string>
+    <string name="action_save">Save</string>
+
     <!-- Splash screen -->
     <string name="splash_screen_loading_recipes_message">Loading recipes...</string>
-    <!-- Menu -->
+
+    <!-- Transitions -->
+    <string name="transition_recipe_detail">detail</string>
+
+    <!-- Lateral menu -->
     <string name="RECIPES">Recipes</string>
     <string name="MY_RECIPES">My recipes</string>
     <string name="MY_FAVOURITES">My favourites</string>
     <string name="SETTINGS">Settings</string>
     <string name="INFO">Information</string>
+
     <!-- Main activity -->
     <string name="exit_message">Are you sure you want to exit?</string>
     <string name="YES">Yes</string>
     <string name="NO">No</string>
-    <!-- Recipe List fragment class -->
+    <!--   Recipe List fragment class -->
     <string name="please_wait_message">Please, wait...</string>
-    <!-- Recipe detail fragment -->
+
+    <!-- Detail activity -->
+    <!--   Recipe detail fragment -->
     <string name="image">Image</string>
     <string name="detail_users">users</string>
     <string name="detail_information_label">Information</string>
@@ -41,18 +52,18 @@
     <string name="detail_hours">hours</string>
     <string name="detail_minutes">minutes</string>
     <string name="detail_seconds">\'\'</string>
-    <!-- Types of dish -->
+    <!--   Types of dish -->
     <string name="type_of_dish_appetizer">Appetizer</string>
     <string name="type_of_dish_first_course">First course</string>
     <string name="type_of_dish_second_course">Second course</string>
     <string name="type_of_dish_main_dish">Main dish</string>
     <string name="type_of_dish_dessert">Dessert</string>
     <string name="type_of_dish_other">Other</string>
-    <!-- Difficulty -->
+    <!--   Difficulty -->
     <string name="difficulty_high">High difficulty</string>
     <string name="difficulty_medium">Medium difficulty</string>
     <string name="difficulty_low">Low difficulty</string>
-    <!-- Measurement units -->
+    <!--   Measurement units -->
     <string name="measurement_unit_of">of</string>
     <string name="measurement_unit_g">gram</string>
     <string name="measurement_unit_kg">kilogram</string>
@@ -70,7 +81,7 @@
     <string name="measurement_unit_tsp_plural">teaspoons</string>
     <string name="measurement_unit_tbsp_plural">tablespoons</string>
     <string name="measurement_unit_rasher_plural">rashers</string>
-    <!-- Timer -->
+    <!--   Timer -->
     <string name="detail_timer_colon">:</string>
     <string name="detail_timer_label">Timer</string>
     <string name="detail_timer_cancel_button">Cancel</string>
@@ -79,14 +90,14 @@
     <string name="detail_timer_hours_initial">h</string>
     <string name="detail_timer_minutes_initial">m</string>
     <string name="detail_timer_seconds_initial">s</string>
-    <!-- Commands -->
+    <!--   Commands -->
     <string name="detail_commands_listening_message">Listening...</string>
     <string name="detail_commands_error_message">Error</string>
     <string name="detail_commands_success_message">Success</string>
-    <!-- Speak messages -->
+    <!--   Speak messages -->
     <string name="detail_direction_speak_end_of_recipe_message">The recipe is finish. Let\'s eat!</string>
     <string name="detail_direction_speak_start_timer_message">Starting timer.</string>
-    <!-- Voice recognition -->
+    <!--   Voice recognition -->
     <string name="voice_command_repeat">repeat</string>
     <string name="voice_command_timer">timer</string>
     <string name="voice_command_next">next</string>
@@ -105,7 +116,7 @@
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">New recipe</string>
-    <!-- Recipe edition fragment -->
+    <!--   Recipe edition fragment -->
     <string name="recipe_edition_error_required">Required</string>
     <string name="recipe_edition_title_label">Title</string>
     <string name="recipe_edition_title_hint">Recipe\'s name</string>
