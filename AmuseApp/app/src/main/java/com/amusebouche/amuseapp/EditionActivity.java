@@ -62,6 +62,7 @@ public class EditionActivity extends ActionBarActivity {
 
     // Fragments
     private RecipeEditionSecondTabFragment mSecondFragment;
+    private RecipeEditionThirdTabFragment mThirdFragment;
 
     // LIFECYCLE METHODS
 
@@ -123,6 +124,7 @@ public class EditionActivity extends ActionBarActivity {
 
         // Get fragments
         mSecondFragment = (RecipeEditionSecondTabFragment) getFragmentManager().findFragmentById(R.id.fragment2);
+        mThirdFragment = (RecipeEditionThirdTabFragment) getFragmentManager().findFragmentById(R.id.fragment3);
 
         // Get FABS
         mAddIngredientButton = (ActionButton)findViewById(R.id.add_ingredient_button);
@@ -132,6 +134,13 @@ public class EditionActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 mSecondFragment.showAddDialog();
+            }
+        });
+
+        mAddDirectionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mThirdFragment.showAddDialog();
             }
         });
 

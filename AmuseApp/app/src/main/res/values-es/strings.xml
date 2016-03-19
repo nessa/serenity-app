@@ -130,4 +130,10 @@
     <!--   Ingredients edition fragment -->
     <string name="recipe_edition_ingredient_name_hint">Ingrediente</string>
     <string name="recipe_edition_ingredient_quantity_hint">Cantidad</string>
+
+    <!--   Directions edition fragment -->
+    <string name="recipe_edition_direction_description_hint">Paso</string>
+    <string name="recipe_edition_direction_image_hint">URL de la imagen</string>
+    <string name="recipe_edition_direction_video_hint">URL del video</string>
+
 </resources>

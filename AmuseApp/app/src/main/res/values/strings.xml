@@ -131,4 +131,9 @@
     <string name="recipe_edition_ingredient_name_hint">Ingredient</string>
     <string name="recipe_edition_ingredient_quantity_hint">Quantity</string>
 
+    <!--   Directions edition fragment -->
+    <string name="recipe_edition_direction_description_hint">Direction</string>
+    <string name="recipe_edition_direction_image_hint">Image URL</string>
+    <string name="recipe_edition_direction_video_hint">Video URL</string>
+
 </resources>

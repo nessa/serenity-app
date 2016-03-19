@@ -29,14 +29,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Recipe edtion fragment class.
+ * Recipe edition fragment class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  *
  * Android fragment class, part of add activity and edit activity.
  * It contains lots of inputs to edit recipe's data.
  *
  * Related layouts:
- * - Content: fragment_edition_first_tab.xmlxml
+ * - Content: fragment_edition_second_tab.xml
  */
 public class RecipeEditionSecondTabFragment extends Fragment {
 

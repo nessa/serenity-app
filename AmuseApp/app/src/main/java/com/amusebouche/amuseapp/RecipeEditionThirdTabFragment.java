@@ -2,61 +2,49 @@ package com.amusebouche.amuseapp;
 
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
+import android.view.Window;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.amusebouche.data.Recipe;
-import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeDirection;
-import com.amusebouche.data.RecipeIngredient;
-import com.amusebouche.data.UserFriendlyRecipeData;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
-
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
- * Recipe edtion fragment class.
+ * Recipe edition fragment class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  *
  * Android fragment class, part of add activity and edit activity.
  * It contains lots of inputs to edit recipe's data.
  *
  * Related layouts:
- * - Content: fragment_edition_first_tab.xmlxml
+ * - Content: fragment_edition_third_tab.xml
  */
 public class RecipeEditionThirdTabFragment extends Fragment {
 
+    private EditionActivity mEditionActivity;
 
-    private Recipe mRecipe;
-    private LinearLayout mLayout;
+    private ArrayList<Pair<Long, RecipeDirection>> mDirectionsArray;
+    private RecipeEditionDirectionListAdapter mDirectionsListAdapter;
 
-    private ArrayList<String> typesOfDish;
-    private ArrayList<String> difficulties;
-
-    private EditText mTitle;
-    private Spinner mTypeOfDish;
-    private Spinner mDifficulty;
-    private TextView mCookingTimeLabel;
-    private SeekBar mCookingTimeHours;
-    private SeekBar mCookingTimeMinutes;
-    private TextView mServingsLabel;
-    private SeekBar mServings;
-    private DragListView mIngredientsListView;
 
     // LIFECYCLE METHODS
-
 
     /**
      * Called to do initial creation of a fragment. This is called after onAttach and before
@@ -68,21 +56,6 @@ public class RecipeEditionThirdTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
-
-        typesOfDish = new ArrayList<String>();
-        typesOfDish.add(getString(R.string.type_of_dish_appetizer));
-        typesOfDish.add(getString(R.string.type_of_dish_first_course));
-        typesOfDish.add(getString(R.string.type_of_dish_second_course));
-        typesOfDish.add(getString(R.string.type_of_dish_main_dish));
-        typesOfDish.add(getString(R.string.type_of_dish_dessert));
-        typesOfDish.add(getString(R.string.type_of_dish_other));
-
-        difficulties = new ArrayList<String>();
-        difficulties.add(getString(R.string.difficulty_low));
-        difficulties.add(getString(R.string.difficulty_medium));
-        difficulties.add(getString(R.string.difficulty_high));
-
-
     }
 
 
@@ -166,80 +139,252 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
 
-        mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_third_tab,
+        LinearLayout mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_third_tab,
                 container, false);
 
-        if (getActivity() instanceof EditionActivity) {
-            // do something
-            EditionActivity x = (EditionActivity) getActivity();
+        mEditionActivity = (EditionActivity) getActivity();
 
-            // Create an empty recipe
-            mRecipe = new Recipe(
-                    "",
-                    "",
-                    "",
-                    "", // Set username
-                    "es", // Set preferences language
-                    UserFriendlyRecipeData.getDefaultTypeOfDish(),
-                    UserFriendlyRecipeData.getDefaultDifficulty(),
-                    null,
-                    null,
-                    null,
-                    "",
-                    0,
-                    0,
-                    0,
-                    "",
-                    new ArrayList<RecipeCategory>(),
-                    new ArrayList<RecipeIngredient>(),
-                    new ArrayList<RecipeDirection>());
-        } else {
-            //do something else
-            Log.d("INFO", "ELSE");
+        // Set initial direction list
+        mDirectionsArray = new ArrayList<>();
+        if (mEditionActivity != null) {
+            for (int i = 0; i < mEditionActivity.getRecipe().getDirections().size(); i++) {
+                RecipeDirection rd = mEditionActivity.getRecipe().getDirections().get(i);
+                mDirectionsArray.add(new Pair<>(Long.valueOf(rd.getSortNumber()), rd));
+            }
         }
+
+        // Set drag list view
+        DragListView mDirectionsListView = (DragListView) mLayout.findViewById(R.id.directions);
+        mDirectionsListView.setDragListListener(new DragListView.DragListListener() {
+            @Override
+            public void onItemDragStarted(int position) {
+            }
+
+            @Override
+            public void onItemDragEnded(int fromPosition, int toPosition) {
+                if (fromPosition != toPosition) {
+                    moveDirectionsInRecipe(fromPosition, toPosition);
+                }
+            }
+        });
+
+        mDirectionsListView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mDirectionsListAdapter = new RecipeEditionDirectionListAdapter(mDirectionsArray,
+                R.layout.item_edition_direction, R.id.swap_image, false, getActivity(),
+                RecipeEditionThirdTabFragment.this);
+        mDirectionsListView.setAdapter(mDirectionsListAdapter, true);
+        mDirectionsListView.setCanDragHorizontally(false);
+        mDirectionsListView.setCustomDragItem(new DirectionDragItem(getActivity(),
+                R.layout.item_edition_direction));
+
 
         return mLayout;
     }
 
-    private void setCookingTimeLabel() {
-        String time;
+    /**
+     * Show new direction creation dialog.
+     *
+     * Uses showEditableDialog method.
+     */
+    public void showAddDialog() {
+        Log.d("INFO", "SHOW ADD DIALOG");
+        showEditionDialog(-1);
+    }
 
-        if (mCookingTimeHours.getProgress() > 0) {
-            if (mCookingTimeMinutes.getProgress() > 0) {
-                time = String.format("%d %s - %d %s", mCookingTimeHours.getProgress(),
-                        (mCookingTimeHours.getProgress() == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours),
-                        mCookingTimeMinutes.getProgress(),
-                        (mCookingTimeMinutes.getProgress() == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
+    /**
+     * Show direction edition dialog.
+     * It creates a new direction or updates an existing one.
+     * Modify directions in both recipe and mDirectionsArray.
+     *
+     * @param position Position of the direction to update.
+     *                 If it's -1, it doesn't exist and we have
+     *                 to create a new one.
+     */
+    public void showEditionDialog(final int position) {
+        Log.d("INFO", "SHOW EDITION DIALOG");
+
+        final Dialog editionDialog = new Dialog(getActivity());
+        editionDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
+        editionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        editionDialog.setContentView(R.layout.dialog_edition_direction);
+
+        final TextView descriptionTextView = (TextView) editionDialog.findViewById(R.id.description);
+        final TextView imageTextView = (TextView) editionDialog.findViewById(R.id.image);
+        final TextView videoTextView = (TextView) editionDialog.findViewById(R.id.video);
+
+        // Cooking time
+        final TextView cookingTimeLabel = (TextView) editionDialog.findViewById(R.id.cooking_time);
+        final SeekBar cookingTimeHours = (SeekBar) editionDialog.findViewById(R.id.cooking_time_hours);
+        final SeekBar cookingTimeMinutes = (SeekBar) editionDialog.findViewById(R.id.cooking_time_minutes);
+
+        SeekBar.OnSeekBarChangeListener cookingTimeListener = new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                cookingTimeLabel.setText(getCookingTimeLabel(cookingTimeHours.getProgress(),
+                        cookingTimeMinutes.getProgress()));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        };
+
+        cookingTimeHours.setOnSeekBarChangeListener(cookingTimeListener);
+        cookingTimeMinutes.setOnSeekBarChangeListener(cookingTimeListener);
+
+        Button cancelButton = (Button) editionDialog.findViewById(R.id.cancel);
+        Button acceptButton = (Button) editionDialog.findViewById(R.id.accept);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editionDialog.dismiss();
+            }
+        });
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (descriptionTextView.getText().toString().length() > 0) {
+
+                    if (position > -1) {
+                        // Update existing direction
+                        mEditionActivity.getRecipe().getDirections().get(position).setDescription(
+                                descriptionTextView.getText().toString());
+                        mEditionActivity.getRecipe().getDirections().get(position).setImage(
+                                imageTextView.getText().toString());
+                        mEditionActivity.getRecipe().getDirections().get(position).setVideo(
+                                videoTextView.getText().toString());
+                        mEditionActivity.getRecipe().getDirections().get(position).setTime(
+                                cookingTimeHours.getProgress() * 60.0F +
+                                        cookingTimeMinutes.getProgress());
+                    } else {
+                        // Add new direction
+                        RecipeDirection direction = new RecipeDirection(
+                                mEditionActivity.getRecipe().getDirections().size() + 1,
+                                descriptionTextView.getText().toString(),
+                                imageTextView.getText().toString(),
+                                videoTextView.getText().toString(),
+                                cookingTimeHours.getProgress() * 60.0F + cookingTimeMinutes.getProgress());
+
+                        mEditionActivity.getRecipe().getDirections().add(direction);
+                        mDirectionsArray.add(new Pair<>(Long.valueOf(direction.getSortNumber()), direction));
+                    }
+
+                    mDirectionsListAdapter.notifyDataSetChanged();
+
+                    // We close the dialog only if the creation/update result is OK
+                    editionDialog.dismiss();
+                }
+            }
+        });
+
+        if (position > -1) {
+            descriptionTextView.setText(mEditionActivity.getRecipe().getDirections().get(position).getDescription());
+            imageTextView.setText(mEditionActivity.getRecipe().getDirections().get(position).getImage());
+            videoTextView.setText(mEditionActivity.getRecipe().getDirections().get(position).getVideo());            cookingTimeHours.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() / 60);
+            cookingTimeMinutes.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() % 60);
+
+            cookingTimeLabel.setText(getCookingTimeLabel(cookingTimeHours.getProgress(),
+                    cookingTimeMinutes.getProgress()));
+        }
+
+        editionDialog.show();
+    }
+
+
+    private String getCookingTimeLabel(Integer cookingHours, Integer cookingMinutes) {
+        if (cookingHours > 0) {
+            if (cookingMinutes > 0) {
+                return String.format("%d %s - %d %s", cookingHours,
+                        (cookingHours == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours),
+                        cookingMinutes,
+                        (cookingMinutes == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
             } else {
-                time = String.format("%d %s", mCookingTimeHours.getProgress(),
-                        (mCookingTimeHours.getProgress() == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours));
+                return String.format("%d %s", cookingHours,
+                        (cookingHours == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours));
             }
         } else {
-            time = String.format("%d %s", mCookingTimeMinutes.getProgress(),
-                    (mCookingTimeMinutes.getProgress() == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
+            return String.format("%d %s", cookingMinutes,
+                    (cookingMinutes == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
+        }
+    }
+
+    /**
+     * Remove direction from recipe and mDirectionsArray.
+     *
+     * @param position Position of the direction to remove.
+     */
+    public void removeDirection(int position) {
+        mEditionActivity.getRecipe().getDirections().remove(position);
+        mDirectionsArray.remove(position);
+
+        // Reset sort numbers
+        for (int i = 0; i < mEditionActivity.getRecipe().getDirections().size(); i++) {
+            mEditionActivity.getRecipe().getDirections().get(i).setSortNumber(i + 1);
+            mDirectionsArray.get(i).second.setSortNumber(i + 1);
         }
 
-        mCookingTimeLabel.setText(time);
+        mDirectionsListAdapter.notifyDataSetChanged();
     }
 
-    private void setServingsLabel() {
-        mServingsLabel.setText(String.format("%d %s", mServings.getProgress() + 1,
-                (mServings.getProgress() == 0) ? getString(R.string.recipe_edition_serving) :
-                        getString(R.string.recipe_edition_servings)));
+    /**
+     * Move directions after drag and drop them in the list view.
+     * We translate the directions movement from the list view
+     * (mDirectionsArray) to the recipe.
+     *
+     * Do NOT change mDirectionsArray or the list view will show
+     * a wrong animation.
+     *
+     * @param fromPosition Initial position of the direction to move.
+     * @param toPosition Last position of the direction to move.
+     */
+    private void moveDirectionsInRecipe(int fromPosition, int toPosition) {
+        if (fromPosition < toPosition) {
+            Collections.rotate(mEditionActivity.getRecipe().getDirections().subList(fromPosition, toPosition + 1), -1);
+        } else {
+            Collections.rotate(mEditionActivity.getRecipe().getDirections().subList(toPosition, fromPosition + 1), +1);
+        }
 
+        // Reset sort numbers
+        for (int i = 0; i < mEditionActivity.getRecipe().getDirections().size(); i++) {
+            mEditionActivity.getRecipe().getDirections().get(i).setSortNumber(i + 1);
+            mDirectionsArray.get(i).second.setSortNumber(i + 1);
+        }
+
+        mDirectionsListAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Drag item needed to populate the directions list view.
+     */
+    private static class DirectionDragItem extends DragItem {
 
-    private static class MyDragItem extends DragItem {
+        private Context mContext;
 
-        public MyDragItem(Context context, int layoutId) {
+        public DirectionDragItem(Context context, int layoutId) {
             super(context, layoutId);
+            mContext = context;
         }
 
+        /**
+         * Fill dragged view with real data and change its style.
+         *
+         * @param clickedView Original view to get the data.
+         * @param dragView Dragged view to modify.
+         */
         @Override
         public void onBindDragView(View clickedView, View dragView) {
-            CharSequence text = ((TextView) clickedView.findViewById(R.id.text)).getText();
-            ((TextView) dragView.findViewById(R.id.text)).setText(text);
+            ((TextView) dragView.findViewById(R.id.name)).setText(((TextView) clickedView.findViewById(R.id.name)).getText());
+            ((TextView) dragView.findViewById(R.id.description)).setText(((TextView) clickedView.findViewById(R.id.description)).getText());
+
+            ((TextView) dragView.findViewById(R.id.name)).setTextColor(mContext.getResources().getColor(android.R.color.white));
+            ((TextView) dragView.findViewById(R.id.description)).setTextColor(mContext.getResources().getColor(android.R.color.white));
+            dragView.findViewById(R.id.delete).setVisibility(View.INVISIBLE);
+            ((ImageView) dragView.findViewById(R.id.swap_image)).setColorFilter(mContext.getResources().getColor(android.R.color.white));
             dragView.setBackgroundColor(dragView.getResources().getColor(R.color.theme_default_primary));
         }
     }

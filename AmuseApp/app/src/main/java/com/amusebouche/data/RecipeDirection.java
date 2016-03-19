@@ -111,6 +111,47 @@ public class RecipeDirection implements Parcelable {
         return mTime;
     }
 
+    // Setters
+
+    /**
+     * Set method for sortNumber variable
+     * @param sortNumber sort number to set
+     */
+    public void setSortNumber(Integer sortNumber) {
+        mSortNumber = sortNumber;
+    }
+
+    /**
+     * Set method for description variable
+     * @param description description to set
+     */
+    public void setDescription(String description) {
+        mDescription = description;
+    }
+
+    /**
+     * Set method for image variable
+     * @param image image to set
+     */
+    public void setImage(String image) {
+        mImage = image;
+    }
+
+    /**
+     * Set method for video variable
+     * @param video video to set
+     */
+    public void setVideo(String video) {
+        mVideo = video;
+    }
+
+    /**
+     * Get method for time variable
+     * @param time time to set
+     */
+    public void setTime(Float time) {
+        mTime = time;
+    }
 
     // Parcelable methods
 
