@@ -34,46 +34,69 @@
 
     </RelativeLayout>
 
-    <EditText android:id="@+id/description"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="4"
-        android:hint="@string/recipe_edition_direction_description_hint" />
+        android:orientation="horizontal">
 
-    <EditText android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:hint="@string/recipe_edition_direction_image_hint" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-    <EditText android:id="@+id/video"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:hint="@string/recipe_edition_direction_video_hint" />
+            <EditText
+                android:id="@+id/description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:hint="@string/recipe_edition_direction_description_hint" />
 
-    <TextView
-        android:id="@+id/cooking_time"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:paddingTop="@dimen/edition_basic_padding"
-        android:textColor="@color/primary_text"
-        android:fontFamily="sans-serif"
-        android:textSize="@dimen/edition_dialog_hours_text_size"
-        android:textStyle="normal" />
-    <SeekBar
-        android:id="@+id/cooking_time_hours"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:max="20"
-        android:progress="0"/>
-    <SeekBar
-        android:id="@+id/cooking_time_minutes"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:max="59"
-        android:progress="0"/>
+            <EditText android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:hint="@string/recipe_edition_direction_image_hint" />
+
+            <EditText android:id="@+id/video"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:hint="@string/recipe_edition_direction_video_hint" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/cooking_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:paddingTop="@dimen/edition_basic_padding"
+                android:textColor="@color/primary_text"
+                android:fontFamily="sans-serif"
+                android:textSize="@dimen/edition_dialog_hours_text_size"
+                android:textStyle="normal" />
+            <SeekBar
+                android:id="@+id/cooking_time_hours"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:max="20"
+                android:progress="0"/>
+            <SeekBar
+                android:id="@+id/cooking_time_minutes"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:max="59"
+                android:progress="0"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"

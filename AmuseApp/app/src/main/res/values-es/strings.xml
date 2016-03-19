@@ -138,5 +138,7 @@
     <string name="recipe_edition_direction_description_hint">Paso</string>
     <string name="recipe_edition_direction_image_hint">URL de la imagen</string>
     <string name="recipe_edition_direction_video_hint">URL del video</string>
+    <string name="recipe_edition_direction_title_new">Nuevo paso</string>
+    <string name="recipe_edition_direction_title_update">Editar paso</string>
 
 </resources>

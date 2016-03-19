@@ -138,5 +138,7 @@
     <string name="recipe_edition_direction_description_hint">Direction</string>
     <string name="recipe_edition_direction_image_hint">Image URL</string>
     <string name="recipe_edition_direction_video_hint">Video URL</string>
+    <string name="recipe_edition_direction_title_new">New direction</string>
+    <string name="recipe_edition_direction_title_update">Edit direction</string>
 
 </resources>

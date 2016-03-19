@@ -2,13 +2,13 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="@dimen/edition_ingredient_dialog_width"
+    android:layout_width="@dimen/edition_dialog_width"
     android:layout_height="match_parent">
 
     <RelativeLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/detail_image_size">
+        android:layout_height="@dimen/edition_dialog_image_height">
 
         <ImageView
             android:layout_width="match_parent"
@@ -27,9 +27,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="@dimen/edition_ingredient_title_margin_left"
-            android:layout_marginBottom="@dimen/edition_ingredient_title_margin_bottom"
-            android:textSize="@dimen/edition_ingredient_title_size"
+            android:layout_marginStart="@dimen/edition_dialog_title_margin_left"
+            android:layout_marginBottom="@dimen/edition_dialog_title_margin_bottom"
+            android:textSize="@dimen/edition_dialog_title_size"
             android:textColor="@android:color/white" />
 
     </RelativeLayout>
@@ -37,6 +37,7 @@
     <EditText android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:maxLines="2"
         android:hint="@string/recipe_edition_ingredient_name_hint" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

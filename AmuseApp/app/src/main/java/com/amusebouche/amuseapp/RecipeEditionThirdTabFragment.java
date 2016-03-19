@@ -206,6 +206,13 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         editionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         editionDialog.setContentView(R.layout.dialog_edition_direction);
 
+        TextView titleTextView = (TextView) editionDialog.findViewById(R.id.title);
+        if (position > -1) {
+            titleTextView.setText(getResources().getString(R.string.recipe_edition_direction_title_update));
+        } else {
+            titleTextView.setText(getResources().getString(R.string.recipe_edition_direction_title_new));
+        }
+
         final TextView descriptionTextView = (TextView) editionDialog.findViewById(R.id.description);
         final TextView imageTextView = (TextView) editionDialog.findViewById(R.id.image);
         final TextView videoTextView = (TextView) editionDialog.findViewById(R.id.video);
