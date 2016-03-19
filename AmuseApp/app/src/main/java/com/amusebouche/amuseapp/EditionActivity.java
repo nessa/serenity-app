@@ -32,7 +32,7 @@ import java.util.ArrayList;
  * Related layouts:
  * - Content: activity_add.xml
  */
-public class AddActivity extends ActionBarActivity {
+public class EditionActivity extends ActionBarActivity {
 
     // Tab identifiers
     private static final String TAB_1 = "first_tab";
@@ -79,30 +79,33 @@ public class AddActivity extends ActionBarActivity {
         String presentTab = TAB_1;
         if (savedInstanceState == null) {
             Intent i = getIntent();
+            mRecipe = i.getParcelableExtra(INTENT_KEY_RECIPE);
             mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
             mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
 
-            // Create an empty recipe
-            mRecipe = new Recipe(
-                    "",
-                    "",
-                    "",
-                    "", // Set username
-                    "es", // Set preferences language
-                    UserFriendlyRecipeData.getDefaultTypeOfDish(),
-                    UserFriendlyRecipeData.getDefaultDifficulty(),
-                    null,
-                    null,
-                    0.0F,
-                    "",
-                    0,
-                    0,
-                    1,
-                    "",
-                    new ArrayList<RecipeCategory>(),
-                    new ArrayList<RecipeIngredient>(),
-                    new ArrayList<RecipeDirection>());
+            if (mRecipe == null) {
+                // Create an empty recipe
+                mRecipe = new Recipe(
+                        "",
+                        "",
+                        "",
+                        "", // Set username
+                        "es", // Set preferences language
+                        UserFriendlyRecipeData.getDefaultTypeOfDish(),
+                        UserFriendlyRecipeData.getDefaultDifficulty(),
+                        null,
+                        null,
+                        0.0F,
+                        "",
+                        0,
+                        0,
+                        1,
+                        "",
+                        new ArrayList<RecipeCategory>(),
+                        new ArrayList<RecipeIngredient>(),
+                        new ArrayList<RecipeDirection>());
+            }
         } else {
             mRecipe = savedInstanceState.getParcelable(INTENT_KEY_RECIPE);
             mRecipes = savedInstanceState.getParcelableArrayList(PARCELABLE_RECIPES_KEY);
@@ -116,6 +119,7 @@ public class AddActivity extends ActionBarActivity {
 
         getSupportActionBar().setTitle(getString(R.string.activity_add_title));
         getSupportActionBar().setElevation(0);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Get fragments
         mSecondFragment = (RecipeEditionSecondTabFragment) getFragmentManager().findFragmentById(R.id.fragment2);

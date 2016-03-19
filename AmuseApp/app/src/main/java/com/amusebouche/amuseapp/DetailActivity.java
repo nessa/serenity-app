@@ -46,6 +46,9 @@ public class DetailActivity extends ActionBarActivity {
     // Saved data keys
     private static final String INTENT_KEY_RECIPE = "recipe";
     private static final String INTENT_KEY_TAB = "tab";
+    private static final String PARCELABLE_RECIPES_KEY = "recipes";
+    private static final String CURRENT_PAGE_KEY = "current_page";
+    private static final String LIMIT_PER_PAGE_KEY = "limit";
 
     // Data variables
     private Recipe mRecipe;
@@ -268,8 +271,8 @@ public class DetailActivity extends ActionBarActivity {
             case android.R.id.home:
                 onBackPressed();
                 return true;
-            case R.id.action_fav:
-                makeFavorite();
+            case R.id.action_edit:
+                editRecipe();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -287,9 +290,10 @@ public class DetailActivity extends ActionBarActivity {
 
     // FUNCTIONALITY METHODS
 
-    public void makeFavorite() {
-        Log.v("INFO", "Favorite X");
-        // TODO: Implement this method.
+    public void editRecipe() {
+        Intent i = new Intent(this, EditionActivity.class);
+        i.putExtra(INTENT_KEY_RECIPE, mRecipe);
+        startActivity(i);
     }
 
 }

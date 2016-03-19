@@ -169,9 +169,9 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_third_tab,
                 container, false);
 
-        if (getActivity() instanceof AddActivity) {
+        if (getActivity() instanceof EditionActivity) {
             // do something
-            AddActivity x = (AddActivity) getActivity();
+            EditionActivity x = (EditionActivity) getActivity();
 
             // Create an empty recipe
             mRecipe = new Recipe(

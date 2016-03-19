@@ -17,13 +17,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
-import com.software.shell.fab.ActionButton;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
@@ -42,7 +40,7 @@ import java.util.Collections;
  */
 public class RecipeEditionSecondTabFragment extends Fragment {
 
-    private AddActivity mAddActivity;
+    private EditionActivity mEditionActivity;
 
     private ArrayList<String> measurementUnits;
 
@@ -150,9 +148,9 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         LinearLayout mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_second_tab,
                 container, false);
 
-        if (getActivity() instanceof AddActivity) {
+        if (getActivity() instanceof EditionActivity) {
             // do something
-            mAddActivity = (AddActivity) getActivity();
+            mEditionActivity = (EditionActivity) getActivity();
         } else {
             //do something else
             Log.d("INFO", "ELSE");
@@ -160,9 +158,9 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
         // Set initial ingredient list
         mIngredientsArray = new ArrayList<>();
-        if (mAddActivity != null) {
-            for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
-                RecipeIngredient ri = mAddActivity.getRecipe().getIngredients().get(i);
+        if (mEditionActivity != null) {
+            for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
+                RecipeIngredient ri = mEditionActivity.getRecipe().getIngredients().get(i);
                 mIngredientsArray.add(new Pair<>(Long.valueOf(ri.getSortNumber()), ri));
             }
         }
@@ -249,11 +247,11 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
                     if (position > -1) {
                         // Update existing ingredient
-                        mAddActivity.getRecipe().getIngredients().get(position).setName(
+                        mEditionActivity.getRecipe().getIngredients().get(position).setName(
                                 nameTextView.getText().toString());
-                        mAddActivity.getRecipe().getIngredients().get(position).setQuantity(
+                        mEditionActivity.getRecipe().getIngredients().get(position).setQuantity(
                                 Float.valueOf(quantityTextView.getText().toString()));
-                        mAddActivity.getRecipe().getIngredients().get(position).setMeasurementUnit(
+                        mEditionActivity.getRecipe().getIngredients().get(position).setMeasurementUnit(
                                 UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
                                         unitsSpinner.getSelectedItemPosition(), getActivity()));
 
@@ -266,14 +264,14 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                     } else {
                         // Add new ingredient
                         RecipeIngredient ingredient = new RecipeIngredient(
-                                mAddActivity.getRecipe().getIngredients().size(),
+                                mEditionActivity.getRecipe().getIngredients().size() + 1,
                                 nameTextView.getText().toString(),
                                 Float.valueOf(quantityTextView.getText().toString()),
                                 UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
                                         unitsSpinner.getSelectedItemPosition(), getActivity())
                         );
 
-                        mAddActivity.getRecipe().getIngredients().add(ingredient);
+                        mEditionActivity.getRecipe().getIngredients().add(ingredient);
                         mIngredientsArray.add(new Pair<>(Long.valueOf(ingredient.getSortNumber()), ingredient));
                     }
 
@@ -287,9 +285,9 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
         if (position > -1) {
 
-            if (mAddActivity != null) {
-                nameTextView.setText(mAddActivity.getRecipe().getIngredients().get(position).getName());
-                quantityTextView.setText(String.format("%f", mAddActivity.getRecipe().getIngredients().get(position).getQuantity()));
+            if (mEditionActivity != null) {
+                nameTextView.setText(mEditionActivity.getRecipe().getIngredients().get(position).getName());
+                quantityTextView.setText(String.format("%f", mEditionActivity.getRecipe().getIngredients().get(position).getQuantity()));
 
             }
         }
@@ -303,13 +301,13 @@ public class RecipeEditionSecondTabFragment extends Fragment {
      * @param position Position of the ingredient to remove.
      */
     public void removeIngredient(int position) {
-        mAddActivity.getRecipe().getIngredients().remove(position);
+        mEditionActivity.getRecipe().getIngredients().remove(position);
         mIngredientsArray.remove(position);
 
         // Reset sort numbers
-        for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
-            mAddActivity.getRecipe().getIngredients().get(i).setSortNumber(i);
-            mIngredientsArray.get(i).second.setSortNumber(i);
+        for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
+            mEditionActivity.getRecipe().getIngredients().get(i).setSortNumber(i + 1);
+            mIngredientsArray.get(i).second.setSortNumber(i + 1);
         }
 
         mIngredientsListAdapter.notifyDataSetChanged();
@@ -327,17 +325,17 @@ public class RecipeEditionSecondTabFragment extends Fragment {
      * @param toPosition Last position of the ingredient to move.
      */
     private void moveIngredientsInRecipe(int fromPosition, int toPosition) {
-        if (mAddActivity != null) {
+        if (mEditionActivity != null) {
             if (fromPosition < toPosition) {
-                Collections.rotate(mAddActivity.getRecipe().getIngredients().subList(fromPosition, toPosition + 1), -1);
+                Collections.rotate(mEditionActivity.getRecipe().getIngredients().subList(fromPosition, toPosition + 1), -1);
             } else {
-                Collections.rotate(mAddActivity.getRecipe().getIngredients().subList(toPosition, fromPosition + 1), +1);
+                Collections.rotate(mEditionActivity.getRecipe().getIngredients().subList(toPosition, fromPosition + 1), +1);
             }
 
             // Reset sort numbers
-            for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
-                mAddActivity.getRecipe().getIngredients().get(i).setSortNumber(i);
-                mIngredientsArray.get(i).second.setSortNumber(i);
+            for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
+                mEditionActivity.getRecipe().getIngredients().get(i).setSortNumber(i + 1);
+                mIngredientsArray.get(i).second.setSortNumber(i + 1);
             }
 
             mIngredientsListAdapter.notifyDataSetChanged();

@@ -64,7 +64,7 @@ public class RecipeEditionIngredientListAdapter extends DragItemAdapter<Pair<Lon
         holder.mNameTextView.setText(i.getName());
         holder.mQuantityTextView.setText(UserFriendlyRecipeData.getIngredientQuantity(i.getQuantity(),
                 i.getMeasurementUnit(), mContext));
-        holder.itemView.setTag(i.getSortNumber());
+        holder.itemView.setTag(i.getSortNumber() - 1);
     }
 
     @Override

@@ -48,6 +48,7 @@ public class RecipeListFragment extends Fragment {
     private static final String LIMIT_PER_PAGE_KEY = "limit";
 
     // Data variables
+    private Recipe mRecipe;
     private ArrayList<Recipe> mRecipes;
     private Boolean mOffline = true;
 
@@ -216,7 +217,7 @@ public class RecipeListFragment extends Fragment {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        Intent i = new Intent(getActivity(), AddActivity.class);
+                        Intent i = new Intent(getActivity(), EditionActivity.class);
 
                         i.putParcelableArrayListExtra(PARCELABLE_RECIPES_KEY,
                                 ((MainActivity) getActivity()).getRecipes());

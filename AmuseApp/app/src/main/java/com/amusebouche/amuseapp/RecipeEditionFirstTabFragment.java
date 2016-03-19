@@ -35,7 +35,7 @@ import java.util.ArrayList;
  */
 public class RecipeEditionFirstTabFragment extends Fragment {
 
-    private AddActivity mAddActivity;
+    private EditionActivity mEditionActivity;
 
     private ArrayList<String> typesOfDish;
     private ArrayList<String> difficulties;
@@ -153,9 +153,9 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         LinearLayout mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_first_tab,
                 container, false);
 
-        if (getActivity() instanceof AddActivity) {
+        if (getActivity() instanceof EditionActivity) {
             // do something
-            mAddActivity = (AddActivity) getActivity();
+            mEditionActivity = (EditionActivity) getActivity();
         } else {
             //do something else
             Log.d("INFO", "ELSE");
@@ -166,8 +166,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
 
         mTitle.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                if (mAddActivity != null) {
-                    mAddActivity.getRecipe().setTitle(mTitle.getText().toString());
+                if (mEditionActivity != null) {
+                    mEditionActivity.getRecipe().setTitle(mTitle.getText().toString());
                 }
 
                 checkTitleValidation();
@@ -181,8 +181,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
 
         mImage.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                if (mAddActivity != null) {
-                    mAddActivity.getRecipe().setImage(mImage.getText().toString());
+                if (mEditionActivity != null) {
+                    mEditionActivity.getRecipe().setImage(mImage.getText().toString());
                 }
 
                 checkTitleValidation();
@@ -201,8 +201,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         mTypeOfDish.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (mAddActivity != null) {
-                    mAddActivity.getRecipe().setTypeOfDish(
+                if (mEditionActivity != null) {
+                    mEditionActivity.getRecipe().setTypeOfDish(
                             UserFriendlyRecipeData.getTypeOfDishTranslationByPosition(position, getActivity()));
                 }
             }
@@ -221,8 +221,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         mDifficulty.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                if (mAddActivity != null) {
-                    mAddActivity.getRecipe().setDifficulty(
+                if (mEditionActivity != null) {
+                    mEditionActivity.getRecipe().setDifficulty(
                             UserFriendlyRecipeData.getDifficultyTranslationByPosition(position, getActivity()));
                 }
             }
@@ -241,8 +241,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 setCookingTimeLabel();
 
-                if (mAddActivity != null) {
-                    mAddActivity.getRecipe().setCookingTime(mCookingTimeHours.getProgress() * 60.0F +
+                if (mEditionActivity != null) {
+                    mEditionActivity.getRecipe().setCookingTime(mCookingTimeHours.getProgress() * 60.0F +
                         mCookingTimeMinutes.getProgress());
                 }
             }
@@ -267,8 +267,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
                 setServingsLabel();
 
-                if (mAddActivity != null) {
-                    mAddActivity.getRecipe().setServings(mServings.getProgress() + 1);
+                if (mEditionActivity != null) {
+                    mEditionActivity.getRecipe().setServings(mServings.getProgress() + 1);
                 }
             }
 
@@ -283,8 +283,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
 
         mSource.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
-                if (mAddActivity != null) {
-                    mAddActivity.getRecipe().setSource(mSource.getText().toString());
+                if (mEditionActivity != null) {
+                    mEditionActivity.getRecipe().setSource(mSource.getText().toString());
                 }
 
                 checkTitleValidation();
@@ -297,16 +297,16 @@ public class RecipeEditionFirstTabFragment extends Fragment {
 
 
         // Set initial data
-        if (mAddActivity != null) {
-            mTitle.setText(mAddActivity.getRecipe().getTitle());
-            mImage.setText(mAddActivity.getRecipe().getImage());
-            mTypeOfDish.setSelection(UserFriendlyRecipeData.getTypeOfDishPosition(mAddActivity.getRecipe().getTypeOfDish()));
-            mDifficulty.setSelection(UserFriendlyRecipeData.getDifficultyPosition(mAddActivity.getRecipe().getDifficulty()));
-            mCookingTimeHours.setProgress(mAddActivity.getRecipe().getCookingTime().intValue() / 60);
-            mCookingTimeMinutes.setProgress(mAddActivity.getRecipe().getCookingTime().intValue() % 60);
-            mServings.setProgress((mAddActivity.getRecipe().getServings() > 0) ?
-                    mAddActivity.getRecipe().getServings() - 1 : 0);
-            mSource.setText(mAddActivity.getRecipe().getSource());
+        if (mEditionActivity != null) {
+            mTitle.setText(mEditionActivity.getRecipe().getTitle());
+            mImage.setText(mEditionActivity.getRecipe().getImage());
+            mTypeOfDish.setSelection(UserFriendlyRecipeData.getTypeOfDishPosition(mEditionActivity.getRecipe().getTypeOfDish()));
+            mDifficulty.setSelection(UserFriendlyRecipeData.getDifficultyPosition(mEditionActivity.getRecipe().getDifficulty()));
+            mCookingTimeHours.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() / 60);
+            mCookingTimeMinutes.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() % 60);
+            mServings.setProgress((mEditionActivity.getRecipe().getServings() > 0) ?
+                    mEditionActivity.getRecipe().getServings() - 1 : 0);
+            mSource.setText(mEditionActivity.getRecipe().getSource());
         }
 
         // Check initial data
