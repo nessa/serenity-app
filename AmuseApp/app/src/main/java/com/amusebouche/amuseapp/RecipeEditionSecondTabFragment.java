@@ -211,6 +211,13 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         editionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         editionDialog.setContentView(R.layout.dialog_edition_ingredient);
 
+        TextView titleTextView = (TextView) editionDialog.findViewById(R.id.title);
+        if (position > -1) {
+            titleTextView.setText(getResources().getString(R.string.recipe_edition_ingredient_title_update));
+        } else {
+            titleTextView.setText(getResources().getString(R.string.recipe_edition_ingredient_title_new));
+        }
+
         final TextView nameTextView = (TextView) editionDialog.findViewById(R.id.name);
         final TextView quantityTextView = (TextView) editionDialog.findViewById(R.id.quantity);
 

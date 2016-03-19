@@ -1,7 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="@dimen/edition_ingredient_dialog_width"
     android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/detail_image_size">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edition_ingredient_title_image_height"
+            android:src="@drawable/ingredients"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/detail_ingredients_label" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edition_ingredient_title_image_height"
+            android:background="@drawable/bottom_gradient"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/edition_ingredient_title_margin_left"
+            android:layout_marginBottom="@dimen/edition_ingredient_title_margin_bottom"
+            android:textSize="@dimen/edition_ingredient_title_size"
+            android:textColor="@android:color/white" />
+
+    </RelativeLayout>
 
     <EditText android:id="@+id/name"
         android:layout_width="match_parent"
@@ -10,19 +41,21 @@
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <EditText android:id="@+id/quantity"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:inputType="number"
             android:hint="@string/recipe_edition_ingredient_quantity_hint" />
 
         <Spinner
             android:id="@+id/measurement_units"
-            android:layout_width="fill_parent"
-            android:layout_height="24dp" />
+            android:layout_width="0dp"
+            android:layout_height="@dimen/edition_ingredient_spinner_height"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
@@ -30,7 +63,8 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_gravity="end">
 
         <Button
             android:id="@+id/cancel"

@@ -131,6 +131,8 @@
     <!--   Ingredients edition fragment -->
     <string name="recipe_edition_ingredient_name_hint">Ingrediente</string>
     <string name="recipe_edition_ingredient_quantity_hint">Cantidad</string>
+    <string name="recipe_edition_ingredient_title_new">Nuevo ingrediente</string>
+    <string name="recipe_edition_ingredient_title_update">Editar ingrediente</string>
 
     <!--   Directions edition fragment -->
     <string name="recipe_edition_direction_description_hint">Paso</string>
