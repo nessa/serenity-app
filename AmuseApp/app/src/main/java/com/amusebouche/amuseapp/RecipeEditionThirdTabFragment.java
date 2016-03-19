@@ -31,7 +31,7 @@ import java.util.Collections;
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  *
  * Android fragment class, part of add activity and edit activity.
- * It contains lots of inputs to edit recipe's data.
+ * It contains directions' data.
  *
  * Related layouts:
  * - Content: fragment_edition_third_tab.xml
@@ -146,11 +146,9 @@ public class RecipeEditionThirdTabFragment extends Fragment {
 
         // Set initial direction list
         mDirectionsArray = new ArrayList<>();
-        if (mEditionActivity != null) {
-            for (int i = 0; i < mEditionActivity.getRecipe().getDirections().size(); i++) {
-                RecipeDirection rd = mEditionActivity.getRecipe().getDirections().get(i);
-                mDirectionsArray.add(new Pair<>(Long.valueOf(rd.getSortNumber()), rd));
-            }
+        for (int i = 0; i < mEditionActivity.getRecipe().getDirections().size(); i++) {
+            RecipeDirection rd = mEditionActivity.getRecipe().getDirections().get(i);
+            mDirectionsArray.add(new Pair<>(Long.valueOf(rd.getSortNumber()), rd));
         }
 
         // Set drag list view
@@ -380,11 +378,17 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         public void onBindDragView(View clickedView, View dragView) {
             ((TextView) dragView.findViewById(R.id.name)).setText(((TextView) clickedView.findViewById(R.id.name)).getText());
             ((TextView) dragView.findViewById(R.id.description)).setText(((TextView) clickedView.findViewById(R.id.description)).getText());
+            dragView.findViewById(R.id.image_icon).setVisibility(clickedView.findViewById(R.id.image_icon).getVisibility());
+            dragView.findViewById(R.id.video_icon).setVisibility(clickedView.findViewById(R.id.video_icon).getVisibility());
+            dragView.findViewById(R.id.timer_icon).setVisibility(clickedView.findViewById(R.id.timer_icon).getVisibility());
 
             ((TextView) dragView.findViewById(R.id.name)).setTextColor(mContext.getResources().getColor(android.R.color.white));
             ((TextView) dragView.findViewById(R.id.description)).setTextColor(mContext.getResources().getColor(android.R.color.white));
             dragView.findViewById(R.id.delete).setVisibility(View.INVISIBLE);
             ((ImageView) dragView.findViewById(R.id.swap_image)).setColorFilter(mContext.getResources().getColor(android.R.color.white));
+            ((ImageView) dragView.findViewById(R.id.image_icon)).setColorFilter(mContext.getResources().getColor(android.R.color.white));
+            ((ImageView) dragView.findViewById(R.id.video_icon)).setColorFilter(mContext.getResources().getColor(android.R.color.white));
+            ((ImageView) dragView.findViewById(R.id.timer_icon)).setColorFilter(mContext.getResources().getColor(android.R.color.white));
             dragView.setBackgroundColor(dragView.getResources().getColor(R.color.theme_default_primary));
         }
     }

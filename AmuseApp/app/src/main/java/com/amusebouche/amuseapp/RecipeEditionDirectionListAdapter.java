@@ -2,6 +2,7 @@ package com.amusebouche.amuseapp;
 
 
 import android.content.Context;
+import android.media.Image;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,6 +64,17 @@ public class RecipeEditionDirectionListAdapter extends DragItemAdapter<Pair<Long
         holder.mNameTextView.setText(String.format("%s %d", mContext.getString(R.string.detail_direction_label),
                 d.getSortNumber()));
         holder.mDescriptionTextView.setText(d.getDescription());
+
+        if (d.getImage().length() > 0) {
+            holder.mImageIcon.setVisibility(View.VISIBLE);
+        }
+        if (d.getVideo().length() > 0) {
+            holder.mVideoIcon.setVisibility(View.VISIBLE);
+        }
+        if (d.getTime() > 0) {
+            holder.mTimerIcon.setVisibility(View.VISIBLE);
+        }
+
         holder.itemView.setTag(d.getSortNumber() - 1);
     }
 
@@ -78,6 +90,9 @@ public class RecipeEditionDirectionListAdapter extends DragItemAdapter<Pair<Long
         public LinearLayout mDirectionData;
         public TextView mNameTextView;
         public TextView mDescriptionTextView;
+        public ImageView mImageIcon;
+        public ImageView mVideoIcon;
+        public ImageView mTimerIcon;
 
         public ViewHolder(final View itemView) {
             super(itemView, mGrabHandleId);
@@ -85,6 +100,9 @@ public class RecipeEditionDirectionListAdapter extends DragItemAdapter<Pair<Long
             mDirectionData = (LinearLayout) itemView.findViewById(R.id.direction_data);
             mNameTextView = (TextView) itemView.findViewById(R.id.name);
             mDescriptionTextView = (TextView) itemView.findViewById(R.id.description);
+            mImageIcon = (ImageView) itemView.findViewById(R.id.image_icon);
+            mVideoIcon = (ImageView) itemView.findViewById(R.id.video_icon);
+            mTimerIcon = (ImageView) itemView.findViewById(R.id.timer_icon);
 
             mDeleteImage.setOnClickListener(new View.OnClickListener() {
                 @Override

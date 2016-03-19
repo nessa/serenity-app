@@ -26,4 +26,17 @@
     <dimen name="edition_cell_primary_text">22sp</dimen>
     <dimen name="edition_cell_secondary_text">16sp</dimen>
 
+    <!-- Divider -->
+
+    <!-- Direction edition -->
+    <dimen name="edition_direction_item_right_margin">42dp</dimen>
+    <dimen name="edition_direction_item_delete_image_padding">4dp</dimen>
+    <dimen name="edition_direction_item_image_size">24dp</dimen>
+    <dimen name="edition_direction_item_image_top_margin">4dp</dimen>
+    <dimen name="edition_direction_item_divider_top_margin">12dp</dimen>
+    <dimen name="edition_direction_divider_slim_table_height">1dp</dimen>
+
+
+
+
 </resources>

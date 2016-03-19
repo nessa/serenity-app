@@ -33,7 +33,7 @@ import java.util.Collections;
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  *
  * Android fragment class, part of add activity and edit activity.
- * It contains lots of inputs to edit recipe's data.
+ * It contains ingredients' data.
  *
  * Related layouts:
  * - Content: fragment_edition_second_tab.xml
@@ -148,21 +148,13 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         LinearLayout mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_second_tab,
                 container, false);
 
-        if (getActivity() instanceof EditionActivity) {
-            // do something
-            mEditionActivity = (EditionActivity) getActivity();
-        } else {
-            //do something else
-            Log.d("INFO", "ELSE");
-        }
+        mEditionActivity = (EditionActivity) getActivity();
 
         // Set initial ingredient list
         mIngredientsArray = new ArrayList<>();
-        if (mEditionActivity != null) {
-            for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
-                RecipeIngredient ri = mEditionActivity.getRecipe().getIngredients().get(i);
-                mIngredientsArray.add(new Pair<>(Long.valueOf(ri.getSortNumber()), ri));
-            }
+        for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
+            RecipeIngredient ri = mEditionActivity.getRecipe().getIngredients().get(i);
+            mIngredientsArray.add(new Pair<>(Long.valueOf(ri.getSortNumber()), ri));
         }
 
         // Set drag list view
@@ -284,12 +276,8 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         });
 
         if (position > -1) {
-
-            if (mEditionActivity != null) {
-                nameTextView.setText(mEditionActivity.getRecipe().getIngredients().get(position).getName());
-                quantityTextView.setText(String.format("%f", mEditionActivity.getRecipe().getIngredients().get(position).getQuantity()));
-
-            }
+            nameTextView.setText(mEditionActivity.getRecipe().getIngredients().get(position).getName());
+            quantityTextView.setText(String.format("%f", mEditionActivity.getRecipe().getIngredients().get(position).getQuantity()));
         }
 
         editionDialog.show();
@@ -325,21 +313,19 @@ public class RecipeEditionSecondTabFragment extends Fragment {
      * @param toPosition Last position of the ingredient to move.
      */
     private void moveIngredientsInRecipe(int fromPosition, int toPosition) {
-        if (mEditionActivity != null) {
-            if (fromPosition < toPosition) {
-                Collections.rotate(mEditionActivity.getRecipe().getIngredients().subList(fromPosition, toPosition + 1), -1);
-            } else {
-                Collections.rotate(mEditionActivity.getRecipe().getIngredients().subList(toPosition, fromPosition + 1), +1);
-            }
-
-            // Reset sort numbers
-            for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
-                mEditionActivity.getRecipe().getIngredients().get(i).setSortNumber(i + 1);
-                mIngredientsArray.get(i).second.setSortNumber(i + 1);
-            }
-
-            mIngredientsListAdapter.notifyDataSetChanged();
+        if (fromPosition < toPosition) {
+            Collections.rotate(mEditionActivity.getRecipe().getIngredients().subList(fromPosition, toPosition + 1), -1);
+        } else {
+            Collections.rotate(mEditionActivity.getRecipe().getIngredients().subList(toPosition, fromPosition + 1), +1);
         }
+
+        // Reset sort numbers
+        for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
+            mEditionActivity.getRecipe().getIngredients().get(i).setSortNumber(i + 1);
+            mIngredientsArray.get(i).second.setSortNumber(i + 1);
+        }
+
+        mIngredientsListAdapter.notifyDataSetChanged();
     }
 
     /**
