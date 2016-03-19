@@ -75,6 +75,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setElevation(0);
 
         // Get data from previous activity
         if (savedInstanceState == null) {

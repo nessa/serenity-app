@@ -4,12 +4,7 @@
     tools:context=".MainActivity">
     <item android:id="@+id/action_save"
         android:title="@string/action_save"
-        android:icon="@drawable/ic_search_white_48dp"
-        android:orderInCategory="100"
-        app:showAsAction="ifRoom" />
-    <item android:id="@+id/action_add"
-        android:title="@string/action_save"
-        android:icon="@drawable/ic_add_white_48dp"
+        android:icon="@android:drawable/ic_menu_save"
         android:orderInCategory="100"
         app:showAsAction="ifRoom" />
 </menu>

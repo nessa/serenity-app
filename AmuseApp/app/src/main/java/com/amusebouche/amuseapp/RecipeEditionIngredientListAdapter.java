@@ -5,8 +5,9 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
@@ -15,21 +16,34 @@ import com.woxthebox.draglistview.DragItemAdapter;
 import java.util.ArrayList;
 
 /**
- * Created by noelia on 17/03/16.
+ * Ingredient list view cell adapter class.
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com
+ *
+ * It declares the view of each list view cells that contains:
+ * - Remove icon.
+ * - Ingredient name.
+ * - Ingredient quantity.
+ * - Drag & drop movement.
+ *
+ * Related layouts:
+ * - Content: item_edition_ingredient.xml
  */
-public class RecipeEditionListAdapter extends DragItemAdapter<Pair<Long, RecipeIngredient>,
-        RecipeEditionListAdapter.ViewHolder> {
+public class RecipeEditionIngredientListAdapter extends DragItemAdapter<Pair<Long, RecipeIngredient>,
+        RecipeEditionIngredientListAdapter.ViewHolder> {
 
     private int mLayoutId;
     private int mGrabHandleId;
     private Context mContext;
+    private RecipeEditionSecondTabFragment mFragment;
 
-    public RecipeEditionListAdapter(ArrayList<Pair<Long, RecipeIngredient>> list, int layoutId,
-                                    int grabHandleId, boolean dragOnLongPress, Context c) {
+    public RecipeEditionIngredientListAdapter(ArrayList<Pair<Long, RecipeIngredient>> list,
+                                              int layoutId, int grabHandleId, boolean dragOnLongPress,
+                                              Context c, RecipeEditionSecondTabFragment fragment) {
         super(dragOnLongPress);
         mLayoutId = layoutId;
         mGrabHandleId = grabHandleId;
         mContext = c;
+        mFragment = fragment;
         setHasStableIds(true);
         setItemList(list);
     }
@@ -46,10 +60,11 @@ public class RecipeEditionListAdapter extends DragItemAdapter<Pair<Long, RecipeI
 
         RecipeIngredient i = mItemList.get(position).second;
 
+        // Set cell data
         holder.mNameTextView.setText(i.getName());
         holder.mQuantityTextView.setText(UserFriendlyRecipeData.getIngredientQuantity(i.getQuantity(),
                 i.getMeasurementUnit(), mContext));
-        holder.itemView.setTag(i.getName());
+        holder.itemView.setTag(i.getSortNumber());
     }
 
     @Override
@@ -58,26 +73,33 @@ public class RecipeEditionListAdapter extends DragItemAdapter<Pair<Long, RecipeI
     }
 
     public class ViewHolder extends DragItemAdapter<Pair<Long, RecipeIngredient>,
-            RecipeEditionListAdapter.ViewHolder>.ViewHolder {
+            RecipeEditionIngredientListAdapter.ViewHolder>.ViewHolder {
 
+        public ImageView mDeleteImage;
+        public LinearLayout mIngredientData;
         public TextView mNameTextView;
         public TextView mQuantityTextView;
 
         public ViewHolder(final View itemView) {
             super(itemView, mGrabHandleId);
+            mDeleteImage = (ImageView) itemView.findViewById(R.id.delete);
+            mIngredientData = (LinearLayout) itemView.findViewById(R.id.ingredient_data);
             mNameTextView = (TextView) itemView.findViewById(R.id.name);
             mQuantityTextView = (TextView) itemView.findViewById(R.id.quantity);
-        }
 
-        @Override
-        public void onItemClicked(View view) {
-            Toast.makeText(view.getContext(), "Item clicked", Toast.LENGTH_SHORT).show();
-        }
+            mDeleteImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mFragment.removeIngredient((int) itemView.getTag());
+                }
+            });
 
-        @Override
-        public boolean onItemLongClicked(View view) {
-            Toast.makeText(view.getContext(), "Item long clicked", Toast.LENGTH_SHORT).show();
-            return true;
+            mIngredientData.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mFragment.showEditionDialog((int) itemView.getTag());
+                }
+            });
         }
     }
 }

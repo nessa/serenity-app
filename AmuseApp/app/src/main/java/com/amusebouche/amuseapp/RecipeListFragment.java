@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
@@ -55,7 +56,6 @@ public class RecipeListFragment extends Fragment {
     private GridView mGridView;
     private ProgressBar mProgressBar;
     private ActionButton mAddButton;
-    private Integer mGridViewHeight;
 
     // Services variables
 
@@ -210,19 +210,22 @@ public class RecipeListFragment extends Fragment {
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                MainActivity a = (MainActivity) getActivity();
-
-                Intent i = new Intent(a, AddActivity.class);
-
-                i.putParcelableArrayListExtra(PARCELABLE_RECIPES_KEY, a.getRecipes());
-                i.putExtra(CURRENT_PAGE_KEY, a.getCurrentPage());
-                i.putExtra(LIMIT_PER_PAGE_KEY, a.getLimitPerPage());
-
-
                 mAddButton.hide();
 
-                startActivity(i);
+                // Show FABs after a delay
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Intent i = new Intent(getActivity(), AddActivity.class);
+
+                        i.putParcelableArrayListExtra(PARCELABLE_RECIPES_KEY,
+                                ((MainActivity) getActivity()).getRecipes());
+                        i.putExtra(CURRENT_PAGE_KEY, ((MainActivity) getActivity()).getCurrentPage());
+                        i.putExtra(LIMIT_PER_PAGE_KEY, ((MainActivity) getActivity()).getLimitPerPage());
+
+                        startActivity(i);
+                    }
+                }, 1200);
             }
         });
 
@@ -230,7 +233,7 @@ public class RecipeListFragment extends Fragment {
         if (true) {
             mAddButton.show();
         } else {
-            mAddButton.setVisibility(View.GONE);
+            mAddButton.setVisibility(View.INVISIBLE);
         }
 
         // TODO: addButton on click must go to create activity

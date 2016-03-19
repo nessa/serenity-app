@@ -15,12 +15,15 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
+import com.software.shell.fab.ActionButton;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
@@ -43,13 +46,11 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
     private ArrayList<String> measurementUnits;
 
-    private ArrayList<Pair<Long, RecipeIngredient>> mItemArray;
+    private ArrayList<Pair<Long, RecipeIngredient>> mIngredientsArray;
+    private RecipeEditionIngredientListAdapter mIngredientsListAdapter;
 
-
-    private RecipeEditionListAdapter mIngredientsListAdapter;
 
     // LIFECYCLE METHODS
-
 
     /**
      * Called to do initial creation of a fragment. This is called after onAttach and before
@@ -157,18 +158,16 @@ public class RecipeEditionSecondTabFragment extends Fragment {
             Log.d("INFO", "ELSE");
         }
 
-        // Test
-
-        mItemArray = new ArrayList<>();
-
+        // Set initial ingredient list
+        mIngredientsArray = new ArrayList<>();
         if (mAddActivity != null) {
             for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
                 RecipeIngredient ri = mAddActivity.getRecipe().getIngredients().get(i);
-                mItemArray.add(new Pair<>(Long.valueOf(ri.getSortNumber()), ri));
+                mIngredientsArray.add(new Pair<>(Long.valueOf(ri.getSortNumber()), ri));
             }
         }
 
-
+        // Set drag list view
         DragListView mIngredientsListView = (DragListView) mLayout.findViewById(R.id.ingredients);
         mIngredientsListView.setDragListListener(new DragListView.DragListListener() {
             @Override
@@ -181,38 +180,40 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                 }
             }
         });
+
         mIngredientsListView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mIngredientsListAdapter = new RecipeEditionListAdapter(mItemArray,
-                R.layout.item_edition_ingredient, R.id.image, false, getActivity());
+        mIngredientsListAdapter = new RecipeEditionIngredientListAdapter(mIngredientsArray,
+                R.layout.item_edition_ingredient, R.id.swap_image, false, getActivity(),
+                RecipeEditionSecondTabFragment.this);
         mIngredientsListView.setAdapter(mIngredientsListAdapter, true);
         mIngredientsListView.setCanDragHorizontally(false);
-        mIngredientsListView.setCustomDragItem(new MyDragItem(getActivity(),
+        mIngredientsListView.setCustomDragItem(new IngredientDragItem(getActivity(),
                 R.layout.item_edition_ingredient));
 
 
         return mLayout;
     }
 
-    public void reloadItems() {
-        mItemArray.clear();
-
-        if (mAddActivity != null) {
-            for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
-                mItemArray.add(new Pair<>(Long.valueOf(mAddActivity.getRecipe().getIngredients().get(i).getSortNumber()),
-                        mAddActivity.getRecipe().getIngredients().get(i)));
-            }
-
-            mIngredientsListAdapter.notifyDataSetChanged();
-        }
-
-    }
-
+    /**
+     * Show new ingredient creation dialog.
+     *
+     * Uses showEditableDialog method.
+     */
     public void showAddDialog() {
         Log.d("INFO", "SHOW ADD DIALOG");
         showEditionDialog(-1);
     }
 
-    private void showEditionDialog(final int position) {
+    /**
+     * Show ingredient edition dialog.
+     * It creates a new ingredient or updates an existing one.
+     * Modify ingredients in both recipe and mIngredientsArray.
+     *
+     * @param position Position of the ingredient to update.
+     *                 If it's -1, it doesn't exist and we have
+     *                 to create a new one.
+     */
+    public void showEditionDialog(final int position) {
         Log.d("INFO", "SHOW EDITION DIALOG");
 
         final Dialog editionDialog = new Dialog(getActivity());
@@ -242,32 +243,44 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editionDialog.dismiss();
 
                 if (nameTextView.getText().toString().length() > 0 &&
                         quantityTextView.getText().toString().length() > 0) {
+
                     if (position > -1) {
                         // Update existing ingredient
-                        mAddActivity.getRecipe().getIngredients().get(position).setName(nameTextView.getText().toString());
+                        mAddActivity.getRecipe().getIngredients().get(position).setName(
+                                nameTextView.getText().toString());
                         mAddActivity.getRecipe().getIngredients().get(position).setQuantity(
                                 Float.valueOf(quantityTextView.getText().toString()));
                         mAddActivity.getRecipe().getIngredients().get(position).setMeasurementUnit(
                                 UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
                                         unitsSpinner.getSelectedItemPosition(), getActivity()));
 
+                        mIngredientsArray.get(position).second.setName(nameTextView.getText().toString());
+                        mIngredientsArray.get(position).second.setQuantity(
+                                Float.valueOf(quantityTextView.getText().toString()));
+                        mIngredientsArray.get(position).second.setMeasurementUnit(
+                                UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
+                                        unitsSpinner.getSelectedItemPosition(), getActivity()));
                     } else {
-
                         // Add new ingredient
-                        mAddActivity.getRecipe().getIngredients().add(new RecipeIngredient(
+                        RecipeIngredient ingredient = new RecipeIngredient(
                                 mAddActivity.getRecipe().getIngredients().size(),
                                 nameTextView.getText().toString(),
                                 Float.valueOf(quantityTextView.getText().toString()),
                                 UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
                                         unitsSpinner.getSelectedItemPosition(), getActivity())
-                        ));
+                        );
+
+                        mAddActivity.getRecipe().getIngredients().add(ingredient);
+                        mIngredientsArray.add(new Pair<>(Long.valueOf(ingredient.getSortNumber()), ingredient));
                     }
 
-                    reloadItems();
+                    mIngredientsListAdapter.notifyDataSetChanged();
+
+                    // We close the dialog only if the creation/update result is OK
+                    editionDialog.dismiss();
                 }
             }
         });
@@ -284,6 +297,35 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         editionDialog.show();
     }
 
+    /**
+     * Remove ingredient from recipe and mIngredientsArray.
+     *
+     * @param position Position of the ingredient to remove.
+     */
+    public void removeIngredient(int position) {
+        mAddActivity.getRecipe().getIngredients().remove(position);
+        mIngredientsArray.remove(position);
+
+        // Reset sort numbers
+        for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
+            mAddActivity.getRecipe().getIngredients().get(i).setSortNumber(i);
+            mIngredientsArray.get(i).second.setSortNumber(i);
+        }
+
+        mIngredientsListAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Move ingredients after drag and drop them in the list view.
+     * We translate the ingredients movement from the list view
+     * (mIngredientsArray) to the recipe.
+     *
+     * Do NOT change mIngredientsArray or the list view will show
+     * a wrong animation.
+     *
+     * @param fromPosition Initial position of the ingredient to move.
+     * @param toPosition Last position of the ingredient to move.
+     */
     private void moveIngredientsInRecipe(int fromPosition, int toPosition) {
         if (mAddActivity != null) {
             if (fromPosition < toPosition) {
@@ -292,23 +334,34 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                 Collections.rotate(mAddActivity.getRecipe().getIngredients().subList(toPosition, fromPosition + 1), +1);
             }
 
+            // Reset sort numbers
             for (int i = 0; i < mAddActivity.getRecipe().getIngredients().size(); i++) {
                 mAddActivity.getRecipe().getIngredients().get(i).setSortNumber(i);
+                mIngredientsArray.get(i).second.setSortNumber(i);
             }
 
-            reloadItems();
+            mIngredientsListAdapter.notifyDataSetChanged();
         }
     }
 
-    private static class MyDragItem extends DragItem {
+    /**
+     * Drag item needed to populate the ingredients list view.
+     */
+    private static class IngredientDragItem extends DragItem {
 
         private Context mContext;
 
-        public MyDragItem(Context context, int layoutId) {
+        public IngredientDragItem(Context context, int layoutId) {
             super(context, layoutId);
             mContext = context;
         }
 
+        /**
+         * Fill dragged view with real data and change its style.
+         *
+         * @param clickedView Original view to get the data.
+         * @param dragView Dragged view to modify.
+         */
         @Override
         public void onBindDragView(View clickedView, View dragView) {
             ((TextView) dragView.findViewById(R.id.name)).setText(((TextView) clickedView.findViewById(R.id.name)).getText());
@@ -316,6 +369,8 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
             ((TextView) dragView.findViewById(R.id.name)).setTextColor(mContext.getResources().getColor(android.R.color.white));
             ((TextView) dragView.findViewById(R.id.quantity)).setTextColor(mContext.getResources().getColor(android.R.color.white));
+            dragView.findViewById(R.id.delete).setVisibility(View.INVISIBLE);
+            ((ImageView) dragView.findViewById(R.id.swap_image)).setColorFilter(mContext.getResources().getColor(android.R.color.white));
             dragView.setBackgroundColor(dragView.getResources().getColor(R.color.theme_default_primary));
         }
     }

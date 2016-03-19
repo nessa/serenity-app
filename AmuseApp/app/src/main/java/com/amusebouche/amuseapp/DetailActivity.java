@@ -37,11 +37,13 @@ import java.io.FileInputStream;
  */
 public class DetailActivity extends ActionBarActivity {
 
+    // Tab identifiers
     private static final String TAB_1 = "first_tab";
     private static final String TAB_2 = "second_tab";
     private static final String TAB_3 = "third_tab";
     private static final String TAB_4 = "fourth_tab";
 
+    // Saved data keys
     private static final String INTENT_KEY_RECIPE = "recipe";
     private static final String INTENT_KEY_TAB = "tab";
 
@@ -84,6 +86,7 @@ public class DetailActivity extends ActionBarActivity {
         }
 
         setContentView(R.layout.activity_detail);
+        getSupportActionBar().setElevation(0);
 
         // Set tabs
         mTabs = (TabHost)findViewById(android.R.id.tabhost);
@@ -134,6 +137,10 @@ public class DetailActivity extends ActionBarActivity {
                 PorterDuff.Mode.SRC_ATOP);
     }
 
+    /**
+     * Change the tab widget appearance.
+     * Set different styles for basic and selected tabs.
+     */
     private void resetTabColors() {
         for (int i = 0; i < mTabs.getTabWidget().getChildCount(); i++) {
             // Unselected ones
@@ -152,6 +159,10 @@ public class DetailActivity extends ActionBarActivity {
                 .getColor(android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
+    /**
+     * Change action bar title every time we select a new tab.
+     * @param tab Selected tab
+     */
     private void resetBarTitle(String tab) {
         // Set
         switch (tab) {
@@ -268,6 +279,10 @@ public class DetailActivity extends ActionBarActivity {
 
     // GETTERS
 
+    /**
+     * Get recipe method to share it with its fragments.
+     * @return Recipe object
+     */
     public Recipe getRecipe() { return mRecipe; }
 
 

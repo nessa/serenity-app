@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:gravity="bottom">
 
     <TabHost android:id="@android:id/tabhost"
         android:layout_width="match_parent"
@@ -13,6 +15,11 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/divider_action_bar" />
 
             <TabWidget android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,4 +71,62 @@
             </FrameLayout>
         </LinearLayout>
     </TabHost>
-</LinearLayout>
+
+
+    <RelativeLayout
+        xmlns:fab="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|end">
+
+        <com.software.shell.fab.ActionButton
+            android:id="@+id/add_ingredient_button"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/fab_margin"
+            fab:type="DEFAULT"
+            fab:button_color="@color/theme_default_accent"
+            fab:button_colorPressed="@color/theme_default_accent_dark"
+            fab:image="@drawable/ic_ingredients_white_32dp"
+            fab:image_size="32dp"
+            fab:shadow_color="@color/gridview_background"
+            fab:shadow_radius="1.0dp"
+            fab:shadow_xOffset="0.5dp"
+            fab:shadow_yOffset="1.0dp"
+            fab:button_colorRipple="@color/theme_default_accent_light"
+            fab:rippleEffect_enabled="true"
+            fab:shadowResponsiveEffect_enabled="true"
+            fab:show_animation="@anim/fab_scale_up"
+            fab:hide_animation="@anim/fab_scale_down"
+            />
+
+        <com.software.shell.fab.ActionButton
+            android:id="@+id/add_direction_button"
+            android:visibility="invisible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginBottom="@dimen/fab_margin"
+            fab:type="DEFAULT"
+            fab:button_color="@color/theme_default_accent"
+            fab:button_colorPressed="@color/theme_default_accent_dark"
+            fab:image="@drawable/ic_cook_white_32dp"
+            fab:image_size="32dp"
+            fab:shadow_color="@color/gridview_background"
+            fab:shadow_radius="1.0dp"
+            fab:shadow_xOffset="0.5dp"
+            fab:shadow_yOffset="1.0dp"
+            fab:button_colorRipple="@color/theme_default_accent_light"
+            fab:rippleEffect_enabled="true"
+            fab:shadowResponsiveEffect_enabled="true"
+            fab:show_animation="@anim/fab_scale_up"
+            fab:hide_animation="@anim/fab_scale_down"
+            />
+    </RelativeLayout>
+</RelativeLayout>
