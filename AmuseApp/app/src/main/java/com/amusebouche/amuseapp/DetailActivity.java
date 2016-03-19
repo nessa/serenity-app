@@ -235,11 +235,10 @@ public class DetailActivity extends ActionBarActivity {
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
 
-        // TODO: Check this!
         boolean goBack = true;
         if (mTabs.getCurrentTabTag().equals(TAB_3)) {
             RecipeDetailThirdTabFragment frag = (RecipeDetailThirdTabFragment) getFragmentManager()
-                    .findFragmentById(R.id.container);
+                    .findFragmentById(R.id.fragment3);
 
             if (frag.isInOngoingMode()) {
                 frag.exitFromOngoingMode();

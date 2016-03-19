@@ -34,8 +34,6 @@ import android.widget.TextView;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.ui.CustomNumberPicker;
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
-import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.software.shell.fab.ActionButton;
@@ -55,8 +53,7 @@ import java.util.Objects;
  * Related layouts:
  * - Content: fragment_detail_third_tab.xml
  */
-public class RecipeDetailThirdTabFragment extends Fragment
-        implements ObservableScrollViewCallbacks {
+public class RecipeDetailThirdTabFragment extends Fragment {
 
     // Data variables
     private Recipe mRecipe;
@@ -133,15 +130,17 @@ public class RecipeDetailThirdTabFragment extends Fragment
 
         mPresentDescriptionIndex = 0;
 
-        mTTS = new TextToSpeech(this.getActivity(), new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status != TextToSpeech.ERROR) {
-                    Locale locSpanish = new Locale("spa", "ESP");
-                    mTTS.setLanguage(locSpanish);
+        if (mTTS == null) {
+            mTTS = new TextToSpeech(this.getActivity(), new TextToSpeech.OnInitListener() {
+                @Override
+                public void onInit(int status) {
+                    if (status != TextToSpeech.ERROR) {
+                        Locale locSpanish = new Locale("spa", "ESP");
+                        mTTS.setLanguage(locSpanish);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
 
@@ -234,7 +233,7 @@ public class RecipeDetailThirdTabFragment extends Fragment
         LinearLayout directionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
 
         for (int d = 0; d < mRecipe.getDirections().size(); d++) {
-            RecipeDirection presentDirection = (RecipeDirection) mRecipe.getDirections().get(d);
+            RecipeDirection presentDirection = mRecipe.getDirections().get(d);
 
             LinearLayout directionLayout = (LinearLayout) inflater.inflate(
                     R.layout.fragment_recipe_detail_direction, mLayout, false);
@@ -269,8 +268,7 @@ public class RecipeDetailThirdTabFragment extends Fragment
                 public void onClick(View v) {
                     mOngoingMode = false;
 
-                    RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
-                            (int) v.getTag());
+                    RecipeDirection dir = mRecipe.getDirections().get((int) v.getTag());
                     CharSequence text = dir.getDescription();
 
                     if (text != "") {
@@ -285,8 +283,7 @@ public class RecipeDetailThirdTabFragment extends Fragment
                 showDirectionImageButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
-                                (int) v.getTag());
+                        RecipeDirection dir = mRecipe.getDirections().get((int) v.getTag());
 
                         // Send selected recipe to the next activity
                         Intent i = new Intent(getActivity(), MediaActivity.class);
@@ -316,8 +313,7 @@ public class RecipeDetailThirdTabFragment extends Fragment
                 directionTimerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
-                                (int) v.getTag());
+                        RecipeDirection dir = mRecipe.getDirections().get((int) v.getTag());
 
                         // Calc time variables
                         Integer time = (int) dir.getTime().floatValue();
@@ -454,8 +450,7 @@ public class RecipeDetailThirdTabFragment extends Fragment
      */
     public void readDescription() {
         if (mRecipe.getDirections().size() > mPresentDescriptionIndex) {
-            final RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(
-                    mPresentDescriptionIndex);
+            final RecipeDirection dir = mRecipe.getDirections().get(mPresentDescriptionIndex);
             CharSequence text = dir.getDescription();
 
             // Move view to direction box
@@ -614,7 +609,7 @@ public class RecipeDetailThirdTabFragment extends Fragment
      * Show timer dialog set up in setTimerDialog
      */
     public void showTimerDialog() {
-        RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
+        RecipeDirection dir = mRecipe.getDirections().get(mPresentDescriptionIndex);
 
         if (dir.getTime() > 0) {
             this.setTimerDialog((int) dir.getTime().floatValue());
@@ -650,7 +645,7 @@ public class RecipeDetailThirdTabFragment extends Fragment
         anim.setRepeatCount(Animation.INFINITE);
 
         // Disable timer button if there's no time specified
-        final RecipeDirection dir = (RecipeDirection) mRecipe.getDirections().get(mPresentDescriptionIndex);
+        final RecipeDirection dir = mRecipe.getDirections().get(mPresentDescriptionIndex);
         if (dir.getTime() == 0) {
             timerButton.setVisibility(View.GONE);
         }
@@ -961,22 +956,4 @@ public class RecipeDetailThirdTabFragment extends Fragment
         return mOngoingMode;
     }
 
-    // SCROLL METHODS
-
-    public ObservableScrollView getScrollView() {
-        return mScrollView;
-    }
-
-    @Override
-    public void onScrollChanged(int scrollY, boolean firstScroll, boolean dragging) {
-
-    }
-
-    // Needed to prevent an error
-    @Override
-    public void onDownMotionEvent() {}
-
-    // Needed to prevent an error
-    @Override
-    public void onUpOrCancelMotionEvent(ScrollState scrollState) {}
 }
