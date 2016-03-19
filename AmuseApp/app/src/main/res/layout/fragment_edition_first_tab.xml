@@ -31,8 +31,7 @@
             <EditText android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/recipe_edition_title_hint"
-                android:backgroundTint="@color/theme_default_primary" />
+                android:hint="@string/recipe_edition_title_hint" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -46,8 +45,7 @@
             <EditText android:id="@+id/image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/recipe_edition_main_image_label"
-                android:backgroundTint="@color/theme_default_primary" />
+                android:hint="@string/recipe_edition_main_image_label" />
 
 
             <TextView
@@ -145,8 +143,7 @@
             <EditText android:id="@+id/source"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/recipe_edition_source_hint"
-                android:backgroundTint="@color/theme_default_primary" />
+                android:hint="@string/recipe_edition_source_hint" />
 
         </LinearLayout>
     </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>

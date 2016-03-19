@@ -43,15 +43,15 @@ public class UserFriendlyRecipeData {
     private static int mDefaultUnitPosition = 0;
 
     private static ArrayList<Pair<String, Integer>> mUnits = new ArrayList<>(Arrays.asList(
-            new Pair<>("g", R.string.measurement_unit_g),
-            new Pair<>("kg", R.string.measurement_unit_kg),
-            new Pair<>("ml", R.string.measurement_unit_ml),
-            new Pair<>("l", R.string.measurement_unit_l),
-            new Pair<>("unit", R.string.measurement_unit_unit),
-            new Pair<>("cup", R.string.measurement_unit_cup),
-            new Pair<>("tsp", R.string.measurement_unit_tsp),
-            new Pair<>("tbsp", R.string.measurement_unit_tbsp),
-            new Pair<>("rasher", R.string.measurement_unit_rasher)
+            new Pair<>("unit", R.string.measurement_unit_unit_plural),
+            new Pair<>("g", R.string.measurement_unit_g_plural),
+            new Pair<>("kg", R.string.measurement_unit_kg_plural),
+            new Pair<>("ml", R.string.measurement_unit_ml_plural),
+            new Pair<>("l", R.string.measurement_unit_l_plural),
+            new Pair<>("cup", R.string.measurement_unit_cup_plural),
+            new Pair<>("tsp", R.string.measurement_unit_tsp_plural),
+            new Pair<>("tbsp", R.string.measurement_unit_tbsp_plural),
+            new Pair<>("rasher", R.string.measurement_unit_rasher_plural)
     ));
 
     // TYPES OF DISH

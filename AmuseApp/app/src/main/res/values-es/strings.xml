@@ -66,6 +66,7 @@
     <!--   Measurement units -->
     <string name="measurement_unit_of">de</string>
     <string name="measurement_unit_unit">unidad</string>
+    <string name="measurement_unit_unit_plural">unidades</string>
     <string name="measurement_unit_g">gramo</string>
     <string name="measurement_unit_kg">kilogramo</string>
     <string name="measurement_unit_ml">mililitro</string>

@@ -6,20 +6,17 @@
     <EditText android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/recipe_edition_direction_description_hint"
-        android:backgroundTint="@color/theme_default_primary" />
+        android:hint="@string/recipe_edition_direction_description_hint" />
 
     <EditText android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/recipe_edition_direction_image_hint"
-        android:backgroundTint="@color/theme_default_primary" />
+        android:hint="@string/recipe_edition_direction_image_hint" />
 
     <EditText android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/recipe_edition_direction_video_hint"
-        android:backgroundTint="@color/theme_default_primary" />
+        android:hint="@string/recipe_edition_direction_video_hint" />
 
     <TextView
         android:id="@+id/cooking_time"

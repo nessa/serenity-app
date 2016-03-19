@@ -66,6 +66,7 @@
     <!--   Measurement units -->
     <string name="measurement_unit_of">of</string>
     <string name="measurement_unit_unit">unit</string>
+    <string name="measurement_unit_unit_plural">units</string>
     <string name="measurement_unit_g">gram</string>
     <string name="measurement_unit_kg">kilogram</string>
     <string name="measurement_unit_ml">mililiter</string>

@@ -6,8 +6,7 @@
     <EditText android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/recipe_edition_ingredient_name_hint"
-        android:backgroundTint="@color/theme_default_primary" />
+        android:hint="@string/recipe_edition_ingredient_name_hint" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="horizontal"
@@ -18,8 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:hint="@string/recipe_edition_ingredient_quantity_hint"
-            android:backgroundTint="@color/theme_default_primary" />
+            android:hint="@string/recipe_edition_ingredient_quantity_hint" />
 
         <Spinner
             android:id="@+id/measurement_units"

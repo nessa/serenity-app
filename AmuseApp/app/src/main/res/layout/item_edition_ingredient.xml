@@ -5,10 +5,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="@dimen/edition_basic_padding">
+    android:paddingTop="@dimen/edition_basic_padding"
+    android:paddingStart="@dimen/edition_basic_padding"
+    android:paddingEnd="@dimen/edition_basic_padding">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
@@ -17,13 +19,16 @@
             android:contentDescription="@string/detail_ingredients_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingEnd="@dimen/edition_direction_item_delete_image_padding"
             android:src="@android:drawable/ic_delete"
             android:gravity="start"/>
 
         <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/ingredient_data"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/edition_direction_item_right_margin"
+            android:layout_marginBottom="@dimen/edition_basic_padding"
             android:orientation="vertical">
 
             <TextView
@@ -32,7 +37,9 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/primary_text"
                 android:fontFamily="sans-serif"
-                android:textSize="@dimen/edition_cell_primary_text"/>
+                android:textSize="@dimen/edition_cell_ingredient_primary_text"
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/quantity"
@@ -53,5 +60,11 @@
         android:tintMode="src_atop"
         android:src="@drawable/ic_draggable_48dp"
         android:gravity="end"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_height="@dimen/edition_direction_divider_slim_table_height"
+        android:background="@drawable/divider"/>
 
 </RelativeLayout>

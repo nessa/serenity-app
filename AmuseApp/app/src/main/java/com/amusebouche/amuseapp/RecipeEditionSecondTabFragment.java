@@ -233,34 +233,35 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // Validate fields
+                if (nameTextView.getText().toString().length() > 0) {
 
-                if (nameTextView.getText().toString().length() > 0 &&
-                        quantityTextView.getText().toString().length() > 0) {
+                    // Calculate quantity and measurement unit
+                    Float quantity = 0.0F;
+                    String unit = UserFriendlyRecipeData.getDefaultMeasurementUnit();
+                    if (quantityTextView.getText().toString().length() == 0) {
+                        quantity = Float.valueOf(quantityTextView.getText().toString());
+                        unit = UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
+                                unitsSpinner.getSelectedItemPosition(), getActivity());
+                    }
 
                     if (position > -1) {
                         // Update existing ingredient
                         mEditionActivity.getRecipe().getIngredients().get(position).setName(
                                 nameTextView.getText().toString());
-                        mEditionActivity.getRecipe().getIngredients().get(position).setQuantity(
-                                Float.valueOf(quantityTextView.getText().toString()));
-                        mEditionActivity.getRecipe().getIngredients().get(position).setMeasurementUnit(
-                                UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
-                                        unitsSpinner.getSelectedItemPosition(), getActivity()));
+                        mEditionActivity.getRecipe().getIngredients().get(position).setQuantity(quantity);
+                        mEditionActivity.getRecipe().getIngredients().get(position).setMeasurementUnit(unit);
 
                         mIngredientsArray.get(position).second.setName(nameTextView.getText().toString());
-                        mIngredientsArray.get(position).second.setQuantity(
-                                Float.valueOf(quantityTextView.getText().toString()));
-                        mIngredientsArray.get(position).second.setMeasurementUnit(
-                                UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
-                                        unitsSpinner.getSelectedItemPosition(), getActivity()));
+                        mIngredientsArray.get(position).second.setQuantity(quantity);
+                        mIngredientsArray.get(position).second.setMeasurementUnit(unit);
                     } else {
                         // Add new ingredient
                         RecipeIngredient ingredient = new RecipeIngredient(
                                 mEditionActivity.getRecipe().getIngredients().size() + 1,
                                 nameTextView.getText().toString(),
-                                Float.valueOf(quantityTextView.getText().toString()),
-                                UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
-                                        unitsSpinner.getSelectedItemPosition(), getActivity())
+                                quantity,
+                                unit
                         );
 
                         mEditionActivity.getRecipe().getIngredients().add(ingredient);
@@ -278,6 +279,8 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         if (position > -1) {
             nameTextView.setText(mEditionActivity.getRecipe().getIngredients().get(position).getName());
             quantityTextView.setText(String.format("%f", mEditionActivity.getRecipe().getIngredients().get(position).getQuantity()));
+            unitsSpinner.setSelection(UserFriendlyRecipeData.getMeasurementUnitPosition(
+                    mEditionActivity.getRecipe().getIngredients().get(position).getMeasurementUnit()));
         }
 
         editionDialog.show();
