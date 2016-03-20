@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -34,7 +33,11 @@ import java.util.ArrayList;
  * - Two navigation drawers:
  *   + A left lateral menu.
  *   + A right search view.
- * - The present fragment that is active (changed by the left navigation drawer).
+ * - The present fragment that is active (changed by the left navigation drawer):
+ *   + User fragment
+ *   + List fragment (with 3 modes)
+ *   + Setting fragment
+ *   + Information fragment
  *
  * Related layouts:
  * - Menu: menu_recipe_list.xml
@@ -44,7 +47,21 @@ import java.util.ArrayList;
  */
 public class MainActivity extends ActionBarActivity {
 
-    private static final int PROFILE = 0, RECIPES = 1;
+    // MENU
+    private static final int PROFILE = 0;
+    private static final int NEW_RECIPES = 1;
+    private static final int DOWNLOADED_RECIPES = 2;
+    private static final int MY_RECIPES = 3;
+    private static final int SETTINGS = 4;
+    private static final int INFO = 5;
+
+    // MODES
+    private static int mRecipeListMode;
+    public static final int NEW_RECIPES_MODE = 1;
+    public static final int DOWNLOADED_RECIPES_MODE = 2;
+    public static final int MY_RECIPES_MODE = 3;
+
+    // SAVED DATA KEYS
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
     private static final String PARCELABLE_RECIPES_KEY = "recipes";
     private static final String CURRENT_PAGE_KEY = "current_page";
@@ -59,7 +76,7 @@ public class MainActivity extends ActionBarActivity {
     private Integer mPreviousTotal;
 
     // UI variables
-    private RecipeListFragment mInitialFragment;
+    private Fragment mLastFragment;
 
     // Left drawer
     private DrawerLayout mDrawerLayout;
@@ -214,17 +231,10 @@ public class MainActivity extends ActionBarActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
-
     /**
-     *  Inflate the menu items to use them in the action bar
+     * We inflate the menu options in every fragment, but the selection
+     * effect it's done here.
      */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_recipe_list, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -318,21 +328,39 @@ public class MainActivity extends ActionBarActivity {
         // Update the main content by replacing fragments
         Fragment fragment;
         switch (position) {
-            /*
             case PROFILE:
-                fragment = new RecipeListFragment();
-                break;*/
+                fragment = new UserFragment();
+                break;
             default:
-            case RECIPES:
-                mInitialFragment = new RecipeListFragment();
-                fragment = (Fragment) mInitialFragment;
+            case NEW_RECIPES:
+                this.setMode(NEW_RECIPES_MODE);
+                fragment = new RecipeListFragment();
+                break;
+            case DOWNLOADED_RECIPES:
+                this.setMode(DOWNLOADED_RECIPES_MODE);
+                fragment = new RecipeListFragment();
+                break;
+            case MY_RECIPES:
+                this.setMode(MY_RECIPES_MODE);
+                fragment = new RecipeListFragment();
+                break;
+            case SETTINGS:
+                fragment = new SettingsFragment();
+                break;
+            case INFO:
+                fragment = new InformationFragment();
                 break;
         }
 
         if (!isFinishing()) {
-            getFragmentManager().popBackStack();
-            getFragmentManager().beginTransaction().add(R.id.container, fragment)
-                    .addToBackStack("fragBack").commit();
+            if (mLastFragment == null) {
+                getFragmentManager().beginTransaction().add(R.id.container, fragment).commit();
+            } else {
+                getFragmentManager().beginTransaction().remove(mLastFragment)
+                        .add(R.id.container, fragment).commit();
+            }
+
+            mLastFragment = fragment;
         }
     }
 
@@ -341,6 +369,10 @@ public class MainActivity extends ActionBarActivity {
 
     public ArrayList<Recipe> getRecipes() {
         return mRecipes;
+    }
+
+    public int getMode() {
+        return mRecipeListMode;
     }
 
     public Integer getCurrentPage() {
@@ -357,6 +389,10 @@ public class MainActivity extends ActionBarActivity {
 
     // SETTERS
 
+    public void setMode(int mode) {
+        mRecipeListMode = mode;
+    }
+
     public void setCurrentPage(Integer currentPage) {
         mCurrentPage = currentPage;
     }
@@ -364,4 +400,6 @@ public class MainActivity extends ActionBarActivity {
     public void setPreviousTotal(Integer previousTotal) {
         mPreviousTotal = previousTotal;
     }
+
+
 }

@@ -20,10 +20,11 @@
     <string name="transition_detail_image">SharedImage</string>
 
     <!-- Lateral menu -->
-    <string name="RECIPES">Recetas</string>
+    <string name="LOGIN">Login</string>
+    <string name="NEW_RECIPES">Últimas recetas</string>
+    <string name="DOWNLOADED_RECIPES">Descargadas</string>
     <string name="MY_RECIPES">Mis recetas</string>
-    <string name="MY_FAVOURITES">Mis favoritas</string>
-    <string name="SETTINGS">Configuration</string>
+    <string name="SETTINGS">Configuración</string>
     <string name="INFO">Información</string>
 
     <!-- Main activity -->
