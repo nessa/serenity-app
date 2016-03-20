@@ -49,12 +49,14 @@ public class MainActivity extends ActionBarActivity {
     private static final String PARCELABLE_RECIPES_KEY = "recipes";
     private static final String CURRENT_PAGE_KEY = "current_page";
     private static final String LIMIT_PER_PAGE_KEY = "limit";
+    private static final String PREVIOUS_TOTAL_KEY = "previous_total";
 
 
     // Data variables
     private ArrayList<Recipe> mRecipes;
     private Integer mCurrentPage;
     private Integer mLimitPerPage;
+    private Integer mPreviousTotal;
 
     // UI variables
     private RecipeListFragment mInitialFragment;
@@ -83,10 +85,12 @@ public class MainActivity extends ActionBarActivity {
             mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
             mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+            mPreviousTotal = i.getIntExtra(PREVIOUS_TOTAL_KEY, 0);
         } else {
             mRecipes = savedInstanceState.getParcelableArrayList(PARCELABLE_RECIPES_KEY);
             mCurrentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = savedInstanceState.getInt(LIMIT_PER_PAGE_KEY, 0);
+            mPreviousTotal = savedInstanceState.getInt(PREVIOUS_TOTAL_KEY, 0);
         }
 
         // Set up action bar
@@ -97,10 +101,10 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            Log.d("MAIN", "OK");
             mRecipes = data.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
             mCurrentPage = data.getIntExtra(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = data.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+            mPreviousTotal = data.getIntExtra(PREVIOUS_TOTAL_KEY, 0);
         }
     }
 
@@ -185,8 +189,9 @@ public class MainActivity extends ActionBarActivity {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
         outState.putParcelableArrayList(PARCELABLE_RECIPES_KEY, mRecipes);
-        outState.getInt(CURRENT_PAGE_KEY, mCurrentPage);
-        outState.getInt(LIMIT_PER_PAGE_KEY, mLimitPerPage);
+        outState.putInt(CURRENT_PAGE_KEY, mCurrentPage);
+        outState.putInt(LIMIT_PER_PAGE_KEY, mLimitPerPage);
+        outState.putInt(PREVIOUS_TOTAL_KEY, 0);
     }
 
     @Override
@@ -344,5 +349,19 @@ public class MainActivity extends ActionBarActivity {
 
     public Integer getLimitPerPage() {
         return mLimitPerPage;
+    }
+
+    public Integer getPreviousTotal() {
+        return mPreviousTotal;
+    }
+
+    // SETTERS
+
+    public void setCurrentPage(Integer currentPage) {
+        mCurrentPage = currentPage;
+    }
+
+    public void setPreviousTotal(Integer previousTotal) {
+        mPreviousTotal = previousTotal;
     }
 }

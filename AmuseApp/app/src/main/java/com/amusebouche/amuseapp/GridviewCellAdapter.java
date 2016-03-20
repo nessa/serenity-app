@@ -1,16 +1,12 @@
 package com.amusebouche.amuseapp;
 
 
-import android.animation.Animator;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +20,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.io.FileOutputStream;
-import java.util.ArrayList;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.ui.ImageManager;
@@ -44,44 +39,33 @@ import com.amusebouche.ui.ImageManager;
  */
 public class GridviewCellAdapter extends BaseAdapter {
     private Context mContext;
+    private RecipeListFragment mFragment;
     private LayoutInflater mInflater;
     private int mScreenWidth;
-    private ArrayList<Recipe> mRecipes;
 
     private String filename = "presentRecipeImage.png";
 
-    public GridviewCellAdapter(Context c, int screenWidth) {
+    public GridviewCellAdapter(Context c, RecipeListFragment f, int screenWidth) {
         mContext = c;
+        mFragment = f;
         mScreenWidth = screenWidth;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mRecipes = new ArrayList<>();
-    }
-
-    public GridviewCellAdapter(Context c, int screenWidth, ArrayList<Recipe> recipes) {
-        mContext = c;
-        mScreenWidth = screenWidth;
-        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mRecipes = recipes;
-    }
-
-    public void setRecipes(ArrayList<Recipe> recipes) {
-        mRecipes = recipes;
     }
 
     public int getCount() {
-        if (mRecipes != null) {
-            return mRecipes.size();
+        if (((MainActivity) mContext).getRecipes() != null) {
+            return ((MainActivity) mContext).getRecipes().size();
         } else {
             return 0;
         }
     }
 
     public Recipe getItem(int position) {
-        return mRecipes.get(position);
+        return ((MainActivity) mContext).getRecipes().get(position);
     }
 
     public long getItemId(int position) {
-        return Long.valueOf(mRecipes.get(position).getId());
+        return Long.valueOf(((MainActivity) mContext).getRecipes().get(position).getId());
     }
 
     // Create a new view for each item referenced by the adapter
@@ -91,7 +75,7 @@ public class GridviewCellAdapter extends BaseAdapter {
      * will update it.
      * @param position Position of this view in the gridview.
      * @param convertView Existing view (it may not exist, so it will be null).
-     * @param parent
+     * @param parent Parent view
      * @return New view.
      */
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -104,10 +88,20 @@ public class GridviewCellAdapter extends BaseAdapter {
         // If the view didn't exist, we create a new one
         if (convertView == null) {
             cell = mInflater.inflate(R.layout.cell_gridview, null);
-            cell.setLayoutParams(new GridView.LayoutParams(mScreenWidth / 2 - 2,
-                    mScreenWidth / 2 - 2));
+            cell.setLayoutParams(new GridView.LayoutParams(mScreenWidth /
+                    mContext.getResources().getInteger(R.integer.gridview_columns) -
+                    mContext.getResources().getInteger(R.integer.gridview_margin),
+                    mScreenWidth / mContext.getResources().getInteger(R.integer.gridview_columns) -
+                            mContext.getResources().getInteger(R.integer.gridview_margin)));
         } else {
             cell = convertView;
+        }
+
+        // Keep downloading next recipes when we show the last ones
+        if (position > ((MainActivity) mContext).getPreviousTotal() && position == getCount() -
+                mContext.getResources().getInteger(R.integer.gridview_left_items_to_reload)) {
+            ((MainActivity) mContext).setPreviousTotal(position);
+            mFragment.downloadNextRecipes();
         }
 
         // Get the item in the adapter
@@ -166,7 +160,7 @@ public class GridviewCellAdapter extends BaseAdapter {
                         public void onAnimationEnd(Animation animation) {
                             // Send selected recipe to the next activity
                             Intent i = new Intent(mContext, DetailActivity.class);
-                            i.putExtra("recipe", mRecipes.get((int) v.getTag()));
+                            i.putExtra("recipe", ((MainActivity) mContext).getRecipes().get((int) v.getTag()));
 
                             Pair<View, String> p1 = Pair.create((View) image, mContext.getString(R.string.transition_detail_image));
                             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
