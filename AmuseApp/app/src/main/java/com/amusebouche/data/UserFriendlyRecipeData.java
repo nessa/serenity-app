@@ -382,4 +382,29 @@ public class UserFriendlyRecipeData {
 
         return q + u;
     }
+
+    /**
+     * Translate hours and minutes into a valid string
+     *
+     * @param cookingHours Number of hours
+     * @param cookingMinutes Number of minutes
+     * @param c Context
+     * @return User-friendly string
+     */
+    public static String getCookingTimeLabel(Integer cookingHours, Integer cookingMinutes, Context c) {
+        if (cookingHours > 0) {
+            if (cookingMinutes > 0) {
+                return String.format("%d %s - %d %s", cookingHours,
+                        (cookingHours == 1) ? c.getString(R.string.detail_hour) : c.getString(R.string.detail_hours),
+                        cookingMinutes,
+                        (cookingMinutes == 1) ? c.getString(R.string.detail_minute) : c.getString(R.string.detail_minutes));
+            } else {
+                return String.format("%d %s", cookingHours,
+                        (cookingHours == 1) ? c.getString(R.string.detail_hour) : c.getString(R.string.detail_hours));
+            }
+        } else {
+            return String.format("%d %s", cookingMinutes,
+                    (cookingMinutes == 1) ? c.getString(R.string.detail_minute) : c.getString(R.string.detail_minutes));
+        }
+    }
 }

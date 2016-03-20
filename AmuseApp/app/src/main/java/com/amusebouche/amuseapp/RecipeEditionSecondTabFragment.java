@@ -7,6 +7,8 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -228,7 +230,18 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         unitsSpinner.setAdapter(unitsSpinnerArrayAdapter);
 
         Button cancelButton = (Button) editionDialog.findViewById(R.id.cancel);
-        Button acceptButton = (Button) editionDialog.findViewById(R.id.accept);
+        final Button acceptButton = (Button) editionDialog.findViewById(R.id.accept);
+
+        nameTextView.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                mEditionActivity.toggleEnableButton(acceptButton,
+                        mEditionActivity.checkRequiredValidation(nameTextView));
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+        });
 
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -240,8 +253,6 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Validate fields
-                if (nameTextView.getText().toString().length() > 0) {
 
                     // Calculate quantity and measurement unit
                     Float quantity = 0.0F;
@@ -280,7 +291,6 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                     // We close the dialog only if the creation/update result is OK
                     editionDialog.dismiss();
                 }
-            }
         });
 
         if (position > -1) {
@@ -288,6 +298,9 @@ public class RecipeEditionSecondTabFragment extends Fragment {
             quantityTextView.setText(String.format("%f", mEditionActivity.getRecipe().getIngredients().get(position).getQuantity()));
             unitsSpinner.setSelection(UserFriendlyRecipeData.getMeasurementUnitPosition(
                     mEditionActivity.getRecipe().getIngredients().get(position).getMeasurementUnit()));
+
+            mEditionActivity.toggleEnableButton(acceptButton,
+                    mEditionActivity.checkRequiredValidation(nameTextView));
         }
 
         editionDialog.show();

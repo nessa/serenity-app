@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -160,7 +161,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 mEditionActivity.getRecipe().setTitle(mTitle.getText().toString());
 
-                checkTitleValidation();
+                toggleEnableSaveButton(mEditionActivity.checkRequiredValidation(mTitle) &&
+                        mEditionActivity.checkURLValidation(mImage));
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -173,7 +175,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 mEditionActivity.getRecipe().setImage(mImage.getText().toString());
 
-                checkTitleValidation();
+                toggleEnableSaveButton(mEditionActivity.checkRequiredValidation(mTitle) &&
+                        mEditionActivity.checkURLValidation(mImage));
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -225,7 +228,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         SeekBar.OnSeekBarChangeListener cookingTimeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                setCookingTimeLabel();
+                mCookingTimeLabel.setText(UserFriendlyRecipeData.getCookingTimeLabel(mCookingTimeHours.getProgress(),
+                        mCookingTimeMinutes.getProgress(), getActivity()));
 
                 mEditionActivity.getRecipe().setCookingTime(mCookingTimeHours.getProgress() * 60.0F +
                         mCookingTimeMinutes.getProgress());
@@ -266,13 +270,13 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         mSource.addTextChangedListener(new TextWatcher() {
             public void afterTextChanged(Editable s) {
                 mEditionActivity.getRecipe().setSource(mSource.getText().toString());
-
-                checkTitleValidation();
             }
 
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
         });
 
 
@@ -288,38 +292,19 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         mSource.setText(mEditionActivity.getRecipe().getSource());
 
         // Check initial data
-        checkTitleValidation();
-        setCookingTimeLabel();
         setServingsLabel();
+
+        mCookingTimeLabel.setText(UserFriendlyRecipeData.getCookingTimeLabel(mCookingTimeHours.getProgress(),
+                mCookingTimeMinutes.getProgress(), getActivity()));
+
+        toggleEnableSaveButton(mEditionActivity.checkRequiredValidation(mTitle) &&
+                mEditionActivity.checkURLValidation(mImage));
 
         return mLayout;
     }
 
-    private void checkTitleValidation() {
-        if (mTitle.getText().toString().length() == 0) {
-            mTitle.setError(getString(R.string.recipe_edition_error_required));
-        }
-    }
-
-    private void setCookingTimeLabel() {
-        String time;
-
-        if (mCookingTimeHours.getProgress() > 0) {
-            if (mCookingTimeMinutes.getProgress() > 0) {
-                time = String.format("%d %s - %d %s", mCookingTimeHours.getProgress(),
-                        (mCookingTimeHours.getProgress() == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours),
-                        mCookingTimeMinutes.getProgress(),
-                        (mCookingTimeMinutes.getProgress() == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
-            } else {
-                time = String.format("%d %s", mCookingTimeHours.getProgress(),
-                        (mCookingTimeHours.getProgress() == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours));
-            }
-        } else {
-            time = String.format("%d %s", mCookingTimeMinutes.getProgress(),
-                    (mCookingTimeMinutes.getProgress() == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
-        }
-
-        mCookingTimeLabel.setText(time);
+    private void toggleEnableSaveButton(boolean enabled) {
+        mEditionActivity.setEnableSaveButton(enabled);
     }
 
     private void setServingsLabel() {

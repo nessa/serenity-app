@@ -7,12 +7,15 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,6 +23,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.amusebouche.data.RecipeDirection;
+import com.amusebouche.data.UserFriendlyRecipeData;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
@@ -213,6 +217,7 @@ public class RecipeEditionThirdTabFragment extends Fragment {
             titleTextView.setText(getResources().getString(R.string.recipe_edition_direction_title_new));
         }
 
+        // Basic info
         final TextView descriptionTextView = (TextView) editionDialog.findViewById(R.id.description);
         final TextView imageTextView = (TextView) editionDialog.findViewById(R.id.image);
         final TextView videoTextView = (TextView) editionDialog.findViewById(R.id.video);
@@ -222,11 +227,53 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         final SeekBar cookingTimeHours = (SeekBar) editionDialog.findViewById(R.id.cooking_time_hours);
         final SeekBar cookingTimeMinutes = (SeekBar) editionDialog.findViewById(R.id.cooking_time_minutes);
 
+        // Buttons
+        Button cancelButton = (Button) editionDialog.findViewById(R.id.cancel);
+        final Button acceptButton = (Button) editionDialog.findViewById(R.id.accept);
+
+        // Basic info views' listeners
+        descriptionTextView.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                mEditionActivity.toggleEnableButton(acceptButton,
+                        mEditionActivity.checkRequiredValidation(descriptionTextView) &&
+                                mEditionActivity.checkURLValidation(imageTextView) &&
+                                mEditionActivity.checkURLValidation(videoTextView));
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        imageTextView.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                mEditionActivity.toggleEnableButton(acceptButton,
+                        mEditionActivity.checkRequiredValidation(descriptionTextView) &&
+                                mEditionActivity.checkURLValidation(imageTextView) &&
+                                mEditionActivity.checkURLValidation(videoTextView));
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        videoTextView.addTextChangedListener(new TextWatcher() {
+            public void afterTextChanged(Editable s) {
+                mEditionActivity.toggleEnableButton(acceptButton,
+                        mEditionActivity.checkRequiredValidation(descriptionTextView) &&
+                                mEditionActivity.checkURLValidation(imageTextView) &&
+                                mEditionActivity.checkURLValidation(videoTextView));
+            }
+
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        });
+
+        // Cooking time views' listeners
         SeekBar.OnSeekBarChangeListener cookingTimeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                cookingTimeLabel.setText(getCookingTimeLabel(cookingTimeHours.getProgress(),
-                        cookingTimeMinutes.getProgress()));
+                cookingTimeLabel.setText(UserFriendlyRecipeData.getCookingTimeLabel(cookingTimeHours.getProgress(),
+                        cookingTimeMinutes.getProgress(), getActivity()));
             }
 
             @Override
@@ -239,9 +286,8 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         cookingTimeHours.setOnSeekBarChangeListener(cookingTimeListener);
         cookingTimeMinutes.setOnSeekBarChangeListener(cookingTimeListener);
 
-        Button cancelButton = (Button) editionDialog.findViewById(R.id.cancel);
-        Button acceptButton = (Button) editionDialog.findViewById(R.id.accept);
 
+        // Buttons' listeners
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -253,69 +299,53 @@ public class RecipeEditionThirdTabFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
-                if (descriptionTextView.getText().toString().length() > 0) {
+                if (position > -1) {
+                    // Update existing direction
+                    mEditionActivity.getRecipe().getDirections().get(position).setDescription(
+                            descriptionTextView.getText().toString());
+                    mEditionActivity.getRecipe().getDirections().get(position).setImage(
+                            imageTextView.getText().toString());
+                    mEditionActivity.getRecipe().getDirections().get(position).setVideo(
+                            videoTextView.getText().toString());
+                    mEditionActivity.getRecipe().getDirections().get(position).setTime(
+                            cookingTimeHours.getProgress() * 60.0F +
+                                    cookingTimeMinutes.getProgress());
+                } else {
+                    // Add new direction
+                    RecipeDirection direction = new RecipeDirection(
+                            mEditionActivity.getRecipe().getDirections().size() + 1,
+                            descriptionTextView.getText().toString(),
+                            imageTextView.getText().toString(),
+                            videoTextView.getText().toString(),
+                            cookingTimeHours.getProgress() * 60.0F + cookingTimeMinutes.getProgress());
 
-                    if (position > -1) {
-                        // Update existing direction
-                        mEditionActivity.getRecipe().getDirections().get(position).setDescription(
-                                descriptionTextView.getText().toString());
-                        mEditionActivity.getRecipe().getDirections().get(position).setImage(
-                                imageTextView.getText().toString());
-                        mEditionActivity.getRecipe().getDirections().get(position).setVideo(
-                                videoTextView.getText().toString());
-                        mEditionActivity.getRecipe().getDirections().get(position).setTime(
-                                cookingTimeHours.getProgress() * 60.0F +
-                                        cookingTimeMinutes.getProgress());
-                    } else {
-                        // Add new direction
-                        RecipeDirection direction = new RecipeDirection(
-                                mEditionActivity.getRecipe().getDirections().size() + 1,
-                                descriptionTextView.getText().toString(),
-                                imageTextView.getText().toString(),
-                                videoTextView.getText().toString(),
-                                cookingTimeHours.getProgress() * 60.0F + cookingTimeMinutes.getProgress());
-
-                        mEditionActivity.getRecipe().getDirections().add(direction);
-                        mDirectionsArray.add(new Pair<>(Long.valueOf(direction.getSortNumber()), direction));
-                    }
-
-                    mDirectionsListAdapter.notifyDataSetChanged();
-
-                    // We close the dialog only if the creation/update result is OK
-                    editionDialog.dismiss();
+                    mEditionActivity.getRecipe().getDirections().add(direction);
+                    mDirectionsArray.add(new Pair<>(Long.valueOf(direction.getSortNumber()), direction));
                 }
+
+                mDirectionsListAdapter.notifyDataSetChanged();
+
+                editionDialog.dismiss();
             }
         });
 
+        // Set initial data
         if (position > -1) {
             descriptionTextView.setText(mEditionActivity.getRecipe().getDirections().get(position).getDescription());
             imageTextView.setText(mEditionActivity.getRecipe().getDirections().get(position).getImage());
             videoTextView.setText(mEditionActivity.getRecipe().getDirections().get(position).getVideo());            cookingTimeHours.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() / 60);
             cookingTimeMinutes.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() % 60);
 
-            cookingTimeLabel.setText(getCookingTimeLabel(cookingTimeHours.getProgress(),
-                    cookingTimeMinutes.getProgress()));
+            cookingTimeLabel.setText(UserFriendlyRecipeData.getCookingTimeLabel(cookingTimeHours.getProgress(),
+                    cookingTimeMinutes.getProgress(), getActivity()));
+
+            mEditionActivity.toggleEnableButton(acceptButton,
+                    mEditionActivity.checkRequiredValidation(descriptionTextView) &&
+                            mEditionActivity.checkURLValidation(imageTextView) &&
+                            mEditionActivity.checkURLValidation(videoTextView));
         }
 
         editionDialog.show();
-    }
-
-
-    private String getCookingTimeLabel(Integer cookingHours, Integer cookingMinutes) {
-        if (cookingHours > 0) {
-            if (cookingMinutes > 0) {
-                return String.format("%d %s - %d %s", cookingHours,
-                        (cookingHours == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours),
-                        cookingMinutes,
-                        (cookingMinutes == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
-            } else {
-                return String.format("%d %s", cookingHours,
-                        (cookingHours == 1) ? getString(R.string.detail_hour) : getString(R.string.detail_hours));
-            }
-        } else {
-            return String.format("%d %s", cookingMinutes,
-                    (cookingMinutes == 1) ? getString(R.string.detail_minute) : getString(R.string.detail_minutes));
-        }
     }
 
     /**

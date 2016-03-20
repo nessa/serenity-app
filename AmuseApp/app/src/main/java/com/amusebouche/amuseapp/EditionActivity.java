@@ -10,8 +10,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.URLUtil;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
@@ -63,6 +66,9 @@ public class EditionActivity extends ActionBarActivity {
     // Fragments
     private RecipeEditionSecondTabFragment mSecondFragment;
     private RecipeEditionThirdTabFragment mThirdFragment;
+
+    // Enable buttons
+    private boolean mEnableSaveButton;
 
     // LIFECYCLE METHODS
 
@@ -321,6 +327,16 @@ public class EditionActivity extends ActionBarActivity {
     }
 
 
+    // SETTERS
+
+    /**
+     * Set boolean that enables save button
+     * @param enable boolean
+     */
+    public void setEnableSaveButton(boolean enable) {
+        mEnableSaveButton = enable;
+    }
+
     // FUNCTIONALITY METHODS
 
     /**
@@ -330,19 +346,64 @@ public class EditionActivity extends ActionBarActivity {
      * TODO: Not implemented yet
      */
     public void onSaveClicked() {
-        Log.d("INFO", "SAVE CLICKED");
-        Log.d("RECIPE TITLE", mRecipe.getTitle());
-        Log.d("RECIPE IMAGEN", mRecipe.getImage());
-        Log.d("RECIPE TIPO", mRecipe.getTypeOfDish());
-        Log.d("RECIPE DIF", mRecipe.getDifficulty());
-        Log.d("RECIPE TIME", mRecipe.getCookingTime().toString());
-        Log.d("RECIPE SERV", mRecipe.getServings().toString());
-        Log.d("RECIPE SOURCE", mRecipe.getSource());
+        if (mEnableSaveButton) {
+            Log.d("INFO", "SAVE CLICKED");
+            Log.d("RECIPE TITLE", mRecipe.getTitle());
+            Log.d("RECIPE IMAGEN", mRecipe.getImage());
+            Log.d("RECIPE TIPO", mRecipe.getTypeOfDish());
+            Log.d("RECIPE DIF", mRecipe.getDifficulty());
+            Log.d("RECIPE TIME", mRecipe.getCookingTime().toString());
+            Log.d("RECIPE SERV", mRecipe.getServings().toString());
+            Log.d("RECIPE SOURCE", mRecipe.getSource());
 
-        Log.d("RECIPE", "ING");
-        for (int i = 0; i < mRecipe.getIngredients().size(); i++) {
-            Log.d(String.format("%d", mRecipe.getIngredients().get(i).getSortNumber()),
-                    mRecipe.getIngredients().get(i).getName());
+            Log.d("RECIPE", "ING");
+            for (int i = 0; i < mRecipe.getIngredients().size(); i++) {
+                Log.d(String.format("%d", mRecipe.getIngredients().get(i).getSortNumber()),
+                        mRecipe.getIngredients().get(i).getName());
+            }
+        } else {
+            Log.d("NOTE", "BUTTON DISABLED");
         }
+    }
+
+    // FRAGMENT METHODS
+
+    /**
+     * Enable or disable the given button
+     * @param button Given button
+     * @param enabled Boolean: if true, enable the button
+     *                If false, disable it
+     */
+    public void toggleEnableButton(Button button, boolean enabled) {
+        button.setEnabled(enabled);
+
+        if (enabled) {
+            button.setTextColor(getResources().getColor(R.color.theme_default_accent));
+        } else {
+            button.setTextColor(getResources().getColor(R.color.secondary_text));
+        }
+    }
+
+    /**
+     *
+     * @param textView
+     * @return
+     */
+    public boolean checkRequiredValidation(TextView textView) {
+        if (textView.getText().toString().length() == 0) {
+            textView.setError(getString(R.string.recipe_edition_error_required));
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean checkURLValidation(TextView textView) {
+        if (textView.getText().toString().length() > 0 && !URLUtil.isValidUrl(textView.getText().toString())) {
+            textView.setError(getString(R.string.recipe_edition_error_invalid_uri));
+            return false;
+        }
+
+        return true;
     }
 }
