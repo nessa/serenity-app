@@ -174,7 +174,7 @@ public class RecipeListFragment extends Fragment {
         mProgressBar.setVisibility(View.GONE);
 
         mGridView = (GridView) mLayout.findViewById(R.id.gridview);
-        mGridView.setAdapter(new GridviewCellAdapter(getActivity(), this, screen_width, mRecipes));
+        mGridView.setAdapter(new GridviewCellAdapter(getActivity(), screen_width, mRecipes));
 
         mGridView.setOnScrollListener(new GridView.OnScrollListener() {
 

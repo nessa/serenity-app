@@ -6,14 +6,21 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -55,6 +62,7 @@ public class DetailActivity extends ActionBarActivity {
     private Bitmap mMainImage;
     private TabHost mTabs;
     private RatingBar mRatingBar;
+    private RelativeLayout mFadeViews;
 
     // LIFECYCLE METHODS
 
@@ -213,6 +221,22 @@ public class DetailActivity extends ActionBarActivity {
         TextView mRecipeNumberUsersRating = (TextView) findViewById(R.id.recipe_number_users_rating);
         mRecipeNumberUsersRating.setText(String.format("(%d %s)", mRecipe.getUsersRating(),
                 getString(R.string.detail_users)));
+
+        // Fade in data
+        mFadeViews = (RelativeLayout) findViewById(R.id.fade_views);
+        final RelativeLayout finalFadeViews = mFadeViews;
+
+        mFadeViews.post(new Runnable() {
+            @Override
+            public void run() {
+                finalFadeViews.setVisibility(View.VISIBLE);
+                finalFadeViews.setAlpha(0);
+                finalFadeViews.animate()
+                        .alpha(1f)
+                        .setDuration(2000)
+                        .setListener(null);
+            }
+        } );
     }
 
     /**
@@ -250,7 +274,26 @@ public class DetailActivity extends ActionBarActivity {
         }
 
         if (goBack) {
-            super.onBackPressed();
+            // Fade out title and view before go back
+            Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
+            fadeOutAnimation.setDuration(1000);
+
+            fadeOutAnimation.setAnimationListener(new Animation.AnimationListener() {
+                @Override
+                public void onAnimationStart(Animation animation) {
+                }
+
+                @Override
+                public void onAnimationEnd(Animation animation) {
+                    DetailActivity.super.onBackPressed();
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animation) {
+                }
+            });
+
+            mFadeViews.startAnimation(fadeOutAnimation);
         }
     }
 

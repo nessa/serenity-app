@@ -8,7 +8,7 @@
     android:gravity="bottom">
 
     <ProgressBar
-        android:id="@+id/progressBar"
+        android:id="@+id/progress_bar"
         style="?android:attr/progressBarStyle"
         android:indeterminate="true"
         android:layout_width="wrap_content"
@@ -24,37 +24,34 @@
 
     <ImageView
         android:id="@+id/recipe_image"
-        android:transitionName="SharedImage"
+        android:transitionName="@string/transition_detail_image"
         android:contentDescription="@string/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
+        android:id="@+id/fade_views"
         android:layout_width="match_parent"
-        android:layout_height="50sp"
-        android:orientation="horizontal"
-        android:background="@color/semi_transparent_primary_dark"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:gravity="bottom">
+        android:layout_height="match_parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bottom_gradient"/>
+
         <TextView
             android:id="@+id/recipe_name"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="4dp"
-            android:textColor="#ffffffff"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:layout_alignParentTop="true" />
-        <!--
-        <ImageButton
-            android:id="@+id/fav_button"
-            android:contentDescription="@string/image"
-            android:layout_height="48dp"
-            android:layout_width="48dp"
-            android:layout_marginEnd="2dp"
-            android:layout_alignParentEnd="true"
-            android:background="@null" /> -->
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/gridview_cell_title_left_margin"
+            android:layout_marginBottom="@dimen/gridview_cell_title_bottom_margin"
+            android:layout_alignParentBottom="true"
+            android:maxLines="4"
+            android:ellipsize="end"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:textSize="@dimen/gridview_cell_title_font_size" />
+
     </RelativeLayout>
 </RelativeLayout>

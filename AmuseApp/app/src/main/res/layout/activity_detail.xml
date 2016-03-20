@@ -18,74 +18,82 @@
         <ImageView
             android:id="@+id/recipe_image"
             android:contentDescription="@string/image"
-            android:transitionName="SharedImage"
+            android:transitionName="@string/transition_detail_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop" />
 
-
-        <LinearLayout
-            android:orientation="vertical"
+        <RelativeLayout
+            android:id="@+id/fade_views"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignStart="@+id/recipe_image"
-            android:layout_alignTop="@+id/recipe_image"
-            android:layout_alignEnd="@+id/recipe_image"
-            android:layout_alignBottom="@+id/recipe_image"
-            android:padding="10dp" >
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/recipe_name"
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="1dp"
-                android:gravity="top"
-                android:textStyle="bold"
-                android:textSize="@dimen/detail_image_name_text_size"
-                android:textColor="@android:color/white" />
+                android:layout_height="match_parent"
+                android:background="@drawable/top_gradient"/>
 
             <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="bottom" >
+                android:padding="10dp" >
 
                 <TextView
-                    android:id="@+id/recipe_owner"
+                    android:id="@+id/recipe_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="1dp"
-                    android:textSize="@dimen/detail_image_user_text_size"
+                    android:gravity="top"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/detail_image_name_text_size"
                     android:textColor="@android:color/white" />
 
-
                 <LinearLayout
-                    android:orientation="horizontal"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
-
-                    <RatingBar
-                        android:id="@+id/rating_bar"
-                        style="?android:attr/ratingBarStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:paddingTop="4dp"
-                        android:numStars="5"
-                        android:stepSize="1.0" />
+                    android:layout_height="match_parent"
+                    android:gravity="bottom" >
 
                     <TextView
-                        android:id="@+id/recipe_number_users_rating"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/recipe_owner"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
                         android:layout_margin="1dp"
+                        android:textSize="@dimen/detail_image_user_text_size"
                         android:textColor="@android:color/white" />
 
-                </LinearLayout>
-            </LinearLayout>
 
-        </LinearLayout>
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <RatingBar
+                            android:id="@+id/rating_bar"
+                            style="?android:attr/ratingBarStyleSmall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:paddingTop="4dp"
+                            android:numStars="5"
+                            android:stepSize="1.0" />
+
+                        <TextView
+                            android:id="@+id/recipe_number_users_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_margin="1dp"
+                            android:textColor="@android:color/white" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </RelativeLayout>
     </RelativeLayout>
 
     <TabHost android:id="@android:id/tabhost"

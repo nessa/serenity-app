@@ -17,6 +17,7 @@
 
     <!-- Transitions -->
     <string name="transition_recipe_detail">detalle</string>
+    <string name="transition_detail_image">SharedImage</string>
 
     <!-- Lateral menu -->
     <string name="RECIPES">Recetas</string>
