@@ -1,8 +1,6 @@
 package com.amusebouche.amuseapp;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.media.Image;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -10,9 +8,6 @@ import android.widget.Checkable;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -27,7 +22,6 @@ import java.util.List;
  * - Content: cell_left_menu
  */
 public class LeftMenuAdapter extends BaseAdapter {
-    private boolean locked = false;
     private Context mContext = null;
 
     public LeftMenuAdapter(Context context) {
@@ -54,100 +48,48 @@ public class LeftMenuAdapter extends BaseAdapter {
         switch (position) {
             default:
             case 0:
-                return mContext.getResources().getString(R.string.LOGIN);
+                return mContext.getResources().getString(R.string.lateral_menu_login);
             case 1:
-                return mContext.getResources().getString(R.string.NEW_RECIPES);
+                return mContext.getResources().getString(R.string.lateral_menu_new_recipes);
             case 2:
-                return mContext.getResources().getString(R.string.DOWNLOADED_RECIPES);
+                return mContext.getResources().getString(R.string.lateral_menu_downloaded_recipes);
             case 3:
-                return mContext.getResources().getString(R.string.MY_RECIPES);
+                return mContext.getResources().getString(R.string.lateral_menu_my_recipes);
             case 4:
-                return mContext.getResources().getString(R.string.SETTINGS);
+                return mContext.getResources().getString(R.string.lateral_menu_settings);
             case 5:
-                return mContext.getResources().getString(R.string.INFO);
+                return mContext.getResources().getString(R.string.lateral_menu_info);
         }
     }
 
-    private int getSectionColor(int position) {
-        switch (position) {
-            default:
-            case 0:
-                return mContext.getResources().getColor(android.R.color.holo_red_dark);
-            case 1:
-                return mContext.getResources().getColor(android.R.color.holo_blue_dark);
-            case 2:
-                return mContext.getResources().getColor(android.R.color.holo_green_dark);
-            case 3:
-                return mContext.getResources().getColor(android.R.color.holo_purple);
-            case 4:
-                return mContext.getResources().getColor(android.R.color.tertiary_text_dark);
-            case 5:
-                return mContext.getResources().getColor(android.R.color.holo_orange_dark);
-        }
-    }
-
-
-    // TODO: Update this!
     private int getSectionIcon(int position) {
         switch (position) {
             default:
             case 0:
-                return R.drawable.ic_add_white_48dp;//ic_drawer_placeline;
-            case 2:
-                return R.drawable.ic_add_white_48dp;//ic_drawer_around;
+                return R.drawable.ic_user_white_48dp;
             case 1:
-                if (!locked)
-                    return R.drawable.ic_add_white_48dp;//ic_drawer_location;
-                else
-                    return R.drawable.ic_add_white_48dp;//ic_drawer_pinned;
+                return R.drawable.ic_cook_white_48dp;
+            case 2:
+                return R.drawable.ic_download_white_48dp;
             case 3:
-                return R.drawable.ic_add_white_48dp;//ic_drawer_inspiration;
+                return R.drawable.ic_tag_white_48dp;
             case 4:
-                return R.drawable.ic_add_white_48dp;//ic_drawer_settings;
+                return R.drawable.ic_settings_white_48dp;
             case 5:
-                return android.R.drawable.ic_dialog_info;
+                return R.drawable.ic_info_white_48dp;
         }
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        DrawerHolder drawerHolder;
 
         if (convertView == null) {
-            drawerHolder = new DrawerHolder();
             convertView = new DrawerView(mContext);
-
-            drawerHolder.titleTextView = (TextView) convertView.findViewById(R.id.title);
-            drawerHolder.drawer_image = (ImageView) convertView.findViewById(R.id.image_icon);
-            drawerHolder.layout = (RelativeLayout) convertView.findViewById(R.id.drawer_relative);
-
-            ((DrawerView) convertView).setTag(getSectionString(position), getSectionIcon(position),
-                    getSectionColor(position));
-        } else {
-            drawerHolder = (DrawerHolder) convertView.getTag();
-            ((DrawerView) convertView).setTag(getSectionString(position), getSectionIcon(position),
-                    getSectionColor(position));
         }
 
-        if (position == 0) {
-            ((DrawerView) convertView).setChecked(true);
-        }
+        ((DrawerView) convertView).setTag(getSectionString(position), getSectionIcon(position));
+
         return convertView;
-    }
-
-    public boolean isLocked() {
-        return locked;
-    }
-
-    public void setLocked(boolean locked) {
-        this.locked = locked;
-        notifyDataSetChanged();
-    }
-
-    public class DrawerHolder {
-        TextView titleTextView;
-        ImageView drawer_image;
-        RelativeLayout layout;
     }
 
     public class DrawerView extends RelativeLayout implements Checkable {
@@ -162,22 +104,15 @@ public class LeftMenuAdapter extends BaseAdapter {
 
             mTitleTextView = (TextView) findViewById(R.id.title);
             mImageView = (ImageView) findViewById(R.id.image);
-            mColoredView = (View) findViewById(R.id.line);
+            mColoredView = findViewById(R.id.line);
         }
 
-        public void setTag(String title, int imageId, int color) {
-/*
-            this.titleTextView = tag.titleTextView;
-            ImageView drawer_image = tag.drawer_image;
-
-            this.layout = tag.layout;*/
+        public void setTag(String title, int imageId) {
             mTitleTextView.setText(title);
             mImageView.setImageResource(imageId);
-            //mImageView.setColorFilter(color);
-            //mColoredView.setBackgroundColor(color);
         }
 
-        private void highlighCell(boolean checked) {
+        private void highlightCell(boolean checked) {
             if (checked) {
                 mTitleTextView.setTextColor(getResources().getColor(R.color.theme_default_accent));
                 mImageView.setColorFilter(getResources().getColor(R.color.theme_default_accent));
@@ -202,14 +137,14 @@ public class LeftMenuAdapter extends BaseAdapter {
         @Override
         public void setChecked(boolean checked) {
             isChecked = checked;
-            highlighCell(checked);
+            highlightCell(checked);
 
         }
 
         @Override
         public void toggle() {
             this.isChecked = !this.isChecked;
-            highlighCell(isChecked);
+            highlightCell(isChecked);
         }
     }
 }

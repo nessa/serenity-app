@@ -5,8 +5,6 @@
     android:layout_width="@dimen/navigation_drawer_width"
     android:layout_height="match_parent"
     android:layout_gravity="end"
-    android:choiceMode="singleChoice"
-    android:dividerHeight="0dp"
     android:background="@android:color/white">
 
     <TextView

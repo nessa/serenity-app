@@ -2,7 +2,6 @@ package com.amusebouche.amuseapp;
 
 
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -78,15 +77,14 @@ public class MainActivity extends ActionBarActivity {
     // UI variables
     private Fragment mLastFragment;
 
-    // Left drawer
+    // Drawers
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-    private ListView mLeftDrawerView;
+    private LinearLayout mLeftDrawerView;
+    private LinearLayout mRightDrawerView;
+    private ListView mLeftDrawerList;
     private LeftMenuAdapter mLeftMenuAdapter;
     private int mCurrentSelectedPosition = 1;
-
-    // Right drawer
-    private LinearLayout mRightDrawerView;
 
 
     @Override
@@ -135,17 +133,18 @@ public class MainActivity extends ActionBarActivity {
 
 
             // Set left menu view
-            mLeftDrawerView = (ListView) findViewById(R.id.left_menu);
-            mLeftDrawerView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            mLeftDrawerView = (LinearLayout) findViewById(R.id.left_menu);
+            mLeftDrawerList = (ListView) findViewById(R.id.left_menu_list);
+            mLeftDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     selectItemInLeftMenu(position);
                 }
             });
-            mLeftDrawerView.setDivider(null);
+            mLeftDrawerList.setDivider(null);
             mLeftMenuAdapter = mLeftMenuAdapter == null ?
                     new LeftMenuAdapter(this) : mLeftMenuAdapter;
-            mLeftDrawerView.setAdapter(mLeftMenuAdapter);
+            mLeftDrawerList.setAdapter(mLeftMenuAdapter);
 
             selectItemInLeftMenu(mCurrentSelectedPosition);
 
@@ -159,7 +158,6 @@ public class MainActivity extends ActionBarActivity {
                 /** Called when a drawer has settled in a completely closed state. */
                 public void onDrawerClosed(View drawerView) {
                     if (drawerView.equals(mLeftDrawerView)) {
-                        getSupportActionBar().setTitle(getTitle());
                         // Call to onPrepareOptionsMenu()
                         supportInvalidateOptionsMenu();
                         mDrawerToggle.syncState();
@@ -169,7 +167,6 @@ public class MainActivity extends ActionBarActivity {
                 /** Called when a drawer has settled in a completely open state. */
                 public void onDrawerOpened(View drawerView) {
                     if (drawerView.equals(mLeftDrawerView)) {
-                        getSupportActionBar().setTitle(getString(R.string.app_name));
                         // Call to onPrepareOptionsMenu()
                         supportInvalidateOptionsMenu();
                         mDrawerToggle.syncState();
@@ -323,10 +320,8 @@ public class MainActivity extends ActionBarActivity {
 
     public void selectItemInLeftMenu(int position) {
         mCurrentSelectedPosition = position;
-        if (mLeftDrawerView != null) {
-            mLeftDrawerView.setItemChecked(mCurrentSelectedPosition, true);
-        }
         if (mDrawerLayout != null && mLeftDrawerView != null) {
+            mLeftDrawerList.setItemChecked(mCurrentSelectedPosition, true);
             mDrawerLayout.closeDrawer(mLeftDrawerView);
         }
 
@@ -334,25 +329,31 @@ public class MainActivity extends ActionBarActivity {
         Fragment fragment;
         switch (position) {
             case PROFILE:
+                getSupportActionBar().setTitle(getString(R.string.lateral_menu_login));
                 fragment = new UserFragment();
                 break;
             default:
             case NEW_RECIPES:
+                getSupportActionBar().setTitle(getString(R.string.lateral_menu_new_recipes));
                 this.setMode(NEW_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case DOWNLOADED_RECIPES:
+                getSupportActionBar().setTitle(getString(R.string.lateral_menu_downloaded_recipes));
                 this.setMode(DOWNLOADED_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case MY_RECIPES:
+                getSupportActionBar().setTitle(getString(R.string.lateral_menu_my_recipes));
                 this.setMode(MY_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case SETTINGS:
+                getSupportActionBar().setTitle(getString(R.string.lateral_menu_settings));
                 fragment = new SettingsFragment();
                 break;
             case INFO:
+                getSupportActionBar().setTitle(getString(R.string.lateral_menu_info));
                 fragment = new InformationFragment();
                 break;
         }

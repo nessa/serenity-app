@@ -12,6 +12,16 @@
     <dimen name="detail_image_name_text_size">20sp</dimen>
     <dimen name="detail_image_user_text_size">16sp</dimen>
 
+    <!-- Action bar -->
+    <dimen name="action_bar_underline">4dp</dimen>
+
+    <!-- Drawers -->
+    <dimen name="drawer_left_divider_height">0dp</dimen>
+    <dimen name="drawer_left_selected_line_width">10dp</dimen>
+    <dimen name="drawer_left_cell_height">48dp</dimen>
+    <dimen name="drawer_left_cell_image_size">40dp</dimen>
+    <dimen name="drawer_left_text_left_margin">8dp</dimen>
+
     <!-- Gridview -->
     <dimen name="gridview_cell_title_font_size">18sp</dimen>
     <dimen name="gridview_cell_title_left_margin">4dp</dimen>
