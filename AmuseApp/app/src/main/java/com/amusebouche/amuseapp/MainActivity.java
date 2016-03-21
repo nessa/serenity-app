@@ -325,6 +325,11 @@ public class MainActivity extends ActionBarActivity {
             mDrawerLayout.closeDrawer(mLeftDrawerView);
         }
 
+        // Prevent fragment from getting stuck
+        if (mLastFragment instanceof RecipeListFragment) {
+            ((RecipeListFragment) mLastFragment).forceStop();
+        }
+
         // Update the main content by replacing fragments
         Fragment fragment;
         switch (position) {
@@ -335,17 +340,17 @@ public class MainActivity extends ActionBarActivity {
             default:
             case NEW_RECIPES:
                 getSupportActionBar().setTitle(getString(R.string.lateral_menu_new_recipes));
-                this.setMode(NEW_RECIPES_MODE);
+                this.resetRecipesAndSetMode(NEW_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case DOWNLOADED_RECIPES:
                 getSupportActionBar().setTitle(getString(R.string.lateral_menu_downloaded_recipes));
-                this.setMode(DOWNLOADED_RECIPES_MODE);
+                this.resetRecipesAndSetMode(DOWNLOADED_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case MY_RECIPES:
                 getSupportActionBar().setTitle(getString(R.string.lateral_menu_my_recipes));
-                this.setMode(MY_RECIPES_MODE);
+                this.resetRecipesAndSetMode(MY_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case SETTINGS:
@@ -370,6 +375,14 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    private void resetRecipesAndSetMode(int mode) {
+        mRecipes.clear();
+        mCurrentPage = 0;
+        mLimitPerPage = 10;
+        mPreviousTotal = 0;
+
+        this.setMode(mode);
+    }
 
     // GETTERS
 

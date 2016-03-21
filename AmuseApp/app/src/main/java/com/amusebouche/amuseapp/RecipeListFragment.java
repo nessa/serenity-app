@@ -1,5 +1,6 @@
 package com.amusebouche.amuseapp;
 
+
 import android.content.Intent;
 import android.graphics.Point;
 import android.app.Activity;
@@ -17,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.amusebouche.data.DatabaseHelper;
 import com.amusebouche.services.ServiceHandler;
@@ -45,15 +47,17 @@ public class RecipeListFragment extends Fragment {
 
     // Data variables
     private MainActivity mMainActivity;
-    private Boolean mOffline = true;
 
     private GridView mGridView;
     private ProgressBar mProgressBar;
     private ActionButton mAddButton;
 
+    private TextView mErrorMessage;
+    private boolean mNoConnectionError;
+
     // Services variables
     private DatabaseHelper mDatabaseHelper;
-
+    private ServiceHandler mServiceHandler;
 
     // LIFECYCLE METHODS
 
@@ -121,6 +125,9 @@ public class RecipeListFragment extends Fragment {
         mProgressBar = (ProgressBar) mLayout.findViewById(R.id.progressBar);
         mProgressBar.setVisibility(View.GONE);
 
+
+        mErrorMessage = (TextView) mLayout.findViewById(R.id.error_message);
+
         mGridView = (GridView) mLayout.findViewById(R.id.gridview);
         mGridView.setAdapter(new GridviewCellAdapter(getActivity(), this, screenWidth));
 
@@ -151,6 +158,10 @@ public class RecipeListFragment extends Fragment {
             mAddButton.show();
         } else {
             mAddButton.setVisibility(View.INVISIBLE);
+        }
+
+        if (mMainActivity.getRecipes().size() == 0) {
+            new GetRecipes().execute();
         }
 
         return mLayout;
@@ -211,6 +222,15 @@ public class RecipeListFragment extends Fragment {
     }
 
     /**
+     * Abort service handler requests
+     */
+    public void forceStop() {
+        if (mServiceHandler != null) {
+            mServiceHandler.abort();
+        }
+    }
+
+    /**
      * Async task class to get json by making HTTP call
      */
     private class GetRecipes extends AsyncTask<Void, Integer, Void> {
@@ -220,40 +240,55 @@ public class RecipeListFragment extends Fragment {
             super.onPreExecute();
 
             mProgressBar.setVisibility(View.VISIBLE);
+            mErrorMessage.setVisibility(View.GONE);
+
+            mNoConnectionError = false;
+            mErrorMessage.setText(getString(R.string.recipe_list_no_recipes_message));
         }
 
         @Override
         protected Void doInBackground(Void... result) {
-            if (mOffline) {
-                mMainActivity.getRecipes().addAll(mDatabaseHelper.getRecipes(mMainActivity.getLimitPerPage(),
-                        mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage()));
-            } else {
-                // Create service handler class instance
-                ServiceHandler sh = new ServiceHandler();
+            if(!isCancelled()) {
 
-                // Check internet connection
-                if (sh.checkInternetConnection(getActivity().getApplicationContext())) {
+                switch (mMainActivity.getMode()) {
+                    default:
+                    case MainActivity.DOWNLOADED_RECIPES_MODE:
+                        mMainActivity.getRecipes().addAll(mDatabaseHelper.getRecipes(mMainActivity.getLimitPerPage(),
+                                mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage()));
+                        break;
+                    case MainActivity.MY_RECIPES_MODE:
+                        // TODO Get recipes with owner = me (if user is logged in) or without owner
+                        mMainActivity.getRecipes().addAll(mDatabaseHelper.getRecipes(mMainActivity.getLimitPerPage(),
+                                mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage()));
+                        break;
+                    case MainActivity.NEW_RECIPES_MODE:
+                        // Create service handler class instance
+                        mServiceHandler = new ServiceHandler();
 
-                    // Make a request to url and getting response
-                    String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);
+                        // Check internet connection
+                        if (mServiceHandler.checkInternetConnection(getActivity().getApplicationContext())) {
 
-                    if (jsonStr != null) {
-                        try {
-                            JSONObject jObject = new JSONObject(jsonStr);
-                            JSONArray results = jObject.getJSONArray("results");
+                            // Make a request to url and getting response
+                            String jsonStr = mServiceHandler.makeServiceCall("recipes/", ServiceHandler.GET);
 
-                            for (int i = 0; i < results.length(); i++) {
-                                mMainActivity.getRecipes().add(new Recipe(results.getJSONObject(i)));
+                            if (jsonStr != null) {
+                                try {
+                                    JSONObject jObject = new JSONObject(jsonStr);
+                                    JSONArray results = jObject.getJSONArray("results");
+
+                                    for (int i = 0; i < results.length(); i++) {
+                                        mMainActivity.getRecipes().add(new Recipe(results.getJSONObject(i)));
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                Log.e("ServiceHandler", "Couldn't get any data from the url");
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        } else {
+                            mNoConnectionError = true;
                         }
-                    } else {
-                        Log.e("ServiceHandler", "Couldn't get any data from the url");
-                    }
-                } else {
-                    Log.d("INFO", "ELSE");
-                    // TODO: Get database recipes??
+                        break;
                 }
             }
 
@@ -272,6 +307,14 @@ public class RecipeListFragment extends Fragment {
             adapter.notifyDataSetChanged();
 
             mProgressBar.setVisibility(View.GONE);
+
+            if (mMainActivity.getRecipes().size() == 0) {
+                if (mNoConnectionError) {
+                    mErrorMessage.setText(getString(R.string.recipe_list_no_connection_message));
+                }
+
+                mErrorMessage.setVisibility(View.VISIBLE);
+            }
         }
     }
 

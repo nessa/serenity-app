@@ -33,6 +33,8 @@
     <string name="NO">No</string>
     <!--   Recipe List fragment class -->
     <string name="please_wait_message">Please, wait...</string>
+    <string name="recipe_list_no_recipes_message">No recipes found</string>
+    <string name="recipe_list_no_connection_message">No connection found</string>
 
     <!-- Detail activity -->
     <!--   Recipe detail fragment -->

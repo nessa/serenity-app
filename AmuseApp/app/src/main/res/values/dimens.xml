@@ -22,10 +22,16 @@
     <dimen name="drawer_left_cell_image_size">40dp</dimen>
     <dimen name="drawer_left_text_left_margin">8dp</dimen>
 
-    <!-- Gridview -->
+    <!-- Main -->
+
+    <!--   Gridview -->
     <dimen name="gridview_cell_title_font_size">18sp</dimen>
     <dimen name="gridview_cell_title_left_margin">4dp</dimen>
     <dimen name="gridview_cell_title_bottom_margin">4dp</dimen>
+
+    <!--   Recipe's list -->
+    <dimen name="recipe_list_message_padding">10dp</dimen>
+    <dimen name="recipe_list_message_size">24sp</dimen>
 
 
     <!-- Detail: Directions dialog -->
@@ -43,7 +49,7 @@
     <dimen name="edition_cell_ingredient_primary_text">20sp</dimen>
     <dimen name="edition_cell_secondary_text">16sp</dimen>
 
-    <!-- Dialogs -->
+    <!--   Dialogs -->
     <dimen name="edition_dialog_width">300dp</dimen>
     <dimen name="edition_dialog_image_height">100dp</dimen>
     <dimen name="edition_dialog_title_margin_left">8dp</dimen>
@@ -51,11 +57,11 @@
     <dimen name="edition_dialog_title_size">24sp</dimen>
     <dimen name="edition_dialog_hours_text_size">22sp</dimen>
 
-    <!-- Ingredient edition -->
+    <!--   Ingredient edition -->
     <dimen name="edition_ingredient_title_image_height">120dp</dimen>
     <dimen name="edition_ingredient_spinner_height">24dp</dimen>
 
-    <!-- Direction edition -->
+    <!--   Direction edition -->
     <dimen name="edition_direction_item_right_margin">42dp</dimen>
     <dimen name="edition_direction_item_delete_image_padding">4dp</dimen>
     <dimen name="edition_direction_item_image_size">24dp</dimen>

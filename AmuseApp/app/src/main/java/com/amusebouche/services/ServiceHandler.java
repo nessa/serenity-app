@@ -34,17 +34,24 @@ public class ServiceHandler {
     public final static int GET = 1;
     public final static int POST = 2;
 
+    // Needed to abort
+    private DefaultHttpClient mHttpClient;
+    private HttpPost mHttpPost;
+    private HttpGet mHttpGet;
+
+    // TODO Set correct URL
     public final static String host = "http://10.0.240.21:8002/";
 
 
-    public ServiceHandler() {
-
-    }
+    /**
+     * Basic constructor
+     */
+    public ServiceHandler() {}
 
     /**
      * Make service call. By default it won't send any parameters.
-     * @url URL to make request
-     * @method HTTP request method
+     * @param url URL to make request
+     * @param method HTTP request method
      * */
     public String makeServiceCall(String url, int method) {
         if (url.startsWith("http://") || url.startsWith("https://")) {
@@ -56,7 +63,7 @@ public class ServiceHandler {
 
     /**
      * Check internet connection
-     * @ctx App context
+     * @param ctx App context
      * */
     public Boolean checkInternetConnection(Context ctx) {
         ConnectivityManager conMgr = (ConnectivityManager)
@@ -74,27 +81,27 @@ public class ServiceHandler {
 
     /**
      * Making service call
-     * @url URL to make request
-     * @method HTTP request method
-     * @params HTTP request params
-     * */
+     * @param url URL to make request
+     * @param method HTTP request method
+     * @param params HTTP request params
+     */
     public String makeServiceCall(String url, int method, List<NameValuePair> params) {
 
         try {
             // HTTP client
-            DefaultHttpClient httpClient = new DefaultHttpClient();
+            mHttpClient = new DefaultHttpClient();
             HttpEntity httpEntity = null;
             HttpResponse httpResponse = null;
 
             // Check HTTP request method type
             if (method == POST) {
-                HttpPost httpPost = new HttpPost(host + url);
+                mHttpPost = new HttpPost(host + url);
                 // Add POST params
                 if (params != null) {
-                    httpPost.setEntity(new UrlEncodedFormEntity(params));
+                    mHttpPost.setEntity(new UrlEncodedFormEntity(params));
                 }
 
-                httpResponse = httpClient.execute(httpPost);
+                httpResponse = mHttpClient.execute(mHttpPost);
 
             } else if (method == GET) {
                 // Append params to URL
@@ -104,22 +111,37 @@ public class ServiceHandler {
                     url = host + url;
                     url += "?" + paramString;
                 }
-                HttpGet httpGet = new HttpGet(url);
+                mHttpGet = new HttpGet(url);
 
-                httpResponse = httpClient.execute(httpGet);
+                httpResponse = mHttpClient.execute(mHttpGet);
 
             }
-            httpEntity = httpResponse.getEntity();
+            if (httpResponse != null) {
+                httpEntity = httpResponse.getEntity();
+            }
             response = EntityUtils.toString(httpEntity, "UTF-8");
 
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (ClientProtocolException e) {
+        } catch (UnsupportedEncodingException | ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return response;
+    }
+
+    /**
+     * Abort present requests and shutdown client
+     */
+    public void abort() {
+        if (mHttpGet != null) {
+            mHttpGet.abort();
+        }
+        if (mHttpPost != null) {
+            mHttpPost.abort();
+        }
+        if (mHttpClient != null) {
+            mHttpClient.getConnectionManager().shutdown();
+        }
     }
 }
