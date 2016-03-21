@@ -66,6 +66,7 @@ public class MainActivity extends ActionBarActivity {
     private static final String CURRENT_PAGE_KEY = "current_page";
     private static final String LIMIT_PER_PAGE_KEY = "limit";
     private static final String PREVIOUS_TOTAL_KEY = "previous_total";
+    private static final String SELECTED_DRAWER_VIEW_KEY = "selected_drawer_view";
 
 
     // Data variables
@@ -106,26 +107,12 @@ public class MainActivity extends ActionBarActivity {
             mCurrentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = savedInstanceState.getInt(LIMIT_PER_PAGE_KEY, 0);
             mPreviousTotal = savedInstanceState.getInt(PREVIOUS_TOTAL_KEY, 0);
+            mCurrentSelectedPosition = savedInstanceState.getInt(SELECTED_DRAWER_VIEW_KEY, 1);
         }
 
         // Set up action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            mRecipes = data.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
-            mCurrentPage = data.getIntExtra(CURRENT_PAGE_KEY, 0);
-            mLimitPerPage = data.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
-            mPreviousTotal = data.getIntExtra(PREVIOUS_TOTAL_KEY, 0);
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
 
         if (mDrawerLayout == null || mLeftDrawerView == null || mRightDrawerView == null || mDrawerToggle == null) {
             // Configure navigation drawer
@@ -186,6 +173,21 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            mRecipes = data.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
+            mCurrentPage = data.getIntExtra(CURRENT_PAGE_KEY, 0);
+            mLimitPerPage = data.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+            mPreviousTotal = data.getIntExtra(PREVIOUS_TOTAL_KEY, 0);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
     }
@@ -206,6 +208,7 @@ public class MainActivity extends ActionBarActivity {
         outState.putInt(CURRENT_PAGE_KEY, mCurrentPage);
         outState.putInt(LIMIT_PER_PAGE_KEY, mLimitPerPage);
         outState.putInt(PREVIOUS_TOTAL_KEY, 0);
+        outState.putInt(SELECTED_DRAWER_VIEW_KEY, mCurrentSelectedPosition);
     }
 
     @Override
