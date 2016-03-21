@@ -135,7 +135,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 @Override
                 public void onInit(int status) {
                     if (status != TextToSpeech.ERROR) {
-                        Locale locSpanish = new Locale("spa", "ESP");
+                        Locale locSpanish = new Locale(mRecipe.getLanguage().toLowerCase());
                         mTTS.setLanguage(locSpanish);
                     }
                 }
