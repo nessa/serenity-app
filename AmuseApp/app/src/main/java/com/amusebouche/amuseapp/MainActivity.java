@@ -281,35 +281,40 @@ public class MainActivity extends ActionBarActivity {
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
 
-        FragmentManager fm = getFragmentManager();
 
-        // The first fragment doesn't count (list fragment)
-        if (fm.getBackStackEntryCount() > 1) {
-            fm.popBackStack();
+        // If it's open any drawer, close it
+        if (mDrawerLayout.isDrawerOpen(mLeftDrawerView)) {
+            mDrawerLayout.closeDrawer(mLeftDrawerView);
         } else {
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which) {
-                        case DialogInterface.BUTTON_POSITIVE:
-                            dialog.dismiss();
+            if (mDrawerLayout.isDrawerOpen(mRightDrawerView)) {
+                mDrawerLayout.closeDrawer(mRightDrawerView);
+            } else {
+                // Elsewhere show an exit dialog
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case DialogInterface.BUTTON_POSITIVE:
+                                dialog.dismiss();
 
-                            // Close app
-                            finish();
+                                // Close app
+                                finish();
+                                android.os.Process.killProcess(android.os.Process.myPid());
 
-                            break;
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            dialog.dismiss();
-                            break;
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                dialog.dismiss();
+                                break;
+                        }
                     }
-                }
-            };
+                };
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.exit_message))
-                    .setPositiveButton(getString(R.string.YES), dialogClickListener)
-                    .setNegativeButton(getString(R.string.NO), dialogClickListener)
-                    .show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage(getString(R.string.exit_message))
+                        .setPositiveButton(getString(R.string.YES), dialogClickListener)
+                        .setNegativeButton(getString(R.string.NO), dialogClickListener)
+                        .show();
+            }
         }
     }
 
