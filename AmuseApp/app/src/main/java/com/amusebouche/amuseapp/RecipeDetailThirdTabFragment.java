@@ -29,13 +29,13 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.ui.CustomNumberPicker;
 
-import com.github.ksoichiro.android.observablescrollview.ObservableScrollView;
 import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
@@ -67,7 +67,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
     // UI variables
     private FrameLayout mLayout;
-    private ObservableScrollView mScrollView;
+    private ScrollView mScrollView;
     private Button mStartSpeakingButton;
 
     // Timer dialog variables
@@ -212,7 +212,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_detail_third_tab,
                 container, false);
 
-        mScrollView = (ObservableScrollView) mLayout.findViewById(R.id.scroll);
+        mScrollView = (ScrollView) mLayout.findViewById(R.id.scroll);
 
         mStartSpeakingButton = (Button) mLayout.findViewById(R.id.startSpeakingButton);
 

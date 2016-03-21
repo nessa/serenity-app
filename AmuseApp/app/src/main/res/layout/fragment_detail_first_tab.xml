@@ -1,203 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- transitionGroup set to avoid exception:
      Layer exceeds max. dimensions supported by the GPU -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:transitionGroup="true"
     android:background="@color/background" >
 
-    <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
-        android:id="@+id/scroll"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:scrollbars="none">
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:baselineAligned="true">
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:baselineAligned="true">
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="4dp" >
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_type_of_dish_layout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:orientation="vertical"
-                        android:padding="4dp" >
+                        android:background="@color/background">
 
-                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                            android:id="@+id/detail_type_of_dish_layout"
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:background="@color/background">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/primary_text"
-                                android:fontFamily="sans-serif"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:text="@string/detail_type_of_dish_label" />
-                            <TextView
-                                android:id="@+id/type_of_dish"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/primary_text"
-                                android:fontFamily="sans-serif-light"
-                                android:textSize="20sp" />
-
-                        </LinearLayout>
-
-
-                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                            android:id="@+id/detail_difficulty_layout"
-                            android:layout_width="match_parent"
+                            android:textColor="@color/primary_text"
+                            android:fontFamily="sans-serif"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:text="@string/detail_type_of_dish_label" />
+                        <TextView
+                            android:id="@+id/type_of_dish"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:background="@color/background">
+                            android:textColor="@color/primary_text"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="20sp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/primary_text"
-                                android:fontFamily="sans-serif"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:text="@string/detail_difficulty_label" />
-                            <TextView
-                                android:id="@+id/difficulty"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/primary_text"
-                                android:fontFamily="sans-serif-light"
-                                android:textSize="20sp" />
-
-                        </LinearLayout>
                     </LinearLayout>
 
-                    <LinearLayout
-                        android:layout_width="0dp"
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_difficulty_layout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:orientation="vertical"
-                        android:padding="4dp" >
+                        android:background="@color/background">
 
-                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                            android:id="@+id/detail_cooking_time_layout"
-                            android:layout_width="match_parent"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:background="@color/background">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/primary_text"
-                                android:fontFamily="sans-serif"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:text="@string/detail_cooking_time_label" />
-                            <TextView
-                                android:id="@+id/cooking_time"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:textColor="@color/primary_text"
-                                android:fontFamily="sans-serif-light"
-                                android:textSize="20sp"
-                                android:gravity="center" />
-                        </LinearLayout>
-
-                        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                            android:id="@+id/detail_servings_layout"
-                            android:layout_width="match_parent"
+                            android:textColor="@color/primary_text"
+                            android:fontFamily="sans-serif"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:text="@string/detail_difficulty_label" />
+                        <TextView
+                            android:id="@+id/difficulty"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:background="@color/background">
+                            android:textColor="@color/primary_text"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="20sp" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/primary_text"
-                                android:fontFamily="sans-serif"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:text="@string/detail_servings_label" />
-                            <TextView
-                                android:id="@+id/servings"
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:textColor="@color/primary_text"
-                                android:fontFamily="sans-serif-light"
-                                android:textSize="20sp"
-                                android:gravity="center" />
-
-                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/detail_source_layout"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:orientation="vertical"
-                    android:background="@color/background"
                     android:padding="4dp" >
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_cooking_time_layout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/primary_text"
-                        android:fontFamily="sans-serif"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:text="@string/detail_source_label" />
-                    <TextView
-                        android:id="@+id/source"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/primary_text"
-                        android:autoLink="web"
-                        android:fontFamily="sans-serif-light"
-                        android:textSize="20sp"
-                        android:gravity="start" />
+                        android:orientation="vertical"
+                        android:background="@color/background">
 
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/primary_text"
+                            android:fontFamily="sans-serif"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:text="@string/detail_cooking_time_label" />
+                        <TextView
+                            android:id="@+id/cooking_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/primary_text"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="20sp"
+                            android:gravity="center" />
+                    </LinearLayout>
+
+                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:id="@+id/detail_servings_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@color/background">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/primary_text"
+                            android:fontFamily="sans-serif"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:text="@string/detail_servings_label" />
+                        <TextView
+                            android:id="@+id/servings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:textColor="@color/primary_text"
+                            android:fontFamily="sans-serif-light"
+                            android:textSize="20sp"
+                            android:gravity="center" />
+
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
 
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/primary_text"
-                android:fontFamily="sans-serif"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:text="@string/detail_categories_label"
-                android:padding="4dp" />
-
             <LinearLayout
-                android:id="@+id/categories"
+                android:id="@+id/detail_source_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="4dp" />
+                android:background="@color/background"
+                android:padding="4dp" >
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_text"
+                    android:fontFamily="sans-serif"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="@string/detail_source_label" />
+                <TextView
+                    android:id="@+id/source"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_text"
+                    android:autoLink="web"
+                    android:fontFamily="sans-serif-light"
+                    android:textSize="20sp"
+                    android:gravity="start" />
+
+            </LinearLayout>
         </LinearLayout>
 
-    </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/primary_text"
+            android:fontFamily="sans-serif"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:text="@string/detail_categories_label"
+            android:padding="4dp" />
 
-</FrameLayout>
+        <LinearLayout
+            android:id="@+id/categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="4dp" />
+
+    </LinearLayout>
+
+</ScrollView>

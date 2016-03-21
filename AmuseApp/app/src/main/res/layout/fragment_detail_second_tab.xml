@@ -1,28 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- transitionGroup set to avoid exception:
      Layer exceeds max. dimensions supported by the GPU -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:transitionGroup="true"
     android:background="@color/background" >
 
-    <com.github.ksoichiro.android.observablescrollview.ObservableScrollView
-        android:id="@+id/scroll"
+    <LinearLayout
+        android:id="@+id/ingredients"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never"
-        android:scrollbars="none">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/background"
+        android:layout_marginTop="20dp"
+        android:gravity="top" />
 
-        <LinearLayout
-            android:id="@+id/ingredients"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/background"
-            android:layout_marginTop="20dp"
-            android:gravity="top" />
-
-    </com.github.ksoichiro.android.observablescrollview.ObservableScrollView>
-
-</FrameLayout>
+</ScrollView>

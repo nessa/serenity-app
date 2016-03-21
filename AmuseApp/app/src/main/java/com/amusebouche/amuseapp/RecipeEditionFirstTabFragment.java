@@ -10,11 +10,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.URLUtil;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -62,6 +61,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
+        super.onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
 
         typesOfDish = UserFriendlyRecipeData.getTypes(getActivity());
@@ -149,7 +149,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
 
-        LinearLayout mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_first_tab,
+        ScrollView mLayout = (ScrollView) inflater.inflate(R.layout.fragment_edition_first_tab,
                 container, false);
 
         mEditionActivity = (EditionActivity) getActivity();
