@@ -30,3 +30,8 @@ Under the following terms:
   + Owner: Moyan Brenn
   + License: CC Attribution - https://creativecommons.org/licenses/by/2.0/
   + No changes were made
+- languages.jpg:
+  + Downloaded from https://www.flickr.com/photos/sunfox/4617939363
+  + Owner: Sunny Ripert
+  + License: CC Attribution - https://creativecommons.org/licenses/by/2.0/
+  + No changes were made
