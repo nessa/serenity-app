@@ -22,8 +22,7 @@ import java.util.Date;
  */
 public class Recipe implements Parcelable {
 
-    // Main variables
-    private String mDatabaseId;
+    // API variables
     private String mId;
     private String mTitle;
     private String mOwner;
@@ -38,6 +37,13 @@ public class Recipe implements Parcelable {
     private Integer mUsersRating;
     private Integer mServings;
     private String mSource;
+
+    // Database variables
+    private String mDatabaseId;
+    private String mLocalImage;
+
+    // Local variables
+    private Boolean mIsOnline;
 
     // List variables
     private ArrayList<RecipeCategory> mCategories;
@@ -93,6 +99,10 @@ public class Recipe implements Parcelable {
         this.mCategories = categories;
         this.mIngredients = ingredients;
         this.mDirections = directions;
+
+        // Default values
+        this.mLocalImage = "";
+        this.mIsOnline = false;
     }
 
     /**
@@ -140,6 +150,10 @@ public class Recipe implements Parcelable {
         this.mCategories = categories;
         this.mIngredients = ingredients;
         this.mDirections = directions;
+
+        // Default values
+        this.mLocalImage = "";
+        this.mIsOnline = false;
     }
 
 
@@ -185,6 +199,10 @@ public class Recipe implements Parcelable {
             this.mServings = o.getInt("servings");
             this.mSource = o.getString("source");
 
+            // Default values
+            this.mLocalImage = "";
+            this.mIsOnline = false;
+
             // Create empty arrays for these variables
             mCategories = new ArrayList<>();
             mIngredients = new ArrayList<>();
@@ -211,6 +229,9 @@ public class Recipe implements Parcelable {
 
     /**
      * Parcelable constructor
+     *
+     * Every data MUST be read in the same order as was written in writeToParcel
+     *
      * @param source Parcel source data
      */
     public Recipe(Parcel source){
@@ -225,10 +246,12 @@ public class Recipe implements Parcelable {
         this.mUpdatedTimestamp = new Date(source.readLong());
         this.mCookingTime = source.readFloat();
         this.mImage = source.readString();
+        this.mLocalImage = source.readString();
         this.mTotalRating = source.readInt();
         this.mUsersRating = source.readInt();
         this.mServings = source.readInt();
         this.mSource = source.readString();
+        this.mIsOnline = source.readByte() != 0;
 
         mCategories = new ArrayList<>();
         mIngredients = new ArrayList<>();
@@ -329,6 +352,14 @@ public class Recipe implements Parcelable {
     }
 
     /**
+     * Get method for local image variable
+     * @return URL/path to the recipe main image in local storage
+     */
+    public String getLocalImage() {
+        return mLocalImage;
+    }
+
+    /**
      * Get method fot totalRating variable
      * @return Total rating
      */
@@ -358,6 +389,15 @@ public class Recipe implements Parcelable {
      */
     public String getSource() {
         return mSource;
+    }
+
+    /**
+     * Get method for isOnline variable
+     * @return boolean If true, recipe is online
+     * Else, recipe is local
+     */
+    public boolean getIsOnline() {
+        return mIsOnline;
     }
 
     /**
@@ -443,6 +483,19 @@ public class Recipe implements Parcelable {
         this.mImage = image;
     }
 
+    /**
+     * Set method for local image variable
+     */
+    public void setLocalImage(String image) {
+        this.mLocalImage = image;
+    }
+
+    /**
+     * Set method for isOnline variable
+     */
+    public void setIsOnline(boolean isOnline) {
+        this.mIsOnline = isOnline;
+    }
 
     public void printString() {
         Log.d("RECIPE", mId + " " + mTitle);
@@ -461,6 +514,10 @@ public class Recipe implements Parcelable {
 
     /**
      * Output to parcelable data
+     *
+     * Every data MUST be written  in the same order as was read in
+     * the parcelable constructor
+     *
      * @param dest Parcelable data to fill with recipe information
      * @param flags ...
      */
@@ -476,10 +533,12 @@ public class Recipe implements Parcelable {
         dest.writeLong(this.mUpdatedTimestamp.getTime());
         dest.writeFloat(this.mCookingTime);
         dest.writeString(this.mImage);
+        dest.writeString(this.mLocalImage);
         dest.writeInt(this.mTotalRating);
         dest.writeInt(this.mUsersRating);
         dest.writeInt(this.mServings);
         dest.writeString(this.mSource);
+        dest.writeByte((byte) (this.mIsOnline ? 1 : 0));
 
         dest.writeList(mCategories);
         dest.writeList(mIngredients);

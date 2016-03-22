@@ -44,7 +44,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         this.mContext = context;
     }
 
-
     /**
      * Create a new recipe in the database with its categories, ingredients and directions.
      *
@@ -85,7 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Insert the database rows for the categories of the recipe in the database
         for (int i = 0; i < recipe.getCategories().size(); i++) {
-            RecipeCategory category = (RecipeCategory) recipe.getCategories().get(i);
+            RecipeCategory category = recipe.getCategories().get(i);
 
             ContentValues categoryValues = new ContentValues();
             categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_RECIPE_ID,
@@ -97,7 +96,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Insert the database rows for the ingredients of the recipe in the database
         for (int i = 0; i < recipe.getIngredients().size(); i++) {
-            RecipeIngredient ingredient = (RecipeIngredient) recipe.getIngredients().get(i);
+            RecipeIngredient ingredient = recipe.getIngredients().get(i);
 
             ContentValues ingredientValues = new ContentValues();
             ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_RECIPE_ID,
@@ -115,7 +114,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Insert the database rows for the directions of the recipe in the database
         for (int i = 0; i < recipe.getDirections().size(); i++) {
-            RecipeDirection direction = (RecipeDirection) recipe.getDirections().get(i);
+            RecipeDirection direction = recipe.getDirections().get(i);
 
             ContentValues directionValues = new ContentValues();
             directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_RECIPE_ID,
@@ -146,7 +145,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         /* Delete the database rows for the categories, ingredients and directions of the recipe
          * in the database and the proper recipe
          */
-        if (recipe.getDatabaseId() != "") {
+        if (!recipe.getDatabaseId().equals("")) {
             mDatabase.delete(RecipeCategoryContract.TABLE_NAME,
                     RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_RECIPE_ID +"=?",
                     new String[] { String.valueOf(recipe.getDatabaseId()) });
@@ -397,8 +396,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String count = "SELECT count(*) FROM " + RecipeContract.TABLE_NAME;
         Cursor mcursor = mDatabase.rawQuery(count, null);
         mcursor.moveToFirst();
+        int recipesCount = mcursor.getInt(0);
+        mcursor.close();
 
-        return mcursor.getInt(0);
+        return recipesCount;
     }
 
 
@@ -406,7 +407,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * Initialize example data to show when the application is first installed.
      */
     public void initializeExampleData() {
-        String jsonData = null;
+        String jsonData;
         try {
             InputStream is = mContext.getAssets().open("recipes.json");
 

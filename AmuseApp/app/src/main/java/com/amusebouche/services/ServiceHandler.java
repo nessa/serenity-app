@@ -4,9 +4,14 @@ package com.amusebouche.services;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
+import android.util.Pair;
+
+import com.amusebouche.amuseapp.R;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -34,19 +39,23 @@ public class ServiceHandler {
     public final static int GET = 1;
     public final static int POST = 2;
 
+    private Context mContext;
+
     // Needed to abort
     private DefaultHttpClient mHttpClient;
     private HttpPost mHttpPost;
     private HttpGet mHttpGet;
 
     // TODO Set correct URL
-    public final static String host = "http://10.0.240.21:8002/";
+    public final static String host = "http://192.168.1.55/";
 
 
     /**
      * Basic constructor
      */
-    public ServiceHandler() {}
+    public ServiceHandler(Context context) {
+        mContext = context;
+    }
 
     /**
      * Make service call. By default it won't send any parameters.
@@ -61,13 +70,55 @@ public class ServiceHandler {
         }
     }
 
+    public String buildUrl(String base, int page, ArrayList<Pair<String, ArrayList<String>>> params) {
+        base += String.format("%s%s%s%d", mContext.getString(R.string.API_GET_SEPARATOR),
+                mContext.getString(R.string.API_PARAM_PAGE),
+                mContext.getString(R.string.API_PARAM_EQUAL), page);
+
+        if (params != null) {
+            for (Pair item : params) {
+                String key = (String) item.first;
+
+                for (String value : (ArrayList<String>) item.second) {
+                    base += mContext.getString(R.string.API_PARAM_SEPARATOR);
+
+                    if (key.startsWith(mContext.getString(R.string.API_PARAM_DISLIKE_PREFIX))) {
+
+                        if (key.equals(mContext.getString(R.string.API_PARAM_DISLIKE_CATEGORY))) {
+                            base += mContext.getString(R.string.API_PARAM_CATEGORY);
+                        }
+
+                        if (key.equals(mContext.getString(R.string.API_PARAM_DISLIKE_INGREDIENT))) {
+                            base += mContext.getString(R.string.API_PARAM_INGREDIENT);
+                        }
+
+                        base += mContext.getString(R.string.API_PARAM_NOT_EQUAL);
+                    } else {
+                        base += key;
+                        base += mContext.getString(R.string.API_PARAM_EQUAL);
+                    }
+
+                    base += value;
+                }
+            }
+        }
+
+        Log.d("BASE", base);
+
+        return base;
+    }
+
+
+    public String buildDetailUrl(String base, int id) {
+        return String.format("%s%d", base, id);
+    }
+
     /**
      * Check internet connection
-     * @param ctx App context
      * */
-    public Boolean checkInternetConnection(Context ctx) {
+    public Boolean checkInternetConnection() {
         ConnectivityManager conMgr = (ConnectivityManager)
-                ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+                mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo info = conMgr.getActiveNetworkInfo();
         if (info == null)

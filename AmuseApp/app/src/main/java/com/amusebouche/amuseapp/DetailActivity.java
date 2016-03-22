@@ -305,6 +305,14 @@ public class DetailActivity extends ActionBarActivity {
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_recipe_detail, menu);
+
+        MenuItem downloadItem = menu.findItem(R.id.action_download);
+        downloadItem.setVisible(mRecipe.getIsOnline());
+
+        // TODO Fix this! The database id is not set
+        MenuItem editItem = menu.findItem(R.id.action_edit);
+        editItem.setVisible(!mRecipe.getDatabaseId().equals(""));
+
         return super.onCreateOptionsMenu(menu);
     }
 

@@ -82,10 +82,10 @@ public class SplashScreenActivity extends Activity {
                 mRecipes = mDatabaseHelper.getRecipes(mLimitPerPage, mLimitPerPage*mCurrentPage);
             } else {
                 // Create service handler class instance
-                ServiceHandler sh = new ServiceHandler();
+                ServiceHandler sh = new ServiceHandler(getApplicationContext());
 
                 // Check internet connection
-                if (sh.checkInternetConnection(getApplicationContext())) {
+                if (sh.checkInternetConnection()) {
 
                     // Make a request to url and getting response
                     String jsonStr = sh.makeServiceCall("recipes/", ServiceHandler.GET);

@@ -263,13 +263,16 @@ public class RecipeListFragment extends Fragment {
                         break;
                     case MainActivity.NEW_RECIPES_MODE:
                         // Create service handler class instance
-                        mServiceHandler = new ServiceHandler();
+                        mServiceHandler = new ServiceHandler(getActivity());
 
                         // Check internet connection
-                        if (mServiceHandler.checkInternetConnection(getActivity().getApplicationContext())) {
+                        if (mServiceHandler.checkInternetConnection()) {
 
                             // Make a request to url and getting response
-                            String jsonStr = mServiceHandler.makeServiceCall("recipes/", ServiceHandler.GET);
+                            String jsonStr = mServiceHandler.makeServiceCall(
+                                    mServiceHandler.buildUrl(getString(R.string.API_RECIPES_ENDPOINT),
+                                            mMainActivity.getCurrentPage() +  1, null),
+                                    ServiceHandler.GET);
 
                             if (jsonStr != null) {
                                 try {
@@ -277,7 +280,9 @@ public class RecipeListFragment extends Fragment {
                                     JSONArray results = jObject.getJSONArray("results");
 
                                     for (int i = 0; i < results.length(); i++) {
-                                        mMainActivity.getRecipes().add(new Recipe(results.getJSONObject(i)));
+                                        Recipe r = new Recipe(results.getJSONObject(i));
+                                        r.setIsOnline(true);
+                                        mMainActivity.getRecipes().add(r);
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();
