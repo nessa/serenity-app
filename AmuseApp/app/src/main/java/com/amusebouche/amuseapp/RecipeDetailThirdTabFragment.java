@@ -686,7 +686,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
         final Intent recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         // TODO: Set user language
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "es");
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 getActivity().getPackageName());
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,

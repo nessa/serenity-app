@@ -27,4 +27,8 @@
     <!-- Dialogs -->
     <dimen name="edition_dialog_width">400dp</dimen>
     <dimen name="edition_dialog_image_height">100dp</dimen>
+
+    <!-- Settings -->
+    <dimen name="settings_languages_list_height">100dp</dimen>
+
 </resources>

@@ -1,14 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_height="match_parent"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@android:color/white">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:text="SETTINGS"/>
+        android:orientation="vertical">
 
-</LinearLayout>
+        <!-- First setting -->
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/settings_item_texts_right_margin"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_marginStart="@dimen/settings_item_basic_padding"
+                android:layout_marginBottom="@dimen/settings_item_basic_padding"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
+                    android:textSize="@dimen/settings_item_primary_text_size"
+                    android:textColor="@color/primary_text"
+                    android:text="@string/settings_download_images_primary_text"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/settings_item_secondary_text_size"
+                    android:textColor="@color/secondary_text"
+                    android:text="@string/settings_download_images_secondary_text"/>
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/setting_download_images_enabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/settings_item_switch_margin"
+                android:layout_marginEnd="@dimen/settings_item_switch_margin"
+                android:layout_alignParentEnd="true" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_item_divider_height"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_alignParentBottom="true"
+                android:background="@color/secondary_text"/>
+
+        </RelativeLayout>
+
+
+        <!-- Second setting -->
+        <RelativeLayout
+            android:id="@+id/setting_recipes_languages_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/settings_item_basic_padding"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_marginStart="@dimen/settings_item_basic_padding"
+                android:layout_marginBottom="@dimen/settings_item_basic_padding"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
+                    android:textSize="@dimen/settings_item_primary_text_size"
+                    android:textColor="@color/primary_text"
+                    android:text="@string/settings_recipes_languages_primary_text"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/settings_item_secondary_text_size"
+                    android:textColor="@color/secondary_text"
+                    android:text="@string/settings_recipes_languages_secondary_text"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
+                        android:textSize="@dimen/settings_item_selected_text_size"
+                        android:textColor="@color/primary_text"
+                        android:text="@string/settings_recipes_languages_selected_text"/>
+
+                    <TextView
+                        android:id="@+id/setting_recipes_languages_selected"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="@dimen/settings_item_selected_text_size"
+                        android:textColor="@color/secondary_text"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_item_divider_height"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_alignParentBottom="true"
+                android:background="@color/secondary_text"/>
+
+        </RelativeLayout>
+
+
+        <!-- Third setting -->
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/settings_item_texts_right_margin"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_marginStart="@dimen/settings_item_basic_padding"
+                android:layout_marginBottom="@dimen/settings_item_basic_padding"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
+                    android:textSize="@dimen/settings_item_primary_text_size"
+                    android:textColor="@color/primary_text"
+                    android:text="@string/settings_recognizer_language_primary_text"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/settings_item_secondary_text_size"
+                    android:textColor="@color/secondary_text"
+                    android:text="@string/settings_recognizer_language_secondary_text"/>
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/setting_recognizer_language_enabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/settings_item_switch_margin"
+                android:layout_marginEnd="@dimen/settings_item_switch_margin"
+                android:layout_alignParentEnd="true" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_item_divider_height"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_alignParentBottom="true"
+                android:background="@color/secondary_text"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+</ScrollView>

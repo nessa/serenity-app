@@ -12,6 +12,15 @@
     <string name="action_fav">Favorito</string>
     <string name="action_save">Guardar</string>
 
+    <!-- Preferences -->
+    <string name="preference_download_images">preference_download_images</string>
+    <string name="preference_recipes_languages">preference_recipes_languages</string>
+    <string name="preference_recognizer_language">preference_recognizer_language</string>
+
+    <!--   Languages -->
+    <string name="language_es">Español</string>
+    <string name="language_en">Inglés</string>
+
     <!-- Splash screen -->
     <string name="splash_screen_loading_recipes_message">Cargando recetas...</string>
 
@@ -34,6 +43,7 @@
     <!--   Recipe List fragment class -->
     <string name="please_wait_message">Por favor, espere...</string>
     <string name="recipe_list_no_recipes_message">No se han encontrado recetas</string>
+    <string name="recipe_list_no_connection_message">No hay conexión a internet</string>
 
     <!-- Detail activity -->
     <!--   Recipe detail fragment -->
@@ -144,5 +154,24 @@
     <string name="recipe_edition_direction_video_hint">URL del video</string>
     <string name="recipe_edition_direction_title_new">Nuevo paso</string>
     <string name="recipe_edition_direction_title_update">Editar paso</string>
+
+    <!-- Settings fragment -->
+    <string name="settings_download_images_primary_text">Descargar imágenes</string>
+    <string name="settings_download_images_secondary_text">Si está habilitado, cuando se guarde una
+        receta en local, se descargarán sus imágenes también, para tenerlas disponibles cuando no
+        haya conexión a internet</string>
+    <string name="settings_recipes_languages_primary_text">Idioma de las recetas</string>
+    <string name="settings_recipes_languages_secondary_text">¡Atención! Si elige varios idiomas y
+        desea utilizar la lectura automática, debe recordar descargar los paquetes de idiomas
+        correspondientes o tener siempre conexión a internet. En caso contrario, la lectura
+        automática funcionará con el idioma local.</string>
+    <string name="settings_recipes_languages_selected_text">Idiomas seleccionados:</string>
+    <string name="settings_recognizer_language_primary_text">Idioma del reconocedor</string>
+    <string name="settings_recognizer_language_secondary_text">Si está habilitado, el idioma del
+        reconocedor de voz será el del dispositivo. En caso contrario, será el de la receta actual.</string>
+
+    <!--   Languages dialog -->
+    <string name="settings_language_title">Idiomas de las recetas</string>
+    <string name="settings_language_not_selected_error">Por favor, seleccione al menos un idioma</string>
 
 </resources>

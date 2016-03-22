@@ -12,6 +12,15 @@
     <string name="action_fav">Favourite</string>
     <string name="action_save">Save</string>
 
+    <!-- Preferences -->
+    <string name="preference_download_images">preference_download_images</string>
+    <string name="preference_recipes_languages">preference_recipes_languages</string>
+    <string name="preference_recognizer_language">preference_recognizer_language</string>
+
+    <!--   Languages -->
+    <string name="language_es">Spanish</string>
+    <string name="language_en">English</string>
+
     <!-- Splash screen -->
     <string name="splash_screen_loading_recipes_message">Loading recipes...</string>
 
@@ -145,5 +154,24 @@
     <string name="recipe_edition_direction_video_hint">Video URL</string>
     <string name="recipe_edition_direction_title_new">New direction</string>
     <string name="recipe_edition_direction_title_update">Edit direction</string>
+
+    <!-- Settings fragment -->
+    <string name="settings_download_images_primary_text">Download images</string>
+    <string name="settings_download_images_secondary_text">If enabled, when a recipe is stored
+        locally, your images will also be downloaded, so they will be available without internet
+        connection.</string>
+    <string name="settings_recipes_languages_primary_text">Idioma de las recetas</string>
+    <string name="settings_recipes_languages_secondary_text">Attention! If you choose multiple
+        languages and you desire to use automatic reading, you should remember to download the
+        language packages or always have internet connection. Otherwise, the automatic reading will
+        load the local language.</string>
+    <string name="settings_recipes_languages_selected_text">Selected languages:</string>
+    <string name="settings_recognizer_language_primary_text">Recognizer language</string>
+    <string name="settings_recognizer_language_secondary_text">If enabled, the speech recognizer
+        language will be the device one. Otherwise, it will be the current recipe language.</string>
+
+    <!--   Languages dialog -->
+    <string name="settings_language_title">Recipes language</string>
+    <string name="settings_language_not_selected_error">Please, select at least one language</string>
 
 </resources>

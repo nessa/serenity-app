@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="@dimen/settings_languages_width"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_languages_image_height">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_languages_image_height"
+            android:src="@drawable/languages"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/detail_ingredients_label" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_languages_image_height"
+            android:background="@drawable/bottom_gradient"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/settings_languages_title_margin_left"
+            android:layout_marginBottom="@dimen/settings_languages_title_margin_bottom"
+            android:textSize="@dimen/settings_languages_title_size"
+            android:textColor="@android:color/white"
+            android:text="@string/settings_language_title"/>
+
+    </RelativeLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_languages_list_height"
+        android:orientation="vertical">
+
+        <ListView
+            android:id="@+id/languages"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:choiceMode="multipleChoice"
+            android:dividerHeight="@dimen/drawer_left_divider_height" />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/settings_languages_buttons_height"
+        android:orientation="horizontal"
+        android:layout_gravity="end">
+
+        <Button
+            android:id="@+id/cancel"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textColor="@color/theme_default_accent"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:enabled="true" />
+        <Button
+            android:id="@+id/accept"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/accept"
+            android:textColor="@color/theme_default_accent"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:enabled="true" />
+
+    </LinearLayout>
+
+</LinearLayout>
