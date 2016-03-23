@@ -325,6 +325,8 @@ public class DetailActivity extends ActionBarActivity {
             case R.id.action_edit:
                 editRecipe();
                 return true;
+            case R.id.action_save:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

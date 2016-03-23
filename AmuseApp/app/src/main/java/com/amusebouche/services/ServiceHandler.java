@@ -11,6 +11,7 @@ import com.amusebouche.amuseapp.R;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,7 +99,11 @@ public class ServiceHandler {
                         base += mContext.getString(R.string.API_PARAM_EQUAL);
                     }
 
-                    base += value;
+                    try {
+                        base += URLEncoder.encode(value, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

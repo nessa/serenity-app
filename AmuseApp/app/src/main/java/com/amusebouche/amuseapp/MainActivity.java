@@ -5,22 +5,32 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.media.Image;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.amusebouche.data.Recipe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 
 /**
@@ -87,6 +97,10 @@ public class MainActivity extends ActionBarActivity {
     private LeftMenuAdapter mLeftMenuAdapter;
     private int mCurrentSelectedPosition = 1;
 
+    private View.OnClickListener mCollapseClickListener;
+
+    private ArrayList<Pair<String, ArrayList<String>>> mFilterParams;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +152,7 @@ public class MainActivity extends ActionBarActivity {
 
             // Set right search view
             mRightDrawerView = (LinearLayout) findViewById(R.id.right_search);
+            setRightDrawer();
 
 
             mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.accept, R.string.cancel) {
@@ -171,6 +186,155 @@ public class MainActivity extends ActionBarActivity {
             mDrawerLayout.setDrawerListener(mDrawerToggle); // Set the drawer toggle as the DrawerListener
         }
     }
+
+    private void setRightDrawer() {
+        if (mCollapseClickListener == null) {
+            mCollapseClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Get collapse image by its tag
+                    ImageView collapseFoldImage = (ImageView) view.findViewWithTag(
+                            getString(R.string.search_view_collapse_fold_image));
+
+
+                    // Get collapsible view by its tag through this view parent
+                    LinearLayout parent = (LinearLayout) view.getParent();
+
+                    final LinearLayout collapsibleView = (LinearLayout) parent.findViewWithTag(
+                            getString(R.string.search_view_collapsible_view));
+
+                    // Set collapse image depending on collapsible view visibility
+                    collapseFoldImage.setBackgroundResource(collapsibleView.isShown() ?
+                            R.drawable.ic_keyboard_arrow_up_black_48px : R.drawable.ic_keyboard_arrow_down_black_48px);
+
+                    // Animations to show or hide
+                    if (collapsibleView.isShown()) {
+                        Animation slide_up = AnimationUtils.loadAnimation(getApplicationContext(),
+                                R.anim.slide_up);
+
+                        slide_up.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                collapsibleView.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                            }
+                        });
+
+                        collapsibleView.startAnimation(slide_up);
+                    } else {
+                        collapsibleView.setVisibility(View.VISIBLE);
+
+                        Animation slide_down = AnimationUtils.loadAnimation(getApplicationContext(),
+                                R.anim.slide_down);
+                        collapsibleView.startAnimation(slide_down);
+                    }
+                }
+            };
+        }
+
+        resetFilterParams();
+
+        // Title filter
+        final TextView titleFilterTextView = (TextView) mRightDrawerView.findViewById(R.id.title_filter);
+        Button clearTitleFilterButton = (Button) mRightDrawerView.findViewById(R.id.clear_title_filter);
+
+        clearTitleFilterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                titleFilterTextView.setText("");
+            }
+        });
+
+        // Get clickable views
+        final RelativeLayout ingredientsCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.ingredients_collapse);
+        final RelativeLayout allergensCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.allergens_collapse);
+
+        // Get collapsible views
+        final LinearLayout ingredientsCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.ingredients_collapsible_view);
+        final LinearLayout allergensCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.allergens_collapsible_view);
+
+        // Hide collapsible views
+        ingredientsCollapsibleView.setVisibility(View.GONE);
+        allergensCollapsibleView.setVisibility(View.GONE);
+
+        // Set listeners on clickable views
+        ingredientsCollapse.setOnClickListener(mCollapseClickListener);
+        allergensCollapse.setOnClickListener(mCollapseClickListener);
+
+
+        final ImageView ingredientsCollapseFoldImage = (ImageView) mRightDrawerView.findViewById(R.id.ingredients_collapse_fold_image);
+
+
+
+
+        // Get buttons
+        Button cancelButton = (Button) mRightDrawerView.findViewById(R.id.cancel);
+        Button acceptButton = (Button) mRightDrawerView.findViewById(R.id.accept);
+
+        // Buttons listeners
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDrawerLayout.closeDrawer(mRightDrawerView);
+            }
+        });
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (titleFilterTextView.getText().toString().length() > 0) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_TITLE),
+                            titleFilterTextView.getText().toString(), true);
+                }
+
+                mDrawerLayout.closeDrawer(mRightDrawerView);
+
+                // Reset list fragment
+                selectItemInLeftMenu(mCurrentSelectedPosition);
+            }
+        });
+
+    }
+
+    private void resetFilterParams() {
+        // Reset filter params
+        mFilterParams = new ArrayList<>();
+    }
+
+    private void addFilterToFilterParams(String key, String value, boolean onlyOne) {
+        int found = -1;
+
+        if (mFilterParams != null) {
+            for (int i = 0; i < mFilterParams.size(); i++) {
+
+                if (key.equals(mFilterParams.get(i).first)) {
+                    found = i;
+                }
+            }
+        }
+
+        if (found > -1) {
+            if (onlyOne) {
+                mFilterParams.get(found).second.clear();
+            }
+
+            mFilterParams.get(found).second.add(value);
+        } else {
+            mFilterParams.add(Pair.create(key, new ArrayList<>(Collections.singletonList(value))));
+        }
+    }
+
+    public ArrayList<Pair<String, ArrayList<String>>> getFilterParams() {
+        return mFilterParams;
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

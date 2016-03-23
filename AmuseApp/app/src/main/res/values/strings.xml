@@ -13,6 +13,7 @@
     <string name="API_PARAM_EQUAL">=</string>
     <string name="API_PARAM_NOT_EQUAL">!=</string>
     <string name="API_PARAM_PAGE">page</string>
+    <string name="API_PARAM_TITLE">title</string>
     <string name="API_PARAM_CATEGORY">category</string>
     <string name="API_PARAM_DIFFICULTY">difficulty</string>
     <string name="API_PARAM_INGREDIENT">ingredient</string>
@@ -44,13 +45,23 @@
     <string name="transition_recipe_detail">detail</string>
     <string name="transition_detail_image">SharedImage</string>
 
-    <!-- Lateral menu -->
+    <!-- Drawers -->
+    <!--   Lateral menu -->
     <string name="lateral_menu_login">Login</string>
     <string name="lateral_menu_new_recipes">Last recipes</string>
     <string name="lateral_menu_downloaded_recipes">Downloaded recipes</string>
     <string name="lateral_menu_my_recipes">My recipes</string>
     <string name="lateral_menu_settings">Settings</string>
     <string name="lateral_menu_info">Information</string>
+
+    <!--   Seach view -->
+    <string name="search_view_accept">Search</string>
+    <string name="search_view_title_filter_hint">Matching text with the title</string>
+    <string name="search_view_collapse_fold_image">collapse_fold_image</string>
+    <string name="search_view_collapsible_view">collapsible_view</string>
+    <string name="search_view_allowed_ingredients">Allowed ingredients</string>
+    <string name="search_view_forbidden_ingredients">Forbidden ingredients</string>
+
 
     <!-- Main activity -->
     <string name="exit_message">Are you sure you want to exit?</string>

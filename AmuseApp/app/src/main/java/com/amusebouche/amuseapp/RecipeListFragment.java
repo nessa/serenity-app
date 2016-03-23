@@ -271,7 +271,8 @@ public class RecipeListFragment extends Fragment {
                             // Make a request to url and getting response
                             String jsonStr = mServiceHandler.makeServiceCall(
                                     mServiceHandler.buildUrl(getString(R.string.API_RECIPES_ENDPOINT),
-                                            mMainActivity.getCurrentPage() +  1, null),
+                                            mMainActivity.getCurrentPage() +  1,
+                                            mMainActivity.getFilterParams()),
                                     ServiceHandler.GET);
 
                             if (jsonStr != null) {

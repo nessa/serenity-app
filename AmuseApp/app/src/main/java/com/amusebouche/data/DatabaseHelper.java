@@ -81,6 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // Set database id in recipe
         recipe.setDatabaseId(Objects.toString(recipeId));
+        Log.d("DATABASE", Objects.toString(recipeId));
 
         // Insert the database rows for the categories of the recipe in the database
         for (int i = 0; i < recipe.getCategories().size(); i++) {
@@ -132,6 +133,106 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             mDatabase.insert(RecipeDirectionContract.TABLE_NAME, null, directionValues);
         }
     }
+
+    public void updateRecipe(Recipe recipe) {
+        mDatabase = this.getWritableDatabase();
+
+        // Delete all subelements
+        mDatabase.delete(RecipeIngredientContract.TABLE_NAME,
+                RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_RECIPE_ID +"=?",
+                new String[] { String.valueOf(recipe.getDatabaseId()) });
+
+        mDatabase.delete(RecipeDirectionContract.TABLE_NAME,
+                RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_RECIPE_ID +"=?",
+                new String[] { String.valueOf(recipe.getDatabaseId()) });
+
+        mDatabase.delete(RecipeContract.TABLE_NAME,
+                RecipeContract.RecipeEntry._ID +"=?",
+                new String[] { String.valueOf(recipe.getDatabaseId()) });
+
+        // Update the database row for the recipe and keep its unique identifier
+        ContentValues recipeValues = new ContentValues();
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_ID, recipe.getId());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_TITLE, recipe.getTitle());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_OWNER, recipe.getOwner());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE, recipe.getLanguage());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_TYPE_OF_DISH,
+                recipe.getTypeOfDish());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY,
+                recipe.getDifficulty());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP,
+                dateFormat.format(recipe.getCreatedTimestamp()));
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP,
+                dateFormat.format(recipe.getUpdatedTimestamp()));
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME,
+                recipe.getCookingTime());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_IMAGE, recipe.getImage());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_TOTAL_RATING,
+                recipe.getTotalRating());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_USERS_RATING,
+                recipe.getUsersRating());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS, recipe.getServings());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE, recipe.getSource());
+
+        long recipeId = mDatabase.update(RecipeContract.TABLE_NAME,
+                recipeValues,
+                RecipeContract.RecipeEntry._ID +"=?",
+                new String[] { String.valueOf(recipe.getDatabaseId()) });
+
+
+        // Reset subelements
+
+        // Insert the database rows for the categories of the recipe in the database
+        for (int i = 0; i < recipe.getCategories().size(); i++) {
+            RecipeCategory category = recipe.getCategories().get(i);
+
+            ContentValues categoryValues = new ContentValues();
+            categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_RECIPE_ID,
+                    recipeId);
+            categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME,
+                    category.getName());
+            mDatabase.insert(RecipeCategoryContract.TABLE_NAME, null, categoryValues);
+        }
+
+        // Insert the database rows for the ingredients of the recipe in the database
+        for (int i = 0; i < recipe.getIngredients().size(); i++) {
+            RecipeIngredient ingredient = recipe.getIngredients().get(i);
+
+            ContentValues ingredientValues = new ContentValues();
+            ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_RECIPE_ID,
+                    recipeId);
+            ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_SORT_NUMBER,
+                    ingredient.getSortNumber());
+            ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME,
+                    ingredient.getName());
+            ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_QUANTITY,
+                    ingredient.getQuantity());
+            ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_MEASUREMENT_UNIT,
+                    ingredient.getMeasurementUnit());
+            mDatabase.insert(RecipeIngredientContract.TABLE_NAME, null, ingredientValues);
+        }
+
+        // Insert the database rows for the directions of the recipe in the database
+        for (int i = 0; i < recipe.getDirections().size(); i++) {
+            RecipeDirection direction = recipe.getDirections().get(i);
+
+            ContentValues directionValues = new ContentValues();
+            directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_RECIPE_ID,
+                    recipeId);
+            directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_SORT_NUMBER,
+                    direction.getSortNumber());
+            directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_DESCRIPTION,
+                    direction.getDescription());
+            directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_IMAGE,
+                    direction.getImage());
+            directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_VIDEO,
+                    direction.getVideo());
+            directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_TIME,
+                    direction.getTime());
+            mDatabase.insert(RecipeDirectionContract.TABLE_NAME, null, directionValues);
+        }
+    }
+
 
 
     /**
