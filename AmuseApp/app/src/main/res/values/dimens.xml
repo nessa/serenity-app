@@ -24,6 +24,21 @@
 
     <!-- Main -->
 
+    <!--   Search -->
+    <dimen name="search_font_size">18sp</dimen>
+    <dimen name="search_clear_button_size">24dp</dimen>
+    <dimen name="search_text_view_clear_images_margin">10dp</dimen>
+    <dimen name="search_main_text_margin_left">4dp</dimen>
+    <dimen name="search_main_text_font_size">18sp</dimen>
+    <dimen name="search_main_text_padding">10dp</dimen>
+    <dimen name="search_main_text_margin_end">60dp</dimen>
+    <dimen name="search_input_padding_end">40dp</dimen>
+    <dimen name="search_checkbox_top_margin">4dp</dimen>
+    <dimen name="search_divider_height">1dp</dimen>
+    <dimen name="search_button_padding">10dp</dimen>
+    <dimen name="search_list_item_text_size">16sp</dimen>
+    <dimen name="search_list_item_padding">10dp</dimen>
+
     <!--   Gridview -->
     <dimen name="gridview_cell_title_font_size">18sp</dimen>
     <dimen name="gridview_cell_title_left_margin">4dp</dimen>

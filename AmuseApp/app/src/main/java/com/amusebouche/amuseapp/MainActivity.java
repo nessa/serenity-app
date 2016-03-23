@@ -2,10 +2,11 @@ package com.amusebouche.amuseapp;
 
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.Image;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.app.Fragment;
@@ -19,10 +20,14 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.MultiAutoCompleteTextView;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -79,6 +84,8 @@ public class MainActivity extends ActionBarActivity {
     private static final String SELECTED_DRAWER_VIEW_KEY = "selected_drawer_view";
 
 
+    private SharedPreferences mSharedPreferences;
+
     // Data variables
     private ArrayList<Recipe> mRecipes;
     private Integer mCurrentPage;
@@ -101,6 +108,9 @@ public class MainActivity extends ActionBarActivity {
 
     private ArrayList<Pair<String, ArrayList<String>>> mFilterParams;
 
+    private static final String[] INGREDIENTS = new String[] {
+            "garbanzos", "chorizo", "aceite de oliva"
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +133,9 @@ public class MainActivity extends ActionBarActivity {
             mPreviousTotal = savedInstanceState.getInt(PREVIOUS_TOTAL_KEY, 0);
             mCurrentSelectedPosition = savedInstanceState.getInt(SELECTED_DRAWER_VIEW_KEY, 1);
         }
+
+        // Get preferences
+        mSharedPreferences = getPreferences(Context.MODE_PRIVATE);
 
         // Set up action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -186,155 +199,6 @@ public class MainActivity extends ActionBarActivity {
             mDrawerLayout.setDrawerListener(mDrawerToggle); // Set the drawer toggle as the DrawerListener
         }
     }
-
-    private void setRightDrawer() {
-        if (mCollapseClickListener == null) {
-            mCollapseClickListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Get collapse image by its tag
-                    ImageView collapseFoldImage = (ImageView) view.findViewWithTag(
-                            getString(R.string.search_view_collapse_fold_image));
-
-
-                    // Get collapsible view by its tag through this view parent
-                    LinearLayout parent = (LinearLayout) view.getParent();
-
-                    final LinearLayout collapsibleView = (LinearLayout) parent.findViewWithTag(
-                            getString(R.string.search_view_collapsible_view));
-
-                    // Set collapse image depending on collapsible view visibility
-                    collapseFoldImage.setBackgroundResource(collapsibleView.isShown() ?
-                            R.drawable.ic_keyboard_arrow_up_black_48px : R.drawable.ic_keyboard_arrow_down_black_48px);
-
-                    // Animations to show or hide
-                    if (collapsibleView.isShown()) {
-                        Animation slide_up = AnimationUtils.loadAnimation(getApplicationContext(),
-                                R.anim.slide_up);
-
-                        slide_up.setAnimationListener(new Animation.AnimationListener() {
-                            @Override
-                            public void onAnimationStart(Animation animation) {
-                            }
-
-                            @Override
-                            public void onAnimationEnd(Animation animation) {
-                                collapsibleView.setVisibility(View.GONE);
-                            }
-
-                            @Override
-                            public void onAnimationRepeat(Animation animation) {
-                            }
-                        });
-
-                        collapsibleView.startAnimation(slide_up);
-                    } else {
-                        collapsibleView.setVisibility(View.VISIBLE);
-
-                        Animation slide_down = AnimationUtils.loadAnimation(getApplicationContext(),
-                                R.anim.slide_down);
-                        collapsibleView.startAnimation(slide_down);
-                    }
-                }
-            };
-        }
-
-        resetFilterParams();
-
-        // Title filter
-        final TextView titleFilterTextView = (TextView) mRightDrawerView.findViewById(R.id.title_filter);
-        Button clearTitleFilterButton = (Button) mRightDrawerView.findViewById(R.id.clear_title_filter);
-
-        clearTitleFilterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                titleFilterTextView.setText("");
-            }
-        });
-
-        // Get clickable views
-        final RelativeLayout ingredientsCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.ingredients_collapse);
-        final RelativeLayout allergensCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.allergens_collapse);
-
-        // Get collapsible views
-        final LinearLayout ingredientsCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.ingredients_collapsible_view);
-        final LinearLayout allergensCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.allergens_collapsible_view);
-
-        // Hide collapsible views
-        ingredientsCollapsibleView.setVisibility(View.GONE);
-        allergensCollapsibleView.setVisibility(View.GONE);
-
-        // Set listeners on clickable views
-        ingredientsCollapse.setOnClickListener(mCollapseClickListener);
-        allergensCollapse.setOnClickListener(mCollapseClickListener);
-
-
-        final ImageView ingredientsCollapseFoldImage = (ImageView) mRightDrawerView.findViewById(R.id.ingredients_collapse_fold_image);
-
-
-
-
-        // Get buttons
-        Button cancelButton = (Button) mRightDrawerView.findViewById(R.id.cancel);
-        Button acceptButton = (Button) mRightDrawerView.findViewById(R.id.accept);
-
-        // Buttons listeners
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mDrawerLayout.closeDrawer(mRightDrawerView);
-            }
-        });
-
-        acceptButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (titleFilterTextView.getText().toString().length() > 0) {
-                    addFilterToFilterParams(getString(R.string.API_PARAM_TITLE),
-                            titleFilterTextView.getText().toString(), true);
-                }
-
-                mDrawerLayout.closeDrawer(mRightDrawerView);
-
-                // Reset list fragment
-                selectItemInLeftMenu(mCurrentSelectedPosition);
-            }
-        });
-
-    }
-
-    private void resetFilterParams() {
-        // Reset filter params
-        mFilterParams = new ArrayList<>();
-    }
-
-    private void addFilterToFilterParams(String key, String value, boolean onlyOne) {
-        int found = -1;
-
-        if (mFilterParams != null) {
-            for (int i = 0; i < mFilterParams.size(); i++) {
-
-                if (key.equals(mFilterParams.get(i).first)) {
-                    found = i;
-                }
-            }
-        }
-
-        if (found > -1) {
-            if (onlyOne) {
-                mFilterParams.get(found).second.clear();
-            }
-
-            mFilterParams.get(found).second.add(value);
-        } else {
-            mFilterParams.add(Pair.create(key, new ArrayList<>(Collections.singletonList(value))));
-        }
-    }
-
-    public ArrayList<Pair<String, ArrayList<String>>> getFilterParams() {
-        return mFilterParams;
-    }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -435,6 +299,381 @@ public class MainActivity extends ActionBarActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    // FILTER PARAMETERS
+
+    /**
+     * Right drawer's view constructor
+     */
+    private void setRightDrawer() {
+        if (mCollapseClickListener == null) {
+            mCollapseClickListener = new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    // Get collapse image by its tag
+                    ImageView collapseFoldImage = (ImageView) view.findViewWithTag(
+                            getString(R.string.search_view_collapse_fold_image));
+
+
+                    // Get collapsible view by its tag through this view parent
+                    LinearLayout parent = (LinearLayout) view.getParent();
+
+                    final LinearLayout collapsibleView = (LinearLayout) parent.findViewWithTag(
+                            getString(R.string.search_view_collapsible_view));
+
+                    // Set collapse image depending on collapsible view visibility
+                    collapseFoldImage.setBackgroundResource(collapsibleView.isShown() ?
+                            R.drawable.ic_keyboard_arrow_up_black_48px : R.drawable.ic_keyboard_arrow_down_black_48px);
+
+                    // Animations to show or hide
+                    if (collapsibleView.isShown()) {
+                        Animation slide_up = AnimationUtils.loadAnimation(getApplicationContext(),
+                                R.anim.slide_up);
+
+                        slide_up.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                collapsibleView.setVisibility(View.GONE);
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                            }
+                        });
+
+                        collapsibleView.startAnimation(slide_up);
+                    } else {
+                        collapsibleView.setVisibility(View.VISIBLE);
+
+                        Animation slide_down = AnimationUtils.loadAnimation(getApplicationContext(),
+                                R.anim.slide_down);
+                        collapsibleView.startAnimation(slide_down);
+                    }
+                }
+            };
+        }
+
+        resetFilterParams();
+
+        // Title filter
+        final TextView titleFilterTextView = (TextView) mRightDrawerView.findViewById(R.id.title_filter);
+        Button clearTitleFilterButton = (Button) mRightDrawerView.findViewById(R.id.clear_title_filter);
+
+        clearTitleFilterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                titleFilterTextView.setText("");
+            }
+        });
+
+        // Get clickable views
+        final RelativeLayout ingredientsCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.ingredients_collapse);
+        final RelativeLayout dislikeIngredientsCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.dislike_ingredients_collapse);
+        final RelativeLayout dislikeCategoriesCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.dislike_categories_collapse);
+        final RelativeLayout categoriesCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.categories_collapse);
+        final RelativeLayout difficultiesCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.difficulties_collapse);
+        final RelativeLayout typesOfDishCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.types_of_dish_collapse);
+
+        // Get collapsible views
+        final LinearLayout ingredientsCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.ingredients_collapsible_view);
+        final LinearLayout dislikeIngredientsCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.dislike_ingredients_collapsible_view);
+        final LinearLayout dislikeCategoriesCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.dislike_categories_collapsible_view);
+        final LinearLayout categoriesCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.categories_collapsible_view);
+        final LinearLayout difficultiesCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.difficulties_collapsible_view);
+        final LinearLayout typesOfDishCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.types_of_dish_collapsible_view);
+
+        // Hide collapsible views
+        ingredientsCollapsibleView.setVisibility(View.GONE);
+        dislikeIngredientsCollapsibleView.setVisibility(View.GONE);
+        dislikeCategoriesCollapsibleView.setVisibility(View.GONE);
+        categoriesCollapsibleView.setVisibility(View.GONE);
+        difficultiesCollapsibleView.setVisibility(View.GONE);
+        typesOfDishCollapsibleView.setVisibility(View.GONE);
+
+        // Set listeners on clickable views
+        ingredientsCollapse.setOnClickListener(mCollapseClickListener);
+        dislikeIngredientsCollapse.setOnClickListener(mCollapseClickListener);
+        dislikeCategoriesCollapse.setOnClickListener(mCollapseClickListener);
+        categoriesCollapse.setOnClickListener(mCollapseClickListener);
+        difficultiesCollapse.setOnClickListener(mCollapseClickListener);
+        typesOfDishCollapse.setOnClickListener(mCollapseClickListener);
+
+
+        // Set multi autocomplete views adapters
+        ArrayAdapter<String> ingredientsAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, INGREDIENTS);
+        final MultiAutoCompleteTextView ingredientsTextView = (MultiAutoCompleteTextView) mRightDrawerView.findViewById(R.id.ingredients_text_view);
+        ingredientsTextView.setAdapter(ingredientsAdapter);
+        ingredientsTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+
+        ArrayAdapter<String> dislikeIngredientsAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_dropdown_item_1line, INGREDIENTS);
+        final MultiAutoCompleteTextView dislikeIngredientsTextView = (MultiAutoCompleteTextView) mRightDrawerView.findViewById(R.id.dislike_ingredients_text_view);
+        dislikeIngredientsTextView.setAdapter(dislikeIngredientsAdapter);
+        dislikeIngredientsTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+
+        // Set multi autocomplete views buttons
+        Button clearIngredientsFilterButton = (Button) mRightDrawerView.findViewById(R.id.clear_ingredients_filter);
+        Button clearDislikeIngredientsFilterButton = (Button) mRightDrawerView.findViewById(R.id.clear_dislike_ingredients_filter);
+
+        clearIngredientsFilterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ingredientsTextView.setText("");
+            }
+        });
+
+        clearDislikeIngredientsFilterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dislikeIngredientsTextView.setText("");
+            }
+        });
+
+        // Get dislike categories checkboxes
+        final CheckBox glutenAllergyCheckbox = (CheckBox) mRightDrawerView.findViewById(R.id.allergy_gluten_checkbox);
+        final CheckBox lactoseAllergyCheckbox = (CheckBox) mRightDrawerView.findViewById(R.id.allergy_lactose_checkbox);
+        final CheckBox shellfishAllergyCheckbox = (CheckBox) mRightDrawerView.findViewById(R.id.allergy_shellfish_checkbox);
+        final CheckBox fishAllergyCheckbox = (CheckBox) mRightDrawerView.findViewById(R.id.allergy_fish_checkbox);
+        final CheckBox driedFruitsAllergyCheckbox = (CheckBox) mRightDrawerView.findViewById(R.id.allergy_dried_fruits_checkbox);
+
+        // Get categories checkboxes
+        final CheckBox mediterraneanDietCheckbox = (CheckBox) mRightDrawerView.findViewById(R.id.diet_mediterranean_checkbox);
+        final CheckBox vegetarianDietheckbox = (CheckBox) mRightDrawerView.findViewById(R.id.diet_vegetarian_checkbox);
+        final CheckBox veganDietCheckbox = (CheckBox) mRightDrawerView.findViewById(R.id.diet_vegan_checkbox);
+
+        // Get difficulties radio group
+        final RadioGroup difficultiesRadioGroup = (RadioGroup) mRightDrawerView.findViewById(R.id.difficulties_radio_group);
+        final RadioGroup typesOfDishRadioGroup = (RadioGroup) mRightDrawerView.findViewById(R.id.types_of_dish_radio_group);
+
+        // Get buttons
+        Button cancelButton = (Button) mRightDrawerView.findViewById(R.id.cancel);
+        Button acceptButton = (Button) mRightDrawerView.findViewById(R.id.accept);
+
+        // Buttons listeners
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDrawerLayout.closeDrawer(mRightDrawerView);
+            }
+        });
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Set title filter
+                if (titleFilterTextView.getText().toString().length() > 0) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_TITLE),
+                            titleFilterTextView.getText().toString(), true);
+                } else {
+                    removeFilterFromFilterParams(getString(R.string.API_PARAM_TITLE));
+                }
+
+                // Set ingredients filter
+                removeFilterFromFilterParams(getString(R.string.API_PARAM_INGREDIENT));
+                if (ingredientsTextView.getText().toString().length() > 0) {
+                    ArrayList<String> strings = new ArrayList<>(Arrays.asList(
+                            ingredientsTextView.getText().toString().split(",")));
+
+                    for (String s : strings) {
+                        addFilterToFilterParams(getString(R.string.API_PARAM_INGREDIENT), s.trim(), false);
+                    }
+                }
+
+                // Set dislike ingredients filter
+                removeFilterFromFilterParams(getString(R.string.API_PARAM_DISLIKE_INGREDIENT));
+                if (dislikeIngredientsTextView.getText().toString().length() > 0) {
+                    ArrayList<String> strings = new ArrayList<>(Arrays.asList(
+                            dislikeIngredientsTextView.getText().toString().split(",")));
+
+                    for (String s : strings) {
+                        addFilterToFilterParams(getString(R.string.API_PARAM_DISLIKE_INGREDIENT),
+                                s.trim(), false);
+                    }
+                }
+
+                // Set dislike categories filter
+                removeFilterFromFilterParams(getString(R.string.API_PARAM_DISLIKE_CATEGORY));
+
+                // Gluten
+                if (glutenAllergyCheckbox.isChecked()) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_DISLIKE_CATEGORY),
+                            getString(R.string.CATEGORY_ALLERGY_GLUTEN_CODE), false);
+                }
+
+                // Lactose
+                if (lactoseAllergyCheckbox.isChecked()) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_DISLIKE_CATEGORY),
+                            getString(R.string.CATEGORY_ALLERGY_LACTOSE_CODE), false);
+                }
+
+                // Shellfish
+                if (shellfishAllergyCheckbox.isChecked()) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_DISLIKE_CATEGORY),
+                            getString(R.string.CATEGORY_ALLERGY_SHELLFISH_CODE), false);
+                }
+
+                // Fish
+                if (fishAllergyCheckbox.isChecked()) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_DISLIKE_CATEGORY),
+                            getString(R.string.CATEGORY_ALLERGY_FISH_CODE), false);
+                }
+                // Gluten
+                if (driedFruitsAllergyCheckbox.isChecked()) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_DISLIKE_CATEGORY),
+                            getString(R.string.CATEGORY_ALLERGY_DRIED_FRUIT_CODE), false);
+                }
+
+
+                // Set  categories filter
+                removeFilterFromFilterParams(getString(R.string.API_PARAM_CATEGORY));
+
+                // Mediterranean
+                if (mediterraneanDietCheckbox.isChecked()) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_CATEGORY),
+                            getString(R.string.CATEGORY_DIET_MEDITERRANEAN), false);
+                }
+
+                // Vegetarian
+                if (vegetarianDietheckbox.isChecked()) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_CATEGORY),
+                            getString(R.string.CATEGORY_DIET_VEGETARIAN), false);
+                }
+
+                // Vegan
+                if (veganDietCheckbox.isChecked()) {
+                    addFilterToFilterParams(getString(R.string.API_PARAM_CATEGORY),
+                            getString(R.string.CATEGORY_DIET_VEGAN), false);
+                }
+
+
+                // Set difficulty filter
+                switch (difficultiesRadioGroup.getCheckedRadioButtonId()) {
+                    case R.id.difficulty_low:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_DIFFICULTY),
+                                getString(R.string.DIFFICULTY_LOW), true);
+                        break;
+                    case R.id.difficulty_medium:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_DIFFICULTY),
+                                getString(R.string.DIFFICULTY_MEDIUM), true);
+                        break;
+                    case R.id.difficulty_high:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_DIFFICULTY),
+                                getString(R.string.DIFFICULTY_HIGH), true);
+                        break;
+                    default:
+                        removeFilterFromFilterParams(getString(R.string.API_PARAM_DIFFICULTY));
+                }
+
+                // Set type of dish filter
+                switch (typesOfDishRadioGroup.getCheckedRadioButtonId()) {
+                    case R.id.type_of_dish_appetizer:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_TYPE_OF_DISH),
+                                getString(R.string.TYPE_OF_DISH_APPETIZER), true);
+                        break;
+                    case R.id.type_of_dish_first_course:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_TYPE_OF_DISH),
+                                getString(R.string.TYPE_OF_DISH_FIRST_COURSE), true);
+                        break;
+                    case R.id.type_of_dish_second_course:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_TYPE_OF_DISH),
+                                getString(R.string.TYPE_OF_DISH_SECOND_COURSE), true);
+                        break;
+                    case R.id.type_of_dish_main_dish:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_TYPE_OF_DISH),
+                                getString(R.string.TYPE_OF_DISH_MAIN_DISH), true);
+                        break;
+                    case R.id.type_of_dish_dessert:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_TYPE_OF_DISH),
+                                getString(R.string.TYPE_OF_DISH_DESSERT), true);
+                        break;
+                    case R.id.type_of_dish_other:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_TYPE_OF_DISH),
+                                getString(R.string.TYPE_OF_DISH_OTHER), true);
+                        break;
+                    default:
+                        removeFilterFromFilterParams(getString(R.string.API_PARAM_TYPE_OF_DISH));
+                }
+
+                mDrawerLayout.closeDrawer(mRightDrawerView);
+
+                // Reset list fragment
+                selectItemInLeftMenu(mCurrentSelectedPosition);
+            }
+        });
+
+    }
+
+    /**
+     * Reset filter params and reset language parameter
+     */
+    private void resetFilterParams() {
+        mFilterParams = new ArrayList<>();
+
+        final String languages = mSharedPreferences.getString(getString(R.string.preference_recipes_languages), "");
+        if (!languages.equals("")) {
+            addFilterToFilterParams(getString(R.string.API_PARAM_LANGUAGE), languages, false);
+        }
+    }
+
+    /**
+     * Add a new value to a given parameter
+     *
+     * @param key Parameter key
+     * @param value New parameter value
+     * @param onlyOne If true, the key only MUST have one parameter.
+     *                Otherwise, we can set multiple values
+     */
+    private void addFilterToFilterParams(String key, String value, boolean onlyOne) {
+        if (value != null && !value.equals("")) {
+            int found = -1;
+
+            if (mFilterParams != null) {
+                for (int i = 0; i < mFilterParams.size(); i++) {
+
+                    if (key.equals(mFilterParams.get(i).first)) {
+                        found = i;
+                    }
+                }
+            }
+
+            if (found > -1) {
+                if (onlyOne) {
+                    mFilterParams.get(found).second.clear();
+                }
+
+                mFilterParams.get(found).second.add(value);
+            } else {
+                mFilterParams.add(Pair.create(key, new ArrayList<>(Collections.singletonList(value))));
+            }
+        }
+    }
+
+    /**
+     * Remove a given key from the filter parameters
+     * @param key Key to remove
+     */
+    private void removeFilterFromFilterParams(String key) {
+        int found = -1;
+
+        if (mFilterParams != null) {
+            for (int i = 0; i < mFilterParams.size(); i++) {
+
+                if (key.equals(mFilterParams.get(i).first)) {
+                    found = i;
+                }
+            }
+        }
+
+        if (found > -1) {
+            mFilterParams.remove(found);
+        }
+    }
+
 
     // UI METHODS
 
@@ -571,6 +810,15 @@ public class MainActivity extends ActionBarActivity {
 
     public Integer getPreviousTotal() {
         return mPreviousTotal;
+    }
+
+    /**
+     * Returns the filter parameters.
+     * Needed to transfer this information to the list fragment.
+     * @return Filter parameters array
+     */
+    public ArrayList<Pair<String, ArrayList<String>>> getFilterParams() {
+        return mFilterParams;
     }
 
     // SETTERS

@@ -11,7 +11,7 @@
     <ScrollView
         android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="8">
+        android:layout_weight="@integer/search_scrollview_weight">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -25,15 +25,15 @@
                 <EditText android:id="@+id/title_filter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/search_font_size"
                     android:maxLines="1"
                     android:hint="@string/search_view_title_filter_hint" />
 
                 <Button
                     android:id="@+id/clear_title_filter"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_width="@dimen/search_clear_button_size"
+                    android:layout_height="@dimen/search_clear_button_size"
+                    android:layout_marginEnd="@dimen/search_text_view_clear_images_margin"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:background="@drawable/ic_clear_black_24px"
@@ -56,21 +56,21 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
+                        android:layout_marginStart="@dimen/search_main_text_margin_left"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/search_main_text_font_size"
                         android:gravity="center"
-                        android:paddingTop="10dp"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:layout_marginEnd="60dp"
+                        android:paddingTop="@dimen/search_main_text_padding"
+                        android:paddingStart="@dimen/search_main_text_padding"
+                        android:paddingEnd="@dimen/search_main_text_padding"
+                        android:layout_marginEnd="@dimen/search_main_text_margin_end"
                         android:text="@string/search_view_allowed_ingredients" />
 
                     <ImageView
                         android:id="@+id/ingredients_collapse_fold_image"
                         android:tag="@string/search_view_collapse_fold_image"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:clickable="false"
@@ -86,55 +86,72 @@
                     android:tag="@string/search_view_collapsible_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="10dp">
+                    android:paddingStart="@dimen/search_main_text_padding"
+                    android:paddingEnd="@dimen/search_main_text_padding"
+                    android:paddingBottom="@dimen/search_main_text_padding"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:text="CONTENT" />
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+
+                        <MultiAutoCompleteTextView
+                            android:labelFor="@+id/ingredients_text_view"
+                            android:id="@+id/ingredients_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="@dimen/search_input_padding_end"/>
+
+                        <Button
+                            android:id="@+id/clear_ingredients_filter"
+                            android:layout_width="@dimen/search_clear_button_size"
+                            android:layout_height="@dimen/search_clear_button_size"
+                            android:layout_marginEnd="@dimen/search_text_view_clear_images_margin"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/ic_clear_black_24px"
+                            android:backgroundTint="@color/secondary_text"
+                            android:backgroundTintMode="src_atop"/>
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="@dimen/search_divider_height"
                     android:background="@color/secondary_text"/>
 
             </LinearLayout>
 
 
-            <!-- Allergens -->
+            <!-- Disliked ingredients -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <RelativeLayout
-                    android:id="@+id/allergens_collapse"
+                    android:id="@+id/dislike_ingredients_collapse"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
+                        android:layout_marginStart="@dimen/search_main_text_margin_left"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/search_main_text_font_size"
                         android:gravity="center"
-                        android:paddingTop="10dp"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
-                        android:layout_marginEnd="60dp"
-                        android:text="@string/search_view_allowed_ingredients" />
+                        android:paddingTop="@dimen/search_main_text_padding"
+                        android:paddingStart="@dimen/search_main_text_padding"
+                        android:paddingEnd="@dimen/search_main_text_padding"
+                        android:layout_marginEnd="@dimen/search_main_text_margin_end"
+                        android:text="@string/search_view_forbidden_ingredients" />
 
                     <ImageView
-                        android:id="@+id/allergens_collapse_fold_image"
+                        android:id="@+id/dislike_ingredients_collapse_fold_image"
                         android:tag="@string/search_view_collapse_fold_image"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -149,32 +166,589 @@
                 </RelativeLayout>
 
                 <LinearLayout
-                    android:id="@+id/allergens_collapsible_view"
+                    android:id="@+id/dislike_ingredients_collapsible_view"
                     android:tag="@string/search_view_collapsible_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="10dp">
+                    android:paddingStart="@dimen/search_main_text_padding"
+                    android:paddingEnd="@dimen/search_main_text_padding"
+                    android:paddingBottom="@dimen/search_main_text_padding">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:textColor="#000000"
-                        android:textSize="20sp"
-                        android:gravity="center"
-                        android:text="CONTENT" />
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+
+                        <MultiAutoCompleteTextView
+                            android:labelFor="@+id/dislike_ingredients_text_view"
+                            android:id="@+id/dislike_ingredients_text_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="@dimen/search_input_padding_end"/>
+
+                        <Button
+                            android:id="@+id/clear_dislike_ingredients_filter"
+                            android:layout_width="@dimen/search_clear_button_size"
+                            android:layout_height="@dimen/search_clear_button_size"
+                            android:layout_marginEnd="@dimen/search_text_view_clear_images_margin"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/ic_clear_black_24px"
+                            android:backgroundTint="@color/secondary_text"
+                            android:backgroundTintMode="src_atop"/>
+
+                    </RelativeLayout>
 
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="@dimen/search_divider_height"
                     android:background="@color/secondary_text"/>
 
             </LinearLayout>
 
+            <!-- Dislike categories -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/dislike_categories_collapse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/search_main_text_margin_left"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/search_main_text_font_size"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/search_main_text_padding"
+                        android:paddingStart="@dimen/search_main_text_padding"
+                        android:paddingEnd="@dimen/search_main_text_padding"
+                        android:layout_marginEnd="@dimen/search_main_text_margin_end"
+                        android:text="@string/search_view_allergens" />
+
+                    <ImageView
+                        android:id="@+id/dislike_categories_collapse_fold_image"
+                        android:tag="@string/search_view_collapse_fold_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:background="@drawable/ic_keyboard_arrow_up_black_48px"
+                        android:backgroundTint="@color/secondary_text"
+                        android:backgroundTintMode="src_atop"/>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/dislike_categories_collapsible_view"
+                    android:tag="@string/search_view_collapsible_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/search_main_text_padding"
+                    android:paddingEnd="@dimen/search_main_text_padding"
+                    android:paddingBottom="@dimen/search_main_text_padding"
+                    android:orientation="vertical">
+
+                    <!-- Gluten -->
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/search_checkbox_top_margin"
+                        android:paddingStart="@dimen/search_list_item_padding"
+                        android:paddingEnd="@dimen/search_list_item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:layout_marginEnd="@dimen/search_input_padding_end"
+                            android:text="@string/search_dislike_category_allergy_gluten"/>
+
+                        <CheckBox
+                            android:id="@+id/allergy_gluten_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
+
+                    </RelativeLayout>
+
+                    <!-- Lactose -->
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/search_checkbox_top_margin"
+                        android:paddingStart="@dimen/search_list_item_padding"
+                        android:paddingEnd="@dimen/search_list_item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:layout_marginEnd="@dimen/search_input_padding_end"
+                            android:text="@string/search_dislike_category_allergy_lactose"/>
+
+                        <CheckBox
+                            android:id="@+id/allergy_lactose_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
+
+                    </RelativeLayout>
+
+                    <!-- Shellfish -->
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/search_checkbox_top_margin"
+                        android:paddingStart="@dimen/search_list_item_padding"
+                        android:paddingEnd="@dimen/search_list_item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:layout_marginEnd="@dimen/search_input_padding_end"
+                            android:text="@string/search_dislike_category_allergy_shellfish"/>
+
+                        <CheckBox
+                            android:id="@+id/allergy_shellfish_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
+
+                    </RelativeLayout>
+
+                    <!-- Fish -->
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/search_checkbox_top_margin"
+                        android:paddingStart="@dimen/search_list_item_padding"
+                        android:paddingEnd="@dimen/search_list_item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:layout_marginEnd="@dimen/search_input_padding_end"
+                            android:text="@string/search_dislike_category_allergy_fish"/>
+
+                        <CheckBox
+                            android:id="@+id/allergy_fish_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
+
+                    </RelativeLayout>
+
+                    <!-- Dried fruits -->
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/search_checkbox_top_margin"
+                        android:paddingStart="@dimen/search_list_item_padding"
+                        android:paddingEnd="@dimen/search_list_item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:layout_marginEnd="@dimen/search_input_padding_end"
+                            android:text="@string/search_dislike_category_allergy_dried_fruit"/>
+
+                        <CheckBox
+                            android:id="@+id/allergy_dried_fruits_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
+
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/search_divider_height"
+                    android:background="@color/secondary_text"/>
+
+            </LinearLayout>
+
+            <!-- Categories -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/categories_collapse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/search_main_text_margin_left"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/search_main_text_font_size"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/search_main_text_padding"
+                        android:paddingStart="@dimen/search_main_text_padding"
+                        android:paddingEnd="@dimen/search_main_text_padding"
+                        android:layout_marginEnd="@dimen/search_main_text_margin_end"
+                        android:text="@string/search_view_diets" />
+
+                    <ImageView
+                        android:id="@+id/categories_collapse_fold_image"
+                        android:tag="@string/search_view_collapse_fold_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:background="@drawable/ic_keyboard_arrow_up_black_48px"
+                        android:backgroundTint="@color/secondary_text"
+                        android:backgroundTintMode="src_atop"/>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/categories_collapsible_view"
+                    android:tag="@string/search_view_collapsible_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/search_main_text_padding"
+                    android:paddingEnd="@dimen/search_main_text_padding"
+                    android:paddingBottom="@dimen/search_main_text_padding"
+                    android:orientation="vertical">
+
+                    <!-- Mediterranean -->
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/search_checkbox_top_margin"
+                        android:paddingStart="@dimen/search_list_item_padding"
+                        android:paddingEnd="@dimen/search_list_item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:layout_marginEnd="@dimen/search_input_padding_end"
+                            android:text="@string/search_category_diet_mediterranean"/>
+
+                        <CheckBox
+                            android:id="@+id/diet_mediterranean_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
+
+                    </RelativeLayout>
+
+                    <!-- Vegetarian -->
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/search_checkbox_top_margin"
+                        android:paddingStart="@dimen/search_list_item_padding"
+                        android:paddingEnd="@dimen/search_list_item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:layout_marginEnd="@dimen/search_input_padding_end"
+                            android:text="@string/search_category_diet_vegetarian"/>
+
+                        <CheckBox
+                            android:id="@+id/diet_vegetarian_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
+
+                    </RelativeLayout>
+
+                    <!-- Vegan -->
+                    <RelativeLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="@dimen/search_checkbox_top_margin"
+                        android:paddingStart="@dimen/search_list_item_padding"
+                        android:paddingEnd="@dimen/search_list_item_padding">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:layout_marginEnd="@dimen/search_input_padding_end"
+                            android:text="@string/search_category_diet_vegan"/>
+
+                        <CheckBox
+                            android:id="@+id/diet_vegan_checkbox"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:focusable="false"
+                            android:focusableInTouchMode="false"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/search_divider_height"
+                    android:background="@color/secondary_text"/>
+
+            </LinearLayout>
+
+
+            <!-- Difficulties -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/difficulties_collapse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/search_main_text_margin_left"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/search_main_text_font_size"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/search_main_text_padding"
+                        android:paddingStart="@dimen/search_main_text_padding"
+                        android:paddingEnd="@dimen/search_main_text_padding"
+                        android:layout_marginEnd="@dimen/search_main_text_margin_end"
+                        android:text="@string/search_view_difficulties" />
+
+                    <ImageView
+                        android:id="@+id/difficulties_collapse_fold_image"
+                        android:tag="@string/search_view_collapse_fold_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:background="@drawable/ic_keyboard_arrow_up_black_48px"
+                        android:backgroundTint="@color/secondary_text"
+                        android:backgroundTintMode="src_atop"/>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/difficulties_collapsible_view"
+                    android:tag="@string/search_view_collapsible_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/search_main_text_padding"
+                    android:paddingEnd="@dimen/search_main_text_padding"
+                    android:paddingBottom="@dimen/search_main_text_padding"
+                    android:orientation="vertical">
+
+                    <RadioGroup
+                        android:id="@+id/difficulties_radio_group"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkedButton="@+id/difficulty_none">
+
+                        <RadioButton
+                            android:id="@+id/difficulty_none"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_difficulty_none"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/difficulty_low"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_difficulty_low"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/difficulty_medium"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_difficulty_medium"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/difficulty_high"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_difficulty_high"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+                    </RadioGroup>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/search_divider_height"
+                    android:background="@color/secondary_text"/>
+
+            </LinearLayout>
+
+            <!-- Types of dish -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/types_of_dish_collapse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/search_main_text_margin_left"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/search_main_text_font_size"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/search_main_text_padding"
+                        android:paddingStart="@dimen/search_main_text_padding"
+                        android:paddingEnd="@dimen/search_main_text_padding"
+                        android:layout_marginEnd="@dimen/search_main_text_margin_end"
+                        android:text="@string/search_view_types_of_dish" />
+
+                    <ImageView
+                        android:id="@+id/types_of_dish_collapse_fold_image"
+                        android:tag="@string/search_view_collapse_fold_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:background="@drawable/ic_keyboard_arrow_up_black_48px"
+                        android:backgroundTint="@color/secondary_text"
+                        android:backgroundTintMode="src_atop"/>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/types_of_dish_collapsible_view"
+                    android:tag="@string/search_view_collapsible_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/search_main_text_padding"
+                    android:paddingEnd="@dimen/search_main_text_padding"
+                    android:paddingBottom="@dimen/search_main_text_padding"
+                    android:orientation="vertical">
+
+                    <RadioGroup
+                        android:id="@+id/types_of_dish_radio_group"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkedButton="@+id/type_of_dish_none">
+
+                        <RadioButton
+                            android:id="@+id/type_of_dish_none"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_difficulty_none"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/type_of_dish_appetizer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_type_of_dish_appetizer"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/type_of_dish_first_course"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_type_of_dish_first_course"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/type_of_dish_second_course"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_type_of_dish_second_course"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/type_of_dish_main_dish"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_type_of_dish_main_dish"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/type_of_dish_dessert"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_type_of_dish_dessert"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/type_of_dish_other"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_type_of_dish_other"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+                    </RadioGroup>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/search_divider_height"
+                    android:background="@color/secondary_text"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
@@ -196,9 +770,9 @@
             android:textColor="@color/theme_default_accent"
             android:gravity="center"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:layout_marginTop="@dimen/search_button_padding"
+            android:paddingStart="@dimen/search_button_padding"
+            android:paddingEnd="@dimen/search_button_padding"
             android:enabled="true" />
         <Button
             android:id="@+id/accept"
@@ -209,9 +783,9 @@
             android:textColor="@color/theme_default_accent"
             android:gravity="center"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:layout_marginTop="@dimen/search_button_padding"
+            android:paddingStart="@dimen/search_button_padding"
+            android:paddingEnd="@dimen/search_button_padding"
             android:enabled="true" />
 
     </LinearLayout>

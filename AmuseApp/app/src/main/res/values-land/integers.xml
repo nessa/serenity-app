@@ -3,4 +3,7 @@
     <integer name="gridview_columns">3</integer>
     <integer name="gridview_margin">2</integer>
     <integer name="gridview_left_items_to_reload">3</integer>
+
+    <!-- Search view -->
+    <integer name="search_scrollview_weight">4</integer>
 </resources>

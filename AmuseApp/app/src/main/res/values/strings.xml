@@ -16,12 +16,36 @@
     <string name="API_PARAM_TITLE">title</string>
     <string name="API_PARAM_CATEGORY">category</string>
     <string name="API_PARAM_DIFFICULTY">difficulty</string>
+    <string name="API_PARAM_TYPE_OF_DISH">type_of_dish</string>
     <string name="API_PARAM_INGREDIENT">ingredient</string>
     <string name="API_PARAM_LANGUAGE">language</string>
     <string name="API_PARAM_RATING">average_rating</string>
-    <string name="API_PARAM_DISLIKE_PREFIX">dislike_category</string>
+    <string name="API_PARAM_DISLIKE_PREFIX">dislike_</string>
     <string name="API_PARAM_DISLIKE_CATEGORY">dislike_category</string>
     <string name="API_PARAM_DISLIKE_INGREDIENT">dislike_ingredient</string>
+
+    <!--   Categories -->
+    <string name="CATEGORY_ALLERGY_GLUTEN_CODE">GLUTEN_ALLERGY</string>
+    <string name="CATEGORY_ALLERGY_LACTOSE_CODE">LACTOSE_ALLERGY</string>
+    <string name="CATEGORY_ALLERGY_SHELLFISH_CODE">SHELLFISH_ALLERGY</string>
+    <string name="CATEGORY_ALLERGY_FISH_CODE">FISH_ALLERGY</string>
+    <string name="CATEGORY_ALLERGY_DRIED_FRUIT_CODE">DRIED_FRUIT_ALLERGY</string>
+    <string name="CATEGORY_DIET_MEDITERRANEAN">MEDITERRANEAN</string>
+    <string name="CATEGORY_DIET_VEGETARIAN">VEGETARIAN</string>
+    <string name="CATEGORY_DIET_VEGAN">VEGAN</string>
+
+    <!--   Types of dish -->
+    <string name="TYPE_OF_DISH_APPETIZER">APPETIZER</string>
+    <string name="TYPE_OF_DISH_FIRST_COURSE">FIRST-COURSE</string>
+    <string name="TYPE_OF_DISH_SECOND_COURSE">SECOND-COURSE</string>
+    <string name="TYPE_OF_DISH_MAIN_DISH">MAIN-DISH</string>
+    <string name="TYPE_OF_DISH_DESSERT">DESSERT</string>
+    <string name="TYPE_OF_DISH_OTHER">OTHER</string>
+
+    <!--   Difficulties -->
+    <string name="DIFFICULTY_LOW">LOW</string>
+    <string name="DIFFICULTY_MEDIUM">MEDIUM</string>
+    <string name="DIFFICULTY_HIGH">HIGH</string>
 
     <!-- Menu -->
     <string name="action_settings">Settings</string>
@@ -54,14 +78,36 @@
     <string name="lateral_menu_settings">Settings</string>
     <string name="lateral_menu_info">Information</string>
 
-    <!--   Seach view -->
+    <!--   Search view -->
     <string name="search_view_accept">Search</string>
     <string name="search_view_title_filter_hint">Matching text with the title</string>
     <string name="search_view_collapse_fold_image">collapse_fold_image</string>
     <string name="search_view_collapsible_view">collapsible_view</string>
     <string name="search_view_allowed_ingredients">Allowed ingredients</string>
     <string name="search_view_forbidden_ingredients">Forbidden ingredients</string>
-
+    <string name="search_view_allergens">Allergies and intolerances</string>
+    <string name="search_view_diets">Diets</string>
+    <string name="search_view_difficulties">Difficulty</string>
+    <string name="search_view_types_of_dish">Type of dish</string>
+    <string name="search_dislike_category_allergy_gluten">Suitable for coeliacs</string>
+    <string name="search_dislike_category_allergy_lactose">Suitable for lactose intolerant</string>
+    <string name="search_dislike_category_allergy_shellfish">Suitable for allergic to shellfish</string>
+    <string name="search_dislike_category_allergy_fish">Suitable for allergic to fish</string>
+    <string name="search_dislike_category_allergy_dried_fruit">Suitable for allergic to dried fruits</string>
+    <string name="search_category_diet_mediterranean">Mediterranean</string>
+    <string name="search_category_diet_vegetarian">Vegetarian</string>
+    <string name="search_category_diet_vegan">Vegan</string>
+    <string name="search_difficulty_none">All</string>
+    <string name="search_difficulty_low">Low</string>
+    <string name="search_difficulty_medium">Medium</string>
+    <string name="search_difficulty_high">High</string>
+    <string name="search_type_of_dish_none">All</string>
+    <string name="search_type_of_dish_appetizer">Appetizer</string>
+    <string name="search_type_of_dish_first_course">First course</string>
+    <string name="search_type_of_dish_second_course">Second course</string>
+    <string name="search_type_of_dish_main_dish">Main dish</string>
+    <string name="search_type_of_dish_dessert">Dessert</string>
+    <string name="search_type_of_dish_other">Other</string>
 
     <!-- Main activity -->
     <string name="exit_message">Are you sure you want to exit?</string>
