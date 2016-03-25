@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +25,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -40,6 +43,10 @@ import java.util.Arrays;
 public class SettingsFragment extends Fragment {
 
     private SharedPreferences mSharedPreferences;
+
+    private TextView mSelectedLanguagesTextView;
+
+    private String SEPARATOR = ",";
 
     // LIFECYCLE METHODS
 
@@ -110,6 +117,8 @@ public class SettingsFragment extends Fragment {
         recognizerLanguageSwitch.setChecked(recognizerLanguageSetting);
 
         RelativeLayout languageSetting = (RelativeLayout) mLayout.findViewById(R.id.setting_recipes_languages_item);
+        mSelectedLanguagesTextView = (TextView) mLayout.findViewById(R.id.setting_recipes_languages_selected);
+        setSelectedLanguages();
 
         // Listeners
         downloadImagesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -134,11 +143,46 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 Dialog languages = new LanguagesDialog(getActivity(), mSharedPreferences);
+
+                languages.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        Log.d("SETTINGS", "ON DISMISS");
+                        setSelectedLanguages();
+                    }
+                });
+
                 languages.show();
             }
         });
 
         return mLayout;
+    }
+
+    /**
+     * Show preferences languages in text view
+     */
+    private void setSelectedLanguages() {
+        // Get languages from shared preferences
+        String languages = mSharedPreferences.getString(getString(R.string.preference_recipes_languages), "");
+
+        if (languages.length() > 0) {
+            ArrayList<String> selectedLanguages = new ArrayList<>(Arrays.asList(languages.split(SEPARATOR)));
+
+            String lang = "";
+            int count = 0;
+
+            for (String l : selectedLanguages) {
+                if (count > 0) {
+                    lang += ", ";
+                }
+
+                lang += l;
+                count++;
+            }
+
+            mSelectedLanguagesTextView.setText(lang);
+        }
     }
 
     /**

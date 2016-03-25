@@ -96,7 +96,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
                         android:textSize="@dimen/settings_item_selected_text_size"
@@ -105,7 +105,7 @@
 
                     <TextView
                         android:id="@+id/setting_recipes_languages_selected"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/settings_item_selected_text_size"
                         android:textColor="@color/secondary_text"/>
