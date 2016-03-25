@@ -3,7 +3,11 @@ package com.amusebouche.amuseapp;
 import java.util.ArrayList;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,6 +38,9 @@ public class SplashScreenActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Get preferences
+        SharedPreferences mSharedPreferences = getPreferences(Context.MODE_PRIVATE);
+
         // Set portrait orientation
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         // Hide title bar
@@ -49,7 +56,25 @@ public class SplashScreenActivity extends Activity {
 
         setContentView(R.layout.splash_screen);
 
-        new GetRecipes().execute();
+        // Get languages from shared preferences
+        final String languages = mSharedPreferences.getString(
+                getString(R.string.preference_recipes_languages), "");
+
+        // If there are no setted languages, ask for them
+        if (languages.length() <= 0) {
+            Dialog languagesDialog = new LanguagesDialog(this, mSharedPreferences);
+
+            languagesDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    new GetRecipes().execute();
+                }
+            });
+
+            languagesDialog.show();
+        } else {
+            new GetRecipes().execute();
+        }
     }
 
 
