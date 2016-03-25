@@ -750,6 +750,94 @@
 
             </LinearLayout>
 
+            <!-- Ordering -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/ordering_collapse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/search_main_text_margin_left"
+                        android:textColor="@color/primary_text"
+                        android:textSize="@dimen/search_main_text_font_size"
+                        android:gravity="center"
+                        android:paddingTop="@dimen/search_main_text_padding"
+                        android:paddingStart="@dimen/search_main_text_padding"
+                        android:paddingEnd="@dimen/search_main_text_padding"
+                        android:layout_marginEnd="@dimen/search_main_text_margin_end"
+                        android:text="@string/search_view_ordering" />
+
+                    <ImageView
+                        android:id="@+id/ordering_collapse_fold_image"
+                        android:tag="@string/search_view_collapse_fold_image"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:clickable="false"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:background="@drawable/ic_keyboard_arrow_up_black_48px"
+                        android:backgroundTint="@color/secondary_text"
+                        android:backgroundTintMode="src_atop"/>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/ordering_collapsible_view"
+                    android:tag="@string/search_view_collapsible_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/search_main_text_padding"
+                    android:paddingEnd="@dimen/search_main_text_padding"
+                    android:paddingBottom="@dimen/search_main_text_padding"
+                    android:orientation="vertical">
+
+                    <RadioGroup
+                        android:id="@+id/ordering_radio_group"
+                        android:orientation="vertical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkedButton="@+id/ordering_last_updated">
+
+                        <RadioButton
+                            android:id="@+id/ordering_last_updated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_ordering_last_updated"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/ordering_best_rated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_ordering_best_rated"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+
+                        <RadioButton
+                            android:id="@+id/ordering_alphabetical"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/search_ordering_alphabetical"
+                            android:textSize="@dimen/search_list_item_text_size"
+                            android:textColor="@color/secondary_text"/>
+                    </RadioGroup>
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/search_divider_height"
+                    android:background="@color/secondary_text"/>
+
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 

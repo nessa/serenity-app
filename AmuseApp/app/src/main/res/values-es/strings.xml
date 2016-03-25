@@ -20,6 +20,8 @@
     <string name="API_PARAM_INGREDIENT">ingredient</string>
     <string name="API_PARAM_LANGUAGE">language</string>
     <string name="API_PARAM_RATING">average_rating</string>
+    <string name="API_PARAM_ORDERING">ordering</string>
+    <string name="API_PARAM_UPDATED_TIMESTAMP">updated_timestamp</string>
     <string name="API_PARAM_DISLIKE_PREFIX">dislike_</string>
     <string name="API_PARAM_DISLIKE_CATEGORY">dislike_category</string>
     <string name="API_PARAM_DISLIKE_INGREDIENT">dislike_ingredient</string>
@@ -89,6 +91,7 @@
     <string name="search_view_diets">Dietas</string>
     <string name="search_view_difficulties">Dificultad</string>
     <string name="search_view_types_of_dish">Tipo de plato</string>
+    <string name="search_view_ordering">Orden</string>
     <string name="search_dislike_category_allergy_gluten">Aptas para celíacos</string>
     <string name="search_dislike_category_allergy_lactose">Aptas para intolerantes a la lactosa</string>
     <string name="search_dislike_category_allergy_shellfish">Aptas para alérgicos al marisco</string>
@@ -108,6 +111,9 @@
     <string name="search_type_of_dish_main_dish">Plato principal</string>
     <string name="search_type_of_dish_dessert">Postre</string>
     <string name="search_type_of_dish_other">Otro</string>
+    <string name="search_ordering_last_updated">Últimas actualizadas</string>
+    <string name="search_ordering_best_rated">Mejor valoradas</string>
+    <string name="search_ordering_alphabetical">Alfabéticamente</string>
 
     <!-- Main activity -->
     <string name="exit_message">¿Está seguro de que desea salir?</string>

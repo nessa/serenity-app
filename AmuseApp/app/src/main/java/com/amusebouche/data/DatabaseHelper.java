@@ -40,9 +40,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private final Context mContext;
 
-    // DATABASE QUERY PARAMS
-    public static final String WHERE_AND = "AND";
-
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public DatabaseHelper(Context context) {
@@ -647,14 +644,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         mDatabase = getReadableDatabase();
 
         String where = "";
+        String ordering = "";
         int count = 0;
         if (whereParams != null) {
             for (Pair item : whereParams) {
                 String key = (String) item.first;
 
                 for (String value : (ArrayList<String>) item.second) {
-                    if (count > 0) {
-                        where += " AND ";
+
+                    if (key.equals(mContext.getString(R.string.API_PARAM_ORDERING))) {
+                        if (value.startsWith("-")) {
+                            ordering = value.substring(1, value.length()) + " DESC";
+                        } else {
+                            ordering = value + " ASC";
+                        }
+                    } else {
+                        // If the key is not ORDERING, then we will set a new WHERE condition,
+                        // so we need to add an AND to join it
+                        if (count > 0) {
+                            where += " AND ";
+                        }
                     }
 
                     if (key.equals(mContext.getString(R.string.API_PARAM_LANGUAGE))) {
@@ -735,7 +744,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 null,
                 null,
                 null,
-                null,
+                ordering,
                 offset + ", " + limit);
         //"limit " + limit + " offset " + offset);
         while (recipeCursor.moveToNext()) {

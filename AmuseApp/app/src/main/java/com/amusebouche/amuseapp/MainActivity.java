@@ -377,6 +377,7 @@ public class MainActivity extends ActionBarActivity {
         final RelativeLayout categoriesCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.categories_collapse);
         final RelativeLayout difficultiesCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.difficulties_collapse);
         final RelativeLayout typesOfDishCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.types_of_dish_collapse);
+        final RelativeLayout orderingCollapse = (RelativeLayout) mRightDrawerView.findViewById(R.id.ordering_collapse);
 
         // Get collapsible views
         final LinearLayout ingredientsCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.ingredients_collapsible_view);
@@ -385,6 +386,7 @@ public class MainActivity extends ActionBarActivity {
         final LinearLayout categoriesCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.categories_collapsible_view);
         final LinearLayout difficultiesCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.difficulties_collapsible_view);
         final LinearLayout typesOfDishCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.types_of_dish_collapsible_view);
+        final LinearLayout orderingCollapsibleView = (LinearLayout) mRightDrawerView.findViewById(R.id.ordering_collapsible_view);
 
         // Hide collapsible views
         ingredientsCollapsibleView.setVisibility(View.GONE);
@@ -393,6 +395,7 @@ public class MainActivity extends ActionBarActivity {
         categoriesCollapsibleView.setVisibility(View.GONE);
         difficultiesCollapsibleView.setVisibility(View.GONE);
         typesOfDishCollapsibleView.setVisibility(View.GONE);
+        orderingCollapsibleView.setVisibility(View.GONE);
 
         // Set listeners on clickable views
         ingredientsCollapse.setOnClickListener(mCollapseClickListener);
@@ -401,6 +404,7 @@ public class MainActivity extends ActionBarActivity {
         categoriesCollapse.setOnClickListener(mCollapseClickListener);
         difficultiesCollapse.setOnClickListener(mCollapseClickListener);
         typesOfDishCollapse.setOnClickListener(mCollapseClickListener);
+        orderingCollapse.setOnClickListener(mCollapseClickListener);
 
 
         // Set multi autocomplete views adapters
@@ -449,6 +453,7 @@ public class MainActivity extends ActionBarActivity {
         // Get difficulties radio group
         final RadioGroup difficultiesRadioGroup = (RadioGroup) mRightDrawerView.findViewById(R.id.difficulties_radio_group);
         final RadioGroup typesOfDishRadioGroup = (RadioGroup) mRightDrawerView.findViewById(R.id.types_of_dish_radio_group);
+        final RadioGroup orderingRadioGroup = (RadioGroup) mRightDrawerView.findViewById(R.id.ordering_radio_group);
 
         // Get buttons
         Button cancelButton = (Button) mRightDrawerView.findViewById(R.id.cancel);
@@ -599,6 +604,24 @@ public class MainActivity extends ActionBarActivity {
                         removeFilterFromFilterParams(getString(R.string.API_PARAM_TYPE_OF_DISH));
                 }
 
+                // Set ordering filter
+                switch (orderingRadioGroup.getCheckedRadioButtonId()) {
+                    case R.id.ordering_last_updated:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_ORDERING),
+                                "-" + getString(R.string.API_PARAM_UPDATED_TIMESTAMP), true);
+                        break;
+                    case R.id.ordering_best_rated:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_ORDERING),
+                                "-" + getString(R.string.API_PARAM_RATING), true);
+                        break;
+                    case R.id.ordering_alphabetical:
+                        addFilterToFilterParams(getString(R.string.API_PARAM_ORDERING),
+                                getString(R.string.API_PARAM_TITLE), true);
+                        break;
+                    default:
+                        removeFilterFromFilterParams(getString(R.string.API_PARAM_ORDERING));
+                }
+
                 mDrawerLayout.closeDrawer(mRightDrawerView);
 
                 // Reset list fragment
@@ -683,7 +706,6 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
-
 
         // If it's open any drawer, close it
         if (mDrawerLayout.isDrawerOpen(mLeftDrawerView)) {
