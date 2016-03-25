@@ -24,6 +24,8 @@ public class RecipeDirectionContract {
             + RecipeDirectionContract.TABLE_NAME + " ("
             + RecipeDirectionContract.RecipeDirectionEntry._ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + RecipeDirectionContract.RecipeDirectionEntry._COLUMN_NAME_RECIPE_ID +
+            " STRING,"
             + RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_RECIPE_ID +
             " STRING,"
             + RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_SORT_NUMBER +
@@ -45,6 +47,11 @@ public class RecipeDirectionContract {
      * The primary key is the _id column from the BaseColumn class.
      */
     public static abstract class RecipeDirectionEntry implements BaseColumns {
+
+        /**
+         * Database identifier of the recipe to which the direction belongs
+         */
+        public static final String _COLUMN_NAME_RECIPE_ID = "_recipe_id";
 
         /**
          * Identifier of the recipe to which the direction belongs

@@ -26,6 +26,8 @@ public class RecipeCategoryContract {
             " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
             + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_RECIPE_ID +
             " STRING,"
+            + RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
+            " STRING,"
             + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME +
             " STRING,"
             + "FOREIGN KEY (" +
@@ -37,6 +39,11 @@ public class RecipeCategoryContract {
      * The primary key is the _id column from the BaseColumn class.
      */
     public static abstract class RecipeCategoryEntry implements BaseColumns {
+
+        /**
+         * Database identifier of the recipe to which the category belongs
+         */
+        public static final String _COLUMN_NAME_RECIPE_ID = "_recipe_id";
 
         /**
          * Identifier of the recipe to which the category belongs

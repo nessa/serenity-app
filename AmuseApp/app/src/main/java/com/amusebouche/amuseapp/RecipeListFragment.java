@@ -254,12 +254,14 @@ public class RecipeListFragment extends Fragment {
                     default:
                     case MainActivity.DOWNLOADED_RECIPES_MODE:
                         mMainActivity.getRecipes().addAll(mDatabaseHelper.getRecipes(mMainActivity.getLimitPerPage(),
-                                mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage()));
+                                mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage(),
+                                mMainActivity.getFilterParams()));
                         break;
                     case MainActivity.MY_RECIPES_MODE:
                         // TODO Get recipes with owner = me (if user is logged in) or without owner
                         mMainActivity.getRecipes().addAll(mDatabaseHelper.getRecipes(mMainActivity.getLimitPerPage(),
-                                mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage()));
+                                mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage(),
+                                mMainActivity.getFilterParams()));
                         break;
                     case MainActivity.NEW_RECIPES_MODE:
                         // Create service handler class instance

@@ -24,6 +24,8 @@ public class RecipeIngredientContract {
             + RecipeIngredientContract.TABLE_NAME + " ("
             + RecipeIngredientContract.RecipeIngredientEntry._ID +
             " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,"
+            + RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
+            " STRING,"
             + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_RECIPE_ID +
             " STRING,"
             + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_SORT_NUMBER +
@@ -43,6 +45,11 @@ public class RecipeIngredientContract {
      * The primary key is the _id column from the BaseColumn class.
      */
     public static abstract class RecipeIngredientEntry implements BaseColumns {
+
+        /**
+         * Database identifier of the recipe to which the ingredient belongs
+         */
+        public static final String _COLUMN_NAME_RECIPE_ID = "_recipe_id";
 
         /**
          * Identifier of the recipe to which the ingredient belongs

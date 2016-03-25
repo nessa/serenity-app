@@ -47,6 +47,8 @@ public final class RecipeContract {
             " INTEGER DEFAULT 0,"
             + RecipeContract.RecipeEntry.COLUMN_NAME_USERS_RATING +
             " INTEGER DEFAULT 0,"
+            + RecipeEntry.COLUMN_NAME_AVERAGE_RATING +
+            " FLOAT DEFAULT 0,"
             + RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS +
             " INTEGER DEFAULT 0,"
             + RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE + " TEXT);";
@@ -93,6 +95,9 @@ public final class RecipeContract {
 
         // Number of users that have rated this recipe
         public static final String COLUMN_NAME_USERS_RATING = "users_rating";
+
+        // Average rating
+        public static final String COLUMN_NAME_AVERAGE_RATING = "average_rating";
 
         // Number of servings of this recipe
         public static final String COLUMN_NAME_SERVINGS = "servings";

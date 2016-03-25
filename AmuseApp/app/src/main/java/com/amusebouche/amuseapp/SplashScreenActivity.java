@@ -79,7 +79,7 @@ public class SplashScreenActivity extends Activity {
                     mDatabaseHelper.initializeExampleData();
                 }
 
-                mRecipes = mDatabaseHelper.getRecipes(mLimitPerPage, mLimitPerPage*mCurrentPage);
+                mRecipes = mDatabaseHelper.getRecipes(mLimitPerPage, mLimitPerPage*mCurrentPage, null);
             } else {
                 // Create service handler class instance
                 ServiceHandler sh = new ServiceHandler(getApplicationContext());
