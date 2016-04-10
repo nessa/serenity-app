@@ -107,7 +107,8 @@ public class SplashScreenActivity extends Activity {
                 mRecipes = mDatabaseHelper.getRecipes(mLimitPerPage, mLimitPerPage*mCurrentPage, null);
             } else {
                 // Create service handler class instance
-                ServiceHandler sh = new ServiceHandler(getApplicationContext());
+                ServiceHandler sh = new ServiceHandler(getApplicationContext(),
+                        getPreferences(Context.MODE_PRIVATE));
 
                 // Check internet connection
                 if (sh.checkInternetConnection()) {

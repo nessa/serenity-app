@@ -1,6 +1,7 @@
 package com.amusebouche.amuseapp;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.app.Activity;
@@ -265,7 +266,8 @@ public class RecipeListFragment extends Fragment {
                         break;
                     case MainActivity.NEW_RECIPES_MODE:
                         // Create service handler class instance
-                        mServiceHandler = new ServiceHandler(getActivity());
+                        mServiceHandler = new ServiceHandler(getActivity(),
+                                getActivity().getPreferences(Context.MODE_PRIVATE));
 
                         // Check internet connection
                         if (mServiceHandler.checkInternetConnection()) {

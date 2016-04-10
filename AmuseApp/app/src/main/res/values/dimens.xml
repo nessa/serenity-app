@@ -107,4 +107,23 @@
     <dimen name="settings_languages_item_divider_size">1dp</dimen>
     <dimen name="settings_languages_item_text_size">18sp</dimen>
 
+    <!-- Users -->
+    <dimen name="users_edit_text_width">240dp</dimen>
+    <dimen name="users_buttons_text_size">20sp</dimen>
+    <dimen name="users_welcome_text_margin">20dp</dimen>
+    <dimen name="users_text_margin">10dp</dimen>
+    <dimen name="users_welcome_text_size">32sp</dimen>
+    <dimen name="users_name_text_size">24sp</dimen>
+    <dimen name="users_mail_text_size">18sp</dimen>
+    <dimen name="users_password_edit_padding_left">0dp</dimen>
+    <dimen name="users_password_edit_padding_right">42dp</dimen>
+    <dimen name="users_visibility_button_size">24dp</dimen>
+    <dimen name="users_visibility_button_margin_right">10dp</dimen>
+    <dimen name="users_visibility_button_margin_top">4dp</dimen>
+    <dimen name="users_remember_text_size">18sp</dimen>
+    <dimen name="users_login_button_padding">10dp</dimen>
+    <dimen name="users_login_button_margin">20dp</dimen>
+    <dimen name="users_login_error_message_margin">30dp</dimen>
+    <dimen name="users_login_sign_up_text_size">20sp</dimen>
+    <dimen name="users_login_sign_up_margin">20dp</dimen>
 </resources>

@@ -2,9 +2,9 @@ package com.amusebouche.services;
 
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 import android.util.Pair;
 
 import com.amusebouche.amuseapp.R;
@@ -18,13 +18,16 @@ import java.util.List;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 /**
@@ -36,11 +39,14 @@ import org.apache.http.util.EntityUtils;
  */
 public class ServiceHandler {
 
-    static String response = null;
     public final static int GET = 1;
     public final static int POST = 2;
 
+    static String mResponse = null;
+    static int mStatus = 0;
+
     private Context mContext;
+    private SharedPreferences mPreferences;
 
     // Needed to abort
     private DefaultHttpClient mHttpClient;
@@ -48,14 +54,15 @@ public class ServiceHandler {
     private HttpGet mHttpGet;
 
     // TODO Set correct URL
-    public final static String host = "http://192.168.1.55/";
+    public final static String host = "http://192.168.1.54/";
 
 
     /**
      * Basic constructor
      */
-    public ServiceHandler(Context context) {
+    public ServiceHandler(Context context, SharedPreferences preferences) {
         mContext = context;
+        mPreferences = preferences;
     }
 
     /**
@@ -108,15 +115,9 @@ public class ServiceHandler {
             }
         }
 
-        Log.d("BASE", base);
-
         return base;
     }
 
-
-    public String buildDetailUrl(String base, int id) {
-        return String.format("%s%d", base, id);
-    }
 
     /**
      * Check internet connection
@@ -126,13 +127,7 @@ public class ServiceHandler {
                 mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo info = conMgr.getActiveNetworkInfo();
-        if (info == null)
-            return false;
-        if (!info.isConnected())
-            return false;
-        if (!info.isAvailable())
-            return false;
-        return true;
+        return info != null && info.isConnected() && info.isAvailable();
     }
 
     /**
@@ -143,11 +138,15 @@ public class ServiceHandler {
      */
     public String makeServiceCall(String url, int method, List<NameValuePair> params) {
 
+        mStatus = 0;
+
         try {
             // HTTP client
             mHttpClient = new DefaultHttpClient();
             HttpEntity httpEntity = null;
             HttpResponse httpResponse = null;
+
+            String token = mPreferences.getString(mContext.getString(R.string.preference_auth_token), "");
 
             // Check HTTP request method type
             if (method == POST) {
@@ -155,6 +154,10 @@ public class ServiceHandler {
                 // Add POST params
                 if (params != null) {
                     mHttpPost.setEntity(new UrlEncodedFormEntity(params));
+                }
+
+                if (!token.equals("")) {
+                    mHttpPost.addHeader("Authorization", "Token " + token);
                 }
 
                 httpResponse = mHttpClient.execute(mHttpPost);
@@ -167,23 +170,88 @@ public class ServiceHandler {
                     url = host + url;
                     url += "?" + paramString;
                 }
+
                 mHttpGet = new HttpGet(url);
 
-                httpResponse = mHttpClient.execute(mHttpGet);
+                if (!token.equals("")) {
+                    mHttpGet.addHeader("Authorization", "Token " + token);
+                }
 
+                httpResponse = mHttpClient.execute(mHttpGet);
             }
+
             if (httpResponse != null) {
                 httpEntity = httpResponse.getEntity();
+                mStatus = httpResponse.getStatusLine().getStatusCode();
             }
-            response = EntityUtils.toString(httpEntity, "UTF-8");
 
-        } catch (UnsupportedEncodingException | ClientProtocolException e) {
-            e.printStackTrace();
+            mResponse = EntityUtils.toString(httpEntity, "UTF-8");
+
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return response;
+        return mResponse;
+    }
+
+    public int getStatus() {
+        return mStatus;
+    }
+
+    /**
+     * Login
+     * @param username Username credential
+     * @param password Password credential
+     * @return int Request status
+     */
+    public int login(String username, String password) {
+        int status = 0;
+
+        try {
+            // HTTP client
+            mHttpClient = new DefaultHttpClient();
+            HttpEntity httpEntity = null;
+            HttpResponse httpResponse;
+
+            // The POST request MUST end with "/"
+            HttpPost httpPost = new HttpPost(host + "api-token-auth/");
+
+            List <NameValuePair> nvps = new ArrayList<>();
+            nvps.add(new BasicNameValuePair("username", username));
+            nvps.add(new BasicNameValuePair("password", password));
+
+            httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+
+            httpResponse = mHttpClient.execute(httpPost);
+            if (httpResponse != null) {
+                status = httpResponse.getStatusLine().getStatusCode();
+                httpEntity = httpResponse.getEntity();
+            }
+
+            mResponse = EntityUtils.toString(httpEntity, "UTF-8");
+
+            if (mResponse != null) {
+                try {
+                    JSONObject jObject = new JSONObject(mResponse);
+                    String token = jObject.getString("token");
+
+                    SharedPreferences.Editor editor = mPreferences.edit();
+                    editor.putString(mContext.getString(R.string.preference_auth_token),
+                            token);
+                    editor.putString(mContext.getString(R.string.preference_username),
+                            username);
+                    editor.apply();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            mHttpClient.getConnectionManager().shutdown();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return status;
     }
 
     /**

@@ -26,6 +26,10 @@
     <string name="API_PARAM_DISLIKE_CATEGORY">dislike_category</string>
     <string name="API_PARAM_DISLIKE_INGREDIENT">dislike_ingredient</string>
 
+    <!--   User -->
+    <string name="API_USERS_ENDPOINT">users/</string>
+    <string name="API_PARAM_USERNAME">username</string>
+
     <!--   Categories -->
     <string name="CATEGORY_ALLERGY_GLUTEN_CODE">GLUTEN_ALLERGY</string>
     <string name="CATEGORY_ALLERGY_LACTOSE_CODE">LACTOSE_ALLERGY</string>
@@ -59,6 +63,10 @@
     <string name="preference_download_images">preference_download_images</string>
     <string name="preference_recipes_languages">preference_recipes_languages</string>
     <string name="preference_recognizer_language">preference_recognizer_language</string>
+    <string name="preference_auth_token">preference_auth_token</string>
+    <string name="preference_remember">preference_remember</string>
+    <string name="preference_username">preference_username</string>
+    <string name="preference_password">preference_password</string>
 
     <!--   Languages -->
     <string name="language_es">Spanish</string>
@@ -252,5 +260,27 @@
     <!--   Languages dialog -->
     <string name="settings_language_title">Recipes language</string>
     <string name="settings_language_not_selected_error">Please, select at least one language</string>
+
+    <!-- User activity -->
+    <string name="users_welcome">Welcome</string>
+    <string name="users_login">Log in</string>
+    <string name="users_register">Register</string>
+    <string name="users_logout">Log out</string>
+    <string name="users_username_hint">Username</string>
+    <string name="users_password_hint">Password</string>
+    <string name="users_repeat_password_hint">Repeat password</string>
+    <string name="users_email_hint">Email</string>
+    <string name="users_name_hint">First name</string>
+    <string name="users_surname_hint">Last name</string>
+    <string name="users_remember">Remember</string>
+    <string name="users_login_error_no_connection">No internet connection. Please, check your connection.</string>
+    <string name="users_login_error_wrong_credentials">No valid user credentials. Please, check the
+        username and password.</string>
+    <string name="users_sign_up_success">User correctly created. You can login now.</string>
+    <string name="users_sign_up">Sign up</string>
+    <string name="users_error_required">Required</string>
+    <string name="users_error_wrong_email">Wrong email address</string>
+    <string name="users_error_passwords_dont_match">Passwords don\'t match</string>
+    <string name="users_sing_up_error_username_not_unique">Existing username. Please, choose another one.</string>
 
 </resources>
