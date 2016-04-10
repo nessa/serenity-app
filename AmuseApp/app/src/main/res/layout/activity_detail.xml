@@ -156,6 +156,11 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
+
+                    <fragment android:name="com.amusebouche.amuseapp.RecipeDetailFourthTabFragment"
+                        android:id="@+id/fragment4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
                 </LinearLayout>
 
             </FrameLayout>

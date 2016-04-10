@@ -143,7 +143,7 @@ public class RecipeDetailSecondTabFragment extends Fragment {
             RecipeIngredient presentIngredient = (RecipeIngredient) mRecipe.getIngredients().get(i);
 
             LinearLayout ingredientLayout = (LinearLayout) inflater.inflate(
-                    R.layout.fragment_recipe_detail_ingredient, mLayout, false);
+                    R.layout.item_detail_ingredient, mLayout, false);
 
             TextView quantity = (TextView) ingredientLayout.findViewById(R.id.quantity);
             quantity.setText(UserFriendlyRecipeData.getIngredientQuantity(presentIngredient.getQuantity(),

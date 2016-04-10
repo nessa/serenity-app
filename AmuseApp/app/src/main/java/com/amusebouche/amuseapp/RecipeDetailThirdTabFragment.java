@@ -236,7 +236,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             RecipeDirection presentDirection = mRecipe.getDirections().get(d);
 
             LinearLayout directionLayout = (LinearLayout) inflater.inflate(
-                    R.layout.fragment_recipe_detail_direction, mLayout, false);
+                    R.layout.item_detail_direction, mLayout, false);
             directionLayout.setTag("direction" + d);
 
             TextView number = (TextView) directionLayout.findViewById(R.id.number);
