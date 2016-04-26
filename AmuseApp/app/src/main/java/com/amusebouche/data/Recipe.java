@@ -529,8 +529,8 @@ public class Recipe implements Parcelable {
         dest.writeString(this.mLanguage);
         dest.writeString(this.mTypeOfDish);
         dest.writeString(this.mDifficulty);
-        dest.writeLong(this.mCreatedTimestamp.getTime());
-        dest.writeLong(this.mUpdatedTimestamp.getTime());
+        dest.writeLong(this.mCreatedTimestamp == null ? 0 : this.mCreatedTimestamp.getTime());
+        dest.writeLong(this.mUpdatedTimestamp == null ? 0 : this.mUpdatedTimestamp.getTime());
         dest.writeFloat(this.mCookingTime);
         dest.writeString(this.mImage);
         dest.writeString(this.mLocalImage);
