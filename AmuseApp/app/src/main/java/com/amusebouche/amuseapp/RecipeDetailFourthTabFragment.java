@@ -163,19 +163,21 @@ public class RecipeDetailFourthTabFragment extends Fragment {
 
     private void showComments() {
 
-        for (int c = 0; c < mComments.size(); c++) {
-            LinearLayout commentLayout = (LinearLayout) getActivity().getLayoutInflater().inflate(
+        if (mComments != null) {
+            for (int c = 0; c < mComments.size(); c++) {
+                LinearLayout commentLayout = (LinearLayout) getActivity().getLayoutInflater().inflate(
                     R.layout.item_detail_comment, mScroll, false);
 
-            TextView userTextView = (TextView) commentLayout.findViewById(R.id.user);
-            TextView timestampTextView = (TextView) commentLayout.findViewById(R.id.timestamp);
-            TextView commentTextView = (TextView) commentLayout.findViewById(R.id.comment);
+                TextView userTextView = (TextView) commentLayout.findViewById(R.id.user);
+                TextView timestampTextView = (TextView) commentLayout.findViewById(R.id.timestamp);
+                TextView commentTextView = (TextView) commentLayout.findViewById(R.id.comment);
 
-            userTextView.setText(mComments.get(c).getUser());
-            timestampTextView.setText(mComments.get(c).getTimestamp().toString());
-            commentTextView.setText(mComments.get(c).getComment());
+                userTextView.setText(mComments.get(c).getUser());
+                timestampTextView.setText(mComments.get(c).getTimestamp().toString());
+                commentTextView.setText(mComments.get(c).getComment());
 
-            mCommentsView.addView(commentLayout);
+                mCommentsView.addView(commentLayout);
+            }
         }
 
         mLoadingIndicator.setVisibility(View.GONE);
