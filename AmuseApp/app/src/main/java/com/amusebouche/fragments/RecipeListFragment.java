@@ -25,7 +25,7 @@ import com.amusebouche.activities.EditionActivity;
 import com.amusebouche.adapters.GridviewCellAdapter;
 import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
-import com.amusebouche.loader.GetRecipesLoader;
+import com.amusebouche.loaders.GetRecipesLoader;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.services.RequestHandler;
 import com.amusebouche.data.Recipe;
@@ -79,7 +79,6 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     private boolean mFirstLoadLaunched;
 
     // Services variables
-    private Loader mLoader;
     private Call<ResponseBody> mRequestCall;
 
     // LIFECYCLE METHODS
@@ -247,12 +246,11 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
             default:
             case MainActivity.DOWNLOADED_RECIPES_MODE:
             case MainActivity.MY_RECIPES_MODE:
-                if (mLoader == null || !mLoader.isStarted()) {
-                    mLoader = getActivity().getLoaderManager().initLoader(LOADER_ID, null, this);
-                    mLoader.forceLoad();
+                Loader l = getLoaderManager().getLoader(LOADER_ID);
+                if (l != null) {
+                    getLoaderManager().restartLoader(LOADER_ID, null, this);
                 } else {
-                    mLoader = getActivity().getLoaderManager().restartLoader(LOADER_ID, null, this);
-                    mLoader.forceLoad();
+                    getLoaderManager().initLoader(LOADER_ID, null, this);
                 }
                 break;
             case MainActivity.NEW_RECIPES_MODE:
@@ -350,8 +348,10 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
      * Abort service handler requests (loader and retrofit call)
      */
     public void forceStop() {
-        if (mLoader != null) {
-            mLoader.cancelLoad();
+        Loader l = getLoaderManager().getLoader(LOADER_ID);
+        if (l != null) {
+            l.cancelLoad();
+            getLoaderManager().destroyLoader(l.getId());
         }
         if (mRequestCall != null) {
             mRequestCall.cancel();
@@ -370,6 +370,7 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     @Override
     public Loader<List<Recipe>> onCreateLoader(int id, Bundle args) {
         if (mMainActivity.getMode() == MainActivity.DOWNLOADED_RECIPES_MODE) {
+            // Downloaded recipes
             return new GetRecipesLoader(getActivity().getApplicationContext(),
                 mMainActivity.getCurrentPage(), mMainActivity.getLimitPerPage(),
                 mMainActivity.getFilterParams());

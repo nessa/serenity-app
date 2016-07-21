@@ -1,4 +1,4 @@
-package com.amusebouche.loader;
+package com.amusebouche.loaders;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
@@ -6,6 +6,8 @@ import android.util.Log;
 import android.util.Pair;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.services.DatabaseHelper;
+import com.amusebouche.services.RequestHandler;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,15 +19,21 @@ import java.util.List;
  */
 public class GetRecipesLoader extends AsyncTaskLoader<List<Recipe>> {
 
+    // Service
     private DatabaseHelper mDatabaseHelper;
 
-    private List<Recipe> mRecipes;
-    public boolean hasResult = false;
-
+    // Query data
     private int mPage;
     private int mLimit;
     private ArrayList<Pair<String, ArrayList<String>>> mParams;
 
+    /**
+     * Constructor
+     * @param context Context from where its called this loader
+     * @param page Query parameter
+     * @param limit Query parameter
+     * @param params Rest of query parameters
+     */
     public GetRecipesLoader(Context context, int page, int limit,
                             ArrayList<Pair<String, ArrayList<String>>> params) {
         super(context);
@@ -48,16 +56,12 @@ public class GetRecipesLoader extends AsyncTaskLoader<List<Recipe>> {
 
     @Override
     public void deliverResult(List<Recipe> data) {
-        mRecipes = data;
-        hasResult = true;
         super.deliverResult(data);
     }
 
     @Override
     protected void onStartLoading() {
-        if (takeContentChanged()) {
-            forceLoad();
-        }
+        forceLoad();
     }
 
     @Override
@@ -69,14 +73,5 @@ public class GetRecipesLoader extends AsyncTaskLoader<List<Recipe>> {
     protected void onReset() {
         super.onReset();
         onStopLoading();
-        if (hasResult) {
-            onReleaseResources(mRecipes);
-            mRecipes = null;
-            hasResult = false;
-        }
-    }
-
-    protected void onReleaseResources(List<Recipe> data) {
-        //nothing to do.
     }
 }

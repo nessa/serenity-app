@@ -1,12 +1,11 @@
-package com.amusebouche.loader;
+package com.amusebouche.loaders;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.util.Log;
-import android.util.Pair;
+
 import com.amusebouche.data.Recipe;
 import com.amusebouche.services.DatabaseHelper;
-import java.util.ArrayList;
+
 import java.util.List;
 
 /**

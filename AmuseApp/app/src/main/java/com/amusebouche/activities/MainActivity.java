@@ -644,10 +644,10 @@ public class MainActivity extends ActionBarActivity {
     private void resetFilterParams() {
         mFilterParams = new ArrayList<>();
 
-        Log.d("MAIN", "RESET FILTER PARAMS");
-        Log.d("MAIN", this.getLimitPerPage().toString());
-
-        addFilterToFilterParams(RequestHandler.API_PARAM_PAGE_SIZE, this.getLimitPerPage().toString(), true);
+        addFilterToFilterParams(RequestHandler.API_PARAM_PAGE_SIZE,
+            this.getLimitPerPage().toString(), true);
+        addFilterToFilterParams(RequestHandler.API_PARAM_ORDERING,
+            "-" + RequestHandler.API_PARAM_UPDATED_TIMESTAMP, true);
 
         final String languages = mSharedPreferences.getString(getString(R.string.preference_recipes_languages), "");
         if (!languages.equals("")) {
