@@ -26,7 +26,7 @@ import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeListFragment;
-import com.amusebouche.ui.ImageManager;
+import com.amusebouche.services.ImageHandler;
 
 
 /**
@@ -123,7 +123,7 @@ public class GridviewCellAdapter extends BaseAdapter {
         // Get the image to update the content
         image = (ImageView) cell.findViewById(R.id.recipe_image);
         image.setTag(position);
-        ImageManager.setCellImage(mContext, presentRecipe.getImage(), image, progressBar);
+        ImageHandler.setCellImage(mContext, presentRecipe.getImage(), image, progressBar);
 
         // TODO: Set this!
         // Save present recipe ID into the button

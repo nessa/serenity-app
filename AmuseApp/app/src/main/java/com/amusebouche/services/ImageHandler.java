@@ -1,4 +1,4 @@
-package com.amusebouche.ui;
+package com.amusebouche.services;
 
 import android.content.Context;
 import android.view.View;
@@ -12,13 +12,13 @@ import com.squareup.picasso.Picasso;
 import java.util.Random;
 
 /**
- * Image manager class.
+ * Image handler class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  *
  * Android support class.
- * It contains useful methods to manage images.
+ * It contains useful methods to handle images.
  */
-public class ImageManager {
+public class ImageHandler {
 
     /**
      * Set an image in a image view using the Picasso library.
@@ -29,8 +29,7 @@ public class ImageManager {
      * @see Picasso library: com.squareup.picasso.Picasso
      */
     public static void setCellImage(Context context, String imageName, ImageView imageView) {
-        ImageManager.setCellImage(context, imageName, imageView, null);
-
+        ImageHandler.setCellImage(context, imageName, imageView, null);
     }
 
     /**
@@ -77,27 +76,33 @@ public class ImageManager {
                 break;
         }
 
+        // Define callback for progress bar if it's defined
+        Callback callback = null;
+        if (progressBar != null) {
+            callback = new Callback() {
+                @Override
+                public void onSuccess() {
+                    progressBar.setVisibility(View.GONE);
+                }
 
-        if (progressBar == null) {
+                @Override
+                public void onError() {
+                }
+            };
+        }
+
+        // Check if image is defined correctly. If not, load the alternative resource.
+        if (imageName == null || imageName.equals("")) {
             Picasso.with(context)
-                    .load(imageName)
-                    .noFade()
-                    .error(resource)
-                    .into(imageView);
+                .load(resource)
+                .noFade()
+                .into(imageView, callback);
         } else {
             Picasso.with(context)
-                    .load(imageName)
-                    .noFade()
-                    .error(resource)
-                    .into(imageView, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            progressBar.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onError() {}
-                    });
+                .load(imageName)
+                .noFade()
+                .error(resource)
+                .into(imageView, callback);
         }
     }
 

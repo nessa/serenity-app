@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.amusebouche.ui.ImageManager;
+import com.amusebouche.services.ImageHandler;
 
 
 /**
@@ -51,7 +51,7 @@ public class MediaActivity extends ActionBarActivity {
                     LinearLayout.LayoutParams.MATCH_PARENT));
             image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-            ImageManager.setCellImage(this, elementUri, image);
+            ImageHandler.setCellImage(this, elementUri, image);
 
             container.addView(image);
         } else {
