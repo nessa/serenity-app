@@ -3,7 +3,7 @@ package com.amusebouche.data;
 import android.content.Context;
 import android.util.Pair;
 
-import com.amusebouche.amuseapp.R;
+import com.amusebouche.activities.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;

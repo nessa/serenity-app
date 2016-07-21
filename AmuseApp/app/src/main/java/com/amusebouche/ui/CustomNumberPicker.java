@@ -41,7 +41,7 @@ public class CustomNumberPicker extends NumberPicker {
         try {
             selectionDivider.setAccessible(true);
             selectionDivider.set(this, getResources()
-                    .getDrawable(com.amusebouche.amuseapp.R.drawable.divider));
+                    .getDrawable(com.amusebouche.activities.R.drawable.divider));
         } catch (IllegalArgumentException | Resources.NotFoundException |
                 IllegalAccessException | NullPointerException e) {
             e.printStackTrace();

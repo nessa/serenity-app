@@ -124,6 +124,7 @@
     <dimen name="users_login_button_padding">10dp</dimen>
     <dimen name="users_login_button_margin">20dp</dimen>
     <dimen name="users_login_error_message_margin">30dp</dimen>
+    <dimen name="users_go_to_height">36dp</dimen>
     <dimen name="users_login_sign_up_text_size">20sp</dimen>
     <dimen name="users_login_sign_up_margin">20dp</dimen>
 </resources>

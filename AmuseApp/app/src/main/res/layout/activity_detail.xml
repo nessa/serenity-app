@@ -124,7 +124,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                    <fragment android:name="com.amusebouche.amuseapp.RecipeDetailFirstTabFragment"
+                    <fragment android:name="com.amusebouche.fragments.RecipeDetailFirstTabFragment"
                         android:id="@+id/fragment1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -135,7 +135,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                    <fragment android:name="com.amusebouche.amuseapp.RecipeDetailSecondTabFragment"
+                    <fragment android:name="com.amusebouche.fragments.RecipeDetailSecondTabFragment"
                         android:id="@+id/fragment2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -146,7 +146,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                    <fragment android:name="com.amusebouche.amuseapp.RecipeDetailThirdTabFragment"
+                    <fragment android:name="com.amusebouche.fragments.RecipeDetailThirdTabFragment"
                         android:id="@+id/fragment3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -157,7 +157,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                    <fragment android:name="com.amusebouche.amuseapp.RecipeDetailFourthTabFragment"
+                    <fragment android:name="com.amusebouche.fragments.RecipeDetailFourthTabFragment"
                         android:id="@+id/fragment4"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />

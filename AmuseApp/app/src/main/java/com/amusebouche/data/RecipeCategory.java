@@ -16,6 +16,16 @@ import org.json.JSONObject;
  */
 public class RecipeCategory implements Parcelable {
 
+    // Category values
+    public static String CATEGORY_ALLERGY_GLUTEN_CODE = "GLUTEN_ALLERGY";
+    public static String CATEGORY_ALLERGY_LACTOSE_CODE = "LACTOSE_ALLERGY";
+    public static String CATEGORY_ALLERGY_SHELLFISH_CODE = "SHELLFISH_ALLERGY";
+    public static String CATEGORY_ALLERGY_FISH_CODE = "FISH_ALLERGY";
+    public static String CATEGORY_ALLERGY_DRIED_FRUIT_CODE = "DRIED_FRUIT_ALLERGY";
+    public static String CATEGORY_DIET_MEDITERRANEAN = "MEDITERRANEAN";
+    public static String CATEGORY_DIET_VEGETARIAN = "VEGETARIAN";
+    public static String CATEGORY_DIET_VEGAN = "VEGAN";
+    
     // Main variables
     private String mName;
 

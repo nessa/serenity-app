@@ -6,53 +6,6 @@
     <string name="accept">Accept</string>
     <string name="cancel">Cancel</string>
 
-    <!-- API words -->
-    <string name="API_RECIPES_ENDPOINT">recipes/</string>
-    <string name="API_GET_SEPARATOR">\?</string>
-    <string name="API_PARAM_SEPARATOR">&amp;</string>
-    <string name="API_PARAM_EQUAL">=</string>
-    <string name="API_PARAM_NOT_EQUAL">!=</string>
-    <string name="API_PARAM_PAGE">page</string>
-    <string name="API_PARAM_TITLE">title</string>
-    <string name="API_PARAM_CATEGORY">category</string>
-    <string name="API_PARAM_DIFFICULTY">difficulty</string>
-    <string name="API_PARAM_TYPE_OF_DISH">type_of_dish</string>
-    <string name="API_PARAM_INGREDIENT">ingredient</string>
-    <string name="API_PARAM_LANGUAGE">language</string>
-    <string name="API_PARAM_RATING">average_rating</string>
-    <string name="API_PARAM_ORDERING">ordering</string>
-    <string name="API_PARAM_UPDATED_TIMESTAMP">updated_timestamp</string>
-    <string name="API_PARAM_DISLIKE_PREFIX">dislike_</string>
-    <string name="API_PARAM_DISLIKE_CATEGORY">dislike_category</string>
-    <string name="API_PARAM_DISLIKE_INGREDIENT">dislike_ingredient</string>
-
-    <!--   User -->
-    <string name="API_USERS_ENDPOINT">users/</string>
-    <string name="API_PARAM_USERNAME">username</string>
-
-    <!--   Categories -->
-    <string name="CATEGORY_ALLERGY_GLUTEN_CODE">GLUTEN_ALLERGY</string>
-    <string name="CATEGORY_ALLERGY_LACTOSE_CODE">LACTOSE_ALLERGY</string>
-    <string name="CATEGORY_ALLERGY_SHELLFISH_CODE">SHELLFISH_ALLERGY</string>
-    <string name="CATEGORY_ALLERGY_FISH_CODE">FISH_ALLERGY</string>
-    <string name="CATEGORY_ALLERGY_DRIED_FRUIT_CODE">DRIED_FRUIT_ALLERGY</string>
-    <string name="CATEGORY_DIET_MEDITERRANEAN">MEDITERRANEAN</string>
-    <string name="CATEGORY_DIET_VEGETARIAN">VEGETARIAN</string>
-    <string name="CATEGORY_DIET_VEGAN">VEGAN</string>
-
-    <!--   Types of dish -->
-    <string name="TYPE_OF_DISH_APPETIZER">APPETIZER</string>
-    <string name="TYPE_OF_DISH_FIRST_COURSE">FIRST-COURSE</string>
-    <string name="TYPE_OF_DISH_SECOND_COURSE">SECOND-COURSE</string>
-    <string name="TYPE_OF_DISH_MAIN_DISH">MAIN-DISH</string>
-    <string name="TYPE_OF_DISH_DESSERT">DESSERT</string>
-    <string name="TYPE_OF_DISH_OTHER">OTHER</string>
-
-    <!--   Difficulties -->
-    <string name="DIFFICULTY_LOW">LOW</string>
-    <string name="DIFFICULTY_MEDIUM">MEDIUM</string>
-    <string name="DIFFICULTY_HIGH">HIGH</string>
-
     <!-- Menu -->
     <string name="action_settings">Settings</string>
     <string name="action_search">Search</string>
@@ -273,6 +226,7 @@
     <string name="users_name_hint">First name</string>
     <string name="users_surname_hint">Last name</string>
     <string name="users_remember">Remember</string>
+    <string name="users_login_error">There was an error on login.</string>
     <string name="users_login_error_no_connection">No internet connection. Please, check your connection.</string>
     <string name="users_login_error_wrong_credentials">No valid user credentials. Please, check the
         username and password.</string>
@@ -281,6 +235,9 @@
     <string name="users_error_required">Required</string>
     <string name="users_error_wrong_email">Wrong email address</string>
     <string name="users_error_passwords_dont_match">Passwords don\'t match</string>
+    <string name="users_sing_up_error">There was an error on register.</string>
     <string name="users_sing_up_error_username_not_unique">Existing username. Please, choose another one.</string>
+    <string name="users_sing_up_error_password_required">Password required. Please, add one.</string>
+    <string name="users_sing_up_error_valid_email">Enter a valid email address.</string>
 
 </resources>

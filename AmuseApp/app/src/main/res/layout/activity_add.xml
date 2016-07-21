@@ -40,7 +40,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                    <fragment android:name="com.amusebouche.amuseapp.RecipeEditionFirstTabFragment"
+                    <fragment android:name="com.amusebouche.fragments.RecipeEditionFirstTabFragment"
                         android:id="@+id/fragment1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -51,7 +51,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                    <fragment android:name="com.amusebouche.amuseapp.RecipeEditionSecondTabFragment"
+                    <fragment android:name="com.amusebouche.fragments.RecipeEditionSecondTabFragment"
                         android:id="@+id/fragment2"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -62,7 +62,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" >
 
-                    <fragment android:name="com.amusebouche.amuseapp.RecipeEditionThirdTabFragment"
+                    <fragment android:name="com.amusebouche.fragments.RecipeEditionThirdTabFragment"
                         android:id="@+id/fragment3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />

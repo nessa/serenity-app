@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- installLocation indicates if the app can be installed in the external devica -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.amusebouche.amuseapp"
+    package="com.amusebouche.activities"
     android:installLocation="preferExternal" >
 
     <uses-sdk
@@ -20,7 +20,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".SplashScreenActivity"
+            android:name="com.amusebouche.activities.SplashScreenActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,30 +28,30 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.amusebouche.amuseapp.MainActivity"
+            android:name="com.amusebouche.activities.MainActivity"
             android:label="@string/app_name">
         </activity>
         <activity
-            android:name="com.amusebouche.amuseapp.DetailActivity"
+            android:name="com.amusebouche.activities.DetailActivity"
             android:label="@string/app_name"
-            android:parentActivityName="com.amusebouche.amuseapp.MainActivity" >
+            android:parentActivityName="com.amusebouche.activities.MainActivity" >
             <!-- The meta-data element is needed for versions lower than 4.1 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.amusebouche.amuseapp.MainActivity" />
+                android:value="com.amusebouche.activities.MainActivity" />
         </activity>
         <activity
-            android:name="com.amusebouche.amuseapp.EditionActivity"
+            android:name="com.amusebouche.activities.EditionActivity"
             android:label="@string/app_name">
         </activity>
         <activity
-            android:name="com.amusebouche.amuseapp.MediaActivity"
+            android:name="com.amusebouche.activities.MediaActivity"
             android:label="@string/app_name"
-            android:parentActivityName="com.amusebouche.amuseapp.DetailActivity" >
+            android:parentActivityName="com.amusebouche.activities.DetailActivity" >
             <!-- The meta-data element is needed for versions lower than 4.1 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.amusebouche.amuseapp.DetailActivity" />
+                android:value="com.amusebouche.activities.DetailActivity" />
         </activity>
     </application>
 

@@ -22,6 +22,19 @@ import java.util.Date;
  */
 public class Recipe implements Parcelable {
 
+    // Types of dish values
+    public static String TYPE_OF_DISH_APPETIZER = "APPETIZER";
+    public static String TYPE_OF_DISH_FIRST_COURSE = "FIRST-COURSE";
+    public static String TYPE_OF_DISH_SECOND_COURSE = "SECOND-COURSE";
+    public static String TYPE_OF_DISH_MAIN_DISH = "MAIN-DISH";
+    public static String TYPE_OF_DISH_DESSERT = "DESSERT";
+    public static String TYPE_OF_DISH_OTHER = "OTHER";
+
+    // Difficulties values
+    public static String DIFFICULTY_LOW = "LOW";
+    public static String DIFFICULTY_MEDIUM = "MEDIUM";
+    public static String DIFFICULTY_HIGH = "HIGH";
+
     // API variables
     private String mId;
     private String mTitle;
