@@ -69,7 +69,17 @@ public class GridviewCellAdapter extends BaseAdapter {
     }
 
     public long getItemId(int position) {
-        return Long.valueOf(((MainActivity) mContext).getRecipes().get(position).getId());
+        try {
+            if (((MainActivity) mContext).getRecipes().get(position).getIsOnline()) {
+                // API identifier
+                return Long.valueOf(((MainActivity) mContext).getRecipes().get(position).getId());
+            } else {
+                // Database identifier
+                return Long.valueOf(((MainActivity) mContext).getRecipes().get(position).getDatabaseId());
+            }
+        } catch (IndexOutOfBoundsException e) {
+            return 0;
+        }
     }
 
     // Create a new view for each item referenced by the adapter
