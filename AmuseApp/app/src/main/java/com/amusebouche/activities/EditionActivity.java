@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.Loader;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -41,7 +41,7 @@ import java.util.ArrayList;
  * Related layouts:
  * - Content: activity_add.xml
  */
-public class EditionActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks {
+public class EditionActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
 
     // Tab identifiers
     private static final String TAB_1 = "first_tab";
@@ -173,19 +173,19 @@ public class EditionActivity extends ActionBarActivity implements LoaderManager.
         // First tab: information
         TabHost.TabSpec spec = mTabs.newTabSpec(TAB_1);
         spec.setContent(R.id.tab1);
-        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_description_32dp));
+        spec.setIndicator("", getDrawable(R.drawable.ic_description_32dp));
         mTabs.addTab(spec);
 
         // Second tab: ingredients
         spec = mTabs.newTabSpec(TAB_2);
         spec.setContent(R.id.tab2);
-        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_ingredients_32dp));
+        spec.setIndicator("", getDrawable(R.drawable.ic_ingredients_32dp));
         mTabs.addTab(spec);
 
         // Third tab: directions
         spec = mTabs.newTabSpec(TAB_3);
         spec.setContent(R.id.tab3);
-        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_cook_32dp));
+        spec.setIndicator("", getDrawable(R.drawable.ic_cook_32dp));
         mTabs.addTab(spec);
 
         // Show first tab at the beginning
@@ -411,9 +411,9 @@ public class EditionActivity extends ActionBarActivity implements LoaderManager.
     }
 
     /**
-     *
-     * @param textView
-     * @return
+     * Checks text field validations
+     * @param textView Text view element to check
+     * @return True if the text view string is correct. Otherwise, false.
      */
     public boolean checkRequiredValidation(TextView textView) {
         if (textView.getText().toString().length() == 0) {
@@ -424,6 +424,11 @@ public class EditionActivity extends ActionBarActivity implements LoaderManager.
         return true;
     }
 
+    /**
+     * Checks URL validations
+     * @param textView Text view element to check
+     * @return True if the string is a valid URL. Otherwise, false.
+     */
     public boolean checkURLValidation(TextView textView) {
         if (textView.getText().toString().length() > 0 && !URLUtil.isValidUrl(textView.getText().toString())) {
             textView.setError(getString(R.string.recipe_edition_error_invalid_uri));
@@ -432,6 +437,8 @@ public class EditionActivity extends ActionBarActivity implements LoaderManager.
 
         return true;
     }
+
+    // LOADER METHODS
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {

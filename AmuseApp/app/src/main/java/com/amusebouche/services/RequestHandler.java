@@ -3,6 +3,7 @@ package com.amusebouche.services;
 import android.util.Pair;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * RequestHandler class.
@@ -58,7 +59,8 @@ public class RequestHandler {
      * @return Parameter's string
      */
     static public String buildParams(int page, ArrayList<Pair<String, ArrayList<String>>> params) {
-        String paramString = String.format("%s%s%d", API_PARAM_PAGE, API_PARAM_EQUAL, page);
+        String paramString = String.format(Locale.getDefault(), "%s%s%d", API_PARAM_PAGE,
+            API_PARAM_EQUAL, page);
 
         if (params != null) {
             for (Pair item : params) {

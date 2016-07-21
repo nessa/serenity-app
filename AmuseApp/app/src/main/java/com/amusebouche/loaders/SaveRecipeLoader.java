@@ -6,8 +6,6 @@ import android.content.Context;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.services.DatabaseHelper;
 
-import java.util.List;
-
 /**
  * SaveRecipe loader class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
@@ -66,9 +64,5 @@ public class SaveRecipeLoader extends AsyncTaskLoader<Void> {
     protected void onReset() {
         super.onReset();
         onStopLoading();
-    }
-
-    protected void onReleaseResources(List<Recipe> data) {
-        //nothing to do.
     }
 }

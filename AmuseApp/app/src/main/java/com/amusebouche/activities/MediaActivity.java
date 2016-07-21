@@ -2,9 +2,8 @@ package com.amusebouche.activities;
 
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -24,7 +23,7 @@ import com.amusebouche.services.ImageHandler;
  * Related layouts:
  * - Content: activity_detail.xml
  */
-public class MediaActivity extends ActionBarActivity {
+public class MediaActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +37,7 @@ public class MediaActivity extends ActionBarActivity {
 
         setContentView(R.layout.activity_media);
 
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(getString(R.string.detail_direction_label) + " " + directionNumber);
+        getSupportActionBar().setTitle(getString(R.string.detail_direction_label) + " " + directionNumber);
 
         LinearLayout container = (LinearLayout) findViewById(R.id.container);
 

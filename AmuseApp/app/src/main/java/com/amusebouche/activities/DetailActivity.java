@@ -6,8 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -40,7 +40,7 @@ import java.io.FileInputStream;
  * - Menu: menu_recipe_detail.xml
  * - Content: activity_detail.xml
  */
-public class DetailActivity extends ActionBarActivity {
+public class DetailActivity extends AppCompatActivity {
 
     // Tab identifiers
     private static final String TAB_1 = "first_tab";
@@ -104,25 +104,25 @@ public class DetailActivity extends ActionBarActivity {
         // First tab: information
         TabHost.TabSpec spec = mTabs.newTabSpec(TAB_1);
         spec.setContent(R.id.tab1);
-        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_description_32dp));
+        spec.setIndicator("", getDrawable(R.drawable.ic_description_32dp));
         mTabs.addTab(spec);
 
         // Second tab: ingredients
         spec = mTabs.newTabSpec(TAB_2);
         spec.setContent(R.id.tab2);
-        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_ingredients_32dp));
+        spec.setIndicator("", getDrawable(R.drawable.ic_ingredients_32dp));
         mTabs.addTab(spec);
 
         // Third tab: directions
         spec = mTabs.newTabSpec(TAB_3);
         spec.setContent(R.id.tab3);
-        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_cook_32dp));
+        spec.setIndicator("", getDrawable(R.drawable.ic_cook_32dp));
         mTabs.addTab(spec);
 
         // Fourth tab: comments (TODO)
         spec = mTabs.newTabSpec(TAB_4);
         spec.setContent(R.id.tab4);
-        spec.setIndicator("", getResources().getDrawable(R.drawable.ic_comments_32dp));
+        spec.setIndicator("", getDrawable(R.drawable.ic_comments_32dp));
         mTabs.addTab(spec);
 
         // Show first tab at the beginning

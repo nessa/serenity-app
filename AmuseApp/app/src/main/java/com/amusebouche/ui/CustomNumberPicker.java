@@ -8,9 +8,6 @@ import android.widget.NumberPicker;
 import java.lang.reflect.Field;
 import java.lang.NullPointerException;
 
-/**
- *
- */
 
 /**
  * Custom NumberPicker class.
@@ -40,8 +37,8 @@ public class CustomNumberPicker extends NumberPicker {
 
         try {
             selectionDivider.setAccessible(true);
-            selectionDivider.set(this, getResources()
-                    .getDrawable(com.amusebouche.activities.R.drawable.divider));
+            selectionDivider.set(this,
+                context.getDrawable(com.amusebouche.activities.R.drawable.divider));
         } catch (IllegalArgumentException | Resources.NotFoundException |
                 IllegalAccessException | NullPointerException e) {
             e.printStackTrace();

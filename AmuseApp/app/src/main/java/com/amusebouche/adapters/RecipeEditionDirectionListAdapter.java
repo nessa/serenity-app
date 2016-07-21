@@ -16,6 +16,7 @@ import com.amusebouche.fragments.RecipeEditionThirdTabFragment;
 import com.woxthebox.draglistview.DragItemAdapter;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Ingredient list view cell adapter class.
@@ -62,7 +63,7 @@ public class RecipeEditionDirectionListAdapter extends DragItemAdapter<Pair<Long
 
         RecipeDirection d = mItemList.get(position).second;
 
-        holder.mNameTextView.setText(String.format("%s %d", mContext.getString(R.string.detail_direction_label),
+        holder.mNameTextView.setText(String.format(Locale.getDefault(), "%s %d", mContext.getString(R.string.detail_direction_label),
                 d.getSortNumber()));
         holder.mDescriptionTextView.setText(d.getDescription());
 
