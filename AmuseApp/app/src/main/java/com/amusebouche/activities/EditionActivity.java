@@ -1,8 +1,11 @@
 package com.amusebouche.activities;
 
 
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +16,7 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -23,6 +27,7 @@ import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
 import com.amusebouche.fragments.RecipeEditionThirdTabFragment;
+import com.amusebouche.loader.SaveRecipeLoader;
 import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
@@ -37,7 +42,7 @@ import java.util.ArrayList;
  * Related layouts:
  * - Content: activity_add.xml
  */
-public class EditionActivity extends ActionBarActivity {
+public class EditionActivity extends ActionBarActivity implements LoaderManager.LoaderCallbacks {
 
     // Tab identifiers
     private static final String TAB_1 = "first_tab";
@@ -51,11 +56,16 @@ public class EditionActivity extends ActionBarActivity {
     private static final String LIMIT_PER_PAGE_KEY = "limit";
     private static final String INTENT_KEY_TAB = "tab";
 
+    // The loader's unique id.
+    private static final int LOADER_ID = 2;
+
     // Data variables
     private Recipe mRecipe;
     private ArrayList<Recipe> mRecipes;
     private Integer mCurrentPage;
     private Integer mLimitPerPage;
+
+    private View mLayout;
 
     // Tabs
     private TabHost mTabs;
@@ -71,6 +81,9 @@ public class EditionActivity extends ActionBarActivity {
 
     // Enable buttons
     private boolean mEnableSaveButton;
+
+    // Services variables
+    private Loader mLoader;
 
     // LIFECYCLE METHODS
 
@@ -129,6 +142,8 @@ public class EditionActivity extends ActionBarActivity {
         getSupportActionBar().setTitle(getString(R.string.activity_add_title));
         getSupportActionBar().setElevation(0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mLayout = findViewById(R.id.layout);
 
         // Get fragments
         mSecondFragment = (RecipeEditionSecondTabFragment) getFragmentManager().findFragmentById(R.id.fragment2);
@@ -363,6 +378,16 @@ public class EditionActivity extends ActionBarActivity {
                 Log.d(String.format("%d", mRecipe.getIngredients().get(i).getSortNumber()),
                         mRecipe.getIngredients().get(i).getName());
             }
+
+
+            if (mLoader == null || !mLoader.isStarted()) {
+                mLoader = getLoaderManager().initLoader(LOADER_ID, null, this);
+                mLoader.forceLoad();
+            } else {
+                mLoader = getLoaderManager().restartLoader(LOADER_ID, null, this);
+                mLoader.forceLoad();
+            }
+
         } else {
             Log.d("NOTE", "BUTTON DISABLED");
         }
@@ -407,5 +432,22 @@ public class EditionActivity extends ActionBarActivity {
         }
 
         return true;
+    }
+
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        return new SaveRecipeLoader(getApplicationContext(), mRecipe);
+    }
+
+    @Override
+    public void onLoadFinished(Loader loader, Object data) {
+        Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
+            Snackbar.LENGTH_LONG)
+            .show();
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {
+
     }
 }

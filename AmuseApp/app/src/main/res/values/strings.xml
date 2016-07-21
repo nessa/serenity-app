@@ -173,6 +173,7 @@
     <!-- Recipe add activity -->
     <string name="activity_add_title">New recipe</string>
     <!--   Recipe edition fragment -->
+    <string name="recipe_edition_saved_recipe_message">Saved recipe</string>
     <string name="recipe_edition_error_required">Required</string>
     <string name="recipe_edition_error_invalid_uri">Invalid URL</string>
     <string name="recipe_edition_title_label">Title</string>

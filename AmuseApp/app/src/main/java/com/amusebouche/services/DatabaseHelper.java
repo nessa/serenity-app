@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 import android.content.ContentValues;
@@ -72,10 +73,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 recipe.getTypeOfDish());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY,
                 recipe.getDifficulty());
-        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP,
+
+        if (recipe.getCreatedTimestamp() == null) {
+            recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP,
+                dateFormat.format(new Date()));
+            recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP,
+                dateFormat.format(new Date()));
+        } else {
+            recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP,
                 dateFormat.format(recipe.getCreatedTimestamp()));
-        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP,
+            recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP,
                 dateFormat.format(recipe.getUpdatedTimestamp()));
+        }
+
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME,
                 recipe.getCookingTime());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_IMAGE, recipe.getImage());
@@ -177,10 +187,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 recipe.getTypeOfDish());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY,
                 recipe.getDifficulty());
-        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP,
-                dateFormat.format(recipe.getCreatedTimestamp()));
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP,
-                dateFormat.format(recipe.getUpdatedTimestamp()));
+            dateFormat.format(new Date()));
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME,
                 recipe.getCookingTime());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_IMAGE, recipe.getImage());
