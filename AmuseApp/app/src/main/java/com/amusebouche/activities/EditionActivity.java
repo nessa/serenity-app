@@ -16,7 +16,6 @@ import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
@@ -27,7 +26,7 @@ import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.UserFriendlyRecipeData;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
 import com.amusebouche.fragments.RecipeEditionThirdTabFragment;
-import com.amusebouche.loader.SaveRecipeLoader;
+import com.amusebouche.loaders.SaveRecipeLoader;
 import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
