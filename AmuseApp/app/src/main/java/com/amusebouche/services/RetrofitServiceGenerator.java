@@ -6,6 +6,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 
 /**
@@ -29,7 +30,27 @@ public class RetrofitServiceGenerator {
      * @return new service instance
      */
     public static <S> S createService(Class<S> serviceClass) {
-        return createService(serviceClass, null);
+        return createService(serviceClass, false);
+    }
+
+    /**
+     * Creates a basic retrofit service.
+     * @param serviceClass service class
+     * @param enableLogging boolean to enable logging
+     * @return new service instance
+     */
+    public static <S> S createService(Class<S> serviceClass, boolean enableLogging) {
+        return createService(serviceClass, null, enableLogging);
+    }
+
+    /**
+     * Creates a basic retrofit service.
+     * @param serviceClass service class
+     * @param authToken authorization token
+     * @return new service instance
+     */
+    public static <S> S createService(Class<S> serviceClass, final String authToken) {
+        return createService(serviceClass, authToken, false);
     }
 
     /**
@@ -37,9 +58,11 @@ public class RetrofitServiceGenerator {
      * that sends the token in an authorization header.
      * @param serviceClass service class
      * @param authToken authorization token
+     * @param enableLogging boolean to enable logging
      * @return new service instance
      */
-    public static <S> S  createService(Class<S> serviceClass, final String authToken) {
+    public static <S> S  createService(Class<S> serviceClass, final String authToken,
+                                       boolean enableLogging) {
         if (authToken != null) {
             httpClient.addInterceptor(new Interceptor() {
                 @Override
@@ -55,6 +78,16 @@ public class RetrofitServiceGenerator {
                     return chain.proceed(request);
                 }
             });
+        }
+
+        if (enableLogging) {
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+
+            // set the desired log level
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+            // add logging as last interceptor
+            httpClient.addInterceptor(logging);
         }
 
         OkHttpClient client = httpClient.build();
