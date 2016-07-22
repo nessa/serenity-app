@@ -26,7 +26,7 @@ import com.amusebouche.activities.EditionActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.adapters.RecipeEditionIngredientListAdapter;
 import com.amusebouche.data.RecipeIngredient;
-import com.amusebouche.data.UserFriendlyRecipeData;
+import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
@@ -66,7 +66,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        measurementUnits = UserFriendlyRecipeData.getMeasurementUnits(getActivity());
+        measurementUnits = UserFriendlyTranslationsHandler.getMeasurementUnits(getActivity());
     }
 
 
@@ -259,10 +259,10 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
                     // Calculate quantity and measurement unit
                     Float quantity = 0.0F;
-                    String unit = UserFriendlyRecipeData.getDefaultMeasurementUnit();
+                    String unit = UserFriendlyTranslationsHandler.getDefaultMeasurementUnit();
                     if (quantityTextView.getText().toString().length() == 0) {
                         quantity = Float.valueOf(quantityTextView.getText().toString());
-                        unit = UserFriendlyRecipeData.getMeasurementUnitTranslationByPosition(
+                        unit = UserFriendlyTranslationsHandler.getMeasurementUnitTranslationByPosition(
                                 unitsSpinner.getSelectedItemPosition(), getActivity());
                     }
 
@@ -299,7 +299,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         if (position > -1) {
             nameTextView.setText(mEditionActivity.getRecipe().getIngredients().get(position).getName());
             quantityTextView.setText(String.format("%f", mEditionActivity.getRecipe().getIngredients().get(position).getQuantity()));
-            unitsSpinner.setSelection(UserFriendlyRecipeData.getMeasurementUnitPosition(
+            unitsSpinner.setSelection(UserFriendlyTranslationsHandler.getMeasurementUnitPosition(
                     mEditionActivity.getRecipe().getIngredients().get(position).getMeasurementUnit()));
 
             mEditionActivity.toggleEnableButton(acceptButton,

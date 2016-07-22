@@ -17,7 +17,7 @@ import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
-import com.amusebouche.data.UserFriendlyRecipeData;
+import com.amusebouche.services.UserFriendlyTranslationsHandler;
 
 import java.util.Objects;
 
@@ -145,10 +145,10 @@ public class RecipeDetailFirstTabFragment extends Fragment {
 
         // Set data
         TextView typeOfDishTextView = (TextView) mLayout.findViewById(R.id.type_of_dish);
-        typeOfDishTextView.setText(UserFriendlyRecipeData.getTypeOfDishTranslation(mRecipe.getTypeOfDish(), getActivity()));
+        typeOfDishTextView.setText(UserFriendlyTranslationsHandler.getTypeOfDishTranslation(mRecipe.getTypeOfDish(), getActivity()));
 
         TextView difficultyTextView = (TextView) mLayout.findViewById(R.id.difficulty);
-        difficultyTextView.setText(UserFriendlyRecipeData.getDifficultyTranslation(mRecipe.getDifficulty(), getActivity()));
+        difficultyTextView.setText(UserFriendlyTranslationsHandler.getDifficultyTranslation(mRecipe.getDifficulty(), getActivity()));
 
         TextView cookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
         cookingTimeTextView.setText(this.getCookingTime(mRecipe.getCookingTime()));

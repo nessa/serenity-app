@@ -23,7 +23,7 @@ import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
-import com.amusebouche.data.UserFriendlyRecipeData;
+import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
 import com.amusebouche.fragments.RecipeEditionThirdTabFragment;
 import com.amusebouche.loaders.SaveRecipeLoader;
@@ -113,8 +113,8 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
                         "",
                         "", // Set username
                         "es", // Set preferences language
-                        UserFriendlyRecipeData.getDefaultTypeOfDish(),
-                        UserFriendlyRecipeData.getDefaultDifficulty(),
+                        UserFriendlyTranslationsHandler.getDefaultTypeOfDish(),
+                        UserFriendlyTranslationsHandler.getDefaultDifficulty(),
                         null,
                         null,
                         0.0F,

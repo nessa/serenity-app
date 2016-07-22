@@ -20,7 +20,7 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.EditionActivity;
 import com.amusebouche.activities.R;
-import com.amusebouche.data.UserFriendlyRecipeData;
+import com.amusebouche.services.UserFriendlyTranslationsHandler;
 
 
 import java.util.ArrayList;
@@ -66,8 +66,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        typesOfDish = UserFriendlyRecipeData.getTypes(getActivity());
-        difficulties = UserFriendlyRecipeData.getDifficulties(getActivity());
+        typesOfDish = UserFriendlyTranslationsHandler.getTypes(getActivity());
+        difficulties = UserFriendlyTranslationsHandler.getDifficulties(getActivity());
     }
 
 
@@ -195,7 +195,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 mEditionActivity.getRecipe().setTypeOfDish(
-                        UserFriendlyRecipeData.getTypeOfDishTranslationByPosition(position, getActivity()));
+                        UserFriendlyTranslationsHandler.getTypeOfDishTranslationByPosition(position, getActivity()));
             }
 
             @Override
@@ -214,7 +214,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 mEditionActivity.getRecipe().setDifficulty(
-                        UserFriendlyRecipeData.getDifficultyTranslationByPosition(position, getActivity()));
+                        UserFriendlyTranslationsHandler.getDifficultyTranslationByPosition(position, getActivity()));
             }
 
             @Override
@@ -230,7 +230,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         SeekBar.OnSeekBarChangeListener cookingTimeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                mCookingTimeLabel.setText(UserFriendlyRecipeData.getCookingTimeLabel(mCookingTimeHours.getProgress(),
+                mCookingTimeLabel.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(mCookingTimeHours.getProgress(),
                         mCookingTimeMinutes.getProgress(), getActivity()));
 
                 mEditionActivity.getRecipe().setCookingTime(mCookingTimeHours.getProgress() * 60.0F +
@@ -285,8 +285,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         // Set initial data
         mTitle.setText(mEditionActivity.getRecipe().getTitle());
         mImage.setText(mEditionActivity.getRecipe().getImage());
-        mTypeOfDish.setSelection(UserFriendlyRecipeData.getTypeOfDishPosition(mEditionActivity.getRecipe().getTypeOfDish()));
-        mDifficulty.setSelection(UserFriendlyRecipeData.getDifficultyPosition(mEditionActivity.getRecipe().getDifficulty()));
+        mTypeOfDish.setSelection(UserFriendlyTranslationsHandler.getTypeOfDishPosition(mEditionActivity.getRecipe().getTypeOfDish()));
+        mDifficulty.setSelection(UserFriendlyTranslationsHandler.getDifficultyPosition(mEditionActivity.getRecipe().getDifficulty()));
         mCookingTimeHours.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() / 60);
         mCookingTimeMinutes.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() % 60);
         mServings.setProgress((mEditionActivity.getRecipe().getServings() > 0) ?
@@ -296,7 +296,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         // Check initial data
         setServingsLabel();
 
-        mCookingTimeLabel.setText(UserFriendlyRecipeData.getCookingTimeLabel(mCookingTimeHours.getProgress(),
+        mCookingTimeLabel.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(mCookingTimeHours.getProgress(),
                 mCookingTimeMinutes.getProgress(), getActivity()));
 
         toggleEnableSaveButton(mEditionActivity.checkRequiredValidation(mTitle) &&

@@ -1,4 +1,4 @@
-package com.amusebouche.data;
+package com.amusebouche.services;
 
 import android.content.Context;
 import android.util.Pair;
@@ -12,7 +12,7 @@ import java.util.Arrays;
  * User friendly translator for recipes data.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  */
-public class UserFriendlyRecipeData {
+public class UserFriendlyTranslationsHandler {
 
     // Types of dish data
 

@@ -15,7 +15,7 @@ import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeIngredient;
-import com.amusebouche.data.UserFriendlyRecipeData;
+import com.amusebouche.services.UserFriendlyTranslationsHandler;
 
 
 /**
@@ -148,7 +148,7 @@ public class RecipeDetailSecondTabFragment extends Fragment {
                     R.layout.item_detail_ingredient, mLayout, false);
 
             TextView quantity = (TextView) ingredientLayout.findViewById(R.id.quantity);
-            quantity.setText(UserFriendlyRecipeData.getIngredientQuantity(presentIngredient.getQuantity(),
+            quantity.setText(UserFriendlyTranslationsHandler.getIngredientQuantity(presentIngredient.getQuantity(),
                     presentIngredient.getMeasurementUnit(), getActivity()));
 
             TextView name = (TextView) ingredientLayout.findViewById(R.id.name);

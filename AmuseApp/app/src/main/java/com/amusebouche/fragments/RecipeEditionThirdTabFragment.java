@@ -25,7 +25,7 @@ import com.amusebouche.activities.EditionActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.adapters.RecipeEditionDirectionListAdapter;
 import com.amusebouche.data.RecipeDirection;
-import com.amusebouche.data.UserFriendlyRecipeData;
+import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
@@ -274,7 +274,7 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         SeekBar.OnSeekBarChangeListener cookingTimeListener = new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                cookingTimeLabel.setText(UserFriendlyRecipeData.getCookingTimeLabel(cookingTimeHours.getProgress(),
+                cookingTimeLabel.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(cookingTimeHours.getProgress(),
                         cookingTimeMinutes.getProgress(), getActivity()));
             }
 
@@ -338,7 +338,7 @@ public class RecipeEditionThirdTabFragment extends Fragment {
             videoTextView.setText(mEditionActivity.getRecipe().getDirections().get(position).getVideo());            cookingTimeHours.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() / 60);
             cookingTimeMinutes.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() % 60);
 
-            cookingTimeLabel.setText(UserFriendlyRecipeData.getCookingTimeLabel(cookingTimeHours.getProgress(),
+            cookingTimeLabel.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(cookingTimeHours.getProgress(),
                     cookingTimeMinutes.getProgress(), getActivity()));
 
             mEditionActivity.toggleEnableButton(acceptButton,

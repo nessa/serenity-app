@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.R;
 import com.amusebouche.data.RecipeIngredient;
-import com.amusebouche.data.UserFriendlyRecipeData;
+import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
 import com.woxthebox.draglistview.DragItemAdapter;
 
@@ -64,7 +64,7 @@ public class RecipeEditionIngredientListAdapter extends DragItemAdapter<Pair<Lon
 
         // Set cell data
         holder.mNameTextView.setText(i.getName());
-        holder.mQuantityTextView.setText(UserFriendlyRecipeData.getIngredientQuantity(i.getQuantity(),
+        holder.mQuantityTextView.setText(UserFriendlyTranslationsHandler.getIngredientQuantity(i.getQuantity(),
                 i.getMeasurementUnit(), mContext));
         holder.itemView.setTag(i.getSortNumber() - 1);
     }
