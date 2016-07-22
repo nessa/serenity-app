@@ -14,7 +14,7 @@ import android.provider.BaseColumns;
 public final class RecipeContract {
 
     /**
-     * Contains the name of the table to create that contans the row counters.
+     * Contains the name of the table to create that contains the row counters.
      */
     public static final String TABLE_NAME = "recipe";
 

@@ -30,7 +30,7 @@ public class Comment implements Parcelable {
     // Constructors
 
     /**
-     * Basic recipe contructor
+     * Basic comment contructor
      *
      * @param id API recipe identifier
      * @param recipeId Recipe id
@@ -144,7 +144,7 @@ public class Comment implements Parcelable {
      * Every data MUST be written  in the same order as was read in
      * the parcelable constructor
      *
-     * @param dest Parcelable data to fill with recipe information
+     * @param dest Parcelable data to fill with comment information
      * @param flags ...
      */
     @Override
