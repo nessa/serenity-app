@@ -17,6 +17,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.util.Pair;
 
+import com.amusebouche.data.Ingredient;
+import com.amusebouche.data.IngredientContract;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeCategoryContract;
@@ -54,6 +56,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         mContext = context;
     }
+
+    // RECIPES
 
     /**
      * Create a new recipe in the database with its categories, ingredients and directions.
@@ -795,6 +799,204 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
+
+    // INGREDIENTS
+
+
+    public boolean existIngredient(Ingredient ingredient) {
+        mDatabase = getReadableDatabase();
+
+        String count = "SELECT count(*) FROM " + IngredientContract.TABLE_NAME +
+            " WHERE " + IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
+            " LIKE ('" + ingredient.getTranslation() + "')";;
+        Cursor mCursor = mDatabase.rawQuery(count, null);
+        mCursor.moveToFirst();
+        int recipesCount = mCursor.getInt(0);
+        mCursor.close();
+
+        mDatabase.close();
+        return recipesCount > 0;
+    }
+
+    /**
+     * Create a new ingredient in the database.
+     *
+     * @param ingredient Ingredient to insert in the database
+     */
+    public void createIngredient(Ingredient ingredient) {
+        mDatabase = this.getWritableDatabase();
+
+        // Create the database row for the recipe and keep its unique identifier
+        ContentValues ingredientValues = new ContentValues();
+        ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION,
+            ingredient.getTranslation());
+        ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE,
+            ingredient.getLanguage());
+
+        if (ingredient.getTimestamp() == null) {
+            ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP,
+                dateFormat.format(new Date()));
+        } else {
+            ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP,
+                dateFormat.format(ingredient.getTimestamp()));
+        }
+
+        ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES,
+            ingredient.getCategories());
+
+        mDatabase.close();
+    }
+
+
+    public void updateIngredient(Ingredient ingredient) {
+        mDatabase = this.getWritableDatabase();
+
+        // Update the database row for the recipe and keep its unique identifier
+        ContentValues ingredientValues = new ContentValues();
+
+        ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION,
+            ingredient.getTranslation());
+        ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE,
+            ingredient.getLanguage());
+
+        if (ingredient.getTimestamp() == null) {
+            ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP,
+                dateFormat.format(new Date()));
+        } else {
+            ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP,
+                dateFormat.format(ingredient.getTimestamp()));
+        }
+
+        ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES,
+            ingredient.getCategories());
+
+        mDatabase.update(RecipeContract.TABLE_NAME,
+            ingredientValues,
+            IngredientContract.IngredientEntry._ID +"=?",
+            new String[] { String.valueOf(ingredient.getDatabaseId()) });
+
+        mDatabase.close();
+    }
+
+    /**
+     * Deletes the specified ingredient from the database.
+     *
+     * @param ingredient the ingredient to remove
+     */
+    public void deleteIngredient(Ingredient ingredient) {
+        mDatabase = this.getWritableDatabase();
+
+        if (!ingredient.getDatabaseId().equals("")) {
+            mDatabase.delete(IngredientContract.TABLE_NAME,
+                IngredientContract.IngredientEntry._ID +"=?",
+                new String[] { String.valueOf(ingredient.getDatabaseId()) });
+        }
+
+        mDatabase.close();
+    }
+
+    /**
+     * Gets the specified ingredient from the database.
+     *
+     * @param databaseIngredientId the database identifier of the ingredient to get
+     * @return the specified ingredient
+     */
+    public Ingredient getIngredientByDatabaseId(String databaseIngredientId) {
+        // Gets the database in the current database helper in read-only mode
+        mDatabase = this.getReadableDatabase();
+        Ingredient ingredient = null;
+
+        /* After the query, the cursor points to the first database row
+         * returned by the request */
+        Cursor ingredientCursor = mDatabase.query(IngredientContract.TABLE_NAME,
+            null,
+            IngredientContract.IngredientEntry._ID + "=?",
+            new String[] { String.valueOf(databaseIngredientId) },
+            null,
+            null,
+            null);
+
+        ingredientCursor.moveToNext();
+
+        try {
+            /* Get the value for each column for the database row pointed by
+             * the cursor using the getColumnIndex method of the cursor and
+             * use it to initialize an Ingredient object by database row */
+            ingredient = new Ingredient(
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry._ID)
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION)
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE)
+                ),
+                dateFormat.parse(ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP))
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES)
+                )
+            );
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        ingredientCursor.close();
+
+        mDatabase.close();
+        return ingredient;
+    }
+
+
+    /**
+     * Gets the list of recipes from the database.
+     *
+     * @param limit Max number of results to return
+     * @param matchString string to match with translations
+     * @return the current recipes from the database.
+     */
+    public ArrayList<Ingredient> getIngredients(Integer limit, String matchString) {
+
+        ArrayList<Ingredient> ingredients = new ArrayList<>();
+
+        // Gets the database in the current database helper in read-only mode
+        mDatabase = getReadableDatabase();
+
+        String where = IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
+            " LIKE ('%" + matchString + "%')";;
+        String ordering = "";
+        int count = 0;
+
+        // After the query, the cursor points to the first database row
+        // returned by the request.
+        String[] columns = {"_id"};
+        Cursor ingredientCursor = mDatabase.query(IngredientContract.TABLE_NAME,
+            columns,
+            where,
+            null,
+            null,
+            null,
+            ordering,
+            "0, " + limit);
+
+        while (ingredientCursor.moveToNext()) {
+            long ingredientId = ingredientCursor.getLong(ingredientCursor.getColumnIndex(
+                IngredientContract.IngredientEntry._ID)
+            );
+
+            Ingredient ingredient = getIngredientByDatabaseId(Objects.toString(ingredientId));
+            ingredients.add(ingredient);
+        }
+        ingredientCursor.close();
+
+        mDatabase.close();
+        return ingredients;
+    }
+
+
+    // REST OF METHODS
+
     /**
      * Initialize example data to show when the application is first installed.
      */
@@ -840,6 +1042,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(RecipeCategoryContract.SQL_CREATE_TABLE);
         db.execSQL(RecipeIngredientContract.SQL_CREATE_TABLE);
         db.execSQL(RecipeDirectionContract.SQL_CREATE_TABLE);
+        db.execSQL(IngredientContract.SQL_CREATE_TABLE);
     }
 
     /**
