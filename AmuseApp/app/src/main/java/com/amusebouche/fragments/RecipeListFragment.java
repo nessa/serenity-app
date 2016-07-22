@@ -218,10 +218,7 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
      */
     @Override
     public void onSaveInstanceState (Bundle outState) {
-        super.onSaveInstanceState(outState);/*
-        outState.putParcelableArrayList(PARCELABLE_RECIPES_KEY, mRecipes);
-        outState.getInt(CURRENT_PAGE_KEY, mCurrentPage);
-        outState.getInt(LIMIT_PER_PAGE_KEY, mLimitPerPage);*/
+        super.onSaveInstanceState(outState);
     }
 
     @Override

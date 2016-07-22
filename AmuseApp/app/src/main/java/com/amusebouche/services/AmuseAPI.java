@@ -46,4 +46,16 @@ public interface AmuseAPI {
 
     @GET("comments/")
     Call<ResponseBody> getComments(@Query("recipe") String id);
+
+
+    // Ingredients requests
+
+    @GET("translations/")
+    Call<ResponseBody> getIngredients(@Query("page") Integer page,
+                                      @Query("language") String language);
+
+    @GET("translations/")
+    Call<ResponseBody> getIngredients(@Query("page") Integer page,
+                                      @Query("language") String language,
+                                      @Query("updated_after") String date);
 }

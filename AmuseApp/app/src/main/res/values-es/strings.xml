@@ -26,7 +26,8 @@
     <string name="language_en">Inglés</string>
 
     <!-- Splash screen -->
-    <string name="splash_screen_loading_recipes_message">Cargando recetas...</string>
+    <string name="splash_screen_loading_ingredients_message">Cargando ingredientes...</string>
+    <string name="splash_screen_login_message">Iniciando sesión...</string>
 
     <!-- Transitions -->
     <string name="transition_recipe_detail">detalle</string>

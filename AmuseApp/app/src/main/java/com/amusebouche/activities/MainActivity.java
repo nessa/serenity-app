@@ -127,13 +127,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setElevation(0);
 
         // Get data from previous activity
-        if (savedInstanceState == null) {
-            Intent i = getIntent();
-            mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
-            mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
-            mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
-            mPreviousTotal = i.getIntExtra(PREVIOUS_TOTAL_KEY, 0);
-        } else {
+        if (savedInstanceState != null) {
             mRecipes = savedInstanceState.getParcelableArrayList(PARCELABLE_RECIPES_KEY);
             mCurrentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
             mLimitPerPage = savedInstanceState.getInt(LIMIT_PER_PAGE_KEY, 10);
@@ -816,7 +810,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void resetRecipesAndSetMode(int mode) {
-        mRecipes.clear();
+        if (mRecipes == null) {
+            mRecipes = new ArrayList<Recipe>();
+        } else {
+            mRecipes.clear();
+        }
         mCurrentPage = 0;
         mLimitPerPage = 10;
         mPreviousTotal = 0;

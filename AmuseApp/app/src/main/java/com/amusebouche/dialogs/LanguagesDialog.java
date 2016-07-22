@@ -33,14 +33,14 @@ import java.util.Arrays;
  */
 public class LanguagesDialog extends Dialog {
 
-    private String SEPARATOR = ",";
+    public static String PREFERENCE_LANGUAGE = "PREFERENCE_LANGUAGE";
 
     // Data
     private ArrayList<Pair<String, Integer>> mLanguages = new ArrayList<>(Arrays.asList(
             new Pair<>("es", R.string.language_es),
             new Pair<>("en", R.string.language_en)
     ));
-    private ArrayList<String> mSelectedLanguages = new ArrayList<>();
+    private String mSelectedLanguage;
 
     // UI elements
     protected ListView list;
@@ -65,11 +65,7 @@ public class LanguagesDialog extends Dialog {
         this.setContentView(R.layout.dialog_languages);
 
         // Get languages from shared preferences
-        final String languages = preferences.getString(
-                context.getString(R.string.preference_recipes_languages), "");
-        if (languages.length() > 0) {
-            mSelectedLanguages = new ArrayList<>(Arrays.asList(languages.split(SEPARATOR)));
-        }
+        mSelectedLanguage = preferences.getString(PREFERENCE_LANGUAGE, "");
 
         // Get layout elements
         list = (ListView) findViewById(R.id.languages);
@@ -77,7 +73,7 @@ public class LanguagesDialog extends Dialog {
         acceptButton = (Button) findViewById(R.id.accept);
 
         // Set list
-        adapter = new LanguagesArrayAdapter(context, mSelectedLanguages, mLanguages);
+        adapter = new LanguagesArrayAdapter(context, mSelectedLanguage, mLanguages);
         list.setAdapter(adapter);
 
         // Set buttons' listeners
@@ -91,17 +87,16 @@ public class LanguagesDialog extends Dialog {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (adapter.getSelected().size() > 0) {
+                if (adapter.getSelected().equals("")) {
+                    Toast.makeText(context, context.getString(R.string.settings_language_not_selected_error),
+                        Toast.LENGTH_SHORT).show();
+                } else {
                     // Set languages as preference
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString(context.getString(R.string.preference_recipes_languages),
-                            android.text.TextUtils.join(SEPARATOR, adapter.getSelected()));
+                    editor.putString(PREFERENCE_LANGUAGE, adapter.getSelected());
                     editor.apply();
 
                     LanguagesDialog.this.dismiss();
-                } else {
-                    Toast.makeText(context, context.getString(R.string.settings_language_not_selected_error),
-                            Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -116,7 +111,7 @@ public class LanguagesDialog extends Dialog {
         private Context mContext;
 
         // Data
-        private ArrayList<String> mSelected;
+        private String mSelected;
         private ArrayList<Pair<String, Integer>> mLanguages;
 
         /**
@@ -124,7 +119,7 @@ public class LanguagesDialog extends Dialog {
          * @param selected Selected languages arraylist
          * @param languages Existing languages arraylist
          */
-        public LanguagesArrayAdapter(Context context, ArrayList<String> selected,
+        public LanguagesArrayAdapter(Context context, String selected,
                                      ArrayList<Pair<String, Integer>> languages) {
             mContext = context;
             mSelected = selected;
@@ -141,7 +136,7 @@ public class LanguagesDialog extends Dialog {
             return mLanguages.get(i);
         }
 
-        public ArrayList<String> getSelected() {
+        public String getSelected() {
             return mSelected;
         }
 
@@ -175,6 +170,8 @@ public class LanguagesDialog extends Dialog {
             // Useful data
             private String mLanguageTag;
             private Boolean checked = false;
+
+            // TODO: Uncheck rest of languages when click one new
 
             /**
              * Constructor
@@ -226,16 +223,9 @@ public class LanguagesDialog extends Dialog {
             /** Toogle the checkbox value */
             @Override
             public void toggle() {
-                checked = !checked;
+                this.checked = true;
                 mCheckbox.setChecked(checked);
-
-                if (checked) {
-                    if (!mSelected.contains(mLanguageTag)) {
-                        mSelected.add(mLanguageTag);
-                    }
-                } else {
-                    mSelected.remove(mLanguageTag);
-                }
+                mSelected = mLanguageTag;
             }
 
             /** Set initial text view value
