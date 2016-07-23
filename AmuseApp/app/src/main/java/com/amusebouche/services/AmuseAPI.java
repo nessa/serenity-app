@@ -6,6 +6,7 @@ import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
 
@@ -39,8 +40,10 @@ public interface AmuseAPI {
     // Recipes requests
 
     @GET
-    Call<ResponseBody> get(@Url String url);
+    Call<ResponseBody> getRecipes(@Url String url);
 
+    @GET("recipes/{id}/")
+    Call<ResponseBody> getRecipe(@Path("id") String id);
 
     // Recipe's comments requests
 

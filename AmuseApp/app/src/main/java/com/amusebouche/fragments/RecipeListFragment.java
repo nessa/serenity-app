@@ -253,7 +253,7 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
             case MainActivity.NEW_RECIPES_MODE:
                 AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class);
 
-                mRequestCall = api.get(RequestHandler.buildGetURL(
+                mRequestCall = api.getRecipes(RequestHandler.buildGetURL(
                     RequestHandler.API_RECIPES_ENDPOINT,
                     RequestHandler.buildParams(mMainActivity.getCurrentPage() + 1,
                         mMainActivity.getFilterParams())));
@@ -338,7 +338,11 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
      */
     @Override
     public void onFailure(Call<ResponseBody> call, Throwable t) {
-        this.onPostExecute();
+        if (!call.isCanceled()) {
+            this.onPostExecute();
+
+            // TODO: Check connectivity
+        }
     }
 
     /**
