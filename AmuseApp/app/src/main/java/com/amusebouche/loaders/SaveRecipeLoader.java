@@ -32,11 +32,16 @@ public class SaveRecipeLoader extends AsyncTaskLoader<Void> {
      */
     @Override
     public Void loadInBackground() {
-        if (mRecipe.getDatabaseId() != null && !mRecipe.getDatabaseId().equals("")) {
-            // Update
+        /* Update recipe if:
+         * - It's from API and exists a recipe with its API id in the database
+         * - It's not from API and it exists in database
+         * Otherwise, create a new recipe
+         */
+        if ((mRecipe.getIsOnline() && mDatabaseHelper.existRecipeWithAPIId(mRecipe.getId())) ||
+                (!mRecipe.getIsOnline() && mRecipe.getDatabaseId() != null &&
+                        !mRecipe.getDatabaseId().equals(""))) {
             mDatabaseHelper.updateRecipe(mRecipe);
         } else {
-            // Create
             mDatabaseHelper.createRecipe(mRecipe);
         }
 
@@ -50,9 +55,7 @@ public class SaveRecipeLoader extends AsyncTaskLoader<Void> {
 
     @Override
     protected void onStartLoading() {
-        if (takeContentChanged()) {
-            forceLoad();
-        }
+        forceLoad();
     }
 
     @Override

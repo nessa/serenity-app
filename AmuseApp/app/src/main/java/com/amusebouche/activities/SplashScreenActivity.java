@@ -109,40 +109,22 @@ public class SplashScreenActivity extends Activity {
         // Prepare new update date as now
         mNewUpdateDate = dateFormat.format(new Date());
 
-        AmuseAPI mAPI;
-        if (lastUpdate.equals("")) {
-            mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
-            Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage);
+        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
+        Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage,
+                lastUpdate.equals("") ? null : lastUpdate);
 
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    setData(response);
-                }
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                setData(response);
+            }
 
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    // End
-                    checkLogin();
-                }
-            });
-        } else {
-            mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
-            Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage, lastUpdate);
-
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    setData(response);
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    // End
-                    checkLogin();
-                }
-            });
-        }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // End
+                checkLogin();
+            }
+        });
     }
 
     /**

@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -25,13 +26,19 @@ import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.amusebouche.loaders.GetRecipeLoader;
+import com.amusebouche.loaders.SaveRecipeLoader;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
+import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.RetrofitServiceGenerator;
 import com.securepreferences.SecurePreferences;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -54,8 +61,9 @@ import retrofit2.Response;
  */
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
 
-    // The loader's unique id.
-    private static final int LOADER_ID = 3;
+    // The loaders uniques id.
+    private static final int GET_RECIPE_LOADER_ID = 3;
+    private static final int SAVE_RECIPE_LOADER_ID = 4;
 
     // Tab identifiers
     private static final String TAB_1 = "first_tab";
@@ -80,6 +88,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private TabHost mTabs;
     private RatingBar mRatingBar;
     private RelativeLayout mFadeViews;
+    private View mLayout;
 
     // Preferences
     private SharedPreferences mUserPreferences;
@@ -88,6 +97,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     // Behaviour variables
     private boolean mDownloadEnabled = false;
+
+    // Services
+    private DatabaseHelper mDatabaseHelper;
 
     // LIFECYCLE METHODS
 
@@ -100,6 +112,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
+
+        mDatabaseHelper = new DatabaseHelper(getApplicationContext());
 
         // Check if user is logged in
         mUserPreferences = new SecurePreferences(this, "", "user_preferences.xml");
@@ -133,6 +147,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         setContentView(R.layout.activity_detail);
         getSupportActionBar().setElevation(0);
+
+        mLayout = findViewById(R.id.layout);
 
         // Set tabs
         mTabs = (TabHost)findViewById(android.R.id.tabhost);
@@ -429,8 +445,63 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      * Download recipe and store it into the database
      */
     public void downloadRecipe() {
-        Log.d("DETAIL", "DOWNLOAD");
-        mDownloadEnabled = true;
+        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, true);
+        Call<ResponseBody> call = mAPI.getRecipe(mRecipe.getId());
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                boolean fail = false;
+
+                if (response.code() == 200) {
+                    String data = "";
+
+                    // Get response data
+                    if (response.body() != null) {
+                        try {
+                            data = response.body().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    // Build objects from response data
+                    if (!data.equals("")) {
+                        try {
+                            JSONObject jObject = new JSONObject(data);
+                            mRecipe = new Recipe(jObject);
+                            mRecipe.setIsOnline(true);
+
+                            Loader l = getLoaderManager().getLoader(SAVE_RECIPE_LOADER_ID);
+                            if (l != null) {
+                                getLoaderManager().restartLoader(SAVE_RECIPE_LOADER_ID, null,
+                                        DetailActivity.this);
+                            } else {
+                                getLoaderManager().initLoader(SAVE_RECIPE_LOADER_ID, null,
+                                        DetailActivity.this);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            fail = true;
+                        }
+                    } else {
+                        fail = true;
+                    }
+                } else {
+                    fail = true;
+                }
+
+                if (fail) {
+                    // TODO: SHow error
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // TODO: SHow error
+            }
+        });
     }
 
     /**
@@ -454,11 +525,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (mRecipe.getIsOnline()) {
             mAPIRecipe = mRecipe;
 
-            Loader l = getLoaderManager().getLoader(LOADER_ID);
+            Loader l = getLoaderManager().getLoader(GET_RECIPE_LOADER_ID);
             if (l != null) {
-                getLoaderManager().restartLoader(LOADER_ID, null, this);
+                getLoaderManager().restartLoader(GET_RECIPE_LOADER_ID, null, this);
             } else {
-                getLoaderManager().initLoader(LOADER_ID, null, this);
+                getLoaderManager().initLoader(GET_RECIPE_LOADER_ID, null, this);
             }
         } else {
             mDatabaseRecipe = mRecipe;
@@ -502,7 +573,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        return new GetRecipeLoader(getApplicationContext(), mRecipe.getDatabaseId());
+        if (id == GET_RECIPE_LOADER_ID) {
+            return new GetRecipeLoader(getApplicationContext(), mRecipe.getDatabaseId());
+        } else {
+            return new SaveRecipeLoader(getApplicationContext(), mRecipe);
+        }
     }
 
     /**
@@ -512,9 +587,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     @Override
     public void onLoadFinished(Loader loader, Object data) {
-        if (loader.getId() == LOADER_ID) {
+        if (loader.getId() == GET_RECIPE_LOADER_ID) {
             mDatabaseRecipe = (Recipe) data;
             onRecipesLoaded();
+        } else if (loader.getId() == SAVE_RECIPE_LOADER_ID) {
+            Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
+                    Snackbar.LENGTH_LONG)
+                    .show();
+            openOptionsMenu();
         }
     }
 
