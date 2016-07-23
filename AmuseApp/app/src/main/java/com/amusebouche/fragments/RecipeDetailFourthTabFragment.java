@@ -54,9 +54,6 @@ public class RecipeDetailFourthTabFragment extends Fragment {
     private LinearLayout mCommentsView;
     private ProgressBar mLoadingIndicator;
 
-    // Service variables
-    private AmuseAPI mAPI;
-
     // LIFECYCLE METHODS
 
     /**
@@ -91,7 +88,6 @@ public class RecipeDetailFourthTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
-
     }
 
     /**
@@ -166,7 +162,7 @@ public class RecipeDetailFourthTabFragment extends Fragment {
             mScroll.setVisibility(View.GONE);
             mLoadingIndicator.setVisibility(View.VISIBLE);
 
-            mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
+            AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
             Call<ResponseBody> call = mAPI.getComments(mRecipe.getId());
 
             call.enqueue(new Callback<ResponseBody>() {

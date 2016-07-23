@@ -469,6 +469,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return recipe;
     }
 
+    public boolean existRecipeWithAPIId(String id) {
+        mDatabase = getReadableDatabase();
+
+        String count = "SELECT count(*) FROM " + RecipeContract.TABLE_NAME +
+                " WHERE " + RecipeContract.RecipeEntry.COLUMN_NAME_ID +
+                " = '" + id + "'";;
+        Cursor mCursor = mDatabase.rawQuery(count, null);
+        mCursor.moveToFirst();
+        int recipesCount = mCursor.getInt(0);
+        mCursor.close();
+
+        mDatabase.close();
+        return recipesCount > 0;
+    }
+
     /**
      * Gets the specified recipe from the database.
      *
@@ -811,11 +826,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             " LIKE ('" + ingredient.getTranslation() + "')";;
         Cursor mCursor = mDatabase.rawQuery(count, null);
         mCursor.moveToFirst();
-        int recipesCount = mCursor.getInt(0);
+        int ingredientsCount = mCursor.getInt(0);
         mCursor.close();
 
         mDatabase.close();
-        return recipesCount > 0;
+        return ingredientsCount > 0;
     }
 
     /**

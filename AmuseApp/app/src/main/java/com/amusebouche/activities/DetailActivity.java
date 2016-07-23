@@ -1,7 +1,10 @@
 package com.amusebouche.activities;
 
 
+import android.app.LoaderManager;
 import android.content.Intent;
+import android.content.Loader;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -21,10 +24,19 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.amusebouche.loaders.GetRecipeLoader;
+import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
+import com.amusebouche.services.RetrofitServiceGenerator;
+import com.securepreferences.SecurePreferences;
 
 import java.io.FileInputStream;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -40,7 +52,10 @@ import java.io.FileInputStream;
  * - Menu: menu_recipe_detail.xml
  * - Content: activity_detail.xml
  */
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
+
+    // The loader's unique id.
+    private static final int LOADER_ID = 3;
 
     // Tab identifiers
     private static final String TAB_1 = "first_tab";
@@ -57,10 +72,22 @@ public class DetailActivity extends AppCompatActivity {
 
     // Data variables
     private Recipe mRecipe;
+    private Recipe mAPIRecipe;
+    private Recipe mDatabaseRecipe;
+
+    // UI
     private Bitmap mMainImage;
     private TabHost mTabs;
     private RatingBar mRatingBar;
     private RelativeLayout mFadeViews;
+
+    // Preferences
+    private SharedPreferences mUserPreferences;
+    private String mUsername;
+    private boolean isUserLoggedIn;
+
+    // Behaviour variables
+    private boolean mDownloadEnabled = false;
 
     // LIFECYCLE METHODS
 
@@ -73,6 +100,12 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
+
+        // Check if user is logged in
+        mUserPreferences = new SecurePreferences(this, "", "user_preferences.xml");
+        String mAuthToken = mUserPreferences.getString(getString(R.string.preference_auth_token), "");
+        mUsername = mUserPreferences.getString(getString(R.string.preference_username), "");
+        isUserLoggedIn = !mAuthToken.equals("");
 
         // Get saved data
         String presentTab = TAB_1;
@@ -93,6 +126,10 @@ public class DetailActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Define check recipes
+        mAPIRecipe = null;
+        mDatabaseRecipe = null;
 
         setContentView(R.layout.activity_detail);
         getSupportActionBar().setElevation(0);
@@ -196,6 +233,9 @@ public class DetailActivity extends AppCompatActivity {
         super.onStart();
         Log.d("INFO", "ON START");
 
+        // Get check recipes
+        getCheckRecipes();
+
         // Set image
         ImageView mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
         mRecipeImage.setImageBitmap(mMainImage);
@@ -234,7 +274,7 @@ public class DetailActivity extends AppCompatActivity {
                         .setDuration(2000)
                         .setListener(null);
             }
-        } );
+        });
     }
 
     /**
@@ -300,16 +340,44 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.d("DETAIL", "ON CREATE OPTIONS MENU");
+
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_recipe_detail, menu);
 
-        MenuItem downloadItem = menu.findItem(R.id.action_download);
-        downloadItem.setVisible(mRecipe.getIsOnline());
-
-        // TODO Fix this! The database id is not set
+        /* Edit item is enabled when:
+         * - Recipe is in database AND
+         * - User is not set OR is set and it matches the logged username
+         */
         MenuItem editItem = menu.findItem(R.id.action_edit);
-        editItem.setVisible(!mRecipe.getDatabaseId().equals(""));
+        editItem.setVisible(!mRecipe.getDatabaseId().equals("") &&
+                (mRecipe.getOwner().equals("") || mRecipe.getOwner().equals(mUsername)));
+
+        /* Download item is enabled when:
+         * - Recipe doesn't exist on database OR
+         * - Recipe exist on database AND API_Recipe.updated_timestamp > DB_Recipe.updated_timestamp
+         */
+        MenuItem downloadItem = menu.findItem(R.id.action_download);
+        downloadItem.setVisible(mDatabaseRecipe == null || (mDatabaseRecipe != null &&
+                mAPIRecipe != null && mAPIRecipe.getUpdatedTimestamp().getTime() >
+                mDatabaseRecipe.getUpdatedTimestamp().getTime()));
+
+        /* TODO: Check this! If someone rates or comments the recipe, may change the updated
+         * timestamp */
+        /* Upload item is enabled when:
+         * - Recipe doesn't exist on API
+         */
+        MenuItem uploadItem = menu.findItem(R.id.action_upload);
+        uploadItem.setVisible(mAPIRecipe == null || (mAPIRecipe != null && mDatabaseRecipe != null &&
+                mDatabaseRecipe.getUpdatedTimestamp().getTime() >
+                        mAPIRecipe.getUpdatedTimestamp().getTime()));
+
+        /* Rate item is enabled when:
+         * - User is logged in
+         */
+        MenuItem rateItem = menu.findItem(R.id.action_rate);
+        rateItem.setVisible(isUserLoggedIn);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -323,7 +391,14 @@ public class DetailActivity extends AppCompatActivity {
             case R.id.action_edit:
                 editRecipe();
                 return true;
-            case R.id.action_save:
+            case R.id.action_download:
+                downloadRecipe();
+                return true;
+            case R.id.action_upload:
+                uploadRecipe();
+                return true;
+            case R.id.action_rate:
+                rateRecipe();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -341,10 +416,108 @@ public class DetailActivity extends AppCompatActivity {
 
     // FUNCTIONALITY METHODS
 
+    /**
+     * Show edition view
+     */
     public void editRecipe() {
         Intent i = new Intent(this, EditionActivity.class);
         i.putExtra(INTENT_KEY_RECIPE, mRecipe);
         startActivity(i);
     }
 
+    /**
+     * Download recipe and store it into the database
+     */
+    public void downloadRecipe() {
+        Log.d("DETAIL", "DOWNLOAD");
+        mDownloadEnabled = true;
+    }
+
+    /**
+     * Upload recipe to the API
+     */
+    public void uploadRecipe() {
+        Log.d("DETAIL", "UPLOAD");
+    }
+
+    /**
+     * Open rate dialog
+     */
+    public void rateRecipe() {
+        Log.d("DETAIL", "RATE");
+    }
+
+    /**
+     * Loads recipes to check data: API and database recipes
+     */
+    private void getCheckRecipes() {
+        if (mRecipe.getIsOnline()) {
+            mAPIRecipe = mRecipe;
+
+            Loader l = getLoaderManager().getLoader(LOADER_ID);
+            if (l != null) {
+                getLoaderManager().restartLoader(LOADER_ID, null, this);
+            } else {
+                getLoaderManager().initLoader(LOADER_ID, null, this);
+            }
+        } else {
+            mDatabaseRecipe = mRecipe;
+
+            if (!mRecipe.getId().equals("") && !mRecipe.getId().equals("0")) {
+                AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class);
+
+                Call<ResponseBody> requestCall = api.getRecipe(mRecipe.getId());
+
+                // Asynchronous call
+                requestCall.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        onRecipesLoaded();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        onRecipesLoaded();
+                    }
+
+                });
+            }
+        }
+    }
+
+    /**
+     * Reloads bar menu when all recipes are loaded
+     */
+    private void onRecipesLoaded() {
+        openOptionsMenu();
+    }
+
+    // LOADER METHODS
+
+    /**
+     * Creates the loader
+     * @param id Loader id
+     * @param args Loader arguments
+     * @return Loader object
+     */
+    @Override
+    public Loader onCreateLoader(int id, Bundle args) {
+        return new GetRecipeLoader(getApplicationContext(), mRecipe.getDatabaseId());
+    }
+
+    /**
+     * Loader finishes its execution
+     * @param loader Loader object
+     * @param data Loader data: recipe
+     */
+    @Override
+    public void onLoadFinished(Loader loader, Object data) {
+        if (loader.getId() == LOADER_ID) {
+            mDatabaseRecipe = (Recipe) data;
+            onRecipesLoaded();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader loader) {}
 }
