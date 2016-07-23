@@ -204,14 +204,14 @@
         languages and you desire to use automatic reading, you should remember to download the
         language packages or always have internet connection. Otherwise, the automatic reading will
         load the local language.</string>
-    <string name="settings_recipes_languages_selected_text">Selected languages:</string>
+    <string name="settings_recipes_language_selected_text">Selected language:</string>
     <string name="settings_recognizer_language_primary_text">Recognizer language</string>
     <string name="settings_recognizer_language_secondary_text">If enabled, the speech recognizer
         language will be the device one. Otherwise, it will be the current recipe language.</string>
 
     <!--   Languages dialog -->
     <string name="settings_language_title">Recipes language</string>
-    <string name="settings_language_not_selected_error">Please, select at least one language</string>
+    <string name="settings_language_not_selected_error">Please, select one language</string>
 
     <!-- User activity -->
     <string name="users_welcome">Welcome</string>

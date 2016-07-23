@@ -20,7 +20,6 @@ import com.amusebouche.activities.R;
 import com.amusebouche.services.AppData;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Languages dialog class.
@@ -33,13 +32,6 @@ import java.util.Arrays;
  * - dialog_languages_item.xml
  */
 public class LanguagesDialog extends Dialog {
-
-    // Data
-    private ArrayList<Pair<String, Integer>> mLanguages = new ArrayList<>(Arrays.asList(
-            new Pair<>("es", R.string.language_es),
-            new Pair<>("en", R.string.language_en)
-    ));
-    private String mSelectedLanguage;
 
     // UI elements
     protected ListView list;
@@ -64,7 +56,7 @@ public class LanguagesDialog extends Dialog {
         this.setContentView(R.layout.dialog_languages);
 
         // Get languages from shared preferences
-        mSelectedLanguage = preferences.getString(AppData.PREFERENCE_RECIPES_LANGUAGE, "");
+        String mSelectedLanguage = preferences.getString(AppData.PREFERENCE_RECIPES_LANGUAGE, "");
 
         // Get layout elements
         list = (ListView) findViewById(R.id.languages);
@@ -72,7 +64,8 @@ public class LanguagesDialog extends Dialog {
         acceptButton = (Button) findViewById(R.id.accept);
 
         // Set list
-        adapter = new LanguagesArrayAdapter(context, mSelectedLanguage, mLanguages);
+        adapter = new LanguagesArrayAdapter(context, mSelectedLanguage, AppData.LANGUAGES);
+        list.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         list.setAdapter(adapter);
 
         // Set buttons' listeners
@@ -145,6 +138,11 @@ public class LanguagesDialog extends Dialog {
             return i;
         }
 
+        public String getItemLanguage(int i) {
+            return mLanguages.get(i).first;
+        }
+
+
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
@@ -153,7 +151,15 @@ public class LanguagesDialog extends Dialog {
 
             ((LanguageView) convertView).setLanguage(mContext.getString(getItem(position).second));
             ((LanguageView) convertView).setLanguageTag(getItem(position).first);
-            ((LanguageView) convertView).setInitialChecked(mSelected.contains(getItem(position).first));
+            ((LanguageView) convertView).setChecked(mSelected.equals(getItemLanguage(position)));
+
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSelected = getItemLanguage((int)v.getTag());
+                    notifyDataSetChanged();
+                }
+            });
 
             return convertView;
         }
@@ -169,9 +175,6 @@ public class LanguagesDialog extends Dialog {
 
             // Useful data
             private String mLanguageTag;
-            private Boolean checked = false;
-
-            // TODO: Uncheck rest of languages when click one new
 
             /**
              * Constructor
@@ -183,13 +186,6 @@ public class LanguagesDialog extends Dialog {
                 inflate(context, R.layout.dialog_languages_item, this);
                 mLanguageTextView = (TextView) findViewById(R.id.language);
                 mCheckbox = (CheckBox) findViewById(R.id.checkbox);
-
-                mCheckbox.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        LanguageView.this.toggle();
-                    }
-                });
             }
 
 
@@ -200,33 +196,22 @@ public class LanguagesDialog extends Dialog {
              */
             @Override
             public boolean isChecked() {
-                return checked;
+                return mCheckbox.isChecked();
             }
 
             /** Unused method
              * It was being called randomly
              */
             @Override
-            public void setChecked(boolean checked) {}
-
+            public void setChecked(boolean checked) {
+                mCheckbox.setChecked(mSelected.equals(mLanguageTag));
+            }
 
             // SETTERS
 
-            /** Set initial checkbox value
-             * @param checked Boolean checkbox state value
-             */
-            public void setInitialChecked(boolean checked) {
-                this.checked = checked;
-                mCheckbox.setChecked(checked);
-            }
-
             /** Toogle the checkbox value */
             @Override
-            public void toggle() {
-                this.checked = true;
-                mCheckbox.setChecked(checked);
-                mSelected = mLanguageTag;
-            }
+            public void toggle() {}
 
             /** Set initial text view value
              * @param language Language string

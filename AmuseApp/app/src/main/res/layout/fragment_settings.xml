@@ -101,10 +101,10 @@
                         android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
                         android:textSize="@dimen/settings_item_selected_text_size"
                         android:textColor="@color/primary_text"
-                        android:text="@string/settings_recipes_languages_selected_text"/>
+                        android:text="@string/settings_recipes_language_selected_text"/>
 
                     <TextView
-                        android:id="@+id/setting_recipes_languages_selected"
+                        android:id="@+id/setting_recipes_language_selected"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="@dimen/settings_item_selected_text_size"

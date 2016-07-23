@@ -21,9 +21,6 @@ import com.amusebouche.dialogs.LanguagesDialog;
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AppData;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 /**
  * Information fragment class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
@@ -38,9 +35,7 @@ public class SettingsFragment extends Fragment {
 
     private SharedPreferences mSharedPreferences;
 
-    private TextView mSelectedLanguagesTextView;
-
-    private String SEPARATOR = ",";
+    private TextView mSelectedLanguageTextView;
 
     // LIFECYCLE METHODS
 
@@ -111,7 +106,7 @@ public class SettingsFragment extends Fragment {
         recognizerLanguageSwitch.setChecked(recognizerLanguageSetting);
 
         RelativeLayout languageSetting = (RelativeLayout) mLayout.findViewById(R.id.setting_recipes_languages_item);
-        mSelectedLanguagesTextView = (TextView) mLayout.findViewById(R.id.setting_recipes_languages_selected);
+        mSelectedLanguageTextView = (TextView) mLayout.findViewById(R.id.setting_recipes_language_selected);
         setSelectedLanguages();
 
         // Listeners
@@ -141,7 +136,6 @@ public class SettingsFragment extends Fragment {
                 languages.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        Log.d("SETTINGS", "ON DISMISS");
                         setSelectedLanguages();
                     }
                 });
@@ -157,26 +151,11 @@ public class SettingsFragment extends Fragment {
      * Show preferences languages in text view
      */
     private void setSelectedLanguages() {
-        // Get languages from shared preferences
-        String languages = mSharedPreferences.getString(
-                AppData.PREFERENCE_RECIPES_LANGUAGE, "");
+        // Get language from shared preferences
+        String language = mSharedPreferences.getString(AppData.PREFERENCE_RECIPES_LANGUAGE, "");
 
-        if (languages.length() > 0) {
-            ArrayList<String> selectedLanguages = new ArrayList<>(Arrays.asList(languages.split(SEPARATOR)));
-
-            String lang = "";
-            int count = 0;
-
-            for (String l : selectedLanguages) {
-                if (count > 0) {
-                    lang += ", ";
-                }
-
-                lang += l;
-                count++;
-            }
-
-            mSelectedLanguagesTextView.setText(lang);
+        if (!language.equals("")) {
+            mSelectedLanguageTextView.setText(language);
         }
     }
 
