@@ -2,7 +2,6 @@ package com.amusebouche.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -20,9 +19,9 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AmuseAPI;
-import com.amusebouche.services.Preferences;
+import com.amusebouche.services.DatabaseHelper;
+import com.amusebouche.services.AppData;
 import com.amusebouche.services.RetrofitServiceGenerator;
-import com.securepreferences.SecurePreferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -80,11 +79,9 @@ public class UserFragment extends Fragment {
     private Button mLoginButton;
     private Button mSignUpButton;
 
-    // Preferences
-    private SharedPreferences mSharedPreferences;
-
     // Services
     private AmuseAPI mAPI;
+    private DatabaseHelper mDatabaseHelper;
 
     // LIFECYCLE METHODS
 
@@ -119,8 +116,7 @@ public class UserFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate()");
 
-        mSharedPreferences = new SecurePreferences(getActivity(), "",
-                Preferences.USER_PREFERENCES_FILE);
+        mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
     }
 
 
@@ -150,7 +146,7 @@ public class UserFragment extends Fragment {
         mLoadingIndicator.setVisibility(View.VISIBLE);
 
         // Check if user is logged in
-        String mAuthToken = mSharedPreferences.getString(Preferences.PREFERENCE_AUTH_TOKEN, "");
+        String mAuthToken = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
         if (mAuthToken.equals("")) {
             showLoginView();
         } else {
@@ -237,16 +233,15 @@ public class UserFragment extends Fragment {
                 mPassword = passwordTextView.getText().toString();
 
                 // Set preferences if needed
-                SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putBoolean(Preferences.PREFERENCE_REMEMBER_CREDENTIALS, mRemember);
+                mDatabaseHelper.setAppData(AppData.USER_REMEMBER_CREDENTIALS,
+                        mRemember ? "YES" : "NO");
                 if (mRemember) {
-                    editor.putString(Preferences.PREFERENCE_USERNAME, mUsername);
-                    editor.putString(Preferences.PREFERENCE_PASSWORD, mPassword);
+                    mDatabaseHelper.setAppData(AppData.USER_USERNAME, mUsername);
+                    mDatabaseHelper.setAppData(AppData.USER_PASSWORD, mPassword);
                 } else {
-                    editor.putString(Preferences.PREFERENCE_USERNAME, "");
-                    editor.putString(Preferences.PREFERENCE_PASSWORD, "");
+                    mDatabaseHelper.setAppData(AppData.USER_USERNAME, "");
+                    mDatabaseHelper.setAppData(AppData.USER_PASSWORD, "");
                 }
-                editor.apply();
 
                 // Show indicator and launch login
                 mLoginView.setVisibility(View.GONE);
@@ -277,9 +272,8 @@ public class UserFragment extends Fragment {
                                     if (jObject.has("auth_token")) {
                                         token = jObject.getString("auth_token");
 
-                                        SharedPreferences.Editor editor = mSharedPreferences.edit();
-                                        editor.putString(Preferences.PREFERENCE_AUTH_TOKEN, token);
-                                        editor.apply();
+                                        mDatabaseHelper.setAppData(AppData.USER_AUTH_TOKEN,
+                                                token);
 
                                         loadUser(token);
                                     }
@@ -327,12 +321,13 @@ public class UserFragment extends Fragment {
         });
 
         // Set initial data
-        mRemember = mSharedPreferences.getBoolean(Preferences.PREFERENCE_REMEMBER_CREDENTIALS, false);
+        String remember = mDatabaseHelper.getAppData(AppData.USER_REMEMBER_CREDENTIALS);
+        mRemember = remember.equals("YES");
         rememberCheckBox.setChecked(mRemember);
 
         if (mRemember) {
-            mUsername = mSharedPreferences.getString(Preferences.PREFERENCE_USERNAME, "");
-            mPassword = mSharedPreferences.getString(Preferences.PREFERENCE_PASSWORD, "");
+            mUsername = mDatabaseHelper.getAppData(AppData.USER_USERNAME);
+            mPassword = mDatabaseHelper.getAppData(AppData.USER_PASSWORD);
 
             usernameTextView.setText(mUsername);
             passwordTextView.setText(mPassword);
@@ -688,7 +683,7 @@ public class UserFragment extends Fragment {
      * It only removes the token.
      */
     private void logOut() {
-        String token = mSharedPreferences.getString(Preferences.PREFERENCE_AUTH_TOKEN, "");
+        String token = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
 
         mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, token);
         Call<ResponseBody> call = mAPI.logout();
@@ -697,9 +692,7 @@ public class UserFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {
-                    SharedPreferences.Editor editor = mSharedPreferences.edit();
-                    editor.putString(Preferences.PREFERENCE_AUTH_TOKEN, "");
-                    editor.apply();
+                    mDatabaseHelper.setAppData(AppData.USER_AUTH_TOKEN, "");
 
                     mUserView.setVisibility(View.GONE);
                     mLoginView.setVisibility(View.VISIBLE);

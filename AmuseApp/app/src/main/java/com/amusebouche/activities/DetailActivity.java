@@ -4,7 +4,6 @@ package com.amusebouche.activities;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -31,9 +30,8 @@ import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
 import com.amusebouche.services.DatabaseHelper;
-import com.amusebouche.services.Preferences;
+import com.amusebouche.services.AppData;
 import com.amusebouche.services.RetrofitServiceGenerator;
-import com.securepreferences.SecurePreferences;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -75,9 +73,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     // Saved data keys
     private static final String INTENT_KEY_RECIPE = "recipe";
     private static final String INTENT_KEY_TAB = "tab";
-    private static final String PARCELABLE_RECIPES_KEY = "recipes";
-    private static final String CURRENT_PAGE_KEY = "current_page";
-    private static final String LIMIT_PER_PAGE_KEY = "limit";
 
     // Data variables
     private Recipe mRecipe;
@@ -91,17 +86,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private RelativeLayout mFadeViews;
     private View mLayout;
 
-    // Preferences
-    private SharedPreferences mUserPreferences;
+    // User data
     private String mUsername;
     private String mToken;
     private boolean isUserLoggedIn;
 
     // Behaviour variables
     private boolean mDownloadEnabled = false;
-
-    // Services
-    private DatabaseHelper mDatabaseHelper;
 
     // LIFECYCLE METHODS
 
@@ -115,12 +106,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        mDatabaseHelper = new DatabaseHelper(getApplicationContext());
+        DatabaseHelper mDatabaseHelper = new DatabaseHelper(getApplicationContext());
 
         // Check if user is logged in
-        mUserPreferences = new SecurePreferences(this, "", Preferences.USER_PREFERENCES_FILE);
-        mToken = mUserPreferences.getString(Preferences.PREFERENCE_AUTH_TOKEN, "");
-        mUsername = mUserPreferences.getString(Preferences.PREFERENCE_USERNAME, "");
+        mToken = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
+        mUsername = mDatabaseHelper.getAppData(AppData.USER_USERNAME);
         isUserLoggedIn = !mToken.equals("");
 
         // Get saved data
@@ -174,7 +164,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         spec.setIndicator("", getDrawable(R.drawable.ic_cook_32dp));
         mTabs.addTab(spec);
 
-        // Fourth tab: comments (TODO)
+        // Fourth tab: comments
         spec = mTabs.newTabSpec(TAB_4);
         spec.setContent(R.id.tab4);
         spec.setIndicator("", getDrawable(R.drawable.ic_comments_32dp));
@@ -201,58 +191,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 PorterDuff.Mode.SRC_ATOP);
     }
 
-    /**
-     * Change the tab widget appearance.
-     * Set different styles for basic and selected tabs.
-     */
-    private void resetTabColors() {
-        for (int i = 0; i < mTabs.getTabWidget().getChildCount(); i++) {
-            // Unselected ones
-            mTabs.getTabWidget().getChildAt(i)
-                    .setBackgroundColor(getResources().getColor(android.R.color.white));
-
-            ImageView iv = (ImageView) mTabs.getTabWidget().getChildAt(i).findViewById(android.R.id.icon);
-            iv.setColorFilter(getResources().getColor(R.color.theme_default_primary), android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-
-        // Selected ones
-        mTabs.getTabWidget().getChildAt(mTabs.getCurrentTab())
-                .setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
-        ImageView iv = (ImageView) mTabs.getCurrentTabView().findViewById(android.R.id.icon);
-        iv.setColorFilter(getResources()
-                .getColor(android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
-    }
-
-    /**
-     * Change action bar title every time we select a new tab.
-     * @param tab Selected tab
-     */
-    private void resetBarTitle(String tab) {
-        // Set
-        switch (tab) {
-            case TAB_2:
-                getSupportActionBar().setTitle(getString(R.string.detail_ingredients_label));
-                break;
-            case TAB_3:
-                getSupportActionBar().setTitle(getString(R.string.detail_directions_label));
-                break;
-            case TAB_4:
-                getSupportActionBar().setTitle(getString(R.string.detail_comments_label));
-                break;
-            default:
-            case TAB_1:
-                getSupportActionBar().setTitle(getString(R.string.detail_information_label));
-                break;
-        }
-    }
-
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d("INFO", "ON START");
-
-        // Get check recipes
-        getCheckRecipes();
 
         // Set image
         ImageView mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
@@ -293,6 +234,15 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                         .setListener(null);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("DETAIL", "ON RESUME");
+
+        // Get check recipes
+        getCheckRecipes();
     }
 
     /**
@@ -353,6 +303,50 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
+    /**
+     * Change the tab widget appearance.
+     * Set different styles for basic and selected tabs.
+     */
+    private void resetTabColors() {
+        for (int i = 0; i < mTabs.getTabWidget().getChildCount(); i++) {
+            // Unselected ones
+            mTabs.getTabWidget().getChildAt(i)
+                    .setBackgroundColor(getResources().getColor(android.R.color.white));
+
+            ImageView iv = (ImageView) mTabs.getTabWidget().getChildAt(i).findViewById(android.R.id.icon);
+            iv.setColorFilter(getResources().getColor(R.color.theme_default_primary), android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+
+        // Selected ones
+        mTabs.getTabWidget().getChildAt(mTabs.getCurrentTab())
+                .setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        ImageView iv = (ImageView) mTabs.getCurrentTabView().findViewById(android.R.id.icon);
+        iv.setColorFilter(getResources()
+                .getColor(android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
+    }
+
+    /**
+     * Change action bar title every time we select a new tab.
+     * @param tab Selected tab
+     */
+    private void resetBarTitle(String tab) {
+        // Set
+        switch (tab) {
+            case TAB_2:
+                getSupportActionBar().setTitle(getString(R.string.detail_ingredients_label));
+                break;
+            case TAB_3:
+                getSupportActionBar().setTitle(getString(R.string.detail_directions_label));
+                break;
+            case TAB_4:
+                getSupportActionBar().setTitle(getString(R.string.detail_comments_label));
+                break;
+            default:
+            case TAB_1:
+                getSupportActionBar().setTitle(getString(R.string.detail_information_label));
+                break;
+        }
+    }
 
     // MENU METHODS
 

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amusebouche.activities.R;
-import com.amusebouche.services.Preferences;
+import com.amusebouche.services.AppData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,7 +64,7 @@ public class LanguagesDialog extends Dialog {
         this.setContentView(R.layout.dialog_languages);
 
         // Get languages from shared preferences
-        mSelectedLanguage = preferences.getString(Preferences.PREFERENCE_RECIPES_LANGUAGE, "");
+        mSelectedLanguage = preferences.getString(AppData.PREFERENCE_RECIPES_LANGUAGE, "");
 
         // Get layout elements
         list = (ListView) findViewById(R.id.languages);
@@ -92,7 +92,7 @@ public class LanguagesDialog extends Dialog {
                 } else {
                     // Set languages as preference
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString(Preferences.PREFERENCE_RECIPES_LANGUAGE,
+                    editor.putString(AppData.PREFERENCE_RECIPES_LANGUAGE,
                             adapter.getSelected());
                     editor.apply();
 

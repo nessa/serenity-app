@@ -163,7 +163,7 @@ public class GridviewCellAdapter extends BaseAdapter {
 
                     // Fade out title and view
                     Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
-                    fadeOutAnimation.setDuration(1000);
+                    fadeOutAnimation.setDuration(500);
 
                     fadeOutAnimation.setAnimationListener(new Animation.AnimationListener() {
                         @Override

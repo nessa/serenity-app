@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.amusebouche.dialogs.LanguagesDialog;
 import com.amusebouche.activities.R;
-import com.amusebouche.services.Preferences;
+import com.amusebouche.services.AppData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,9 +99,9 @@ public class SettingsFragment extends Fragment {
 
         // Get preferences
         boolean downloadImagesSetting = mSharedPreferences.getBoolean(
-                Preferences.PREFERENCE_DOWNLOAD_IMAGES, false);
+                AppData.PREFERENCE_DOWNLOAD_IMAGES, false);
         boolean recognizerLanguageSetting = mSharedPreferences.getBoolean(
-                Preferences.PREFERENCE_RECOGNIZER_LANGUAGE, false);
+                AppData.PREFERENCE_RECOGNIZER_LANGUAGE, false);
 
         // Get views and set its values
         Switch downloadImagesSwitch = (Switch) mLayout.findViewById(R.id.setting_download_images_enabled);
@@ -119,7 +119,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putBoolean(Preferences.PREFERENCE_DOWNLOAD_IMAGES, isChecked);
+                editor.putBoolean(AppData.PREFERENCE_DOWNLOAD_IMAGES, isChecked);
                 editor.apply();
             }
         });
@@ -128,7 +128,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putBoolean(Preferences.PREFERENCE_RECOGNIZER_LANGUAGE, isChecked);
+                editor.putBoolean(AppData.PREFERENCE_RECOGNIZER_LANGUAGE, isChecked);
                 editor.apply();
             }
         });
@@ -159,7 +159,7 @@ public class SettingsFragment extends Fragment {
     private void setSelectedLanguages() {
         // Get languages from shared preferences
         String languages = mSharedPreferences.getString(
-                Preferences.PREFERENCE_RECIPES_LANGUAGE, "");
+                AppData.PREFERENCE_RECIPES_LANGUAGE, "");
 
         if (languages.length() > 0) {
             ArrayList<String> selectedLanguages = new ArrayList<>(Arrays.asList(languages.split(SEPARATOR)));

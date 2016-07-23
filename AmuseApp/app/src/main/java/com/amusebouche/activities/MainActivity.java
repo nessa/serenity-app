@@ -15,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -39,7 +38,7 @@ import com.amusebouche.fragments.InformationFragment;
 import com.amusebouche.fragments.RecipeListFragment;
 import com.amusebouche.fragments.SettingsFragment;
 import com.amusebouche.fragments.UserFragment;
-import com.amusebouche.services.Preferences;
+import com.amusebouche.services.AppData;
 import com.amusebouche.services.RequestHandler;
 
 import java.util.ArrayList;
@@ -651,7 +650,7 @@ public class MainActivity extends AppCompatActivity {
             "-" + RequestHandler.API_PARAM_UPDATED_TIMESTAMP, true);
 
         final String language = mSharedPreferences.getString(
-                Preferences.PREFERENCE_RECIPES_LANGUAGE, "");
+                AppData.PREFERENCE_RECIPES_LANGUAGE, "");
         if (!language.equals("")) {
             addFilterToFilterParams(RequestHandler.API_PARAM_LANGUAGE, language, false);
         }
