@@ -20,7 +20,7 @@
     <dimen name="drawer_left_selected_line_width">10dp</dimen>
     <dimen name="drawer_left_cell_height">48dp</dimen>
     <dimen name="drawer_left_cell_image_size">40dp</dimen>
-    <dimen name="drawer_left_text_left_margin">8dp</dimen>
+    <dimen name="drawer_left_text_left_margin">6dp</dimen>
 
     <!-- Main -->
 

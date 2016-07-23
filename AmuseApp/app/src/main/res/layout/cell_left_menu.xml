@@ -30,6 +30,8 @@
         android:layout_centerVertical="true"
         android:layout_alignBaseline="@+id/image"
         android:layout_marginStart="@dimen/drawer_left_text_left_margin"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:fontFamily="sans-serif-light"
         android:textColor="@color/drawer_text_color" />

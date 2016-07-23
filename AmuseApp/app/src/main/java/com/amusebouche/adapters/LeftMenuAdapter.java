@@ -10,6 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amusebouche.activities.R;
+import com.amusebouche.services.AppData;
+import com.amusebouche.services.DatabaseHelper;
 
 
 /**
@@ -26,8 +28,11 @@ import com.amusebouche.activities.R;
 public class LeftMenuAdapter extends BaseAdapter {
     private Context mContext = null;
 
+    private DatabaseHelper mDatabaseHelper;
+
     public LeftMenuAdapter(Context context) {
         this.mContext = context;
+        mDatabaseHelper = new DatabaseHelper(context);
     }
 
     @Override
@@ -50,7 +55,12 @@ public class LeftMenuAdapter extends BaseAdapter {
         switch (position) {
             default:
             case 0:
-                return mContext.getResources().getString(R.string.lateral_menu_login);
+                String user = mDatabaseHelper.getAppData(AppData.USER_SHOW_TEXT);
+                if (user.equals("")) {
+                    return mContext.getResources().getString(R.string.lateral_menu_login);
+                } else {
+                    return user;
+                }
             case 1:
                 return mContext.getResources().getString(R.string.lateral_menu_new_recipes);
             case 2:
@@ -84,7 +94,6 @@ public class LeftMenuAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         if (convertView == null) {
             convertView = new DrawerView(mContext);
         }

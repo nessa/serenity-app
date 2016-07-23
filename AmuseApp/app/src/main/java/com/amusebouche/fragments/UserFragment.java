@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.services.DatabaseHelper;
@@ -83,6 +84,8 @@ public class UserFragment extends Fragment {
     private AmuseAPI mAPI;
     private DatabaseHelper mDatabaseHelper;
 
+    private MainActivity mMainActivity;
+
     // LIFECYCLE METHODS
 
     /**
@@ -116,6 +119,7 @@ public class UserFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate()");
 
+        mMainActivity = (MainActivity) getActivity();
         mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
     }
 
@@ -693,6 +697,9 @@ public class UserFragment extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {
                     mDatabaseHelper.setAppData(AppData.USER_AUTH_TOKEN, "");
+                    mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+
+                    mMainActivity.reloadLeftDrawer();
 
                     mUserView.setVisibility(View.GONE);
                     mLoginView.setVisibility(View.VISIBLE);
@@ -731,6 +738,9 @@ public class UserFragment extends Fragment {
                             mName = String.format("%s %s", jObject.getString("first_name"),
                                 jObject.getString("last_name"));
                             mMail = jObject.getString("email");
+
+                            mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, mMail);
+                            mMainActivity.reloadLeftDrawer();
 
                         } catch (JSONException e) {
                             e.printStackTrace();

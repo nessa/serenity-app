@@ -193,6 +193,7 @@ public class SplashScreenActivity extends Activity {
     private void checkLogin() {
         // TODO: Try to login
         Log.d("SPLASH", "LOGIN");
+        mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
         mTextView.setText(getString(R.string.splash_screen_login_message));
         goToMainView();
     }

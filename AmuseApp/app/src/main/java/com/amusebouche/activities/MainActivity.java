@@ -144,26 +144,9 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
 
         if (mDrawerLayout == null || mLeftDrawerView == null || mRightDrawerView == null || mDrawerToggle == null) {
-            // Configure navigation drawer
-            mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-
-            // Set left menu view
-            mLeftDrawerView = (LinearLayout) findViewById(R.id.left_menu);
-            mLeftDrawerList = (ListView) findViewById(R.id.left_menu_list);
-            mLeftDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    selectItemInLeftMenu(position);
-                }
-            });
-            mLeftDrawerList.setDivider(null);
-            mLeftMenuAdapter = mLeftMenuAdapter == null ?
-                    new LeftMenuAdapter(this) : mLeftMenuAdapter;
-            mLeftDrawerList.setAdapter(mLeftMenuAdapter);
-
+            // Set left drawer
+            loadLeftDrawer();
             selectItemInLeftMenu(mCurrentSelectedPosition);
-
 
             // Set right search view
             mRightDrawerView = (LinearLayout) findViewById(R.id.right_search);
@@ -758,6 +741,30 @@ public class MainActivity extends AppCompatActivity {
 
 
     // NAVIGATION DRAWER METHODS
+
+    private void loadLeftDrawer() {
+        // Configure navigation drawer
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        // Set left menu view
+        mLeftDrawerView = (LinearLayout) findViewById(R.id.left_menu);
+        mLeftDrawerList = (ListView) findViewById(R.id.left_menu_list);
+        mLeftDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                selectItemInLeftMenu(position);
+            }
+        });
+        mLeftDrawerList.setDivider(null);
+        mLeftMenuAdapter = mLeftMenuAdapter == null ?
+                new LeftMenuAdapter(this) : mLeftMenuAdapter;
+        mLeftDrawerList.setAdapter(mLeftMenuAdapter);
+    }
+
+    public void reloadLeftDrawer() {
+        loadLeftDrawer();
+        mLeftDrawerList.setItemChecked(mCurrentSelectedPosition, true);
+    }
 
     public void selectItemInLeftMenu(int position) {
         mCurrentSelectedPosition = position;
