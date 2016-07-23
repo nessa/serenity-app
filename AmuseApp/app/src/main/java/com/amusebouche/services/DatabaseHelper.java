@@ -780,73 +780,74 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             if (count > 0) {
                                 where += " AND ";
                             }
+
+                            // Add new parameter to the count
+                            count += 1;
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_LANGUAGE)) {
                             where += RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE +
-                                " = UPPER('" + value + "') ";
+                                    " = UPPER('" + value + "') ";
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_TITLE)) {
                             where += RecipeContract.RecipeEntry.COLUMN_NAME_TITLE +
-                                " LIKE LOWER('%" + value + "%') ";
+                                    " LIKE LOWER('%" + value + "%') ";
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_DIFFICULTY)) {
                             where += RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY +
-                                " = '" + value + "' ";
+                                    " = '" + value + "' ";
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_TYPE_OF_DISH)) {
                             where += RecipeContract.RecipeEntry.COLUMN_NAME_TYPE_OF_DISH +
-                                " = '" + value + "' ";
+                                    " = '" + value + "' ";
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_CATEGORY)) {
                             where += "EXISTS (SELECT " +
-                                RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
-                                " FROM " + RecipeCategoryContract.TABLE_NAME +
-                                " WHERE " + RecipeContract.TABLE_NAME + "." +
-                                RecipeContract.RecipeEntry._ID + " = " +
-                                RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
-                                " AND " + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME +
-                                " LIKE ('%" + value + "%')) ";
+                                    RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
+                                    " FROM " + RecipeCategoryContract.TABLE_NAME +
+                                    " WHERE " + RecipeContract.TABLE_NAME + "." +
+                                    RecipeContract.RecipeEntry._ID + " = " +
+                                    RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
+                                    " AND " + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME +
+                                    " LIKE ('%" + value + "%')) ";
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_DISLIKE_CATEGORY)) {
                             where += "NOT EXISTS (SELECT " +
-                                RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
-                                " FROM " + RecipeCategoryContract.TABLE_NAME +
-                                " WHERE " + RecipeContract.TABLE_NAME + "." +
-                                RecipeContract.RecipeEntry._ID + " = " +
-                                RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
-                                " AND " + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME +
-                                " LIKE ('%" + value + "%')) ";
+                                    RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
+                                    " FROM " + RecipeCategoryContract.TABLE_NAME +
+                                    " WHERE " + RecipeContract.TABLE_NAME + "." +
+                                    RecipeContract.RecipeEntry._ID + " = " +
+                                    RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
+                                    " AND " + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME +
+                                    " LIKE ('%" + value + "%')) ";
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_DISLIKE_INGREDIENT)) {
                             where += "NOT EXISTS (SELECT " +
-                                RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
-                                " FROM " + RecipeIngredientContract.TABLE_NAME +
-                                " WHERE " + RecipeContract.TABLE_NAME + "." +
-                                RecipeContract.RecipeEntry._ID + " = " +
-                                RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
-                                " AND " + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME +
-                                " LIKE ('%" + value + "%')) ";
+                                    RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
+                                    " FROM " + RecipeIngredientContract.TABLE_NAME +
+                                    " WHERE " + RecipeContract.TABLE_NAME + "." +
+                                    RecipeContract.RecipeEntry._ID + " = " +
+                                    RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
+                                    " AND " + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME +
+                                    " LIKE ('%" + value + "%')) ";
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_INGREDIENT)) {
                             where += "EXISTS (SELECT " +
-                                RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
-                                " FROM " + RecipeIngredientContract.TABLE_NAME +
-                                " WHERE " + RecipeContract.TABLE_NAME + "." +
-                                RecipeContract.RecipeEntry._ID + " = " +
-                                RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
-                                " AND " + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME +
-                                " LIKE ('%" + value + "%')) ";
+                                    RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
+                                    " FROM " + RecipeIngredientContract.TABLE_NAME +
+                                    " WHERE " + RecipeContract.TABLE_NAME + "." +
+                                    RecipeContract.RecipeEntry._ID + " = " +
+                                    RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
+                                    " AND " + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME +
+                                    " LIKE ('%" + value + "%')) ";
                         }
-
-                        count += 1;
                     }
                 }
             }
