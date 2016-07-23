@@ -20,6 +20,8 @@ import java.util.Random;
  */
 public class ImageHandler {
 
+    private static int RESIZE_PIXELS = 500;
+
     /**
      * Set an image in a image view using the Picasso library.
      * @param context Context where the image will be set.
@@ -94,15 +96,19 @@ public class ImageHandler {
         // Check if image is defined correctly. If not, load the alternative resource.
         if (imageName == null || imageName.equals("")) {
             Picasso.with(context)
-                .load(resource)
-                .noFade()
-                .into(imageView, callback);
+                    .load(resource)
+                    .resize(RESIZE_PIXELS, RESIZE_PIXELS)
+                    .centerInside()
+                    .noFade()
+                    .into(imageView, callback);
         } else {
             Picasso.with(context)
-                .load(imageName)
-                .noFade()
-                .error(resource)
-                .into(imageView, callback);
+                    .load(imageName)
+                    .resize(RESIZE_PIXELS, RESIZE_PIXELS)
+                    .centerInside()
+                    .noFade()
+                    .error(resource)
+                    .into(imageView, callback);
         }
     }
 
