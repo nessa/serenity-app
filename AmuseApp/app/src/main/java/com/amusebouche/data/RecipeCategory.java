@@ -69,6 +69,25 @@ public class RecipeCategory implements Parcelable {
         return mName;
     }
 
+    // JSON methods
+
+    /**
+     * Build a JSON object with the category data
+     *
+     * @return o JSONObject that contains all category information
+     */
+    public JSONObject buildJSON() {
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("name", this.getName());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
 
     // Parcelable methods
 

@@ -15,15 +15,6 @@
     <string name="action_edit">Edit</string>
     <string name="action_save">Save</string>
 
-    <!-- Preferences -->
-    <string name="preference_download_images">preference_download_images</string>
-    <string name="preference_recipes_languages">preference_recipes_languages</string>
-    <string name="preference_recognizer_language">preference_recognizer_language</string>
-    <string name="preference_auth_token">preference_auth_token</string>
-    <string name="preference_remember">preference_remember</string>
-    <string name="preference_username">preference_username</string>
-    <string name="preference_password">preference_password</string>
-
     <!--   Languages -->
     <string name="language_es">Spanish</string>
     <string name="language_en">English</string>
@@ -90,6 +81,8 @@
     <string name="recipe_list_no_connection_message">No connection found</string>
 
     <!-- Detail activity -->
+    <string name="detail_recipe_created_message">Recipe created</string>
+    <string name="detail_recipe_updated_message">Recipe updated</string>
     <!--   Recipe detail fragment -->
     <string name="image">Image</string>
     <string name="detail_users">users</string>

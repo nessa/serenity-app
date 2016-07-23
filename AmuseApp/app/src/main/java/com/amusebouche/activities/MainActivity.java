@@ -38,6 +38,7 @@ import com.amusebouche.fragments.InformationFragment;
 import com.amusebouche.fragments.RecipeListFragment;
 import com.amusebouche.fragments.SettingsFragment;
 import com.amusebouche.fragments.UserFragment;
+import com.amusebouche.services.Preferences;
 import com.amusebouche.services.RequestHandler;
 
 import java.util.ArrayList;
@@ -643,9 +644,10 @@ public class MainActivity extends AppCompatActivity {
         addFilterToFilterParams(RequestHandler.API_PARAM_ORDERING,
             "-" + RequestHandler.API_PARAM_UPDATED_TIMESTAMP, true);
 
-        final String languages = mSharedPreferences.getString(getString(R.string.preference_recipes_languages), "");
-        if (!languages.equals("")) {
-            addFilterToFilterParams(RequestHandler.API_PARAM_LANGUAGE, languages, false);
+        final String language = mSharedPreferences.getString(
+                Preferences.PREFERENCE_RECIPES_LANGUAGE, "");
+        if (!language.equals("")) {
+            addFilterToFilterParams(RequestHandler.API_PARAM_LANGUAGE, language, false);
         }
     }
 

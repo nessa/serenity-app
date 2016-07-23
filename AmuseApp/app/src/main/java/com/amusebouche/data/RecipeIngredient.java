@@ -132,6 +132,28 @@ public class RecipeIngredient implements Parcelable {
         this.mMeasurementUnit = measurementUnit;
     }
 
+    // JSON methods
+
+    /**
+     * Build a JSON object with the ingredient data
+     *
+     * @return o JSONObject that contains all ingredient information
+     */
+    public JSONObject buildJSON() {
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("sort_number", this.getSortNumber());
+            json.put("name", this.getName());
+            json.put("quantity", this.getQuantity());
+            json.put("measurement_unit", this.getMeasurementUnit());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
 
     // Parcelable methods
 

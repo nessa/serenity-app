@@ -153,6 +153,31 @@ public class RecipeDirection implements Parcelable {
         mTime = time;
     }
 
+    // JSON methods
+
+    /**
+     * Build a JSON object with the direction data
+     *
+     * @return o JSONObject that contains all direction information
+     */
+    public JSONObject buildJSON() {
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("sort_number", this.getSortNumber());
+            json.put("description", this.getDescription());
+            json.put("image", this.getImage());
+            json.put("video", this.getVideo());
+            json.put("time", this.getTime());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
+
     // Parcelable methods
 
     /**

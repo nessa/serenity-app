@@ -454,6 +454,13 @@ public class Recipe implements Parcelable {
     }
 
     /**
+     * Set method for owner variable
+     */
+    public void setOwner(String owner) {
+        this.mOwner = owner;
+    }
+
+    /**
      * Set method for typeOfDish variable
      */
     public void setTypeOfDish(String typeOfDish) {
@@ -513,6 +520,52 @@ public class Recipe implements Parcelable {
     public void printString() {
         Log.d("RECIPE", mId + " " + mTitle);
     }
+
+    // JSON methods
+
+    /**
+     * Build a JSON object with the recipe data
+     *
+     * @return o JSONObject that contains all recipe information
+     */
+    public JSONObject buildJSON() {
+
+        JSONObject json = new JSONObject();
+        JSONArray categories = new JSONArray();
+        JSONArray ingredients = new JSONArray();
+        JSONArray directions = new JSONArray();
+
+        try {
+            json.put("title", this.getTitle());
+            json.put("language", this.getLanguage());
+            json.put("type_of_dish", this.getTypeOfDish());
+            json.put("difficulty", this.getDifficulty());
+            json.put("cooking_time", this.getCookingTime());
+            json.put("image", this.getImage());
+            json.put("servings", this.getServings());
+            json.put("source", this.getSource());
+
+            for (int i = 0; i < this.getCategories().size(); i++) {
+                categories.put(i, this.getCategories().get(i).buildJSON());
+            }
+            for (int i = 0; i < this.getIngredients().size(); i++) {
+                ingredients.put(i, this.getIngredients().get(i).buildJSON());
+            }
+            for (int i = 0; i < this.getDirections().size(); i++) {
+                directions.put(i, this.getDirections().get(i).buildJSON());
+            }
+
+            json.put("categories", categories);
+            json.put("ingredients", ingredients);
+            json.put("directions", directions);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
 
     // Parcelable methods
 

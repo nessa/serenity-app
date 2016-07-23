@@ -111,8 +111,8 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
                         "",
                         "",
                         "",
-                        "", // Set username
-                        "es", // Set preferences language
+                        "", // TODO: Set username
+                        "es", // TODO: Set preferences language
                         UserFriendlyTranslationsHandler.getDefaultTypeOfDish(),
                         UserFriendlyTranslationsHandler.getDefaultDifficulty(),
                         null,

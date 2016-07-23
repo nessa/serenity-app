@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AmuseAPI;
+import com.amusebouche.services.Preferences;
 import com.amusebouche.services.RetrofitServiceGenerator;
 import com.securepreferences.SecurePreferences;
 
@@ -118,7 +119,8 @@ public class UserFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate()");
 
-        mSharedPreferences = new SecurePreferences(getActivity(), "", "user_preferences.xml");
+        mSharedPreferences = new SecurePreferences(getActivity(), "",
+                Preferences.USER_PREFERENCES_FILE);
     }
 
 
@@ -148,7 +150,7 @@ public class UserFragment extends Fragment {
         mLoadingIndicator.setVisibility(View.VISIBLE);
 
         // Check if user is logged in
-        String mAuthToken = mSharedPreferences.getString(getString(R.string.preference_auth_token), "");
+        String mAuthToken = mSharedPreferences.getString(Preferences.PREFERENCE_AUTH_TOKEN, "");
         if (mAuthToken.equals("")) {
             showLoginView();
         } else {
@@ -236,13 +238,13 @@ public class UserFragment extends Fragment {
 
                 // Set preferences if needed
                 SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putBoolean(getString(R.string.preference_remember), mRemember);
+                editor.putBoolean(Preferences.PREFERENCE_REMEMBER_CREDENTIALS, mRemember);
                 if (mRemember) {
-                    editor.putString(getString(R.string.preference_username), mUsername);
-                    editor.putString(getString(R.string.preference_password), mPassword);
+                    editor.putString(Preferences.PREFERENCE_USERNAME, mUsername);
+                    editor.putString(Preferences.PREFERENCE_PASSWORD, mPassword);
                 } else {
-                    editor.putString(getString(R.string.preference_username), "");
-                    editor.putString(getString(R.string.preference_password), "");
+                    editor.putString(Preferences.PREFERENCE_USERNAME, "");
+                    editor.putString(Preferences.PREFERENCE_PASSWORD, "");
                 }
                 editor.apply();
 
@@ -276,7 +278,7 @@ public class UserFragment extends Fragment {
                                         token = jObject.getString("auth_token");
 
                                         SharedPreferences.Editor editor = mSharedPreferences.edit();
-                                        editor.putString(getString(R.string.preference_auth_token), token);
+                                        editor.putString(Preferences.PREFERENCE_AUTH_TOKEN, token);
                                         editor.apply();
 
                                         loadUser(token);
@@ -325,12 +327,12 @@ public class UserFragment extends Fragment {
         });
 
         // Set initial data
-        mRemember = mSharedPreferences.getBoolean(getString(R.string.preference_remember), false);
+        mRemember = mSharedPreferences.getBoolean(Preferences.PREFERENCE_REMEMBER_CREDENTIALS, false);
         rememberCheckBox.setChecked(mRemember);
 
         if (mRemember) {
-            mUsername = mSharedPreferences.getString(getString(R.string.preference_username), "");
-            mPassword = mSharedPreferences.getString(getString(R.string.preference_password), "");
+            mUsername = mSharedPreferences.getString(Preferences.PREFERENCE_USERNAME, "");
+            mPassword = mSharedPreferences.getString(Preferences.PREFERENCE_PASSWORD, "");
 
             usernameTextView.setText(mUsername);
             passwordTextView.setText(mPassword);
@@ -686,7 +688,7 @@ public class UserFragment extends Fragment {
      * It only removes the token.
      */
     private void logOut() {
-        String token = mSharedPreferences.getString(getString(R.string.preference_auth_token), "");
+        String token = mSharedPreferences.getString(Preferences.PREFERENCE_AUTH_TOKEN, "");
 
         mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, token);
         Call<ResponseBody> call = mAPI.logout();
@@ -696,7 +698,7 @@ public class UserFragment extends Fragment {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 200) {
                     SharedPreferences.Editor editor = mSharedPreferences.edit();
-                    editor.putString(getString(R.string.preference_auth_token), "");
+                    editor.putString(Preferences.PREFERENCE_AUTH_TOKEN, "");
                     editor.apply();
 
                     mUserView.setVisibility(View.GONE);

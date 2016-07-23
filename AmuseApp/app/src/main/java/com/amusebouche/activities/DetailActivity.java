@@ -31,6 +31,7 @@ import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
 import com.amusebouche.services.DatabaseHelper;
+import com.amusebouche.services.Preferences;
 import com.amusebouche.services.RetrofitServiceGenerator;
 import com.securepreferences.SecurePreferences;
 
@@ -93,6 +94,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     // Preferences
     private SharedPreferences mUserPreferences;
     private String mUsername;
+    private String mToken;
     private boolean isUserLoggedIn;
 
     // Behaviour variables
@@ -116,10 +118,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
 
         // Check if user is logged in
-        mUserPreferences = new SecurePreferences(this, "", "user_preferences.xml");
-        String mAuthToken = mUserPreferences.getString(getString(R.string.preference_auth_token), "");
-        mUsername = mUserPreferences.getString(getString(R.string.preference_username), "");
-        isUserLoggedIn = !mAuthToken.equals("");
+        mUserPreferences = new SecurePreferences(this, "", Preferences.USER_PREFERENCES_FILE);
+        mToken = mUserPreferences.getString(Preferences.PREFERENCE_AUTH_TOKEN, "");
+        mUsername = mUserPreferences.getString(Preferences.PREFERENCE_USERNAME, "");
+        isUserLoggedIn = !mToken.equals("");
 
         // Get saved data
         String presentTab = TAB_1;
@@ -493,13 +495,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 }
 
                 if (fail) {
-                    // TODO: SHow error
+                    // TODO: Show error
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                // TODO: SHow error
+                // TODO: Show error
             }
         });
     }
@@ -509,6 +511,50 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     public void uploadRecipe() {
         Log.d("DETAIL", "UPLOAD");
+        if (isUserLoggedIn) {
+            AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken);
+
+            if (mRecipe.getId().equals("") || mRecipe.getId().equals("0")) {
+                // Create
+                Call<ResponseBody> requestCall = api.createRecipe(mRecipe.buildJSON());
+
+                // Asynchronous call
+                requestCall.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        mRecipe.setOwner(mUsername);
+
+                        Snackbar.make(mLayout, getString(R.string.detail_recipe_created_message),
+                                Snackbar.LENGTH_LONG)
+                                .show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.d("DETAIL", "ERROR CREATING RECIPE");
+                    }
+
+                });
+            } else {
+                // Update
+                Call<ResponseBody> requestCall = api.updateRecipe(mRecipe.getId(), mRecipe.buildJSON());
+
+                // Asynchronous call
+                requestCall.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        Snackbar.make(mLayout, getString(R.string.detail_recipe_updated_message),
+                                Snackbar.LENGTH_LONG)
+                                .show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.d("DETAIL", "ERROR UPDATING RECIPE");
+                    }
+                });
+            }
+        }
     }
 
     /**

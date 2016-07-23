@@ -22,6 +22,7 @@ import com.amusebouche.data.Ingredient;
 import com.amusebouche.dialogs.LanguagesDialog;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.services.DatabaseHelper;
+import com.amusebouche.services.Preferences;
 import com.amusebouche.services.RetrofitServiceGenerator;
 
 import org.json.JSONArray;
@@ -34,9 +35,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class SplashScreenActivity extends Activity {
-
-    public static String PREFERENCE_INGREDIENT_LAST_UPDATE = "PREFERENCE_INGREDIENT_LAST_UPDATE";
-    public static String PREFERENCE_LANGUAGE = "PREFERENCE_LANGUAGE";
 
     // User interface
     private ProgressBar mProgressBar;
@@ -76,7 +74,7 @@ public class SplashScreenActivity extends Activity {
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         // Get languages from shared preferences
-        mLanguage = mSharedPreferences.getString(PREFERENCE_LANGUAGE, "");
+        mLanguage = mSharedPreferences.getString(Preferences.PREFERENCE_RECIPES_LANGUAGE, "");
 
         // If there are no set languages, ask for them
         if (mLanguage.equals("")) {
@@ -85,7 +83,8 @@ public class SplashScreenActivity extends Activity {
             languagesDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    mLanguage = mSharedPreferences.getString(PREFERENCE_LANGUAGE, "");
+                    mLanguage = mSharedPreferences.getString(
+                            Preferences.PREFERENCE_RECIPES_LANGUAGE, "");
                     loadIngredients();
                 }
             });
@@ -104,7 +103,8 @@ public class SplashScreenActivity extends Activity {
         mProgressBar.setVisibility(View.VISIBLE);
         mTextView.setText(getString(R.string.splash_screen_loading_ingredients_message));
 
-        final String lastUpdate = mSharedPreferences.getString(PREFERENCE_INGREDIENT_LAST_UPDATE, "");
+        final String lastUpdate = mSharedPreferences.getString(
+                Preferences.PREFERENCE_INGREDIENT_LAST_UPDATE, "");
 
         // Prepare new update date as now
         mNewUpdateDate = dateFormat.format(new Date());
@@ -163,7 +163,8 @@ public class SplashScreenActivity extends Activity {
                     if (jObject.getString("next") == null) {
                         // Set new update date as last one
                         SharedPreferences.Editor editor = mSharedPreferences.edit();
-                        editor.putString(PREFERENCE_INGREDIENT_LAST_UPDATE, mNewUpdateDate);
+                        editor.putString(Preferences.PREFERENCE_INGREDIENT_LAST_UPDATE,
+                                mNewUpdateDate);
                         editor.apply();
 
                         // Go to next step

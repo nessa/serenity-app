@@ -1,11 +1,15 @@
 package com.amusebouche.services;
 
+import org.json.JSONObject;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.Url;
@@ -44,6 +48,12 @@ public interface AmuseAPI {
 
     @GET("recipes/{id}/")
     Call<ResponseBody> getRecipe(@Path("id") String id);
+
+    @POST("recipes/")
+    Call<ResponseBody> createRecipe(@Body JSONObject body);
+
+    @PUT("recipes/{id}/")
+    Call<ResponseBody> updateRecipe(@Path("id") String id, @Body JSONObject body);
 
     // Recipe's comments requests
 
