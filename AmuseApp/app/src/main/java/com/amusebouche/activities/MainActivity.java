@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -261,6 +262,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    // MENU METHODS
+
     /**
      * We inflate the menu options in every fragment, but the selection
      * effect it's done here.
@@ -296,6 +299,9 @@ public class MainActivity extends AppCompatActivity {
                     mDrawerLayout.openDrawer(mRightDrawerView);
                 }
 
+                return true;
+            case R.id.action_reload:
+                selectItemInLeftMenu(mCurrentSelectedPosition);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

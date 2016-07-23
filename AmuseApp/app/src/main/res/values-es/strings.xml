@@ -9,6 +9,7 @@
     <!-- Menu -->
     <string name="action_settings">Configuración</string>
     <string name="action_search">Buscar</string>
+    <string name="action_reload">Recargar</string>
     <string name="action_rate">Puntuar</string>
     <string name="action_download">Descargar</string>
     <string name="action_upload">Subir</string>
