@@ -82,8 +82,6 @@ public class GridviewCellAdapter extends BaseAdapter {
         }
     }
 
-    // Create a new view for each item referenced by the adapter
-
     /**
      * Create a new view for each item referenced by the adapter. If the view already existed, it
      * will update it.

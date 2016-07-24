@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ImageView;
@@ -31,6 +30,7 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amusebouche.adapters.AutoCompleteArrayAdapter;
 import com.amusebouche.adapters.LeftMenuAdapter;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
@@ -48,7 +48,7 @@ import java.util.Collections;
 
 /**
  * Main activity class.
- * Author: Noelia Sales <noelia.salesmontes@gmail.com
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com>
  *
  * Main app activity.
  * It has:
@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private Integer mCurrentPage;
     private Integer mLimitPerPage;
     private Integer mPreviousTotal;
+    private ArrayList<Pair<String, ArrayList<String>>> mFilterParams;
 
     // UI variables
     private Fragment mLastFragment;
@@ -114,11 +115,6 @@ public class MainActivity extends AppCompatActivity {
 
     private View.OnClickListener mCollapseClickListener;
 
-    private ArrayList<Pair<String, ArrayList<String>>> mFilterParams;
-
-    private static final String[] INGREDIENTS = new String[] {
-            "garbanzos", "chorizo", "aceite de oliva"
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -398,16 +394,14 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Set multi autocomplete views adapters
-        ArrayAdapter<String> ingredientsAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, INGREDIENTS);
-        final MultiAutoCompleteTextView ingredientsTextView = (MultiAutoCompleteTextView) mRightDrawerView.findViewById(R.id.ingredients_text_view);
-        ingredientsTextView.setAdapter(ingredientsAdapter);
+        final MultiAutoCompleteTextView ingredientsTextView = (MultiAutoCompleteTextView)
+                mRightDrawerView.findViewById(R.id.ingredients_text_view);
+        ingredientsTextView.setAdapter(new AutoCompleteArrayAdapter(this));
         ingredientsTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
-        ArrayAdapter<String> dislikeIngredientsAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_dropdown_item_1line, INGREDIENTS);
-        final MultiAutoCompleteTextView dislikeIngredientsTextView = (MultiAutoCompleteTextView) mRightDrawerView.findViewById(R.id.dislike_ingredients_text_view);
-        dislikeIngredientsTextView.setAdapter(dislikeIngredientsAdapter);
+        final MultiAutoCompleteTextView dislikeIngredientsTextView = (MultiAutoCompleteTextView)
+                mRightDrawerView.findViewById(R.id.dislike_ingredients_text_view);
+        dislikeIngredientsTextView.setAdapter(new AutoCompleteArrayAdapter(this));
         dislikeIngredientsTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
         // Set multi autocomplete views buttons

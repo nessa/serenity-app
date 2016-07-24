@@ -16,6 +16,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.ScrollView;
 
 import com.amusebouche.data.AppDataContract;
 import com.amusebouche.data.Ingredient;
@@ -786,8 +787,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_LANGUAGE)) {
-                            where += RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE +
-                                    " = UPPER('" + value + "') ";
+                            where += "UPPER(" + RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE +
+                                    ") = UPPER('" + value + "') ";
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_TITLE)) {
@@ -897,7 +898,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // INGREDIENTS
 
-
     public boolean existIngredient(Ingredient ingredient) {
         mDatabase = getReadableDatabase();
 
@@ -939,6 +939,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES,
                 ingredient.getCategories());
 
+        long ingredientId;
+        ingredientId = mDatabase.insert(IngredientContract.TABLE_NAME, null, ingredientValues);
+
+        // Set database id in ingredient
+        ingredient.setDatabaseId(Objects.toString(ingredientId));
+
         mDatabase.close();
     }
 
@@ -965,7 +971,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES,
                 ingredient.getCategories());
 
-        mDatabase.update(RecipeContract.TABLE_NAME,
+        mDatabase.update(IngredientContract.TABLE_NAME,
                 ingredientValues,
                 IngredientContract.IngredientEntry._ID + "=?",
                 new String[]{String.valueOf(ingredient.getDatabaseId())});
@@ -1046,52 +1052,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ingredient;
     }
 
-
     /**
-     * Gets the list of recipes from the database.
+     * Gets the list of ingredients translations from the database.
      *
      * @param limit Max number of results to return
+     * @param language Language in which the ingredients are translated
      * @param matchString string to match with translations
      * @return the current recipes from the database.
      */
-    public ArrayList<Ingredient> getIngredients(Integer limit, String matchString) {
-
-        ArrayList<Ingredient> ingredients = new ArrayList<>();
+    public ArrayList<String> getIngredientsTranslations(Integer limit, String language,
+                                                        String matchString) {
 
         // Gets the database in the current database helper in read-only mode
         mDatabase = getReadableDatabase();
 
+        ArrayList<String> ingredients = new ArrayList<>();
+
         String where = IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
-            " LIKE ('%" + matchString + "%')";;
-        String ordering = "";
-        int count = 0;
+                " LIKE ('%" + matchString + "%') AND UPPER(" +
+                IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE +
+                ") = UPPER('" + language + "') ";
+
+        String ordering = IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION + " ASC";
 
         // After the query, the cursor points to the first database row
         // returned by the request.
-        String[] columns = {"_id"};
+        String[] columns = {IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION};
         Cursor ingredientCursor = mDatabase.query(IngredientContract.TABLE_NAME,
-            columns,
-            where,
-            null,
-            null,
-            null,
-            ordering,
-            "0, " + limit);
+                columns,
+                where,
+                null,
+                null,
+                null,
+                ordering,
+                "0, " + limit);
 
         while (ingredientCursor.moveToNext()) {
-            long ingredientId = ingredientCursor.getLong(ingredientCursor.getColumnIndex(
-                IngredientContract.IngredientEntry._ID)
+            String translation = ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                            IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION)
             );
 
-            Ingredient ingredient = getIngredientByDatabaseId(Objects.toString(ingredientId));
-            ingredients.add(ingredient);
+            ingredients.add(translation);
         }
         ingredientCursor.close();
 
         mDatabase.close();
         return ingredients;
     }
-
 
     // REST OF METHODS
 

@@ -76,24 +76,14 @@ public class Ingredient implements Parcelable {
     public Ingredient(JSONObject o) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
 
-        Log.d("JSON", o.toString());
-
         try {
             this.mDatabaseId = "";
             this.mTranslation = o.getString("translation");
             this.mLanguage = o.getString("language");
             this.mTimestamp = format.parse(o.getString("timestamp"));
 
-            String categoriesString = "";
             JSONArray categories = o.getJSONObject("ingredient").getJSONArray("categories");
-
-            for (int i = 0; i < categories.length(); i++) {
-                if (i > 0) {
-                    categoriesString += CATEGORY_SEPARATOR;
-                }
-
-                categoriesString += categories.getJSONObject(i).getString("name");
-            }
+            this.mCategories = categories.join(CATEGORY_SEPARATOR);
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
@@ -155,6 +145,16 @@ public class Ingredient implements Parcelable {
 
     public String getCategories() {
         return mCategories;
+    }
+
+    // Setters
+
+    /**
+     * Set method for database identifier
+     * @param databaseId Ingredient database identifier
+     */
+    public void setDatabaseId(String databaseId) {
+        mDatabaseId = databaseId;
     }
 
     // Parcelable methods

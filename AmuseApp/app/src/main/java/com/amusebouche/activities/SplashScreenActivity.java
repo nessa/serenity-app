@@ -34,6 +34,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Splash activity class.
+ * Author: Noelia Sales <noelia.salesmontes@gmail.com>
+ *
+ * It shows a loading indicator while:
+ * - Download new ingredients.
+ * - Check user login.
+ */
 public class SplashScreenActivity extends Activity {
 
     // User interface
@@ -43,6 +51,7 @@ public class SplashScreenActivity extends Activity {
     // Data variables
     private Integer mCurrentPage;
 
+    // TODO: UTC Date
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private DatabaseHelper mDatabaseHelper;
