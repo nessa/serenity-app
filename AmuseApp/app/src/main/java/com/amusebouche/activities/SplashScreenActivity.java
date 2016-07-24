@@ -56,6 +56,7 @@ public class SplashScreenActivity extends Activity {
 
     private DatabaseHelper mDatabaseHelper;
     private SharedPreferences mSharedPreferences;
+    private AmuseAPI mAPI;
 
     private String mNewUpdateDate;
     private String mLanguage;
@@ -131,7 +132,7 @@ public class SplashScreenActivity extends Activity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 // End
-                checkLogin();
+                checkIfUserIsLoggedIn();
             }
         });
     }
@@ -177,7 +178,7 @@ public class SplashScreenActivity extends Activity {
                         editor.apply();
 
                         // Go to next step
-                        checkLogin();
+                        checkIfUserIsLoggedIn();
                     } else {
                         // Load next page of ingredients
                         mCurrentPage += 1;
@@ -186,26 +187,157 @@ public class SplashScreenActivity extends Activity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                     // End
-                    checkLogin();
+                    checkIfUserIsLoggedIn();
                 }
             } else {
-                checkLogin();
+                checkIfUserIsLoggedIn();
             }
         } else {
-            checkLogin();
+            checkIfUserIsLoggedIn();
         }
     }
 
     /**
      * Try to login with stored credentials (if there are)
      */
-    private void checkLogin() {
-        // TODO: Try to login
+    private void checkIfUserIsLoggedIn() {
         Log.d("SPLASH", "LOGIN");
-        mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
-        mTextView.setText(getString(R.string.splash_screen_login_message));
-        goToMainView();
+
+        String authToken = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
+
+        if (authToken.equals("")) {
+            // Try to login
+            login();
+        } else {
+            // Load user with the present token
+            loadUser(authToken);
+        }
     }
+
+    /**
+     * Launch login request
+     */
+    private void login() {
+        boolean remember = mDatabaseHelper.getAppData(AppData.USER_REMEMBER_CREDENTIALS).equals("YES");
+        if (remember) {
+            String username = mDatabaseHelper.getAppData(AppData.USER_USERNAME);
+            String password = mDatabaseHelper.getAppData(AppData.USER_PASSWORD);
+
+            mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
+            Call<ResponseBody> call = mAPI.login(username, password);
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+
+                    boolean error = false;
+                    String jsonStr = "";
+                    String token;
+
+                    if (response.body() != null) {
+                        try {
+                            jsonStr = response.body().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            JSONObject jObject = new JSONObject(jsonStr);
+
+                            if (response.code() == 200) {
+                                if (jObject.has("auth_token")) {
+                                    token = jObject.getString("auth_token");
+
+                                    mDatabaseHelper.setAppData(AppData.USER_AUTH_TOKEN, token);
+
+                                    loadUser(token);
+                                }
+                            } else {
+                                error = true;
+                            }
+
+                        } catch (JSONException e) {
+                            error = true;
+                        }
+                    } else {
+                        error = true;
+                    }
+
+                    if (error) {
+                        mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                        goToMainView();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                    goToMainView();
+                }
+
+            });
+        } else {
+            mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+            goToMainView();
+        }
+    }
+
+    /**
+     * Launch me request
+     */
+    private void loadUser(String token) {
+        mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, token);
+        Call<ResponseBody> call = mAPI.me();
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                boolean error = false;
+
+                if (response.code() == 200) {
+                    String jsonStr = "";
+
+                    if (response.body() != null) {
+                        try {
+                            jsonStr = response.body().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            JSONObject jObject = new JSONObject(jsonStr);
+
+                            mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT,
+                                    jObject.getString("email"));
+
+                            goToMainView();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            error = true;
+                        }
+                    } else {
+                        error = true;
+                    }
+
+                } else {
+                    error = true;
+                }
+
+                if (error) {
+                    mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                    goToMainView();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                goToMainView();
+            }
+
+        });
+    }
+
 
     /**
      * Final step: load main activity
