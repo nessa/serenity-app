@@ -425,6 +425,11 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     public Recipe getRecipe() { return mRecipe; }
 
+    /**
+     * Get token method to share it with its fragments.
+     * @return Authorization token
+     */
+    public String getToken() { return mToken; }
 
     // FUNCTIONALITY METHODS
 

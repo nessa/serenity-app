@@ -21,8 +21,8 @@
     <string name="language_en">English</string>
 
     <!-- Splash screen -->
-    <string name="splash_screen_loading_ingredients_message">Loading ingredients...</string>
-    <string name="splash_screen_login_message">Login...</string>
+    <string name="splash_screen_loading_ingredients_message">Loading ingredients…</string>
+    <string name="splash_screen_login_message">Login…</string>
 
     <!-- Transitions -->
     <string name="transition_recipe_detail">detail</string>
@@ -77,7 +77,7 @@
     <string name="YES">Yes</string>
     <string name="NO">No</string>
     <!--   Recipe List fragment class -->
-    <string name="please_wait_message">Please, wait...</string>
+    <string name="please_wait_message">Please, wait…</string>
     <string name="recipe_list_no_recipes_message">No recipes found</string>
     <string name="recipe_list_no_connection_message">No connection found</string>
 
@@ -145,7 +145,7 @@
     <string name="detail_timer_seconds_initial">s</string>
     <!--   Commands -->
     <string name="detail_button_start_speaking">Start speaking</string>
-    <string name="detail_commands_listening_message">Listening...</string>
+    <string name="detail_commands_listening_message">Listening…</string>
     <string name="detail_commands_error_message">Error</string>
     <string name="detail_commands_success_message">Success</string>
     <!--   Speak messages -->
@@ -167,6 +167,9 @@
     <string name="voice_error_server">Error from server</string>
     <string name="voice_error_speech_timeout">No speech input. Please, say one of these commands:</string>
     <string name="voice_error_not_understood">Didn\'t understand. Please, say one of these commands:</string>
+    <!-- Comments -->
+    <string name="detail_leave_a_comment_message">Leave a comment…</string>
+    <string name="detail_send_comment">Send comment</string>
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">New recipe</string>

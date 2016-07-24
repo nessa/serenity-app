@@ -28,13 +28,13 @@
                 android:id="@+id/comment_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Leave a comment..."/>
+                android:hint="@string/detail_leave_a_comment_message"/>
 
             <Button
                 android:id="@+id/send_comment_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Send comment"/>
+                android:text="@string/detail_send_comment"/>
 
             <LinearLayout
                 android:id="@+id/comments"

@@ -55,17 +55,25 @@ public interface AmuseAPI {
     @PUT("recipes/{id}/")
     Call<ResponseBody> updateRecipe(@Path("id") String id, @Body JSONObject body);
 
+
     // Recipe's comments requests
 
     @GET("comments/")
     Call<ResponseBody> getComments(@Query("recipe") String id);
 
+    @FormUrlEncoded
+    @POST("comments/")
+    Call<ResponseBody> addComment(@Field("recipe") String recipe, @Field("comment") String comment);
+
+
+    // Recipe's ratings requests
+
+    @FormUrlEncoded
+    @POST("ratings/")
+    Call<ResponseBody> rateRecipe(@Field("recipe") String recipe, @Field("rating") Integer rating);
+
 
     // Ingredients requests
-
-    @GET("translations/")
-    Call<ResponseBody> getIngredients(@Query("page") Integer page,
-                                      @Query("language") String language);
 
     @GET("translations/")
     Call<ResponseBody> getIngredients(@Query("page") Integer page,

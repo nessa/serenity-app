@@ -3,10 +3,14 @@ package com.amusebouche.fragments;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -16,7 +20,6 @@ import android.widget.TextView;
 import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.data.Comment;
-import com.amusebouche.data.Recipe;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.services.RetrofitServiceGenerator;
 
@@ -45,13 +48,15 @@ import retrofit2.Response;
  */
 public class RecipeDetailFourthTabFragment extends Fragment {
 
+    private DetailActivity mActivity;
+
     // Data variables
-    private Recipe mRecipe;
     private ArrayList<Comment> mComments;
 
     // UI variables
     private ScrollView mScroll;
     private LinearLayout mCommentsView;
+    private EditText mCommentTextView;
     private ProgressBar mLoadingIndicator;
 
     // LIFECYCLE METHODS
@@ -88,6 +93,8 @@ public class RecipeDetailFourthTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
+
+        mActivity = (DetailActivity) getActivity();
     }
 
     /**
@@ -144,10 +151,6 @@ public class RecipeDetailFourthTabFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        // Get recipe from activity
-        DetailActivity x = (DetailActivity) getActivity();
-        mRecipe = x.getRecipe();
-
         // Get layouts
         RelativeLayout mLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_detail_fourth_tab,
                 container, false);
@@ -156,19 +159,61 @@ public class RecipeDetailFourthTabFragment extends Fragment {
         mLoadingIndicator = (ProgressBar) mLayout.findViewById(R.id.loading_indicator);
         mCommentsView = (LinearLayout) mLayout.findViewById(R.id.comments);
 
+        mCommentTextView = (EditText) mLayout.findViewById(R.id.comment_text);
+        final Button sendCommentButton = (Button) mLayout.findViewById(R.id.send_comment_button);
+
+        mCommentTextView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                sendCommentButton.setEnabled(!s.toString().equals("") &&
+                        mActivity.getRecipe().getId() != null &&
+                        !mActivity.getRecipe().getId().equals("0"));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        sendCommentButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mCommentTextView.getText().toString().equals("")) {
+                    sendComment(mCommentTextView.getText().toString());
+                }
+            }
+        });
+
         // Get comments if needed
-        if (mRecipe.getId() != null && !mRecipe.getId().equals("0")) {
+        reloadComments();
+
+        return mLayout;
+    }
+
+    public void reloadComments() {
+        if (mComments == null) {
+            mComments = new ArrayList<>();
+        } else {
+            mComments.clear();
+        }
+        mCommentsView.removeAllViews();
+        getComments();
+    }
+
+    private void getComments() {
+        if (mActivity.getRecipe().getId() != null && !mActivity.getRecipe().getId().equals("0")) {
 
             mScroll.setVisibility(View.GONE);
             mLoadingIndicator.setVisibility(View.VISIBLE);
 
             AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
-            Call<ResponseBody> call = mAPI.getComments(mRecipe.getId());
+            Call<ResponseBody> call = mAPI.getComments(mActivity.getRecipe().getId());
 
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-
                     String jsonStr = "";
 
                     if (response.body() != null) {
@@ -182,7 +227,6 @@ public class RecipeDetailFourthTabFragment extends Fragment {
                             JSONObject jObject = new JSONObject(jsonStr);
                             JSONArray results = jObject.getJSONArray("results");
 
-                            mComments = new ArrayList<>();
                             for (int i = 0; i < results.length(); i++) {
                                 Comment c = new Comment(results.getJSONObject(i));
                                 mComments.add(c);
@@ -201,12 +245,9 @@ public class RecipeDetailFourthTabFragment extends Fragment {
 
             });
         }
-
-        return mLayout;
     }
 
     private void showComments() {
-
         if (mComments != null) {
             for (int c = 0; c < mComments.size(); c++) {
                 LinearLayout commentLayout = (LinearLayout) getActivity().getLayoutInflater().inflate(
@@ -227,5 +268,27 @@ public class RecipeDetailFourthTabFragment extends Fragment {
         mLoadingIndicator.setVisibility(View.GONE);
         mScroll.setVisibility(View.VISIBLE);
     }
+
+    private void sendComment(String comment) {
+        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, mActivity.getToken());
+        Call<ResponseBody> call = mAPI.addComment(mActivity.getRecipe().getId(), comment);
+
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.code() == 201) {
+                    // Reset comment text and reload comments
+                    mCommentTextView.setText("");
+                    reloadComments();
+                } else {
+                    // TODO: Show error
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // TODO: Show error
+            }
+        });}
 
 }

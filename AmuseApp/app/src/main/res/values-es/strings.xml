@@ -21,8 +21,8 @@
     <string name="language_en">Inglés</string>
 
     <!-- Splash screen -->
-    <string name="splash_screen_loading_ingredients_message">Cargando ingredientes...</string>
-    <string name="splash_screen_login_message">Iniciando sesión...</string>
+    <string name="splash_screen_loading_ingredients_message">Cargando ingredientes…</string>
+    <string name="splash_screen_login_message">Iniciando sesión…</string>
 
     <!-- Transitions -->
     <string name="transition_recipe_detail">detalle</string>
@@ -77,7 +77,7 @@
     <string name="YES">Sí</string>
     <string name="NO">No</string>
     <!--   Recipe List fragment class -->
-    <string name="please_wait_message">Por favor, espere...</string>
+    <string name="please_wait_message">Por favor, espere…</string>
     <string name="recipe_list_no_recipes_message">No se han encontrado recetas</string>
     <string name="recipe_list_no_connection_message">No hay conexión a internet</string>
 
@@ -145,7 +145,7 @@
     <string name="detail_timer_seconds_initial">s</string>
     <!--   Commands -->
     <string name="detail_button_start_speaking">Empieza a hablar</string>
-    <string name="detail_commands_listening_message">Escuchando...</string>
+    <string name="detail_commands_listening_message">Escuchando…</string>
     <string name="detail_commands_error_message">Error</string>
     <string name="detail_commands_success_message">Éxito</string>
     <!-- Speak messages -->
@@ -167,6 +167,9 @@
     <string name="voice_error_server">Error del servidor</string>
     <string name="voice_error_speech_timeout">No hay entrada de voz. Por favor, diga una de estas órdenes:</string>
     <string name="voice_error_not_understood">No entendí. Por favor, diga una de estas órdenes:</string>
+    <!-- Comments -->
+    <string name="detail_leave_a_comment_message">Deje un comentario…</string>
+    <string name="detail_send_comment">Enviar comentario</string>
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">Nueva receta</string>
