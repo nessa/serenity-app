@@ -17,10 +17,12 @@ import java.util.Arrays;
 public class AppData {
 
     // Preferences
-    public static String PREFERENCE_INGREDIENT_LAST_UPDATE = "ingredient_last_update";
     public static String PREFERENCE_DOWNLOAD_IMAGES = "download_images";
     public static String PREFERENCE_RECIPES_LANGUAGE = "recipes_language";
     public static String PREFERENCE_RECOGNIZER_LANGUAGE = "recognizer_language";
+
+    // App info
+    public static String INGREDIENTS_LAST_UPDATE = "ingredients_last_update";
 
     // User data
     public static String USER_AUTH_TOKEN = "user_auth_token";

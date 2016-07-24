@@ -1,7 +1,6 @@
 package com.amusebouche.activities;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.app.Activity;
@@ -12,7 +11,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
@@ -23,6 +21,7 @@ import com.amusebouche.dialogs.LanguagesDialog;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.AppData;
+import com.amusebouche.services.DateUTCFormat;
 import com.amusebouche.services.RetrofitServiceGenerator;
 
 import org.json.JSONArray;
@@ -51,13 +50,11 @@ public class SplashScreenActivity extends Activity {
     // Data variables
     private Integer mCurrentPage;
 
-    // TODO: UTC Date
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
     private DatabaseHelper mDatabaseHelper;
     private SharedPreferences mSharedPreferences;
     private AmuseAPI mAPI;
 
+    private String mLastUpdateDate;
     private String mNewUpdateDate;
     private String mLanguage;
 
@@ -95,33 +92,41 @@ public class SplashScreenActivity extends Activity {
                 public void onDismiss(DialogInterface dialog) {
                     mLanguage = mSharedPreferences.getString(
                             AppData.PREFERENCE_RECIPES_LANGUAGE, "");
-                    loadIngredients();
+                    preLoadIngredients();
                 }
             });
 
             languagesDialog.show();
         } else {
-            loadIngredients();
+            preLoadIngredients();
         }
+    }
+
+    /**
+     * Before load ingredients page by page.
+     * Shows loading indicator. Calculates dates. Generates a new retrofit service.
+     */
+    private void preLoadIngredients() {
+        // Set info message
+        mProgressBar.setVisibility(View.VISIBLE);
+        mTextView.setText(getString(R.string.splash_screen_loading_ingredients_message));
+
+        String lastUpdate = mDatabaseHelper.getAppData(AppData.INGREDIENTS_LAST_UPDATE);
+        mLastUpdateDate = lastUpdate.equals("") ? null : lastUpdate;
+
+        // Prepare new update date as now
+        mNewUpdateDate = DateUTCFormat.getUTCString(new Date());
+
+        // Create a new retrofit service and load ingredients
+        mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
+        loadIngredients();
     }
 
     /**
      * Send requests to the API to get the ingredients and store them into the database.
      */
     private void loadIngredients() {
-        // Set info message
-        mProgressBar.setVisibility(View.VISIBLE);
-        mTextView.setText(getString(R.string.splash_screen_loading_ingredients_message));
-
-        final String lastUpdate = mSharedPreferences.getString(
-                AppData.PREFERENCE_INGREDIENT_LAST_UPDATE, "");
-
-        // Prepare new update date as now
-        mNewUpdateDate = dateFormat.format(new Date());
-
-        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
-        Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage,
-                lastUpdate.equals("") ? null : lastUpdate);
+        Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage, mLastUpdateDate);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -142,7 +147,7 @@ public class SplashScreenActivity extends Activity {
      */
     private void setData(Response<ResponseBody> response) {
 
-        if (response.body() != null && response.code() == 200) {
+        if (response.code() == 200) {
             String data = "";
 
             // Get response data
@@ -170,12 +175,9 @@ public class SplashScreenActivity extends Activity {
                         }
                     }
 
-                    if (jObject.getString("next") == null) {
+                    if (jObject.getString("next").equals("null")) {
                         // Set new update date as last one
-                        SharedPreferences.Editor editor = mSharedPreferences.edit();
-                        editor.putString(AppData.PREFERENCE_INGREDIENT_LAST_UPDATE,
-                                mNewUpdateDate);
-                        editor.apply();
+                        mDatabaseHelper.setAppData(AppData.INGREDIENTS_LAST_UPDATE, mNewUpdateDate);
 
                         // Go to next step
                         checkIfUserIsLoggedIn();
@@ -201,8 +203,6 @@ public class SplashScreenActivity extends Activity {
      * Try to login with stored credentials (if there are)
      */
     private void checkIfUserIsLoggedIn() {
-        Log.d("SPLASH", "LOGIN");
-
         String authToken = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
 
         if (authToken.equals("")) {
