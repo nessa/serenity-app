@@ -21,6 +21,7 @@ import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.data.Comment;
 import com.amusebouche.services.AmuseAPI;
+import com.amusebouche.services.CustomDateFormat;
 import com.amusebouche.services.RetrofitServiceGenerator;
 
 import org.json.JSONArray;
@@ -258,7 +259,7 @@ public class RecipeDetailFourthTabFragment extends Fragment {
                 TextView commentTextView = (TextView) commentLayout.findViewById(R.id.comment);
 
                 userTextView.setText(mComments.get(c).getUser());
-                timestampTextView.setText(mComments.get(c).getTimestamp().toString());
+                timestampTextView.setText(CustomDateFormat.getDateTimeString(mComments.get(c).getTimestamp()));
                 commentTextView.setText(mComments.get(c).getComment());
 
                 mCommentsView.addView(commentLayout);

@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/background"
-        android:layout_marginTop="20dp"
         android:gravity="top" />
 
 </ScrollView>

@@ -150,6 +150,7 @@ public class LanguagesDialog extends Dialog {
             }
 
             ((LanguageView) convertView).setLanguage(mContext.getString(getItem(position).second));
+            convertView.setTag(position);
             ((LanguageView) convertView).setLanguageTag(getItem(position).first);
             ((LanguageView) convertView).setChecked(mSelected.equals(getItemLanguage(position)));
 

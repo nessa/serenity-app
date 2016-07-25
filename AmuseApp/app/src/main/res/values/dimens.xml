@@ -12,6 +12,10 @@
     <dimen name="detail_image_name_text_size">20sp</dimen>
     <dimen name="detail_image_user_text_size">16sp</dimen>
 
+    <!-- Common -->
+    <dimen name="divider_height">1dp</dimen>
+
+
     <!-- Action bar -->
     <dimen name="action_bar_underline">4dp</dimen>
 
@@ -48,12 +52,32 @@
     <dimen name="recipe_list_message_padding">10dp</dimen>
     <dimen name="recipe_list_message_size">24sp</dimen>
 
+    <!-- Detail -->
 
-    <!-- Detail: Directions dialog -->
+    <!--   Detail: Ingredients -->
+    <dimen name="detail_ingredients_padding">10dp</dimen>
+    <dimen name="detail_ingredients_name_text">16sp</dimen>
+    <dimen name="detail_ingredients_quantity_text">14sp</dimen>
+
+    <!--   Detail: Directions -->
+    <dimen name="detail_directions_padding_top">14dp</dimen>
+    <dimen name="detail_directions_step_height">26dp</dimen>
+    <dimen name="detail_directions_margin">10dp</dimen>
+    <dimen name="detail_directions_step_text">18sp</dimen>
+    <dimen name="detail_directions_text">16sp</dimen>
+    <dimen name="detail_directions_button_size">50dp</dimen>
+    <dimen name="detail_directions_button_margin">8dp</dimen>
+
+    <!--   Detail: Directions dialog -->
     <dimen name="detail_directions_order_dialog_total_height">340dp</dimen>
     <dimen name="detail_directions_order_dialog_listening_height">140dp</dimen>
     <dimen name="detail_directions_order_dialog_message_height">100dp</dimen>
     <dimen name="detail_directions_order_dialog_icons_height">100dp</dimen>
+
+    <!--   Detail: Comments -->
+    <dimen name="detail_comments_padding">10dp</dimen>
+    <dimen name="detail_comment_user_text">14sp</dimen>
+    <dimen name="detail_comment_text">16sp</dimen>
 
     <!-- Edition -->
     <dimen name="edition_basic_padding">10dp</dimen>-->

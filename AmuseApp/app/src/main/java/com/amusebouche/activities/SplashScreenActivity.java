@@ -21,7 +21,7 @@ import com.amusebouche.dialogs.LanguagesDialog;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.AppData;
-import com.amusebouche.services.DateUTCFormat;
+import com.amusebouche.services.CustomDateFormat;
 import com.amusebouche.services.RetrofitServiceGenerator;
 
 import org.json.JSONArray;
@@ -115,7 +115,7 @@ public class SplashScreenActivity extends Activity {
         mLastUpdateDate = lastUpdate.equals("") ? null : lastUpdate;
 
         // Prepare new update date as now
-        mNewUpdateDate = DateUTCFormat.getUTCString(new Date());
+        mNewUpdateDate = CustomDateFormat.getUTCString(new Date());
 
         // Create a new retrofit service and load ingredients
         mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
