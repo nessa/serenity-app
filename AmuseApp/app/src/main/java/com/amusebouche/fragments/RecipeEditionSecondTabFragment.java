@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,14 +25,20 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.EditionActivity;
 import com.amusebouche.activities.R;
+import com.amusebouche.adapters.AutoCompleteArrayAdapter;
 import com.amusebouche.adapters.RecipeEditionIngredientListAdapter;
+import com.amusebouche.data.Ingredient;
+import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.regex.Pattern;
 
 /**
  * Recipe edition fragment class.
@@ -52,6 +59,8 @@ public class RecipeEditionSecondTabFragment extends Fragment {
     private ArrayList<Pair<Long, RecipeIngredient>> mIngredientsArray;
     private RecipeEditionIngredientListAdapter mIngredientsListAdapter;
 
+    // Service
+    private DatabaseHelper mDatabaseHelper;
 
     // LIFECYCLE METHODS
 
@@ -67,6 +76,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         measurementUnits = UserFriendlyTranslationsHandler.getMeasurementUnits(getActivity());
+        mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
     }
 
 
@@ -223,7 +233,9 @@ public class RecipeEditionSecondTabFragment extends Fragment {
             titleTextView.setText(getResources().getString(R.string.recipe_edition_ingredient_title_new));
         }
 
-        final TextView nameTextView = (TextView) editionDialog.findViewById(R.id.name);
+        final AutoCompleteTextView nameTextView = (AutoCompleteTextView) editionDialog.findViewById(R.id.name);
+        nameTextView.setAdapter(new AutoCompleteArrayAdapter(getActivity()));
+
         final TextView quantityTextView = (TextView) editionDialog.findViewById(R.id.quantity);
 
         final Spinner unitsSpinner = (Spinner) editionDialog.findViewById(R.id.measurement_units);
@@ -260,7 +272,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                     // Calculate quantity and measurement unit
                     Float quantity = 0.0F;
                     String unit = UserFriendlyTranslationsHandler.getDefaultMeasurementUnit();
-                    if (quantityTextView.getText().toString().length() == 0) {
+                    if (quantityTextView.getText().toString().length() > 0) {
                         quantity = Float.valueOf(quantityTextView.getText().toString());
                         unit = UserFriendlyTranslationsHandler.getMeasurementUnitTranslationByPosition(
                                 unitsSpinner.getSelectedItemPosition(), getActivity());
@@ -287,6 +299,8 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
                         mEditionActivity.getRecipe().getIngredients().add(ingredient);
                         mIngredientsArray.add(new Pair<>(Long.valueOf(ingredient.getSortNumber()), ingredient));
+
+                        addCategoryForIngredient(nameTextView.getText().toString());
                     }
 
                     mIngredientsListAdapter.notifyDataSetChanged();
@@ -317,6 +331,9 @@ public class RecipeEditionSecondTabFragment extends Fragment {
     public void removeIngredient(int position) {
         mEditionActivity.getRecipe().getIngredients().remove(position);
         mIngredientsArray.remove(position);
+
+        // Update categories if needed
+        checkCategories();
 
         // Reset sort numbers
         for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
@@ -352,6 +369,91 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         }
 
         mIngredientsListAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Add category for a new ingredient that has been set.
+     * Search the ingredient categories and check if they have been added yet. Otherwise, add them.
+     *
+     * @param name Ingredient name that has been added.
+     */
+    private void addCategoryForIngredient(String name) {
+        if (mDatabaseHelper.existIngredient(name)) {
+            // If ingredient exists in database, we add all its categories to the recipe
+            Ingredient ing = mDatabaseHelper.getIngredientByTranslation(name);
+
+            ArrayList<String> categories = new ArrayList<>(Arrays.asList(ing.getCategories().split(
+                Pattern.quote(Ingredient.CATEGORY_SEPARATOR))));
+
+            for (int c = 0; c < categories.size(); c++) {
+                boolean found = false;
+
+                for (int ci = 0; ci < mEditionActivity.getRecipe().getCategories().size(); ci++) {
+                    if (categories.get(c).equals(mEditionActivity.getRecipe().getCategories().get(ci).getName())) {
+                        found = true;
+                    }
+                }
+
+                if (!found) {
+                    mEditionActivity.getRecipe().getCategories().add(new RecipeCategory(categories.get(c)));
+                }
+            }
+        } else {
+            // If ingredient doesn't exists in database, we add UNCATEGORIZED category
+            boolean found = false;
+
+            for (int ci = 0; ci < mEditionActivity.getRecipe().getCategories().size(); ci++) {
+                if (mEditionActivity.getRecipe().getCategories().get(ci).getName().equals(
+                    RecipeCategory.CATEGORY_UNCATEGORIZED)) {
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                mEditionActivity.getRecipe().getCategories().add(new RecipeCategory(
+                    RecipeCategory.CATEGORY_UNCATEGORIZED));
+            }
+        }
+    }
+
+    /**
+     * Check if the present categories of the recipe are correct. Called when an ingredient has
+     * been removed.
+     */
+    private void checkCategories() {
+        for (int c = mEditionActivity.getRecipe().getCategories().size() - 1; c >= 0; c--) {
+
+            RecipeCategory category = mEditionActivity.getRecipe().getCategories().get(c);
+            boolean found = false;
+
+            if (category.getName().equals(RecipeCategory.CATEGORY_UNCATEGORIZED)) {
+                // Check if there is any ingredient not set in the database
+                for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
+                    found = found && !mDatabaseHelper.existIngredient(
+                        mEditionActivity.getRecipe().getIngredients().get(i).getName());
+                }
+            } else {
+                // Check if any ingredient has this category
+                for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
+                    if (mDatabaseHelper.existIngredient(
+                        mEditionActivity.getRecipe().getIngredients().get(i).getName())) {
+
+                        Ingredient ing = mDatabaseHelper.getIngredientByTranslation(
+                            mEditionActivity.getRecipe().getIngredients().get(i).getName());
+
+                        ArrayList<String> categories = new ArrayList<>(Arrays.asList(ing.getCategories().split(
+                            Pattern.quote(Ingredient.CATEGORY_SEPARATOR))));
+
+                        // TODO: Fix this!
+                        found = found && categories.contains(category.getName());
+                    }
+                }
+            }
+
+            if (found) {
+                mEditionActivity.getRecipe().getCategories().remove(c);
+            }
+        }
     }
 
     /**

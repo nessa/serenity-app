@@ -913,6 +913,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ingredientsCount > 0;
     }
 
+    public boolean existIngredient(String translation) {
+        mDatabase = getReadableDatabase();
+
+        String count = "SELECT count(*) FROM " + IngredientContract.TABLE_NAME +
+            " WHERE " + IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
+            " LIKE ('" + translation + "')";;
+        Cursor mCursor = mDatabase.rawQuery(count, null);
+        mCursor.moveToFirst();
+        int ingredientsCount = mCursor.getInt(0);
+        mCursor.close();
+
+        mDatabase.close();
+        return ingredientsCount > 0;
+    }
+
     /**
      * Create a new ingredient in the database.
      *
@@ -1040,6 +1055,62 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         ingredientCursor.getString(ingredientCursor.getColumnIndex(
                                         IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES)
                         )
+                );
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        ingredientCursor.close();
+
+        mDatabase.close();
+        return ingredient;
+    }
+
+    /**
+     * Gets the specified ingredient from the database.
+     *
+     * @param translation the database identifier of the ingredient to get
+     * @return the specified ingredient
+     */
+    public Ingredient getIngredientByTranslation(String translation) {
+        // Gets the database in the current database helper in read-only mode
+        mDatabase = this.getReadableDatabase();
+        Ingredient ingredient = null;
+
+        /* After the query, the cursor points to the first database row
+         * returned by the request */
+        Cursor ingredientCursor = mDatabase.query(IngredientContract.TABLE_NAME,
+            null,
+            IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION + "=?",
+            new String[] { String.valueOf(translation) },
+            null,
+            null,
+            null);
+
+        if (ingredientCursor.getCount() > 0) {
+            ingredientCursor.moveToNext();
+
+            try {
+            /* Get the value for each column for the database row pointed by
+             * the cursor using the getColumnIndex method of the cursor and
+             * use it to initialize an Ingredient object by database row */
+                ingredient = new Ingredient(
+                    ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                        IngredientContract.IngredientEntry._ID)
+                    ),
+                    ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                        IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION)
+                    ),
+                    ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                        IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE)
+                    ),
+                    dateFormat.parse(ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                        IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP))
+                    ),
+                    ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                        IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES)
+                    )
                 );
             } catch (ParseException e) {
                 e.printStackTrace();

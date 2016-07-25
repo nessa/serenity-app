@@ -83,7 +83,15 @@ public class Ingredient implements Parcelable {
             this.mTimestamp = format.parse(o.getString("timestamp"));
 
             JSONArray categories = o.getJSONObject("ingredient").getJSONArray("categories");
-            this.mCategories = categories.join(CATEGORY_SEPARATOR);
+            String cat = "";
+            for (int i = 0; i < categories.length(); i++) {
+                if (i > 0) {
+                    cat = cat + CATEGORY_SEPARATOR;
+                }
+
+                cat = cat + categories.getJSONObject(i).getString("name");
+            }
+            this.mCategories = cat;
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }

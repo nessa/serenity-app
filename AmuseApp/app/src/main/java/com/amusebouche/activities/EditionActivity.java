@@ -23,6 +23,7 @@ import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
 import com.amusebouche.fragments.RecipeEditionThirdTabFragment;
