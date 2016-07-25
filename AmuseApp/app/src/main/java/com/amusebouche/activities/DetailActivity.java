@@ -1,6 +1,7 @@
 package com.amusebouche.activities;
 
 
+import android.app.Dialog;
 import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.Loader;
@@ -16,8 +17,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
@@ -218,7 +221,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         // Set number of users
         TextView mRecipeNumberUsersRating = (TextView) findViewById(R.id.recipe_number_users_rating);
         mRecipeNumberUsersRating.setText(UserFriendlyTranslationsHandler.getUsersLabel(
-            mRecipe.getUsersRating(), getApplication()));
+                mRecipe.getUsersRating(), getApplication()));
 
         // Fade in data
         mFadeViews = (RelativeLayout) findViewById(R.id.fade_views);
@@ -447,7 +450,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      * Download recipe and store it into the database
      */
     public void downloadRecipe() {
-        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, true);
+        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
         Call<ResponseBody> call = mAPI.getRecipe(mRecipe.getId());
 
         call.enqueue(new Callback<ResponseBody>() {
@@ -558,10 +561,61 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     /**
-     * Open rate dialog
+     * Show rate recipe dialog.
      */
     public void rateRecipe() {
-        Log.d("DETAIL", "RATE");
+        Log.d("INFO", "SHOW EDITION DIALOG");
+
+        final Dialog rateDialog = new Dialog(this);
+        rateDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
+        rateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        rateDialog.setContentView(R.layout.dialog_rate_recipe);
+
+        final RatingBar ratingBar = (RatingBar) rateDialog.findViewById(R.id.rating_bar);
+
+        Button cancelButton = (Button) rateDialog.findViewById(R.id.cancel);
+        final Button acceptButton = (Button) rateDialog.findViewById(R.id.accept);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                rateDialog.dismiss();
+            }
+        });
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken);
+                Call<ResponseBody> call = mAPI.rateRecipe(mRecipe.getId(), (int) ratingBar.getRating());
+
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.code() == 201) {
+                            Snackbar.make(mLayout, getString(R.string.detail_recipe_rated_message),
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+
+                            // TODO: Update view
+                        } else {
+                            // TODO: Show error
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        // TODO: Show error
+                    }
+                });
+
+
+                // We close the dialog only if the creation/update result is OK
+                rateDialog.dismiss();
+            }
+        });
+
+        rateDialog.show();
     }
 
     /**

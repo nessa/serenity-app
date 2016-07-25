@@ -126,6 +126,7 @@
     <!-- Detail activity -->
     <string name="detail_recipe_created_message">Recipe created</string>
     <string name="detail_recipe_updated_message">Recipe updated</string>
+    <string name="detail_recipe_rated_message">Rating uploaded</string>
     <!--   Recipe detail fragment -->
     <string name="image">Image</string>
     <string name="detail_users">users</string>
@@ -182,6 +183,8 @@
     <!-- Comments -->
     <string name="detail_leave_a_comment_message">Leave a comment…</string>
     <string name="detail_send_comment">Send comment</string>
+    <!-- Rating -->
+    <string name="detail_rate_recipe_title">Rate recipe</string>
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">New recipe</string>

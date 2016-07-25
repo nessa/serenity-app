@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="@dimen/edition_dialog_width"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/edition_dialog_image_height">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edition_ingredient_title_image_height"
+            android:src="@drawable/rating"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/detail_ingredients_label" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edition_ingredient_title_image_height"
+            android:background="@drawable/bottom_gradient"/>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="@dimen/edition_dialog_title_margin_left"
+            android:layout_marginBottom="@dimen/edition_dialog_title_margin_bottom"
+            android:textSize="@dimen/edition_dialog_title_size"
+            android:textColor="@android:color/white"
+            android:text="@string/detail_rate_recipe_title"/>
+
+    </RelativeLayout>
+
+    <RatingBar
+        android:id="@+id/rating_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="4dp"
+        android:numStars="5"
+        android:stepSize="1.0" />
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end">
+
+        <Button
+            android:id="@+id/cancel"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:textColor="@color/theme_default_accent"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:enabled="true" />
+        <Button
+            android:id="@+id/accept"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/accept"
+            android:textColor="@color/theme_default_accent"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:enabled="true" />
+
+    </LinearLayout>
+</LinearLayout>

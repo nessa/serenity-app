@@ -18,11 +18,6 @@ import retrofit2.Retrofit;
 public class RetrofitServiceGenerator {
     public static final String API_BASE_URL = "http://amuse-bouche.noeliarcado.es/";
 
-    private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-
-    private static Retrofit.Builder builder =
-        new Retrofit.Builder()
-            .baseUrl(API_BASE_URL);
 
     /**
      * Creates a basic retrofit service.
@@ -63,6 +58,12 @@ public class RetrofitServiceGenerator {
      */
     public static <S> S  createService(Class<S> serviceClass, final String authToken,
                                        boolean enableLogging) {
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+        Retrofit.Builder builder = new Retrofit.Builder()
+                .baseUrl(API_BASE_URL);
+
         if (authToken != null) {
             httpClient.addInterceptor(new Interceptor() {
                 @Override

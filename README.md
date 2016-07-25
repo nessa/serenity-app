@@ -35,3 +35,8 @@ Under the following terms:
   + Owner: Sunny Ripert
   + License: CC Attribution - https://creativecommons.org/licenses/by/2.0/
   + No changes were made
+- rating.jpg:
+  + Downloaded from https://www.flickr.com/photos/lisbokt/3456411427
+  + Owner: Lis Bokt
+  + License: CC Attribution Non commercial No derivs - https://creativecommons.org/licenses/by-nc-nd/2.0/
+  + No changes were made
