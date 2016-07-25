@@ -62,7 +62,6 @@
     <string name="measurement_unit_tbsp_plural">cucharadas</string>
     <string name="measurement_unit_rasher_plural">lonchas</string>
 
-
     <!-- Splash screen -->
     <string name="splash_screen_loading_ingredients_message">Cargando ingredientes…</string>
     <string name="splash_screen_login_message">Iniciando sesión…</string>
@@ -130,6 +129,7 @@
     <!--   Recipe detail fragment -->
     <string name="image">Imagen</string>
     <string name="detail_users">usuarios</string>
+    <string name="detail_user">usuario</string>
     <string name="detail_information_label">Información</string>
     <string name="detail_ingredients_label">Ingredientes</string>
     <string name="detail_directions_label">Pasos</string>

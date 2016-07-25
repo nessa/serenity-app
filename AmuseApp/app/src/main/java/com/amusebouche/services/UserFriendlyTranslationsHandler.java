@@ -485,17 +485,43 @@ public class UserFriendlyTranslationsHandler {
     public static String getCookingTimeLabel(Integer cookingHours, Integer cookingMinutes, Context c) {
         if (cookingHours > 0) {
             if (cookingMinutes > 0) {
-                return String.format("%d %s - %d %s", cookingHours,
-                        (cookingHours == 1) ? c.getString(R.string.detail_hour) : c.getString(R.string.detail_hours),
-                        cookingMinutes,
-                        (cookingMinutes == 1) ? c.getString(R.string.detail_minute) : c.getString(R.string.detail_minutes));
+                return cookingHours.toString() + " " +
+                    ((cookingHours == 1) ? c.getString(R.string.detail_hour) : c.getString(R.string.detail_hours)) +
+                    ", " + cookingMinutes.toString() + " " +
+                    ((cookingMinutes == 1) ? c.getString(R.string.detail_minute) : c.getString(R.string.detail_minutes));
             } else {
-                return String.format("%d %s", cookingHours,
-                        (cookingHours == 1) ? c.getString(R.string.detail_hour) : c.getString(R.string.detail_hours));
+                return cookingHours + " " +
+                    ((cookingHours == 1) ? c.getString(R.string.detail_hour) : c.getString(R.string.detail_hours));
             }
         } else {
-            return String.format("%d %s", cookingMinutes,
-                    (cookingMinutes == 1) ? c.getString(R.string.detail_minute) : c.getString(R.string.detail_minutes));
+            return cookingMinutes + " " +
+                ((cookingMinutes == 1) ? c.getString(R.string.detail_minute) : c.getString(R.string.detail_minutes));
+        }
+    }
+
+    /**
+     * Translate servings into a valid string
+     *
+     * @param servings Number of servings
+     * @param c Context
+     * @return User-friendly string
+     */
+    public static String getServingsLabel(Integer servings, Context c) {
+        return servings.toString() + " " + c.getString(R.string.detail_servings_label).toLowerCase();
+    }
+
+    /**
+     * Translate users into a valid string
+     *
+     * @param users Number of users
+     * @param c Context
+     * @return User-friendly string
+     */
+    public static String getUsersLabel(Integer users, Context c) {
+        if (users == 1) {
+            return "(" + users.toString() + " " + c.getString(R.string.detail_user).toLowerCase() + ")";
+        } else {
+            return "(" + users.toString() + " " + c.getString(R.string.detail_users).toLowerCase() + ")";
         }
     }
 }

@@ -12,7 +12,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="4dp"
+        android:paddingTop="@dimen/detail_info_padding"
+        android:paddingBottom="@dimen/detail_info_padding"
         android:orientation="vertical" >
 
         <LinearLayout
@@ -21,157 +22,157 @@
             android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/detail_type_of_dish_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:baselineAligned="true">
+                android:paddingStart="@dimen/detail_info_padding"
+                android:paddingEnd="@dimen/detail_info_padding"
+                android:paddingTop="@dimen/detail_info_small_padding"
+                android:paddingBottom="@dimen/detail_info_small_padding"
+                android:background="@color/background"
+                android:gravity="top">
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="4dp" >
-
-                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/detail_type_of_dish_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@color/background">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/primary_text"
-                            android:fontFamily="sans-serif"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:text="@string/detail_type_of_dish_label" />
-                        <TextView
-                            android:id="@+id/type_of_dish"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/primary_text"
-                            android:fontFamily="sans-serif-light"
-                            android:textSize="20sp" />
-
-                    </LinearLayout>
+                <ImageView
+                    android:contentDescription="@string/detail_type_of_dish_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_type_of_dish_24dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="4dp"
+                    android:tint="@color/theme_default_primary" />
+                <TextView
+                    android:id="@+id/type_of_dish"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/detail_info_text_height"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/detail_info_text_size"
+                    android:gravity="center" />
+            </LinearLayout>
 
 
-                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/detail_difficulty_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@color/background">
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/detail_difficulty_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/detail_info_padding"
+                android:paddingEnd="@dimen/detail_info_padding"
+                android:paddingTop="@dimen/detail_info_small_padding"
+                android:paddingBottom="@dimen/detail_info_small_padding"
+                android:background="@color/background"
+                android:gravity="top">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/primary_text"
-                            android:fontFamily="sans-serif"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:text="@string/detail_difficulty_label" />
-                        <TextView
-                            android:id="@+id/difficulty"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/primary_text"
-                            android:fontFamily="sans-serif-light"
-                            android:textSize="20sp" />
+                <ImageView
+                    android:contentDescription="@string/detail_difficulty_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_extension_black_24dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="4dp"
+                    android:tint="@color/theme_default_primary" />
+                <TextView
+                    android:id="@+id/difficulty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/detail_info_text_height"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/detail_info_text_size"
+                    android:gravity="center" />
+            </LinearLayout>
 
-                    </LinearLayout>
-                </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="4dp" >
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/detail_cooking_time_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/detail_info_padding"
+                android:paddingEnd="@dimen/detail_info_padding"
+                android:paddingTop="@dimen/detail_info_small_padding"
+                android:paddingBottom="@dimen/detail_info_small_padding"
+                android:background="@color/background"
+                android:gravity="top">
 
-                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/detail_cooking_time_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@color/background">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/primary_text"
-                            android:fontFamily="sans-serif"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:text="@string/detail_cooking_time_label" />
-                        <TextView
-                            android:id="@+id/cooking_time"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:textColor="@color/primary_text"
-                            android:fontFamily="sans-serif-light"
-                            android:textSize="20sp"
-                            android:gravity="center" />
-                    </LinearLayout>
-
-                    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:id="@+id/detail_servings_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:background="@color/background">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/primary_text"
-                            android:fontFamily="sans-serif"
-                            android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:text="@string/detail_servings_label" />
-                        <TextView
-                            android:id="@+id/servings"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:textColor="@color/primary_text"
-                            android:fontFamily="sans-serif-light"
-                            android:textSize="20sp"
-                            android:gravity="center" />
-
-                    </LinearLayout>
-                </LinearLayout>
+                <ImageView
+                    android:contentDescription="@string/detail_cooking_time_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_access_time_black_24dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="4dp"
+                    android:tint="@color/theme_default_primary" />
+                <TextView
+                    android:id="@+id/cooking_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/detail_info_text_height"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/detail_info_text_size"
+                    android:gravity="center" />
             </LinearLayout>
 
             <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/detail_servings_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/detail_info_padding"
+                android:paddingEnd="@dimen/detail_info_padding"
+                android:paddingTop="@dimen/detail_info_small_padding"
+                android:paddingBottom="@dimen/detail_info_small_padding"
+                android:background="@color/background"
+                android:gravity="top">
+
+                <ImageView
+                    android:contentDescription="@string/detail_servings_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_group_black_24dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="4dp"
+                    android:tint="@color/theme_default_primary" />
+                <TextView
+                    android:id="@+id/servings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/detail_info_text_height"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/detail_info_text_size"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <LinearLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/detail_source_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/detail_info_padding"
+                android:paddingEnd="@dimen/detail_info_padding"
+                android:paddingTop="@dimen/detail_info_small_padding"
+                android:paddingBottom="@dimen/detail_info_small_padding"
                 android:background="@color/background"
-                android:padding="4dp" >
+                android:gravity="top">
 
-                <TextView
+                <ImageView
+                    android:contentDescription="@string/detail_source_label"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/primary_text"
-                    android:fontFamily="sans-serif"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:text="@string/detail_source_label" />
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_format_align_left_black_24dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginEnd="4dp"
+                    android:tint="@color/theme_default_primary" />
                 <TextView
                     android:id="@+id/source"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/primary_text"
                     android:autoLink="web"
-                    android:fontFamily="sans-serif-light"
-                    android:textSize="20sp"
+                    android:textSize="@dimen/detail_info_text_size"
                     android:gravity="start" />
-
             </LinearLayout>
+
         </LinearLayout>
 
         <TextView
@@ -183,16 +184,18 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:text="@string/detail_categories_label"
-            android:padding="4dp" />
+            android:paddingTop="@dimen/detail_info_padding"
+            android:paddingStart="@dimen/detail_info_padding"
+            android:paddingEnd="@dimen/detail_info_padding" />
 
         <com.ns.developer.tagview.widget.TagCloudLinkView
             android:id="@+id/categories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp"
+            android:padding="@dimen/detail_info_padding"
             app:isDeletable="false"
-            app:tagLayoutColor="#a000"
-            app:tagTextSize="8sp"
+            app:tagLayoutColor="@color/theme_default_primary"
+            app:tagTextSize="@dimen/detail_info_tag_text_size"
             app:tagTextColor="@android:color/white"/>
 
     </LinearLayout>

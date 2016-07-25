@@ -32,6 +32,7 @@ import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.AppData;
 import com.amusebouche.services.RetrofitServiceGenerator;
+import com.amusebouche.services.UserFriendlyTranslationsHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -187,7 +188,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         // Set rating bar colors
         mRatingBar = (RatingBar) findViewById(R.id.rating_bar);
         LayerDrawable stars = (LayerDrawable) mRatingBar.getProgressDrawable();
-        stars.getDrawable(2).setColorFilter(getResources().getColor(R.color.theme_default_primary),
+        stars.getDrawable(2).setColorFilter(getResources().getColor(android.R.color.white),
                 PorterDuff.Mode.SRC_ATOP);
     }
 
@@ -216,8 +217,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         // Set number of users
         TextView mRecipeNumberUsersRating = (TextView) findViewById(R.id.recipe_number_users_rating);
-        mRecipeNumberUsersRating.setText(String.format("(%d %s)", mRecipe.getUsersRating(),
-                getString(R.string.detail_users)));
+        mRecipeNumberUsersRating.setText(UserFriendlyTranslationsHandler.getUsersLabel(
+            mRecipe.getUsersRating(), getApplication()));
 
         // Fade in data
         mFadeViews = (RelativeLayout) findViewById(R.id.fade_views);

@@ -149,10 +149,12 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         difficultyTextView.setText(UserFriendlyTranslationsHandler.getDifficultyTranslation(mRecipe.getDifficulty(), getActivity()));
 
         TextView cookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
-        cookingTimeTextView.setText(this.getCookingTime(mRecipe.getCookingTime()));
+        cookingTimeTextView.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(
+            mRecipe.getCookingTime().intValue() / 60, mRecipe.getCookingTime().intValue() % 60,
+            getActivity()));
 
         TextView servingsTextView = (TextView) mLayout.findViewById(R.id.servings);
-        servingsTextView.setText(Objects.toString(mRecipe.getServings()));
+        servingsTextView.setText(UserFriendlyTranslationsHandler.getServingsLabel(mRecipe.getServings(), getActivity()));
 
         TextView sourceTextView = (TextView) mLayout.findViewById(R.id.source);
         sourceTextView.setText(mRecipe.getSource());
@@ -182,27 +184,6 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         }
 
         return mLayout;
-    }
-
-
-    // DATA USER-FRIENDLY
-
-    /**
-     * Translate cookingTime code to an understandable string
-     *
-     * @param time Float time
-     * @return User-friendly string
-     */
-    private String getCookingTime(float time) {
-        int minutes = (int) (time / 60);
-        int seconds = (int) (time % 60);
-
-        String completeTime = seconds + getString(R.string.detail_seconds);
-        if (minutes > 0) {
-            completeTime = minutes + getString(R.string.detail_minutes) + " " + completeTime;
-        }
-
-        return completeTime;
     }
 
 }
