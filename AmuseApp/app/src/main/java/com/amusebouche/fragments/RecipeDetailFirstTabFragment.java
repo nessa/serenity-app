@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amusebouche.activities.DetailActivity;
@@ -18,6 +17,8 @@ import com.amusebouche.activities.R;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
+import com.ns.developer.tagview.entity.Tag;
+import com.ns.developer.tagview.widget.TagCloudLinkView;
 
 import java.util.Objects;
 
@@ -132,9 +133,6 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        /* TODO: Try to prevent Skipped XX frames! The application may be doing too
-         * much work on its main thread. */
-
         // Get recipe from activity
         DetailActivity x = (DetailActivity) getActivity();
         mRecipe = x.getRecipe();
@@ -171,18 +169,18 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         }
 
         // Categories
-        LinearLayout categoriesLayout = (LinearLayout) mLayout.findViewById(R.id.categories);
+        TextView categoriesTextView = (TextView) mLayout.findViewById(R.id.categories_label);
+        categoriesTextView.setVisibility(mRecipe.getCategories().size() > 0 ? View.VISIBLE : View.GONE);
+
+        TagCloudLinkView categoriesLayout = (TagCloudLinkView)  mLayout.findViewById(R.id.categories);
 
         for (int i = 0; i < mRecipe.getCategories().size(); i++) {
-            RecipeCategory presentCategory = (RecipeCategory) mRecipe.getCategories().get(i);
-
-            TextView categoryTextView = new TextView(getActivity());
-            // TODO: Translate category name
-            categoryTextView.setText(presentCategory.getName());
-            categoryTextView.setTextColor(getResources().getColor(R.color.primary_text));
-
-            categoriesLayout.addView(categoryTextView);
+            if (!mRecipe.getCategories().get(i).getName().equals(RecipeCategory.CATEGORY_UNCATEGORIZED)) {
+                categoriesLayout.add(new Tag(i, UserFriendlyTranslationsHandler.getCategoryTranslation(
+                    mRecipe.getCategories().get(i).getName(), getActivity()).toUpperCase()));
+            }
         }
+
         return mLayout;
     }
 

@@ -25,6 +25,7 @@ public class RecipeCategory implements Parcelable {
     public static String CATEGORY_DIET_MEDITERRANEAN = "MEDITERRANEAN";
     public static String CATEGORY_DIET_VEGETARIAN = "VEGETARIAN";
     public static String CATEGORY_DIET_VEGAN = "VEGAN";
+    public static String CATEGORY_UNCATEGORIZED = "UNCATEGORIZED";
     
     // Main variables
     private String mName;

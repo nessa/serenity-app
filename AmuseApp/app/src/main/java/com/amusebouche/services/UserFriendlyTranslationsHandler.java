@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Pair;
 
 import com.amusebouche.activities.R;
+import com.amusebouche.data.RecipeCategory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +14,20 @@ import java.util.Arrays;
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  */
 public class UserFriendlyTranslationsHandler {
+
+    // Categories
+    private static int mDefaultCategoryPosition = 0;
+
+    private static ArrayList<Pair<String, Integer>> mCategories = new ArrayList<>(Arrays.asList(
+        new Pair<>(RecipeCategory.CATEGORY_DIET_MEDITERRANEAN, R.string.category_allergy_mediterranean),
+        new Pair<>(RecipeCategory.CATEGORY_DIET_VEGETARIAN, R.string.category_allergy_vegetarian),
+        new Pair<>(RecipeCategory.CATEGORY_DIET_VEGAN, R.string.category_allergy_vegan),
+        new Pair<>(RecipeCategory.CATEGORY_ALLERGY_GLUTEN_CODE, R.string.category_allergy_gluten),
+        new Pair<>(RecipeCategory.CATEGORY_ALLERGY_LACTOSE_CODE, R.string.category_allergy_lactose),
+        new Pair<>(RecipeCategory.CATEGORY_ALLERGY_SHELLFISH_CODE, R.string.category_allergy_shellfish),
+        new Pair<>(RecipeCategory.CATEGORY_ALLERGY_FISH_CODE, R.string.category_allergy_fish),
+        new Pair<>(RecipeCategory.CATEGORY_ALLERGY_DRIED_FRUIT_CODE, R.string.category_allergy_dried_fruit)
+    ));
 
     // Types of dish data
 
@@ -53,6 +68,82 @@ public class UserFriendlyTranslationsHandler {
             new Pair<>("tbsp", R.string.measurement_unit_tbsp_plural),
             new Pair<>("rasher", R.string.measurement_unit_rasher_plural)
     ));
+
+    // CATEGORIES
+
+    /**
+     * Get all categproes strings
+     *
+     * @param c Context to get the strings
+     * @return Categories strings array
+     */
+    public static ArrayList<String> getCategories(Context c) {
+        ArrayList<String> categories = new ArrayList<>();
+
+        for (int i = 0; i < mCategories.size(); i++) {
+            categories.add(c.getString(mCategories.get(i).second));
+        }
+
+        return categories;
+    }
+
+    /**
+     * Return the default category string
+     *
+     * @return default category string
+     */
+    public static String getDefaultCategory() {
+        return mCategories.get(mDefaultCategoryPosition).first;
+    }
+
+    /**
+     * Translate a position integer into a category code
+     *
+     * @param position API category code
+     * @return user-friendly category string
+     */
+    public static String getCategoryTranslationByPosition(int position, Context c) {
+        return c.getString(mCategories.get(position).second);
+    }
+
+    /**
+     * Get category position by its code
+     *
+     * @param code API category code
+     * @return position integer
+     */
+    public static int getCategoryPosition(String code) {
+        int position = mDefaultCategoryPosition;
+
+        for (int i = 0; i < mCategories.size(); i++) {
+            if (mCategories.get(i).first.equals(code)) {
+                position = i;
+                break;
+            }
+        }
+
+        return position;
+    }
+
+    /**
+     * Translate category code to an understandable string
+     *
+     * @param code API category code
+     * @return user-friendly category string
+     */
+    public static String getCategoryTranslation(String code, Context c) {
+        int position = mDefaultCategoryPosition;
+
+        for (int i = 0; i < mTypes.size(); i++) {
+            if (mCategories.get(i).first.equals(code)) {
+                position = i;
+                break;
+            }
+        }
+
+        return c.getString(mCategories.get(position).second);
+    }
+
 
     // TYPES OF DISH
 

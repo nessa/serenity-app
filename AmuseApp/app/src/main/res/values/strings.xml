@@ -20,6 +20,48 @@
     <string name="language_es">Spanish</string>
     <string name="language_en">English</string>
 
+    <!-- Data -->
+    <!--   Categories -->
+    <string name="category_allergy_gluten">Gluten allergy</string>
+    <string name="category_allergy_lactose">Lactose allergy</string>
+    <string name="category_allergy_shellfish">Shellfish allergy</string>
+    <string name="category_allergy_fish">Fish allergy</string>
+    <string name="category_allergy_dried_fruit">Dried fruit allergy</string>
+    <string name="category_allergy_mediterranean">Mediterranean</string>
+    <string name="category_allergy_vegetarian">Vegetarian</string>
+    <string name="category_allergy_vegan">Vegan</string>
+    <!--   Types of dish -->
+    <string name="type_of_dish_appetizer">Appetizer</string>
+    <string name="type_of_dish_first_course">First course</string>
+    <string name="type_of_dish_second_course">Second course</string>
+    <string name="type_of_dish_main_dish">Main dish</string>
+    <string name="type_of_dish_dessert">Dessert</string>
+    <string name="type_of_dish_other">Other</string>
+    <!--   Difficulty -->
+    <string name="difficulty_high">High difficulty</string>
+    <string name="difficulty_medium">Medium difficulty</string>
+    <string name="difficulty_low">Low difficulty</string>
+    <!--   Measurement units -->
+    <string name="measurement_unit_of">of</string>
+    <string name="measurement_unit_unit">unit</string>
+    <string name="measurement_unit_unit_plural">units</string>
+    <string name="measurement_unit_g">gram</string>
+    <string name="measurement_unit_kg">kilogram</string>
+    <string name="measurement_unit_ml">mililiter</string>
+    <string name="measurement_unit_l">liter</string>
+    <string name="measurement_unit_cup">cup</string>
+    <string name="measurement_unit_tsp">teaspoon</string>
+    <string name="measurement_unit_tbsp">tablespoon</string>
+    <string name="measurement_unit_rasher">rasher</string>
+    <string name="measurement_unit_g_plural">grams</string>
+    <string name="measurement_unit_kg_plural">kilograms</string>
+    <string name="measurement_unit_ml_plural">mililiters</string>
+    <string name="measurement_unit_l_plural">liters</string>
+    <string name="measurement_unit_cup_plural">cups</string>
+    <string name="measurement_unit_tsp_plural">teaspoons</string>
+    <string name="measurement_unit_tbsp_plural">tablespoons</string>
+    <string name="measurement_unit_rasher_plural">rashers</string>
+
     <!-- Splash screen -->
     <string name="splash_screen_loading_ingredients_message">Loading ingredients…</string>
     <string name="splash_screen_login_message">Login…</string>
@@ -103,37 +145,6 @@
     <string name="detail_hours">hours</string>
     <string name="detail_minutes">minutes</string>
     <string name="detail_seconds">\'\'</string>
-    <!--   Types of dish -->
-    <string name="type_of_dish_appetizer">Appetizer</string>
-    <string name="type_of_dish_first_course">First course</string>
-    <string name="type_of_dish_second_course">Second course</string>
-    <string name="type_of_dish_main_dish">Main dish</string>
-    <string name="type_of_dish_dessert">Dessert</string>
-    <string name="type_of_dish_other">Other</string>
-    <!--   Difficulty -->
-    <string name="difficulty_high">High difficulty</string>
-    <string name="difficulty_medium">Medium difficulty</string>
-    <string name="difficulty_low">Low difficulty</string>
-    <!--   Measurement units -->
-    <string name="measurement_unit_of">of</string>
-    <string name="measurement_unit_unit">unit</string>
-    <string name="measurement_unit_unit_plural">units</string>
-    <string name="measurement_unit_g">gram</string>
-    <string name="measurement_unit_kg">kilogram</string>
-    <string name="measurement_unit_ml">mililiter</string>
-    <string name="measurement_unit_l">liter</string>
-    <string name="measurement_unit_cup">cup</string>
-    <string name="measurement_unit_tsp">teaspoon</string>
-    <string name="measurement_unit_tbsp">tablespoon</string>
-    <string name="measurement_unit_rasher">rasher</string>
-    <string name="measurement_unit_g_plural">grams</string>
-    <string name="measurement_unit_kg_plural">kilograms</string>
-    <string name="measurement_unit_ml_plural">mililiters</string>
-    <string name="measurement_unit_l_plural">liters</string>
-    <string name="measurement_unit_cup_plural">cups</string>
-    <string name="measurement_unit_tsp_plural">teaspoons</string>
-    <string name="measurement_unit_tbsp_plural">tablespoons</string>
-    <string name="measurement_unit_rasher_plural">rashers</string>
     <!--   Timer -->
     <string name="detail_timer_colon">:</string>
     <string name="detail_timer_label">Timer</string>
