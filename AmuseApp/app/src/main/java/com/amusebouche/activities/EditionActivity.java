@@ -19,10 +19,12 @@ import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.amusebouche.data.Ingredient;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.fragments.RecipeEditionFirstTabFragment;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
@@ -31,6 +33,8 @@ import com.amusebouche.loaders.SaveRecipeLoader;
 import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 
 /**
@@ -61,6 +65,7 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
 
     // Data variables
     private Recipe mRecipe;
+    private ArrayList<String> mForcedCategories;
     private ArrayList<Recipe> mRecipes;
     private Integer mCurrentPage;
     private Integer mLimitPerPage;
@@ -76,6 +81,7 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
     private ActionButton mAddDirectionButton;
 
     // Fragments
+    private RecipeEditionFirstTabFragment mFirstFragment;
     private RecipeEditionSecondTabFragment mSecondFragment;
     private RecipeEditionThirdTabFragment mThirdFragment;
 
@@ -83,6 +89,7 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
     private boolean mEnableSaveButton;
 
     // Services variables
+    private DatabaseHelper mDatabaseHelper;
     private Loader mLoader;
 
     // LIFECYCLE METHODS
@@ -136,6 +143,8 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
             presentTab = savedInstanceState.getString(INTENT_KEY_TAB);
         }
 
+        resetForcedCategories();
+
         overridePendingTransition(R.anim.pull_in_from_left, R.anim.hold);
         setContentView(R.layout.activity_add);
 
@@ -146,6 +155,7 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
         mLayout = findViewById(R.id.layout);
 
         // Get fragments
+        mFirstFragment = (RecipeEditionFirstTabFragment) getFragmentManager().findFragmentById(R.id.fragment1);
         mSecondFragment = (RecipeEditionSecondTabFragment) getFragmentManager().findFragmentById(R.id.fragment2);
         mThirdFragment = (RecipeEditionThirdTabFragment) getFragmentManager().findFragmentById(R.id.fragment3);
 
@@ -207,6 +217,11 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
 
                 mTabs.setCurrentTabByTag(tabId);
                 resetTabColors();
+
+                // Reload initial data
+                if (tabId.equals(TAB_1)) {
+                    mFirstFragment.reloadInitialData();
+                }
 
                 // Show FABs after a delay
                 new Handler().postDelayed(new Runnable() {
@@ -344,6 +359,10 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
     }
 
 
+    public ArrayList<String> getForcedCategories() {
+        return mForcedCategories;
+    }
+
     // SETTERS
 
     /**
@@ -391,6 +410,51 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
         } else {
             Log.d("NOTE", "BUTTON DISABLED");
         }
+    }
+
+    // RECIPE METHODS
+
+    private void resetForcedCategories() {
+        if (mForcedCategories == null) {
+            mForcedCategories = new ArrayList<>();
+        } else {
+            mForcedCategories.clear();
+        }
+
+        boolean uncategorized = false;
+
+        for (RecipeIngredient ingredient : mRecipe.getIngredients()) {
+
+            if (mDatabaseHelper.existIngredient(ingredient.getName())) {
+
+                Ingredient ing = mDatabaseHelper.getIngredientByTranslation(ingredient.getName());
+
+                ArrayList<String> categories = new ArrayList<>(Arrays.asList(ing.getCategories().split(
+                    Pattern.quote(Ingredient.CATEGORY_SEPARATOR))));
+
+                for (String c : categories) {
+                    boolean found = false;
+
+                    for (RecipeCategory rc : mRecipe.getCategories()) {
+                        if (rc.getName().equals(c)) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        mRecipe.getCategories().add(new RecipeCategory(c));
+                    }
+                }
+            } else {
+                uncategorized = true;
+            }
+        }
+
+        if (uncategorized) {
+            mRecipe.getCategories().add(new RecipeCategory(RecipeCategory.CATEGORY_UNCATEGORIZED));
+        }
+
     }
 
     // FRAGMENT METHODS

@@ -126,6 +126,16 @@ public class UserFriendlyTranslationsHandler {
     }
 
     /**
+     * Get category position by its code
+     *
+     * @param position API category code
+     * @return position integer
+     */
+    public static String getCategoryCodeByPosition(int position) {
+        return mCategories.get(position).first;
+    }
+
+    /**
      * Translate category code to an understandable string
      *
      * @param code API category code
@@ -507,7 +517,8 @@ public class UserFriendlyTranslationsHandler {
      * @return User-friendly string
      */
     public static String getServingsLabel(Integer servings, Context c) {
-        return servings.toString() + " " + c.getString(R.string.detail_servings_label).toLowerCase();
+        return servings.toString() + " " + ((servings == 1) ? c.getString(R.string.recipe_edition_serving) :
+                c.getString(R.string.recipe_edition_servings));
     }
 
     /**

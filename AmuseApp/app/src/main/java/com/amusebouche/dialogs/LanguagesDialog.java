@@ -52,7 +52,6 @@ public class LanguagesDialog extends Dialog {
 
         this.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.setContentView(R.layout.dialog_edition_direction);
         this.setContentView(R.layout.dialog_languages);
 
         // Get languages from shared preferences

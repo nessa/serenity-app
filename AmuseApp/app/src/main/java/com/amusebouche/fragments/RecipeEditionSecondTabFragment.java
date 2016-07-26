@@ -52,10 +52,11 @@ import java.util.regex.Pattern;
  */
 public class RecipeEditionSecondTabFragment extends Fragment {
 
+    // Father activity
     private EditionActivity mEditionActivity;
 
+    // Data variables
     private ArrayList<String> measurementUnits;
-
     private ArrayList<Pair<Long, RecipeIngredient>> mIngredientsArray;
     private RecipeEditionIngredientListAdapter mIngredientsListAdapter;
 
@@ -395,7 +396,11 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                 }
 
                 if (!found) {
+                    // Add category to recipe
                     mEditionActivity.getRecipe().getCategories().add(new RecipeCategory(categories.get(c)));
+
+                    // Add category to forced recipes
+                    mEditionActivity.getForcedCategories().add(categories.get(c));
                 }
             }
         } else {
@@ -409,8 +414,12 @@ public class RecipeEditionSecondTabFragment extends Fragment {
             }
 
             if (!found) {
+                // Add category to recipe
                 mEditionActivity.getRecipe().getCategories().add(new RecipeCategory(
                     RecipeCategory.CATEGORY_UNCATEGORIZED));
+
+                // Add category to forced recipes
+                mEditionActivity.getForcedCategories().add(RecipeCategory.CATEGORY_UNCATEGORIZED);
             }
         }
     }
@@ -457,6 +466,20 @@ public class RecipeEditionSecondTabFragment extends Fragment {
             }
 
             if (remove) {
+                // Remove category from forced categories
+                int found = -1;
+                for (int index = 0; index < mEditionActivity.getForcedCategories().size(); index++) {
+                    if (mEditionActivity.getForcedCategories().get(index).equals(
+                        mEditionActivity.getRecipe().getCategories().get(c).getName())) {
+                        found = index;
+                        break;
+                    }
+                }
+                if (found > -1) {
+                    mEditionActivity.getForcedCategories().remove(found);
+                }
+
+                // Remove category from recipe
                 mEditionActivity.getRecipe().getCategories().remove(c);
             }
         }

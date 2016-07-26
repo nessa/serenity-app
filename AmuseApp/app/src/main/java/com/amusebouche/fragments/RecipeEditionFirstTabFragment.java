@@ -12,7 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
@@ -20,6 +23,7 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.EditionActivity;
 import com.amusebouche.activities.R;
+import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 
 
@@ -37,22 +41,31 @@ import java.util.ArrayList;
  */
 public class RecipeEditionFirstTabFragment extends Fragment {
 
+    // Father activity
     private EditionActivity mEditionActivity;
 
+    // Data variables
+    private ArrayList<String> categories;
     private ArrayList<String> typesOfDish;
     private ArrayList<String> difficulties;
 
+    // UI
+    private LayoutInflater mInflater;
+    private ScrollView mLayout;
     private EditText mTitle;
     private EditText mImage;
     private TextView mCookingTimeLabel;
     private SeekBar mCookingTimeHours;
     private SeekBar mCookingTimeMinutes;
     private TextView mServingsLabel;
+    private Spinner mTypeOfDish;
+    private Spinner mDifficulty;
     private SeekBar mServings;
     private EditText mSource;
+    private LinearLayout mCategories;
+
 
     // LIFECYCLE METHODS
-
 
     /**
      * Called to do initial creation of a fragment. This is called after onAttach and before
@@ -66,6 +79,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         super.onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
 
+        categories = UserFriendlyTranslationsHandler.getCategories(getActivity());
         typesOfDish = UserFriendlyTranslationsHandler.getTypes(getActivity());
         difficulties = UserFriendlyTranslationsHandler.getDifficulties(getActivity());
     }
@@ -150,8 +164,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-
-        ScrollView mLayout = (ScrollView) inflater.inflate(R.layout.fragment_edition_first_tab,
+        mInflater = inflater;
+        mLayout = (ScrollView) inflater.inflate(R.layout.fragment_edition_first_tab,
                 container, false);
 
         mEditionActivity = (EditionActivity) getActivity();
@@ -185,7 +199,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         });
 
         // Type of dish
-        Spinner mTypeOfDish = (Spinner) mLayout.findViewById(R.id.type_of_dish);
+        mTypeOfDish = (Spinner) mLayout.findViewById(R.id.type_of_dish);
         ArrayAdapter<String> typeOfDishSpinnerArrayAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, typesOfDish);
         typeOfDishSpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -204,7 +218,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         });
 
         // Difficulty
-        Spinner mDifficulty = (Spinner) mLayout.findViewById(R.id.difficulty);
+        mDifficulty = (Spinner) mLayout.findViewById(R.id.difficulty);
         ArrayAdapter<String> difficultySpinnerArrayAdapter = new ArrayAdapter<>(getActivity(),
                 android.R.layout.simple_spinner_item, difficulties);
         difficultySpinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -281,7 +295,19 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             }
         });
 
+        // Categories
+        mCategories = (LinearLayout) mLayout.findViewById(R.id.categories);
 
+        reloadInitialData();
+
+        return mLayout;
+    }
+
+
+    /**
+     * Reloads data needed for this tab every time it's needed (at the end of onCreateView, at least).
+     */
+    public void reloadInitialData() {
         // Set initial data
         mTitle.setText(mEditionActivity.getRecipe().getTitle());
         mImage.setText(mEditionActivity.getRecipe().getImage());
@@ -290,19 +316,79 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         mCookingTimeHours.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() / 60);
         mCookingTimeMinutes.setProgress(mEditionActivity.getRecipe().getCookingTime().intValue() % 60);
         mServings.setProgress((mEditionActivity.getRecipe().getServings() > 0) ?
-                mEditionActivity.getRecipe().getServings() - 1 : 0);
+            mEditionActivity.getRecipe().getServings() - 1 : 0);
         mSource.setText(mEditionActivity.getRecipe().getSource());
 
         // Check initial data
         setServingsLabel();
 
         mCookingTimeLabel.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(mCookingTimeHours.getProgress(),
-                mCookingTimeMinutes.getProgress(), getActivity()));
+            mCookingTimeMinutes.getProgress(), getActivity()));
 
         toggleEnableSaveButton(mEditionActivity.checkRequiredValidation(mTitle) &&
-                mEditionActivity.checkURLValidation(mImage));
+            mEditionActivity.checkURLValidation(mImage));
 
-        return mLayout;
+        // Set categories
+        mCategories.removeAllViews();
+
+        for (int i = 0; i < categories.size(); i++) {
+            String category = categories.get(i);
+
+            View v = mInflater.inflate(R.layout.item_edition_category, mLayout, false);
+
+            TextView categoryTextView = (TextView) v.findViewById(R.id.category);
+            categoryTextView.setText(category);
+
+            CheckBox categoryCheck = (CheckBox) v.findViewById(R.id.checkbox);
+            categoryCheck.setTag(UserFriendlyTranslationsHandler.getCategoryCodeByPosition(i));
+
+            if (mEditionActivity.getForcedCategories().contains(
+                UserFriendlyTranslationsHandler.getCategoryCodeByPosition(i))) {
+                // Category forced by ingredients check
+                categoryCheck.setChecked(true);
+                categoryCheck.setEnabled(false);
+            } else {
+                // Category available
+                boolean found = false;
+                for (RecipeCategory c : mEditionActivity.getRecipe().getCategories()) {
+                    if (c.getName().equals(UserFriendlyTranslationsHandler.getCategoryCodeByPosition(i))) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                categoryCheck.setChecked(found);
+                categoryCheck.setEnabled(true);
+
+                categoryCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        String categoryCode = (String) compoundButton.getTag();
+
+                        if (b) {
+                            // Add category to recipe
+                            mEditionActivity.getRecipe().getCategories().add(new RecipeCategory(categoryCode));
+                        } else {
+                            // Remove category from recipe
+                            int index = -1;
+
+                            for (int c = 0; c < mEditionActivity.getRecipe().getCategories().size(); c++) {
+                                if (mEditionActivity.getRecipe().getCategories().get(c).getName().equals(categoryCode)) {
+                                    index = c;
+                                    break;
+                                }
+                            }
+
+                            if (index > -1) {
+                                mEditionActivity.getRecipe().getCategories().remove(index);
+                            }
+                        }
+                    }
+                });
+            }
+
+            mCategories.addView(v);
+        }
     }
 
     private void toggleEnableSaveButton(boolean enabled) {
@@ -310,10 +396,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
     }
 
     private void setServingsLabel() {
-        mServingsLabel.setText(String.format("%d %s", mServings.getProgress() + 1,
-                (mServings.getProgress() == 0) ? getString(R.string.recipe_edition_serving) :
-                        getString(R.string.recipe_edition_servings)));
-
+        mServingsLabel.setText(UserFriendlyTranslationsHandler.getServingsLabel(
+            mServings.getProgress() + 1, getActivity()));
     }
 
 }

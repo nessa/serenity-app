@@ -44,8 +44,10 @@ import java.util.Collections;
  */
 public class RecipeEditionThirdTabFragment extends Fragment {
 
+    // Father activity
     private EditionActivity mEditionActivity;
 
+    // Data variables
     private ArrayList<Pair<Long, RecipeDirection>> mDirectionsArray;
     private RecipeEditionDirectionListAdapter mDirectionsListAdapter;
 
