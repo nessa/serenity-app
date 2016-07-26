@@ -402,9 +402,8 @@ public class RecipeEditionSecondTabFragment extends Fragment {
             // If ingredient doesn't exists in database, we add UNCATEGORIZED category
             boolean found = false;
 
-            for (int ci = 0; ci < mEditionActivity.getRecipe().getCategories().size(); ci++) {
-                if (mEditionActivity.getRecipe().getCategories().get(ci).getName().equals(
-                    RecipeCategory.CATEGORY_UNCATEGORIZED)) {
+            for (RecipeCategory c : mEditionActivity.getRecipe().getCategories()) {
+                if (c.getName().equals(RecipeCategory.CATEGORY_UNCATEGORIZED)) {
                     found = true;
                 }
             }
@@ -424,33 +423,40 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         for (int c = mEditionActivity.getRecipe().getCategories().size() - 1; c >= 0; c--) {
 
             RecipeCategory category = mEditionActivity.getRecipe().getCategories().get(c);
-            boolean found = false;
+            boolean remove = true;
 
             if (category.getName().equals(RecipeCategory.CATEGORY_UNCATEGORIZED)) {
-                // Check if there is any ingredient not set in the database
-                for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
-                    found = found && !mDatabaseHelper.existIngredient(
-                        mEditionActivity.getRecipe().getIngredients().get(i).getName());
+                // Check if there is any ingredient not set in the database. If not, remove
+                // the UNCATEGORIZED category.
+                for (RecipeIngredient i : mEditionActivity.getRecipe().getIngredients()) {
+                    if (!mDatabaseHelper.existIngredient(i.getName())) {
+                        remove = false;
+                        break;
+                    }
                 }
             } else {
-                // Check if any ingredient has this category
+                // Check if any ingredient has this category. If not, remove it.
                 for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
                     if (mDatabaseHelper.existIngredient(
                         mEditionActivity.getRecipe().getIngredients().get(i).getName())) {
+
 
                         Ingredient ing = mDatabaseHelper.getIngredientByTranslation(
                             mEditionActivity.getRecipe().getIngredients().get(i).getName());
 
                         ArrayList<String> categories = new ArrayList<>(Arrays.asList(ing.getCategories().split(
                             Pattern.quote(Ingredient.CATEGORY_SEPARATOR))));
-
-                        // TODO: Fix this!
-                        found = found && categories.contains(category.getName());
+                        for (String s : categories) {
+                            if (s.equals(category.getName())) {
+                                remove = false;
+                                break;
+                            }
+                        }
                     }
                 }
             }
 
-            if (found) {
+            if (remove) {
                 mEditionActivity.getRecipe().getCategories().remove(c);
             }
         }
