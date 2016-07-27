@@ -2,7 +2,9 @@ package com.amusebouche.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,31 +38,67 @@ public class Recipe implements Parcelable {
     public static String DIFFICULTY_HIGH = "HIGH";
 
     // API variables
-    private String mId;
+    private transient String mId;
+
+    @Expose
+    @SerializedName("title")
     private String mTitle;
-    private String mOwner;
+
+    private transient String mOwner;
+
+    @Expose
+    @SerializedName("language")
     private String mLanguage;
+
+    @Expose
+    @SerializedName("type_of_dish")
     private String mTypeOfDish;
+
+    @Expose
+    @SerializedName("difficulty")
     private String mDifficulty;
-    private Date mCreatedTimestamp;
-    private Date mUpdatedTimestamp;
+
+    private transient Date mCreatedTimestamp;
+    private transient Date mUpdatedTimestamp;
+
+    @Expose
+    @SerializedName("cooking_time")
     private Float mCookingTime;
+
+    @Expose
+    @SerializedName("image")
     private String mImage;
-    private Integer mTotalRating;
-    private Integer mUsersRating;
+
+    private transient Integer mTotalRating;
+    private transient Integer mUsersRating;
+
+    @Expose
+    @SerializedName("servings")
     private Integer mServings;
+
+    @Expose
+    @SerializedName("source")
     private String mSource;
 
     // Database variables
-    private String mDatabaseId;
-    private String mLocalImage;
+    private transient String mDatabaseId;
+    private transient String mLocalImage;
 
     // Local variables
-    private Boolean mIsOnline;
+    private transient Boolean mIsOnline;
 
     // List variables
+
+    @Expose
+    @SerializedName("categories")
     private ArrayList<RecipeCategory> mCategories;
+
+    @Expose
+    @SerializedName("ingredients")
     private ArrayList<RecipeIngredient> mIngredients;
+
+    @Expose
+    @SerializedName("directions")
     private ArrayList<RecipeDirection> mDirections;
 
     // Constructors
@@ -178,8 +216,6 @@ public class Recipe implements Parcelable {
     public Recipe(JSONObject o) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'");
 
-        Log.d("JSON", o.toString());
-
         try {
             if (o.has("id")) {
                 this.mId = o.getString("id");
@@ -248,7 +284,7 @@ public class Recipe implements Parcelable {
      * @param source Parcel source data
      */
     public Recipe(Parcel source){
-        this.mDatabaseId = "";
+        this.mDatabaseId = source.readString();
         this.mId = source.readString();
         this.mTitle = source.readString();
         this.mOwner = source.readString();
@@ -447,6 +483,13 @@ public class Recipe implements Parcelable {
     }
 
     /**
+     * Set method for id variable
+     */
+    public void setId(String id) {
+        this.mId = id;
+    }
+
+    /**
      * Set method for title variable
      */
     public void setTitle(String title) {
@@ -517,56 +560,6 @@ public class Recipe implements Parcelable {
         this.mIsOnline = isOnline;
     }
 
-    public void printString() {
-        Log.d("RECIPE", mId + " " + mTitle);
-    }
-
-    // JSON methods
-
-    /**
-     * Build a JSON object with the recipe data
-     *
-     * @return o JSONObject that contains all recipe information
-     */
-    public JSONObject buildJSON() {
-
-        JSONObject json = new JSONObject();
-        JSONArray categories = new JSONArray();
-        JSONArray ingredients = new JSONArray();
-        JSONArray directions = new JSONArray();
-
-        try {
-            json.put("title", this.getTitle());
-            json.put("language", this.getLanguage());
-            json.put("type_of_dish", this.getTypeOfDish());
-            json.put("difficulty", this.getDifficulty());
-            json.put("cooking_time", this.getCookingTime());
-            json.put("image", this.getImage());
-            json.put("servings", this.getServings());
-            json.put("source", this.getSource());
-
-            for (int i = 0; i < this.getCategories().size(); i++) {
-                categories.put(i, this.getCategories().get(i).buildJSON());
-            }
-            for (int i = 0; i < this.getIngredients().size(); i++) {
-                ingredients.put(i, this.getIngredients().get(i).buildJSON());
-            }
-            for (int i = 0; i < this.getDirections().size(); i++) {
-                directions.put(i, this.getDirections().get(i).buildJSON());
-            }
-
-            json.put("categories", categories);
-            json.put("ingredients", ingredients);
-            json.put("directions", directions);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return json;
-    }
-
-
     // Parcelable methods
 
     /**
@@ -589,6 +582,7 @@ public class Recipe implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.mDatabaseId);
         dest.writeString(this.mId);
         dest.writeString(this.mTitle);
         dest.writeString(this.mOwner);

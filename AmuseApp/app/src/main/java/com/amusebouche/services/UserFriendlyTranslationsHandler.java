@@ -72,7 +72,7 @@ public class UserFriendlyTranslationsHandler {
     // CATEGORIES
 
     /**
-     * Get all categproes strings
+     * Get all categories strings
      *
      * @param c Context to get the strings
      * @return Categories strings array
@@ -126,7 +126,7 @@ public class UserFriendlyTranslationsHandler {
     }
 
     /**
-     * Get category position by its code
+     * Get category code by its position
      *
      * @param position API category code
      * @return position integer
@@ -212,6 +212,16 @@ public class UserFriendlyTranslationsHandler {
     }
 
     /**
+     * Get typeOfDish code by its position
+     *
+     * @param position API typeOfDish code
+     * @return position integer
+     */
+    public static String getTypeOfDishCodeByPosition(int position) {
+        return mTypes.get(position).first;
+    }
+
+    /**
      * Translate typeOfDish code to an understandable string
      *
      * @param code API type of dish code
@@ -287,6 +297,16 @@ public class UserFriendlyTranslationsHandler {
     }
 
     /**
+     * Get difficulty code by its position
+     *
+     * @param position API difficulty code
+     * @return position integer
+     */
+    public static String getDifficultyCodeByPosition(int position) {
+        return mDifficulties.get(position).first;
+    }
+
+    /**
      * Translate difficulty code to an understandable string
      *
      * @param code API difficulty code
@@ -359,6 +379,16 @@ public class UserFriendlyTranslationsHandler {
         }
 
         return position;
+    }
+
+    /**
+     * Get unit code by its position
+     *
+     * @param position API unit code
+     * @return position integer
+     */
+    public static String getMeasurementeUnitCodeByPosition(int position) {
+        return mUnits.get(position).first;
     }
 
     /**

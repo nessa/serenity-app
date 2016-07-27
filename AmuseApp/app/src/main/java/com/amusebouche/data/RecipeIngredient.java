@@ -4,6 +4,9 @@ package com.amusebouche.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,11 +20,22 @@ import org.json.JSONObject;
 public class RecipeIngredient implements Parcelable {
 
     // Main variables
-    private Integer mSortNumber;
-    private String mName;
-    private Float mQuantity;
-    private String mMeasurementUnit;
 
+    @Expose
+    @SerializedName("sort_number")
+    private Integer mSortNumber;
+
+    @Expose
+    @SerializedName("name")
+    private String mName;
+
+    @Expose
+    @SerializedName("quantity")
+    private Float mQuantity;
+
+    @Expose
+    @SerializedName("measurement_unit")
+    private String mMeasurementUnit;
 
 
     // Constructors

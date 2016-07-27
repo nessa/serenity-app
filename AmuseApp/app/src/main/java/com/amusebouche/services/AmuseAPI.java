@@ -1,5 +1,7 @@
 package com.amusebouche.services;
 
+import com.amusebouche.data.Recipe;
+
 import org.json.JSONObject;
 
 import okhttp3.ResponseBody;
@@ -50,10 +52,10 @@ public interface AmuseAPI {
     Call<ResponseBody> getRecipe(@Path("id") String id);
 
     @POST("recipes/")
-    Call<ResponseBody> createRecipe(@Body JSONObject body);
+    Call<ResponseBody> createRecipe(@Body Recipe body);
 
     @PUT("recipes/{id}/")
-    Call<ResponseBody> updateRecipe(@Path("id") String id, @Body JSONObject body);
+    Call<ResponseBody> updateRecipe(@Path("id") String id, @Body Recipe body);
 
 
     // Recipe's comments requests

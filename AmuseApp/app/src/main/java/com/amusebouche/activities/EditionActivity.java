@@ -383,22 +383,6 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
      */
     public void onSaveClicked() {
         if (mEnableSaveButton) {
-            Log.d("INFO", "SAVE CLICKED");
-            Log.d("RECIPE TITLE", mRecipe.getTitle());
-            Log.d("RECIPE IMAGEN", mRecipe.getImage());
-            Log.d("RECIPE TIPO", mRecipe.getTypeOfDish());
-            Log.d("RECIPE DIF", mRecipe.getDifficulty());
-            Log.d("RECIPE TIME", mRecipe.getCookingTime().toString());
-            Log.d("RECIPE SERV", mRecipe.getServings().toString());
-            Log.d("RECIPE SOURCE", mRecipe.getSource());
-
-            Log.d("RECIPE", "ING");
-            for (int i = 0; i < mRecipe.getIngredients().size(); i++) {
-                Log.d(String.format("%d", mRecipe.getIngredients().get(i).getSortNumber()),
-                        mRecipe.getIngredients().get(i).getName());
-            }
-
-
             if (mLoader == null || !mLoader.isStarted()) {
                 mLoader = getLoaderManager().initLoader(LOADER_ID, null, this);
                 mLoader.forceLoad();
@@ -406,7 +390,6 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
                 mLoader = getLoaderManager().restartLoader(LOADER_ID, null, this);
                 mLoader.forceLoad();
             }
-
         } else {
             Log.d("NOTE", "BUTTON DISABLED");
         }

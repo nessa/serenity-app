@@ -77,11 +77,12 @@ public class RecipeEditionFirstTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
-        super.onCreate(savedInstanceState);
 
         categories = UserFriendlyTranslationsHandler.getCategories(getActivity());
         typesOfDish = UserFriendlyTranslationsHandler.getTypes(getActivity());
         difficulties = UserFriendlyTranslationsHandler.getDifficulties(getActivity());
+
+        mEditionActivity = (EditionActivity) getActivity();
     }
 
 
@@ -168,8 +169,6 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         mLayout = (ScrollView) inflater.inflate(R.layout.fragment_edition_first_tab,
                 container, false);
 
-        mEditionActivity = (EditionActivity) getActivity();
-
         // Title
         mTitle = (EditText) mLayout.findViewById(R.id.title);
 
@@ -209,7 +208,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 mEditionActivity.getRecipe().setTypeOfDish(
-                        UserFriendlyTranslationsHandler.getTypeOfDishTranslationByPosition(position, getActivity()));
+                        UserFriendlyTranslationsHandler.getTypeOfDishCodeByPosition(position));
             }
 
             @Override
@@ -228,7 +227,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 mEditionActivity.getRecipe().setDifficulty(
-                        UserFriendlyTranslationsHandler.getDifficultyTranslationByPosition(position, getActivity()));
+                        UserFriendlyTranslationsHandler.getDifficultyCodeByPosition(position));
             }
 
             @Override

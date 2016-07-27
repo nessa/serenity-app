@@ -4,6 +4,9 @@ package com.amusebouche.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,6 +31,9 @@ public class RecipeCategory implements Parcelable {
     public static String CATEGORY_UNCATEGORIZED = "UNCATEGORIZED";
     
     // Main variables
+
+    @Expose
+    @SerializedName("name")
     private String mName;
 
     // Constructors

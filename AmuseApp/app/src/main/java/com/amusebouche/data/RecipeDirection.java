@@ -3,6 +3,9 @@ package com.amusebouche.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,10 +19,25 @@ import org.json.JSONObject;
 public class RecipeDirection implements Parcelable {
 
     // Main variables
+
+    @Expose
+    @SerializedName("sort_number")
     private Integer mSortNumber;
+
+    @Expose
+    @SerializedName("description")
     private String mDescription;
+
+    @Expose
+    @SerializedName("image")
     private String mImage;
+
+    @Expose
+    @SerializedName("video")
     private String mVideo;
+
+    @Expose
+    @SerializedName("time")
     private Float mTime;
 
     // Constructors

@@ -98,6 +98,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     // Behaviour variables
     private boolean mDownloadEnabled = false;
 
+    // Services
+    private DatabaseHelper mDatabaseHelper;
+
     // LIFECYCLE METHODS
 
     /**
@@ -110,7 +113,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        DatabaseHelper mDatabaseHelper = new DatabaseHelper(getApplicationContext());
+        mDatabaseHelper = new DatabaseHelper(getApplicationContext());
 
         // Check if user is logged in
         mToken = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
@@ -513,47 +516,85 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      * Upload recipe to the API
      */
     public void uploadRecipe() {
-        Log.d("DETAIL", "UPLOAD");
         if (isUserLoggedIn) {
             AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken);
 
             if (mRecipe.getId().equals("") || mRecipe.getId().equals("0")) {
                 // Create
-                Call<ResponseBody> requestCall = api.createRecipe(mRecipe.buildJSON());
+                Call<ResponseBody> requestCall = api.createRecipe(mRecipe);
 
                 // Asynchronous call
                 requestCall.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        mRecipe.setOwner(mUsername);
+                        if (response.code() == 201) {
+                            String data = "";
 
-                        Snackbar.make(mLayout, getString(R.string.detail_recipe_created_message),
+                            // Get response data
+                            if (response.body() != null) {
+                                try {
+                                    data = response.body().string();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            // Build objects from response data
+                            if (!data.equals("")) {
+                                try {
+                                    JSONObject jObject = new JSONObject(data);
+
+                                    if (jObject.has("owner")) {
+                                        mRecipe.setOwner(jObject.getString("owner"));
+                                    }
+
+                                    if (jObject.has("id")) {
+                                        mRecipe.setId(jObject.getString("id"));
+                                    }
+
+                                    if (!mRecipe.getDatabaseId().equals("")) {
+                                        mDatabaseHelper.updateRecipe(mRecipe);
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            Snackbar.make(mLayout, getString(R.string.detail_recipe_created_message),
                                 Snackbar.LENGTH_LONG)
                                 .show();
+                        } else {
+                            // TODO: Show error
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.d("DETAIL", "ERROR CREATING RECIPE");
+                        // TODO: Show error
                     }
 
                 });
             } else {
                 // Update
-                Call<ResponseBody> requestCall = api.updateRecipe(mRecipe.getId(), mRecipe.buildJSON());
+                Call<ResponseBody> requestCall = api.updateRecipe(mRecipe.getId(), mRecipe);
 
                 // Asynchronous call
                 requestCall.enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        Snackbar.make(mLayout, getString(R.string.detail_recipe_updated_message),
+                        if (response.code() == 200) {
+                            Snackbar.make(mLayout, getString(R.string.detail_recipe_updated_message),
                                 Snackbar.LENGTH_LONG)
                                 .show();
+                        } else {
+                            // TODO: Show error
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        Log.d("DETAIL", "ERROR UPDATING RECIPE");
+                        // TODO: Show error
                     }
                 });
             }

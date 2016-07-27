@@ -277,9 +277,9 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                     Float quantity = 0.0F;
                     String unit = UserFriendlyTranslationsHandler.getDefaultMeasurementUnit();
                     if (quantityTextView.getText().toString().length() > 0) {
-                        quantity = Float.valueOf(quantityTextView.getText().toString());
-                        unit = UserFriendlyTranslationsHandler.getMeasurementUnitTranslationByPosition(
-                                unitsSpinner.getSelectedItemPosition(), getActivity());
+                        quantity = Float.valueOf(quantityTextView.getText().toString().replace(",", "."));
+                        unit = UserFriendlyTranslationsHandler.getMeasurementeUnitCodeByPosition(
+                                unitsSpinner.getSelectedItemPosition());
                     }
 
                     if (position > -1) {
