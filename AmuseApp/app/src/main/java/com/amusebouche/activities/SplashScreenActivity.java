@@ -5,10 +5,8 @@ import java.util.Date;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
@@ -51,7 +49,6 @@ public class SplashScreenActivity extends Activity {
     private Integer mCurrentPage;
 
     private DatabaseHelper mDatabaseHelper;
-    private SharedPreferences mSharedPreferences;
     private AmuseAPI mAPI;
 
     private String mLastUpdateDate;
@@ -61,9 +58,6 @@ public class SplashScreenActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Get preferences
-        mSharedPreferences = getPreferences(Context.MODE_PRIVATE);
 
         // Set portrait orientation
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -80,18 +74,17 @@ public class SplashScreenActivity extends Activity {
         mTextView = (TextView) findViewById(R.id.text);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        // Get languages from shared preferences
-        mLanguage = mSharedPreferences.getString(AppData.PREFERENCE_RECIPES_LANGUAGE, "");
+        // Get language from database
+        mLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
         // If there are no set languages, ask for them
         if (mLanguage.equals("")) {
-            Dialog languagesDialog = new LanguagesDialog(this, mSharedPreferences);
+            Dialog languagesDialog = new LanguagesDialog(this, mDatabaseHelper);
 
             languagesDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialog) {
-                    mLanguage = mSharedPreferences.getString(
-                            AppData.PREFERENCE_RECIPES_LANGUAGE, "");
+                    mLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
                     preLoadIngredients();
                 }
             });

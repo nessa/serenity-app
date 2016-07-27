@@ -3,9 +3,7 @@ package com.amusebouche.fragments;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,9 +15,11 @@ import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.amusebouche.activities.MainActivity;
 import com.amusebouche.dialogs.LanguagesDialog;
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AppData;
+import com.amusebouche.services.DatabaseHelper;
 
 /**
  * Information fragment class.
@@ -33,16 +33,22 @@ import com.amusebouche.services.AppData;
  */
 public class SettingsFragment extends Fragment {
 
-    private SharedPreferences mSharedPreferences;
+    // Parent activity
+    private MainActivity mActivity;
 
+    // UI
     private TextView mSelectedLanguageTextView;
+
+    // Services
+    private DatabaseHelper mDatabaseHelper;
+
 
     // LIFECYCLE METHODS
 
     /**
      * Called when a fragment is first attached to its activity.
      *
-     * @param activity Fragemnt activity (DetailActivity)
+     * @param activity Fragment activity (DetailActivity)
      */
     @Override
     public void onAttach(Activity activity) {
@@ -70,7 +76,8 @@ public class SettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate()");
 
-        mSharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        mActivity = (MainActivity) getActivity();
+        mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
     }
 
 
@@ -93,10 +100,10 @@ public class SettingsFragment extends Fragment {
                 container, false);
 
         // Get preferences
-        boolean downloadImagesSetting = mSharedPreferences.getBoolean(
-                AppData.PREFERENCE_DOWNLOAD_IMAGES, false);
-        boolean recognizerLanguageSetting = mSharedPreferences.getBoolean(
-                AppData.PREFERENCE_RECOGNIZER_LANGUAGE, false);
+        String downloadImagesString = mDatabaseHelper.getAppData(AppData.PREFERENCE_DOWNLOAD_IMAGES);
+        String recognizerLanguageString = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE);
+        boolean downloadImagesSetting = downloadImagesString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        boolean recognizerLanguageSetting = recognizerLanguageString.equals(AppData.PREFERENCE_TRUE_VALUE);
 
         // Get views and set its values
         Switch downloadImagesSwitch = (Switch) mLayout.findViewById(R.id.setting_download_images_enabled);
@@ -113,25 +120,23 @@ public class SettingsFragment extends Fragment {
         downloadImagesSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putBoolean(AppData.PREFERENCE_DOWNLOAD_IMAGES, isChecked);
-                editor.apply();
+                mDatabaseHelper.setAppData(AppData.PREFERENCE_DOWNLOAD_IMAGES,
+                    isChecked ? AppData.PREFERENCE_TRUE_VALUE : AppData.PREFERENCE_FALSE_VALUE);
             }
         });
 
         recognizerLanguageSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putBoolean(AppData.PREFERENCE_RECOGNIZER_LANGUAGE, isChecked);
-                editor.apply();
+                mDatabaseHelper.setAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE,
+                    isChecked ? AppData.PREFERENCE_TRUE_VALUE : AppData.PREFERENCE_FALSE_VALUE);
             }
         });
 
         languageSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog languages = new LanguagesDialog(getActivity(), mSharedPreferences);
+                Dialog languages = new LanguagesDialog(getActivity(), mDatabaseHelper);
 
                 languages.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
@@ -152,10 +157,11 @@ public class SettingsFragment extends Fragment {
      */
     private void setSelectedLanguages() {
         // Get language from shared preferences
-        String language = mSharedPreferences.getString(AppData.PREFERENCE_RECIPES_LANGUAGE, "");
+        String language = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
         if (!language.equals("")) {
             mSelectedLanguageTextView.setText(language);
+            mActivity.reloadRecipesLanguage();
         }
     }
 

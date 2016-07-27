@@ -238,7 +238,7 @@ public class UserFragment extends Fragment {
 
                 // Set preferences if needed
                 mDatabaseHelper.setAppData(AppData.USER_REMEMBER_CREDENTIALS,
-                        mRemember ? "YES" : "NO");
+                        mRemember ? AppData.PREFERENCE_TRUE_VALUE : AppData.PREFERENCE_FALSE_VALUE);
                 if (mRemember) {
                     mDatabaseHelper.setAppData(AppData.USER_USERNAME, mUsername);
                     mDatabaseHelper.setAppData(AppData.USER_PASSWORD, mPassword);
@@ -326,7 +326,7 @@ public class UserFragment extends Fragment {
 
         // Set initial data
         String remember = mDatabaseHelper.getAppData(AppData.USER_REMEMBER_CREDENTIALS);
-        mRemember = remember.equals("YES");
+        mRemember = remember.equals(AppData.PREFERENCE_TRUE_VALUE);
         rememberCheckBox.setChecked(mRemember);
 
         if (mRemember) {

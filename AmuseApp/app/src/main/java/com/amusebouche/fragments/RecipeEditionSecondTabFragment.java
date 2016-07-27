@@ -30,6 +30,7 @@ import com.amusebouche.adapters.RecipeEditionIngredientListAdapter;
 import com.amusebouche.data.Ingredient;
 import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeIngredient;
+import com.amusebouche.services.AppData;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.woxthebox.draglistview.DragItem;
@@ -59,6 +60,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
     private ArrayList<String> measurementUnits;
     private ArrayList<Pair<Long, RecipeIngredient>> mIngredientsArray;
     private RecipeEditionIngredientListAdapter mIngredientsListAdapter;
+    private String mRecipesLanguage;
 
     // Service
     private DatabaseHelper mDatabaseHelper;
@@ -78,6 +80,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
 
         measurementUnits = UserFriendlyTranslationsHandler.getMeasurementUnits(getActivity());
         mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
+        mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
     }
 
 
@@ -235,7 +238,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         }
 
         final AutoCompleteTextView nameTextView = (AutoCompleteTextView) editionDialog.findViewById(R.id.name);
-        nameTextView.setAdapter(new AutoCompleteArrayAdapter(getActivity()));
+        nameTextView.setAdapter(new AutoCompleteArrayAdapter(getActivity(), mRecipesLanguage));
 
         final TextView quantityTextView = (TextView) editionDialog.findViewById(R.id.quantity);
 

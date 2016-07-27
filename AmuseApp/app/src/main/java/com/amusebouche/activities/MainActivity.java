@@ -2,10 +2,8 @@ package com.amusebouche.activities;
 
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
@@ -39,6 +37,7 @@ import com.amusebouche.fragments.RecipeListFragment;
 import com.amusebouche.fragments.SettingsFragment;
 import com.amusebouche.fragments.UserFragment;
 import com.amusebouche.services.AppData;
+import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.RequestHandler;
 
 import java.util.ArrayList;
@@ -91,8 +90,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String PREVIOUS_TOTAL_KEY = "previous_total";
     private static final String SELECTED_DRAWER_VIEW_KEY = "selected_drawer_view";
 
-
-    private SharedPreferences mSharedPreferences;
+    // Services
+    private DatabaseHelper mDatabaseHelper;
 
     // Data variables
     private ArrayList<Recipe> mRecipes;
@@ -100,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private Integer mLimitPerPage;
     private Integer mPreviousTotal;
     private ArrayList<Pair<String, ArrayList<String>>> mFilterParams;
+    private String mRecipesLanguage;
 
     // UI variables
     private Fragment mLastFragment;
@@ -132,8 +132,10 @@ public class MainActivity extends AppCompatActivity {
             mCurrentSelectedPosition = savedInstanceState.getInt(SELECTED_DRAWER_VIEW_KEY, 1);
         }
 
-        // Get preferences
-        mSharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        // Get database helper
+        mDatabaseHelper = new DatabaseHelper(getApplicationContext());
+
+        reloadRecipesLanguage();
 
         // Set up action bar
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -396,12 +398,12 @@ public class MainActivity extends AppCompatActivity {
         // Set multi autocomplete views adapters
         final MultiAutoCompleteTextView ingredientsTextView = (MultiAutoCompleteTextView)
                 mRightDrawerView.findViewById(R.id.ingredients_text_view);
-        ingredientsTextView.setAdapter(new AutoCompleteArrayAdapter(this));
+        ingredientsTextView.setAdapter(new AutoCompleteArrayAdapter(this, mRecipesLanguage));
         ingredientsTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
         final MultiAutoCompleteTextView dislikeIngredientsTextView = (MultiAutoCompleteTextView)
                 mRightDrawerView.findViewById(R.id.dislike_ingredients_text_view);
-        dislikeIngredientsTextView.setAdapter(new AutoCompleteArrayAdapter(this));
+        dislikeIngredientsTextView.setAdapter(new AutoCompleteArrayAdapter(this, mRecipesLanguage));
         dislikeIngredientsTextView.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
         // Set multi autocomplete views buttons
@@ -626,10 +628,8 @@ public class MainActivity extends AppCompatActivity {
         addFilterToFilterParams(RequestHandler.API_PARAM_ORDERING,
             "-" + RequestHandler.API_PARAM_UPDATED_TIMESTAMP, true);
 
-        final String language = mSharedPreferences.getString(
-                AppData.PREFERENCE_RECIPES_LANGUAGE, "");
-        if (!language.equals("")) {
-            addFilterToFilterParams(RequestHandler.API_PARAM_LANGUAGE, language, false);
+        if (!mRecipesLanguage.equals("")) {
+            addFilterToFilterParams(RequestHandler.API_PARAM_LANGUAGE, mRecipesLanguage, false);
         }
     }
 
@@ -852,6 +852,10 @@ public class MainActivity extends AppCompatActivity {
         return mPreviousTotal;
     }
 
+    public String getRecipesLanguage() {
+        return mRecipesLanguage;
+    }
+
     /**
      * Returns the filter parameters.
      * Needed to transfer this information to the list fragment.
@@ -875,5 +879,14 @@ public class MainActivity extends AppCompatActivity {
         mPreviousTotal = previousTotal;
     }
 
+
+    // OTHERS
+
+    /**
+     * Reload recipes language preference
+     */
+    public void reloadRecipesLanguage() {
+        mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
+    }
 
 }

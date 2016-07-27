@@ -24,16 +24,22 @@ import java.util.ArrayList;
  * - Item: autocomplete_list_item
  */
 public class AutoCompleteArrayAdapter extends ArrayAdapter<String> implements Filterable {
+
+    // Data variables
     private ArrayList<String> resultList;
+    private int mResourceId;
+    private String mLanguage;
+
+    // Services
     private DatabaseHelper mDatabaseHelper;
     private LayoutInflater mInflater;
-    private int mResourceId;
 
-    public AutoCompleteArrayAdapter(Context context) {
+    public AutoCompleteArrayAdapter(Context context, String language) {
         super(context, R.layout.autocomplete_list_item);
         this.mDatabaseHelper = new DatabaseHelper(context);
-        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        mResourceId = R.layout.autocomplete_list_item;
+        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.mResourceId = R.layout.autocomplete_list_item;
+        this.mLanguage = language;
     }
 
     @Override
@@ -74,8 +80,7 @@ public class AutoCompleteArrayAdapter extends ArrayAdapter<String> implements Fi
                 FilterResults filterResults = new FilterResults();
                 if (constraint != null) {
                     // Retrieve the autocomplete results.
-                    // TODO: Get language before
-                    resultList = mDatabaseHelper.getIngredientsTranslations(10, "es",
+                    resultList = mDatabaseHelper.getIngredientsTranslations(10, mLanguage,
                             constraint.toString());
 
                     // Assign the data to the FilterResults

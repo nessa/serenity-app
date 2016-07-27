@@ -16,6 +16,10 @@ import java.util.Arrays;
  */
 public class AppData {
 
+    // Values
+    public static String PREFERENCE_TRUE_VALUE = "YES";
+    public static String PREFERENCE_FALSE_VALUE = "NO";
+
     // Preferences
     public static String PREFERENCE_DOWNLOAD_IMAGES = "download_images";
     public static String PREFERENCE_RECIPES_LANGUAGE = "recipes_language";

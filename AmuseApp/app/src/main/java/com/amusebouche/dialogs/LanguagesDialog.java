@@ -2,7 +2,6 @@ package com.amusebouche.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import android.widget.Toast;
 
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AppData;
+import com.amusebouche.services.DatabaseHelper;
 
 import java.util.ArrayList;
 
@@ -39,14 +39,13 @@ public class LanguagesDialog extends Dialog {
     protected Button acceptButton;
     protected Button cancelButton;
 
-
     /**
      * Dialog constructor
      *
      * @param context Application context
-     * @param preferences Present active preferences
+     * @param databaseHelper Present active database helper
      */
-    public LanguagesDialog(final Context context, final SharedPreferences preferences) {
+    public LanguagesDialog(final Context context, final DatabaseHelper databaseHelper) {
         // Set your theme here
         super(context);
 
@@ -55,7 +54,7 @@ public class LanguagesDialog extends Dialog {
         this.setContentView(R.layout.dialog_languages);
 
         // Get languages from shared preferences
-        String mSelectedLanguage = preferences.getString(AppData.PREFERENCE_RECIPES_LANGUAGE, "");
+        String mSelectedLanguage = databaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
         // Get layout elements
         list = (ListView) findViewById(R.id.languages);
@@ -83,10 +82,8 @@ public class LanguagesDialog extends Dialog {
                         Toast.LENGTH_SHORT).show();
                 } else {
                     // Set languages as preference
-                    SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString(AppData.PREFERENCE_RECIPES_LANGUAGE,
-                            adapter.getSelected());
-                    editor.apply();
+                    databaseHelper.setAppData(AppData.PREFERENCE_RECIPES_LANGUAGE,
+                        adapter.getSelected());
 
                     LanguagesDialog.this.dismiss();
                 }
