@@ -58,8 +58,10 @@ import java.util.Objects;
  */
 public class RecipeDetailThirdTabFragment extends Fragment {
 
+    // Father activity
+    private DetailActivity mDetailActivity;
+    
     // Data variables
-    private Recipe mRecipe;
     private Integer mPresentDescriptionIndex;
 
     // Behaviour variables
@@ -69,8 +71,10 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     private TextToSpeech mTTS;
 
     // UI variables
+    private LayoutInflater mInflater;
     private FrameLayout mLayout;
     private ScrollView mScrollView;
+    private LinearLayout mDirectionsLayout;
     private Button mStartSpeakingButton;
 
     // Timer dialog variables
@@ -138,7 +142,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 @Override
                 public void onInit(int status) {
                     if (status != TextToSpeech.ERROR) {
-                        Locale locSpanish = new Locale(mRecipe.getLanguage().toLowerCase());
+                        Locale locSpanish = new Locale(mDetailActivity.getRecipe().getLanguage().toLowerCase());
                         mTTS.setLanguage(locSpanish);
                     }
                 }
@@ -209,12 +213,13 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
         // Get recipe from activity
-        DetailActivity x = (DetailActivity) getActivity();
-        mRecipe = x.getRecipe();
+        mDetailActivity = (DetailActivity) getActivity();
 
         mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_detail_third_tab,
                 container, false);
 
+        mInflater = inflater;
+        
         mScrollView = (ScrollView) mLayout.findViewById(R.id.scroll);
 
         mStartSpeakingButton = (Button) mLayout.findViewById(R.id.startSpeakingButton);
@@ -222,7 +227,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         mStartSpeakingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (RecipeDetailThirdTabFragment.this.mRecipe.getDirections().size() > 0) {
+                if (RecipeDetailThirdTabFragment.this.mDetailActivity.getRecipe().getDirections().size() > 0) {
                     mOngoingMode = true;
                     mPresentDescriptionIndex = 0;
                     RecipeDetailThirdTabFragment.this.readDescription();
@@ -233,18 +238,30 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         });
 
         // Directions
-        LinearLayout directionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
+        mDirectionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
 
-        for (int d = 0; d < mRecipe.getDirections().size(); d++) {
-            RecipeDirection presentDirection = mRecipe.getDirections().get(d);
+        onReloadView();
 
-            LinearLayout directionLayout = (LinearLayout) inflater.inflate(
-                    R.layout.item_detail_direction, mLayout, false);
+        return mLayout;
+    }
+
+
+    /**
+     * Reload all UI elements with the mRecipe data.
+     */
+    public void onReloadView() {
+        mDirectionsLayout.removeAllViews();
+
+        for (int d = 0; d < mDetailActivity.getRecipe().getDirections().size(); d++) {
+            RecipeDirection presentDirection = mDetailActivity.getRecipe().getDirections().get(d);
+
+            LinearLayout directionLayout = (LinearLayout) mInflater.inflate(
+                R.layout.item_detail_direction, mLayout, false);
             directionLayout.setTag("direction" + d);
 
             TextView number = (TextView) directionLayout.findViewById(R.id.number);
-            number.setText(String.format("%s %d", getString(R.string.detail_direction_label),
-                    presentDirection.getSortNumber()));
+            number.setText(String.format(getString(R.string.detail_direction_label),
+                presentDirection.getSortNumber()));
 
             TextView description = (TextView) directionLayout.findViewById(R.id.description);
             description.setText(presentDirection.getDescription());
@@ -252,13 +269,13 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             LinearLayout extraLayout = (LinearLayout) directionLayout.findViewById(R.id.extra);
 
             ImageButton readDirectionButton = (ImageButton) extraLayout.findViewById(
-                    R.id.readDescription);
+                R.id.readDescription);
             ImageButton showDirectionImageButton = (ImageButton) extraLayout.findViewById(
-                    R.id.showPhoto);
+                R.id.showPhoto);
             ImageButton showDirectionVideoButton = (ImageButton) extraLayout.findViewById(
-                    R.id.showVideo);
+                R.id.showVideo);
             ImageButton directionTimerButton = (ImageButton) extraLayout.findViewById(
-                    R.id.timer);
+                R.id.timer);
 
 
             readDirectionButton.setTag(d);
@@ -271,7 +288,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 public void onClick(View v) {
                     mOngoingMode = false;
 
-                    RecipeDirection dir = mRecipe.getDirections().get((int) v.getTag());
+                    RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
+                        (int) v.getTag());
                     CharSequence text = dir.getDescription();
 
                     if (text != "") {
@@ -286,7 +304,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 showDirectionImageButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        RecipeDirection dir = mRecipe.getDirections().get((int) v.getTag());
+                        RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
+                            (int) v.getTag());
 
                         // Send selected recipe to the next activity
                         Intent i = new Intent(getActivity(), MediaActivity.class);
@@ -316,7 +335,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 directionTimerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        RecipeDirection dir = mRecipe.getDirections().get((int) v.getTag());
+                        RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
+                            (int) v.getTag());
 
                         // Calc time variables
                         Integer time = (int) dir.getTime().floatValue();
@@ -335,13 +355,13 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                         final TextView minutesTextView = (TextView) selectTimeDialog.findViewById(R.id.minutes);
                         final TextView secondsTextView = (TextView) selectTimeDialog.findViewById(R.id.seconds);
 
-                        hoursTextView.setText(String.format("%d", mTimerHours));
-                        minutesTextView.setText(String.format("%d", mTimerMinutes));
-                        secondsTextView.setText(String.format("%d", mTimerSeconds));
+                        hoursTextView.setText(String.valueOf(mTimerHours));
+                        minutesTextView.setText(String.valueOf(mTimerMinutes));
+                        secondsTextView.setText(String.valueOf(mTimerSeconds));
 
                         // Number pickers for hours, minutes and seconds
                         final CustomNumberPicker hoursPicker = (CustomNumberPicker)
-                                selectTimeDialog.findViewById(R.id.hoursPicker);
+                            selectTimeDialog.findViewById(R.id.hoursPicker);
                         hoursPicker.setMaxValue(10);
                         hoursPicker.setMinValue(0);
                         hoursPicker.setWrapSelectorWheel(false);
@@ -351,12 +371,12 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                                 RecipeDetailThirdTabFragment.this.mTimerHours = newVal;
-                                hoursTextView.setText(String.format("%d", mTimerHours));
+                                hoursTextView.setText(String.valueOf(mTimerHours));
                             }
                         });
 
                         final CustomNumberPicker minutesPicker = (CustomNumberPicker)
-                                selectTimeDialog.findViewById(R.id.minutesPicker);
+                            selectTimeDialog.findViewById(R.id.minutesPicker);
                         minutesPicker.setMaxValue(59);
                         minutesPicker.setMinValue(0);
                         minutesPicker.setWrapSelectorWheel(true);
@@ -366,12 +386,12 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                                 RecipeDetailThirdTabFragment.this.mTimerMinutes = newVal;
-                                minutesTextView.setText(String.format("%d", mTimerMinutes));
+                                minutesTextView.setText(String.valueOf(mTimerMinutes));
                             }
                         });
 
                         final CustomNumberPicker secondsPicker = (CustomNumberPicker)
-                                selectTimeDialog.findViewById(R.id.secondsPicker);
+                            selectTimeDialog.findViewById(R.id.secondsPicker);
                         secondsPicker.setMaxValue(59);
                         secondsPicker.setMinValue(0);
                         secondsPicker.setWrapSelectorWheel(false);
@@ -381,7 +401,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                             @Override
                             public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
                                 RecipeDetailThirdTabFragment.this.mTimerSeconds = newVal;
-                                secondsTextView.setText(String.format("%d", mTimerSeconds));
+                                secondsTextView.setText(String.valueOf(mTimerSeconds));
                             }
                         });
 
@@ -397,9 +417,9 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                                 RecipeDetailThirdTabFragment.this.mTimerSeconds = secondsPicker.getValue();
 
                                 RecipeDetailThirdTabFragment.this.setTimerDialog(
-                                        RecipeDetailThirdTabFragment.this.mTimerHours * 3600 +
-                                                RecipeDetailThirdTabFragment.this.mTimerMinutes * 60 +
-                                                RecipeDetailThirdTabFragment.this.mTimerSeconds);
+                                    RecipeDetailThirdTabFragment.this.mTimerHours * 3600 +
+                                        RecipeDetailThirdTabFragment.this.mTimerMinutes * 60 +
+                                        RecipeDetailThirdTabFragment.this.mTimerSeconds);
 
                                 selectTimeDialog.dismiss();
                                 RecipeDetailThirdTabFragment.this.mTimerDialog.show();
@@ -419,12 +439,11 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 });
             }
 
-            directionsLayout.addView(directionLayout);
+            mDirectionsLayout.addView(directionLayout);
         }
 
-        return mLayout;
     }
-
+    
     // TEXT TO SPEECH AND DIALOGS
 
     /**
@@ -452,8 +471,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
      * Make TextToSpeech read the direction given by mPresentDescriptionIndex
      */
     public void readDescription() {
-        if (mRecipe.getDirections().size() > mPresentDescriptionIndex) {
-            final RecipeDirection dir = mRecipe.getDirections().get(mPresentDescriptionIndex);
+        if (mDetailActivity.getRecipe().getDirections().size() > mPresentDescriptionIndex) {
+            final RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(mPresentDescriptionIndex);
             CharSequence text = dir.getDescription();
 
             // Move view to direction box
@@ -530,8 +549,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         Button skipButton = (Button) mTimerDialog.findViewById(R.id.buttonSkip);
         final ProgressBar progressBar = (ProgressBar) mTimerDialog.findViewById(R.id.progressBar);
 
-        minutesTextView.setText(String.format("%d", (time / 60)));
-        secondsTextView.setText(String.format("%d", (time % 60)));
+        minutesTextView.setText(String.valueOf((time / 60)));
+        secondsTextView.setText(String.valueOf((time % 60)));
 
         progressBar.setMax(time);
         progressBar.setProgress(time);
@@ -612,7 +631,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
      * Show timer dialog set up in setTimerDialog
      */
     public void showTimerDialog() {
-        RecipeDirection dir = mRecipe.getDirections().get(mPresentDescriptionIndex);
+        RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(mPresentDescriptionIndex);
 
         if (dir.getTime() > 0) {
             this.setTimerDialog((int) dir.getTime().floatValue());
@@ -648,7 +667,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         anim.setRepeatCount(Animation.INFINITE);
 
         // Disable timer button if there's no time specified
-        final RecipeDirection dir = mRecipe.getDirections().get(mPresentDescriptionIndex);
+        final RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(mPresentDescriptionIndex);
         if (dir.getTime() == 0) {
             timerButton.setVisibility(View.GONE);
         }

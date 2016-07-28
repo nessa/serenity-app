@@ -14,13 +14,10 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.R;
-import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.ns.developer.tagview.entity.Tag;
 import com.ns.developer.tagview.widget.TagCloudLinkView;
-
-import java.util.Objects;
 
 /**
  * Recipe detail first tab fragment class.
@@ -35,11 +32,17 @@ import java.util.Objects;
  */
 public class RecipeDetailFirstTabFragment extends Fragment {
 
-    // Data variables
-    private Recipe mRecipe;
+    // Father activity
+    private DetailActivity mDetailActivity;
 
-    // UI variables
-    private FrameLayout mLayout;
+    // UI
+    private TextView mTypeOfDishTextView;
+    private TextView mDifficultyTextView;
+    private TextView mCookingTimeTextView;
+    private TextView mServingsTextView;
+    private TextView mSourceTextView;
+    private TextView mCategoriesTextView;
+    private TagCloudLinkView mCategoriesLayout;
 
 
     // LIFECYCLE METHODS
@@ -134,56 +137,66 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
         // Get recipe from activity
-        DetailActivity x = (DetailActivity) getActivity();
-        mRecipe = x.getRecipe();
+        mDetailActivity = (DetailActivity) getActivity();
 
-        mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_detail_first_tab,
-                container, false);
+        FrameLayout mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_detail_first_tab,
+            container, false);
 
+        // Set UI elements
+        mTypeOfDishTextView = (TextView) mLayout.findViewById(R.id.type_of_dish);
+        mDifficultyTextView = (TextView) mLayout.findViewById(R.id.difficulty);
+        mCookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
+        mServingsTextView = (TextView) mLayout.findViewById(R.id.servings);
+        mSourceTextView = (TextView) mLayout.findViewById(R.id.source);
+        mCategoriesTextView = (TextView) mLayout.findViewById(R.id.categories_label);
+        mCategoriesLayout = (TagCloudLinkView)  mLayout.findViewById(R.id.categories);
 
-        // Set data
-        TextView typeOfDishTextView = (TextView) mLayout.findViewById(R.id.type_of_dish);
-        typeOfDishTextView.setText(UserFriendlyTranslationsHandler.getTypeOfDishTranslation(mRecipe.getTypeOfDish(), getActivity()));
+        onReloadView();
 
-        TextView difficultyTextView = (TextView) mLayout.findViewById(R.id.difficulty);
-        difficultyTextView.setText(UserFriendlyTranslationsHandler.getDifficultyTranslation(mRecipe.getDifficulty(), getActivity()));
+        return mLayout;
+    }
 
-        TextView cookingTimeTextView = (TextView) mLayout.findViewById(R.id.cooking_time);
-        cookingTimeTextView.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(
-            mRecipe.getCookingTime().intValue() / 60, mRecipe.getCookingTime().intValue() % 60,
+    /**
+     * Reload all UI elements with the mRecipe data.
+     */
+    public void onReloadView() {
+
+        mTypeOfDishTextView.setText(UserFriendlyTranslationsHandler.getTypeOfDishTranslation(
+            mDetailActivity.getRecipe().getTypeOfDish(), getActivity()));
+        mDifficultyTextView.setText(UserFriendlyTranslationsHandler.getDifficultyTranslation(
+            mDetailActivity.getRecipe().getDifficulty(), getActivity()));
+        mCookingTimeTextView.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(
+            mDetailActivity.getRecipe().getCookingTime().intValue() / 60, mDetailActivity.getRecipe().getCookingTime().intValue() % 60,
             getActivity()));
+        mServingsTextView.setText(UserFriendlyTranslationsHandler.getServingsLabel(
+            mDetailActivity.getRecipe().getServings(), getActivity()));
 
-        TextView servingsTextView = (TextView) mLayout.findViewById(R.id.servings);
-        servingsTextView.setText(UserFriendlyTranslationsHandler.getServingsLabel(mRecipe.getServings(), getActivity()));
+        // Source
+        mSourceTextView.setText(mDetailActivity.getRecipe().getSource());
 
-        TextView sourceTextView = (TextView) mLayout.findViewById(R.id.source);
-        sourceTextView.setText(mRecipe.getSource());
+        if (mDetailActivity.getRecipe().getSource().startsWith("http://") ||
+            mDetailActivity.getRecipe().getSource().startsWith("https://")) {
 
-        if (mRecipe.getSource().startsWith("http://") || mRecipe.getSource().startsWith("https://")) {
-            sourceTextView.setOnClickListener(new View.OnClickListener() {
+            mSourceTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent launchWebIntent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(mRecipe.getSource()));
+                        Uri.parse(mDetailActivity.getRecipe().getSource()));
                     startActivity(launchWebIntent);
                 }
             });
         }
 
         // Categories
-        TextView categoriesTextView = (TextView) mLayout.findViewById(R.id.categories_label);
-        categoriesTextView.setVisibility(mRecipe.getCategories().size() > 0 ? View.VISIBLE : View.GONE);
+        mCategoriesTextView.setVisibility(mDetailActivity.getRecipe().getCategories().size() > 0 ? View.VISIBLE : View.GONE);
 
-        TagCloudLinkView categoriesLayout = (TagCloudLinkView)  mLayout.findViewById(R.id.categories);
-
-        for (int i = 0; i < mRecipe.getCategories().size(); i++) {
-            if (!mRecipe.getCategories().get(i).getName().equals(RecipeCategory.CATEGORY_UNCATEGORIZED)) {
-                categoriesLayout.add(new Tag(i, UserFriendlyTranslationsHandler.getCategoryTranslation(
-                    mRecipe.getCategories().get(i).getName(), getActivity()).toUpperCase()));
+        mCategoriesLayout.removeAllViews();
+        for (int i = 0; i < mDetailActivity.getRecipe().getCategories().size(); i++) {
+            if (!mDetailActivity.getRecipe().getCategories().get(i).getName().equals(RecipeCategory.CATEGORY_UNCATEGORIZED)) {
+                mCategoriesLayout.add(new Tag(i, UserFriendlyTranslationsHandler.getCategoryTranslation(
+                    mDetailActivity.getRecipe().getCategories().get(i).getName(), getActivity()).toUpperCase()));
             }
         }
-
-        return mLayout;
     }
 
 }

@@ -25,6 +25,7 @@ import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.fragments.RecipeEditionFirstTabFragment;
+import com.amusebouche.services.AppData;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
@@ -70,6 +71,7 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
     private Integer mCurrentPage;
     private Integer mLimitPerPage;
 
+    // UI
     private View mLayout;
 
     // Tabs
@@ -85,8 +87,9 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
     private RecipeEditionSecondTabFragment mSecondFragment;
     private RecipeEditionThirdTabFragment mThirdFragment;
 
-    // Enable buttons
+    // Behaviour variables
     private boolean mEnableSaveButton;
+    private boolean mRecipeUpdated;
 
     // Services variables
     private DatabaseHelper mDatabaseHelper;
@@ -103,6 +106,11 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
+
+        // Get database helper
+        mDatabaseHelper = new DatabaseHelper(getApplicationContext());
+
+        mRecipeUpdated = false;
 
         // Get data from previous activity
         String presentTab = TAB_1;
@@ -274,7 +282,7 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
      */
     @Override
     public void onBackPressed() {
-        saveData();
+        onBack();
         super.onBackPressed();
     }
 
@@ -300,20 +308,6 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
                 .getColor(android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
     }
 
-
-    /**
-     * Send main activity its proper data again
-     */
-    private void saveData() {
-        Intent intent = new Intent();
-        intent.putParcelableArrayListExtra(PARCELABLE_RECIPES_KEY, mRecipes);
-        intent.putExtra(CURRENT_PAGE_KEY, mCurrentPage);
-        intent.putExtra(LIMIT_PER_PAGE_KEY, mLimitPerPage);
-
-        setResult(RESULT_OK, intent);
-    }
-
-
     // MENU METHODS
 
     /**
@@ -336,7 +330,7 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                saveData();
+                onBack();
                 super.onBackPressed();
                 return true;
             case R.id.action_save:
@@ -345,6 +339,12 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void onBack() {
+        Intent intent = new Intent();
+        intent.putExtra(AppData.INTENT_KEY_RECIPE, mRecipe);
+        setResult(RESULT_OK, intent);
     }
 
 

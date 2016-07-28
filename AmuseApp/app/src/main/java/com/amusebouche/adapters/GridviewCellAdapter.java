@@ -25,6 +25,7 @@ import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeListFragment;
+import com.amusebouche.services.AppData;
 import com.amusebouche.services.ImageHandler;
 
 /**
@@ -44,8 +45,6 @@ public class GridviewCellAdapter extends BaseAdapter {
     private RecipeListFragment mFragment;
     private LayoutInflater mInflater;
     private int mScreenWidth;
-
-    private String filename = "presentRecipeImage.png";
 
     public GridviewCellAdapter(Context c, RecipeListFragment f, int screenWidth) {
         mContext = c;
@@ -149,7 +148,8 @@ public class GridviewCellAdapter extends BaseAdapter {
 
                 try {
                     // Save bitmap into file to prevent transactiontoolargeexception
-                    FileOutputStream stream = mContext.openFileOutput(filename, Context.MODE_PRIVATE);
+                    FileOutputStream stream = mContext.openFileOutput(
+                        AppData.RECIPE_TRANSITION_IMAGE, Context.MODE_PRIVATE);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
 
                     // Cleanup

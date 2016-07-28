@@ -258,6 +258,7 @@ public class SplashScreenActivity extends Activity {
 
                     if (error) {
                         mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                        mDatabaseHelper.setAppData(AppData.USER_LOGGED_USERNAME, "");
                         goToMainView();
                     }
                 }
@@ -265,12 +266,14 @@ public class SplashScreenActivity extends Activity {
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
                     mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                    mDatabaseHelper.setAppData(AppData.USER_LOGGED_USERNAME, "");
                     goToMainView();
                 }
 
             });
         } else {
             mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+            mDatabaseHelper.setAppData(AppData.USER_LOGGED_USERNAME, "");
             goToMainView();
         }
     }
@@ -301,7 +304,9 @@ public class SplashScreenActivity extends Activity {
                             JSONObject jObject = new JSONObject(jsonStr);
 
                             mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT,
-                                    jObject.getString("email"));
+                                jObject.getString("email"));
+                            mDatabaseHelper.setAppData(AppData.USER_LOGGED_USERNAME,
+                                jObject.getString("username"));
 
                             goToMainView();
                         } catch (JSONException e) {
@@ -318,6 +323,7 @@ public class SplashScreenActivity extends Activity {
 
                 if (error) {
                     mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                    mDatabaseHelper.setAppData(AppData.USER_LOGGED_USERNAME, "");
                     goToMainView();
                 }
             }
@@ -325,6 +331,7 @@ public class SplashScreenActivity extends Activity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                mDatabaseHelper.setAppData(AppData.USER_LOGGED_USERNAME, "");
                 goToMainView();
             }
 

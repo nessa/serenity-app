@@ -20,6 +20,13 @@ public class AppData {
     public static String PREFERENCE_TRUE_VALUE = "YES";
     public static String PREFERENCE_FALSE_VALUE = "NO";
 
+    // Files
+    public static String RECIPE_TRANSITION_IMAGE = "presentRecipeImage.png";
+
+    // Intents keys
+    public static String INTENT_KEY_RECIPE = "recipe";
+    public static String INTENT_KEY_DETAIL_TAG = "detail_tag";
+
     // Preferences
     public static String PREFERENCE_DOWNLOAD_IMAGES = "download_images";
     public static String PREFERENCE_RECIPES_LANGUAGE = "recipes_language";
@@ -34,6 +41,7 @@ public class AppData {
     public static String USER_USERNAME = "user_username";
     public static String USER_PASSWORD = "user_password";
     public static String USER_SHOW_TEXT = "user_show_text";
+    public static String USER_LOGGED_USERNAME = "user_logged_username";
 
     // Languages
     public static ArrayList<Pair<String, Integer>> LANGUAGES = new ArrayList<>(Arrays.asList(

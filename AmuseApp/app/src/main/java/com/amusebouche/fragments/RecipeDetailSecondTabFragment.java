@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.R;
-import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 
@@ -31,11 +30,13 @@ import com.amusebouche.services.UserFriendlyTranslationsHandler;
  */
 public class RecipeDetailSecondTabFragment extends Fragment {
 
-    // Data variables
-    private Recipe mRecipe;
+    // Father activity
+    private DetailActivity mDetailActivity;
 
-    // UI variables
+    // UI
+    private LayoutInflater mInflater;
     private FrameLayout mLayout;
+    private LinearLayout mIngredientsLayout;
 
 
     // LIFECYCLE METHODS
@@ -128,36 +129,42 @@ public class RecipeDetailSecondTabFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        /* TODO: Try to prevent Skipped XX frames! The application may be doing too
-         * much work on its main thread. */
+        mDetailActivity = (DetailActivity) getActivity();
 
-        // Get recipe from activity
-        DetailActivity x = (DetailActivity) getActivity();
-        mRecipe = x.getRecipe();
+        mInflater = inflater;
 
         mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_detail_second_tab,
-                container, false);
+            container, false);
 
-        // Ingredients
-        LinearLayout ingredientsLayout = (LinearLayout) mLayout.findViewById(R.id.ingredients);
+        mIngredientsLayout = (LinearLayout) mLayout.findViewById(R.id.ingredients);
 
-        for (int i = 0; i < mRecipe.getIngredients().size(); i++) {
-            RecipeIngredient presentIngredient = (RecipeIngredient) mRecipe.getIngredients().get(i);
+        onReloadView();
 
-            LinearLayout ingredientLayout = (LinearLayout) inflater.inflate(
-                    R.layout.item_detail_ingredient, mLayout, false);
+        return mLayout;
+    }
+    
+    /**
+     * Reload all UI elements with the mDetailActivity.getRecipe() data.
+     */
+    public void onReloadView() {
+        mIngredientsLayout.removeAllViews();
+        
+        for (int i = 0; i < mDetailActivity.getRecipe().getIngredients().size(); i++) {
+            RecipeIngredient presentIngredient = mDetailActivity.getRecipe().getIngredients().get(i);
+
+            LinearLayout ingredientLayout = (LinearLayout) mInflater.inflate(
+                R.layout.item_detail_ingredient, mLayout, false);
 
             TextView quantity = (TextView) ingredientLayout.findViewById(R.id.quantity);
-            quantity.setText(UserFriendlyTranslationsHandler.getIngredientQuantity(presentIngredient.getQuantity(),
-                    presentIngredient.getMeasurementUnit(), getActivity()));
+            quantity.setText(UserFriendlyTranslationsHandler.getIngredientQuantity(
+                presentIngredient.getQuantity(), presentIngredient.getMeasurementUnit(),
+                getActivity()));
 
             TextView name = (TextView) ingredientLayout.findViewById(R.id.name);
             name.setText(presentIngredient.getName());
 
-            ingredientsLayout.addView(ingredientLayout);
+            mIngredientsLayout.addView(ingredientLayout);
         }
-
-        return mLayout;
     }
 
 }

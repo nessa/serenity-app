@@ -698,6 +698,7 @@ public class UserFragment extends Fragment {
                 if (response.code() == 200) {
                     mDatabaseHelper.setAppData(AppData.USER_AUTH_TOKEN, "");
                     mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, "");
+                    mDatabaseHelper.setAppData(AppData.USER_LOGGED_USERNAME, "");
 
                     mMainActivity.reloadLeftDrawer();
 
@@ -738,8 +739,10 @@ public class UserFragment extends Fragment {
                             mName = String.format("%s %s", jObject.getString("first_name"),
                                 jObject.getString("last_name"));
                             mMail = jObject.getString("email");
+                            String username = jObject.getString("username");
 
                             mDatabaseHelper.setAppData(AppData.USER_SHOW_TEXT, mMail);
+                            mDatabaseHelper.setAppData(AppData.USER_LOGGED_USERNAME, username);
                             mMainActivity.reloadLeftDrawer();
 
                         } catch (JSONException e) {

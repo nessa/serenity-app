@@ -27,6 +27,8 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.amusebouche.fragments.RecipeDetailFirstTabFragment;
+import com.amusebouche.fragments.RecipeDetailSecondTabFragment;
 import com.amusebouche.loaders.GetRecipeLoader;
 import com.amusebouche.loaders.SaveRecipeLoader;
 import com.amusebouche.services.AmuseAPI;
@@ -68,15 +70,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static final int GET_RECIPE_LOADER_ID = 3;
     private static final int SAVE_RECIPE_LOADER_ID = 4;
 
+    // Results
+    private static final int ACTIVITY_RESULT = 1;
+
     // Tab identifiers
     private static final String TAB_1 = "first_tab";
     private static final String TAB_2 = "second_tab";
     private static final String TAB_3 = "third_tab";
     private static final String TAB_4 = "fourth_tab";
-
-    // Saved data keys
-    private static final String INTENT_KEY_RECIPE = "recipe";
-    private static final String INTENT_KEY_TAB = "tab";
 
     // Data variables
     private Recipe mRecipe;
@@ -86,9 +87,18 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     // UI
     private Bitmap mMainImage;
     private TabHost mTabs;
+    private ImageView mRecipeImage;
+    private TextView mRecipeName;
+    private TextView mRecipeOwner;
     private RatingBar mRatingBar;
+    private TextView mRecipeNumberUsersRating;
     private RelativeLayout mFadeViews;
     private View mLayout;
+
+    // Fragments
+    private RecipeDetailFirstTabFragment mFirstFragment;
+    private RecipeDetailSecondTabFragment mSecondFragment;
+    private RecipeDetailThirdTabFragment mThirdFragment;
 
     // User data
     private String mUsername;
@@ -97,6 +107,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     // Behaviour variables
     private boolean mDownloadEnabled = false;
+    private boolean mInitialDownload = true;
 
     // Services
     private DatabaseHelper mDatabaseHelper;
@@ -117,21 +128,23 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         // Check if user is logged in
         mToken = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
-        mUsername = mDatabaseHelper.getAppData(AppData.USER_USERNAME);
+        mUsername = mDatabaseHelper.getAppData(AppData.USER_LOGGED_USERNAME);
         isUserLoggedIn = !mToken.equals("");
+
+        mInitialDownload = true;
 
         // Get saved data
         String presentTab = TAB_1;
         if (savedInstanceState == null) {
             Intent i = getIntent();
-            mRecipe = i.getParcelableExtra(INTENT_KEY_RECIPE);
+            mRecipe = i.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
         } else {
-            mRecipe = savedInstanceState.getParcelable(INTENT_KEY_RECIPE);
-            presentTab = savedInstanceState.getString(INTENT_KEY_TAB);
+            mRecipe = savedInstanceState.getParcelable(AppData.INTENT_KEY_RECIPE);
+            presentTab = savedInstanceState.getString(AppData.INTENT_KEY_DETAIL_TAG);
         }
 
         // Get image bitmap from file
-        String FILENAME = "presentRecipeImage.png";
+        String FILENAME = AppData.RECIPE_TRANSITION_IMAGE;
         try {
             FileInputStream is = this.openFileInput(FILENAME);
             mMainImage = BitmapFactory.decodeStream(is);
@@ -148,6 +161,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         getSupportActionBar().setElevation(0);
 
         mLayout = findViewById(R.id.layout);
+
+        // Fragments
+        mFirstFragment = (RecipeDetailFirstTabFragment) getFragmentManager().findFragmentById(
+            R.id.fragment1);
+        mSecondFragment = (RecipeDetailSecondTabFragment) getFragmentManager().findFragmentById(
+            R.id.fragment2);
+        mThirdFragment = (RecipeDetailThirdTabFragment) getFragmentManager().findFragmentById(
+            R.id.fragment3);
 
         // Set tabs
         mTabs = (TabHost)findViewById(android.R.id.tabhost);
@@ -202,29 +223,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     protected void onStart() {
         super.onStart();
 
-        // Set image
-        ImageView mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
-        mRecipeImage.setImageBitmap(mMainImage);
+        // Define UI
+        mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
+        mRecipeName = (TextView) findViewById(R.id.recipe_name);
+        mRecipeOwner = (TextView) findViewById(R.id.recipe_owner);
+        mRecipeNumberUsersRating = (TextView) findViewById(R.id.recipe_number_users_rating);
 
-        // Set name
-        TextView mRecipeName = (TextView) findViewById(R.id.recipe_name);
-        mRecipeName.setText(mRecipe.getTitle());
-
-        // Set user
-        TextView mRecipeOwner = (TextView) findViewById(R.id.recipe_owner);
-        mRecipeOwner.setText(mRecipe.getOwner());
-
-        // Set rating
-        float rating = 0;
-        if (mRecipe.getUsersRating() > 0) {
-            rating = mRecipe.getTotalRating() / mRecipe.getUsersRating();
-        }
-        mRatingBar.setRating(rating);
-
-        // Set number of users
-        TextView mRecipeNumberUsersRating = (TextView) findViewById(R.id.recipe_number_users_rating);
-        mRecipeNumberUsersRating.setText(UserFriendlyTranslationsHandler.getUsersLabel(
-                mRecipe.getUsersRating(), getApplication()));
+        onReloadView();
 
         // Fade in data
         mFadeViews = (RelativeLayout) findViewById(R.id.fade_views);
@@ -246,7 +251,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d("DETAIL", "ON RESUME");
 
         // Get check recipes
         getCheckRecipes();
@@ -261,8 +265,18 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(INTENT_KEY_RECIPE, mRecipe);
-        outState.putString(INTENT_KEY_TAB, mTabs.getCurrentTabTag());
+        outState.putParcelable(AppData.INTENT_KEY_RECIPE, mRecipe);
+        outState.putString(AppData.INTENT_KEY_DETAIL_TAG, mTabs.getCurrentTabTag());
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == ACTIVITY_RESULT) {
+            if (resultCode == RESULT_OK) {
+                mRecipe = data.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
+            }
+        }
     }
 
 
@@ -308,6 +322,30 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
             mFadeViews.startAnimation(fadeOutAnimation);
         }
+    }
+
+    /**
+     * Reload all UI elements (and fragments) with the mRecipe data.
+     */
+    public void onReloadView() {
+        // Reset UI elements
+        mRecipeImage.setImageBitmap(mMainImage);
+        mRecipeName.setText(mRecipe.getTitle());
+        mRecipeOwner.setText(mRecipe.getOwner());
+
+        float rating = 0;
+        if (mRecipe.getUsersRating() > 0) {
+            rating = mRecipe.getTotalRating() / mRecipe.getUsersRating();
+        }
+        mRatingBar.setRating(rating);
+
+        mRecipeNumberUsersRating.setText(UserFriendlyTranslationsHandler.getUsersLabel(
+            mRecipe.getUsersRating(), getApplication()));
+
+        // Reset fragment components
+        mFirstFragment.onReloadView();
+        mSecondFragment.onReloadView();
+        mThirdFragment.onReloadView();
     }
 
     /**
@@ -359,7 +397,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d("DETAIL", "ON CREATE OPTIONS MENU");
 
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
@@ -445,8 +482,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     public void editRecipe() {
         Intent i = new Intent(this, EditionActivity.class);
-        i.putExtra(INTENT_KEY_RECIPE, mRecipe);
-        startActivity(i);
+        i.putExtra(AppData.INTENT_KEY_RECIPE, mRecipe);
+        startActivityForResult(i, ACTIVITY_RESULT);
     }
 
     /**
@@ -605,8 +642,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      * Show rate recipe dialog.
      */
     public void rateRecipe() {
-        Log.d("INFO", "SHOW EDITION DIALOG");
-
         final Dialog rateDialog = new Dialog(this);
         rateDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
         rateDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -638,7 +673,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                                     Snackbar.LENGTH_LONG)
                                     .show();
 
-                            // TODO: Update view
+                            // Update view
+                            onReloadView();
                         } else {
                             // TODO: Show error
                         }
@@ -730,7 +766,13 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public void onLoadFinished(Loader loader, Object data) {
         if (loader.getId() == GET_RECIPE_LOADER_ID) {
             mDatabaseRecipe = (Recipe) data;
-            onRecipesLoaded();
+
+            if (mInitialDownload) {
+                mInitialDownload = false;
+                onRecipesLoaded();
+            } else {
+                onReloadView();
+            }
         } else if (loader.getId() == SAVE_RECIPE_LOADER_ID) {
             Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
                     Snackbar.LENGTH_LONG)
