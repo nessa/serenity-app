@@ -1,6 +1,5 @@
 package com.amusebouche.adapters;
 
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -27,7 +26,6 @@ import com.amusebouche.activities.R;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeListFragment;
 import com.amusebouche.services.ImageHandler;
-
 
 /**
  * Gridview cell adapter class.
@@ -126,7 +124,7 @@ public class GridviewCellAdapter extends BaseAdapter {
         fadeViews = (RelativeLayout) cell.findViewById(R.id.fade_views);
 
         progressBar = (ProgressBar) cell.findViewById(R.id.progress_bar);
-        progressBar.setVisibility(View.VISIBLE);
+        //progressBar.setVisibility(View.VISIBLE);
 
         // Get the image to update the content
         image = (ImageView) cell.findViewById(R.id.recipe_image);

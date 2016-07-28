@@ -9,7 +9,7 @@ import com.amusebouche.activities.R;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Image handler class.
@@ -20,7 +20,7 @@ import java.util.Random;
  */
 public class ImageHandler {
 
-    private static int RESIZE_PIXELS = 500;
+    private static final AtomicInteger RESIZE_PIXELS = new AtomicInteger(500);
 
     /**
      * Set an image in a image view using the Picasso library.
@@ -44,12 +44,10 @@ public class ImageHandler {
      */
     public static void setCellImage(Context context, String imageName, ImageView imageView,
                                     final ProgressBar progressBar) {
-        // Get a random default image
-        Random r = new Random();
-        int randomNumber = (r.nextInt(3));
+        // Get a default image from the image position
         int resource;
-
-        switch (randomNumber) {
+        int position = (int)imageView.getTag() % 3;
+        switch (position) {
             default:
             case 0:
                 resource = R.drawable.fake_food_1;
@@ -62,33 +60,30 @@ public class ImageHandler {
                 break;
         }
 
-        // Define callback for progress bar if it's defined
-        Callback callback = null;
-        if (progressBar != null) {
-            callback = new Callback() {
-                @Override
-                public void onSuccess() {
-                    progressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onError() {
-                }
-            };
-        }
-
         // Check if image is defined correctly. If not, load the alternative resource.
         if (imageName == null || imageName.equals("")) {
-            Picasso.with(context)
-                    .load(resource)
-                    .resize(RESIZE_PIXELS, RESIZE_PIXELS)
-                    .centerInside()
-                    .noFade()
-                    .into(imageView, callback);
+            imageView.setImageDrawable(context.getDrawable(resource));
         } else {
+            // Define callback for progress bar and enable it if it's defined
+            Callback callback = null;
+            if (progressBar != null) {
+                progressBar.setVisibility(View.VISIBLE);
+
+                callback = new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                    }
+                };
+            }
+
             Picasso.with(context)
                     .load(imageName)
-                    .resize(RESIZE_PIXELS, RESIZE_PIXELS)
+                    .resize(RESIZE_PIXELS.get(), RESIZE_PIXELS.get())
                     .centerInside()
                     .noFade()
                     .error(resource)
