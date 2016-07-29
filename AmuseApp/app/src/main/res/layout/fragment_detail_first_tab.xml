@@ -188,15 +188,12 @@
             android:paddingStart="@dimen/detail_info_padding"
             android:paddingEnd="@dimen/detail_info_padding" />
 
-        <com.ns.developer.tagview.widget.TagCloudLinkView
+        <LinearLayout
             android:id="@+id/categories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/detail_info_padding"
-            app:isDeletable="false"
-            app:tagLayoutColor="@color/theme_default_primary"
-            app:tagTextSize="@dimen/detail_info_tag_text_size"
-            app:tagTextColor="@android:color/white"/>
+            android:orientation="vertical"/>
 
     </LinearLayout>
 

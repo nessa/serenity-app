@@ -27,6 +27,8 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.amusebouche.data.RecipeCategory;
+import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.fragments.RecipeDetailFirstTabFragment;
 import com.amusebouche.fragments.RecipeDetailSecondTabFragment;
 import com.amusebouche.loaders.GetRecipeLoader;
@@ -342,6 +344,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mRecipeNumberUsersRating.setText(UserFriendlyTranslationsHandler.getUsersLabel(
             mRecipe.getUsersRating(), getApplication()));
 
+    }
+
+    public void onReloadFragmentViews() {
         // Reset fragment components
         mFirstFragment.onReloadView();
         mSecondFragment.onReloadView();
@@ -554,7 +559,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
      */
     public void uploadRecipe() {
         if (isUserLoggedIn) {
-            AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken);
+            AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken, true);
 
             if (mRecipe.getId().equals("") || mRecipe.getId().equals("0")) {
                 // Create
@@ -603,12 +608,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                                 .show();
                         } else {
                             // TODO: Show error
+                            Log.d("DETAIL", "CREATE RECIPE ERROR");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         // TODO: Show error
+                        Log.d("DETAIL", "CREATE RECIPE ERROR");
                     }
 
                 });
@@ -626,12 +633,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                                 .show();
                         } else {
                             // TODO: Show error
+                            Log.d("DETAIL", "UPDATE RECIPE ERROR");
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
                         // TODO: Show error
+                        Log.d("DETAIL", "UPDATE RECIPE ERROR");
                     }
                 });
             }
@@ -675,6 +684,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                             // Update view
                             onReloadView();
+                            onReloadFragmentViews();
                         } else {
                             // TODO: Show error
                         }
@@ -772,6 +782,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 onRecipesLoaded();
             } else {
                 onReloadView();
+                onReloadFragmentViews();
             }
         } else if (loader.getId() == SAVE_RECIPE_LOADER_ID) {
             Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),

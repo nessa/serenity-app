@@ -260,7 +260,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             directionLayout.setTag("direction" + d);
 
             TextView number = (TextView) directionLayout.findViewById(R.id.number);
-            number.setText(String.format(getString(R.string.detail_direction_label),
+            number.setText(String.format(getString(R.string.detail_direction_label_with_number),
                 presentDirection.getSortNumber()));
 
             TextView description = (TextView) directionLayout.findViewById(R.id.description);
@@ -518,8 +518,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 });
 
                 // Utterance ID is needed to make the listener work
-                mTTS.speak(getString(R.string.detail_direction_label) + " " + dir.getSortNumber() +
-                                ". " + text, TextToSpeech.QUEUE_FLUSH, null,
+                mTTS.speak(String.format(getString(R.string.detail_direction_label_with_number),
+                    dir.getSortNumber()) + ". " + text, TextToSpeech.QUEUE_FLUSH, null,
                         TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID);
             }
 
