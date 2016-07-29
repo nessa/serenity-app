@@ -123,14 +123,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getSupportActionBar().setElevation(0);
 
-        // Get data from previous activity
-        if (savedInstanceState != null) {
-            mRecipes = savedInstanceState.getParcelableArrayList(PARCELABLE_RECIPES_KEY);
-            mCurrentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
-            mLimitPerPage = savedInstanceState.getInt(LIMIT_PER_PAGE_KEY, 10);
-            mPreviousTotal = savedInstanceState.getInt(PREVIOUS_TOTAL_KEY, 0);
-            mCurrentSelectedPosition = savedInstanceState.getInt(SELECTED_DRAWER_VIEW_KEY, 1);
-        }
+        // Set initial data
+        mCurrentPage = 0;
+        mLimitPerPage = 10;
+        mPreviousTotal = 0;
+        mCurrentSelectedPosition = 1;
 
         // Get database helper
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());

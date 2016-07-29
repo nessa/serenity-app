@@ -3,8 +3,6 @@ package com.amusebouche.services;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
@@ -16,7 +14,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.util.Pair;
-import android.widget.ScrollView;
 
 import com.amusebouche.data.AppDataContract;
 import com.amusebouche.data.Ingredient;
@@ -49,8 +46,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "amuse.sqlite";
 
     private static SQLiteDatabase mDatabase;
-
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private static Context mContext;
 
@@ -157,14 +152,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (recipe.getCreatedTimestamp() == null) {
             recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP,
-                dateFormat.format(new Date()));
+                CustomDateFormat.getUTCString(new Date()));
             recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP,
-                dateFormat.format(new Date()));
+                CustomDateFormat.getUTCString(new Date()));
         } else {
             recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP,
-                dateFormat.format(recipe.getCreatedTimestamp()));
+                CustomDateFormat.getUTCString(recipe.getCreatedTimestamp()));
             recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP,
-                dateFormat.format(recipe.getUpdatedTimestamp()));
+                CustomDateFormat.getUTCString(recipe.getUpdatedTimestamp()));
         }
 
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME,
@@ -189,7 +184,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             ContentValues categoryValues = new ContentValues();
             categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID,
-                    recipeId);
+                    recipe.getDatabaseId());
             categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_RECIPE_ID,
                     recipe.getId());
             categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME,
@@ -203,7 +198,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             ContentValues ingredientValues = new ContentValues();
             ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID,
-                    recipeId);
+                    recipe.getDatabaseId());
             ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_RECIPE_ID,
                     recipe.getId());
             ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_SORT_NUMBER,
@@ -223,7 +218,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             ContentValues directionValues = new ContentValues();
             directionValues.put(RecipeDirectionContract.RecipeDirectionEntry._COLUMN_NAME_RECIPE_ID,
-                    recipeId);
+                    recipe.getDatabaseId());
             directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_RECIPE_ID,
                     recipe.getId());
             directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_SORT_NUMBER,
@@ -269,7 +264,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY,
                 recipe.getDifficulty());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP,
-            dateFormat.format(new Date()));
+            CustomDateFormat.getUTCString(new Date()));
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME,
                 recipe.getCookingTime());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_IMAGE, recipe.getImage());
@@ -280,10 +275,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS, recipe.getServings());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE, recipe.getSource());
 
-        long recipeId = mDatabase.update(RecipeContract.TABLE_NAME,
+        mDatabase.update(RecipeContract.TABLE_NAME,
                 recipeValues,
                 RecipeContract.RecipeEntry._ID + "=?",
-                new String[]{String.valueOf(recipe.getDatabaseId())});
+                new String[]{ recipe.getDatabaseId() });
 
 
         // Reset subelements
@@ -294,7 +289,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             ContentValues categoryValues = new ContentValues();
             categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID,
-                    recipeId);
+                    recipe.getDatabaseId());
             categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_RECIPE_ID,
                     recipe.getId());
             categoryValues.put(RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME,
@@ -308,7 +303,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             ContentValues ingredientValues = new ContentValues();
             ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID,
-                    recipeId);
+                    recipe.getDatabaseId());
             ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_RECIPE_ID,
                     recipe.getId());
             ingredientValues.put(RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_SORT_NUMBER,
@@ -328,7 +323,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             ContentValues directionValues = new ContentValues();
             directionValues.put(RecipeDirectionContract.RecipeDirectionEntry._COLUMN_NAME_RECIPE_ID,
-                    recipeId);
+                    recipe.getDatabaseId());
             directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_RECIPE_ID,
                     recipe.getId());
             directionValues.put(RecipeDirectionContract.RecipeDirectionEntry.COLUMN_NAME_SORT_NUMBER,
@@ -363,19 +358,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (!recipe.getDatabaseId().equals("")) {
             mDatabase.delete(RecipeCategoryContract.TABLE_NAME,
                     RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +"=?",
-                    new String[] { String.valueOf(recipe.getDatabaseId()) });
+                    new String[] { recipe.getDatabaseId() });
 
             mDatabase.delete(RecipeIngredientContract.TABLE_NAME,
                     RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +"=?",
-                    new String[] { String.valueOf(recipe.getDatabaseId()) });
+                    new String[] { recipe.getDatabaseId() });
 
             mDatabase.delete(RecipeDirectionContract.TABLE_NAME,
                     RecipeDirectionContract.RecipeDirectionEntry._COLUMN_NAME_RECIPE_ID +"=?",
-                    new String[] { String.valueOf(recipe.getDatabaseId()) });
+                    new String[] { recipe.getDatabaseId() });
 
             mDatabase.delete(RecipeContract.TABLE_NAME,
                     RecipeContract.RecipeEntry._ID +"=?",
-                    new String[] { String.valueOf(recipe.getDatabaseId()) });
+                    new String[] { recipe.getDatabaseId() });
         }
 
         mDatabase.close();
@@ -410,6 +405,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME)
                     )
             );
+
             categories.add(category);
         }
         catCursor.close();
@@ -438,6 +434,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_MEASUREMENT_UNIT)
                     )
             );
+
             ingredients.add(ingredient);
         }
         ingCursor.close();
@@ -485,61 +482,58 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         recipeCursor.moveToNext();
 
-        try {
             /* Get the value for each column for the database row pointed by
              * the cursor using the getColumnIndex method of the cursor and
              * use it to initialize a Recipe object by database row */
-            recipe = new Recipe(
-                    recipeCursor.getString(recipeCursor.getColumnIndex(RecipeContract.RecipeEntry._ID)),
-                    recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_ID)
-                    ),
-                    recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_TITLE)
-                    ),
-                    recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_OWNER)
-                    ),
-                    recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE)
-                    ),
-                    recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_TYPE_OF_DISH)
-                    ),
-                    recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY)
-                    ),
-                    dateFormat.parse(recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP))
-                    ),
-                    dateFormat.parse(recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP))
-                    ),
-                    recipeCursor.getFloat(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME)
-                    ),
-                    recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_IMAGE)
-                    ),
-                    recipeCursor.getInt(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_TOTAL_RATING)
-                    ),
-                    recipeCursor.getInt(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_USERS_RATING)
-                    ),
-                    recipeCursor.getInt(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS)
-                    ),
-                    recipeCursor.getString(recipeCursor.getColumnIndex(
-                            RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE)
-                    ),
-                    categories,
-                    ingredients,
-                    directions
-            );
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        recipe = new Recipe(
+            recipeCursor.getString(recipeCursor.getColumnIndex(RecipeContract.RecipeEntry._ID)),
+            recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_ID)
+            ),
+            recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_TITLE)
+            ),
+            recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_OWNER)
+            ),
+            recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE)
+            ),
+            recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_TYPE_OF_DISH)
+            ),
+            recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY)
+            ),
+            CustomDateFormat.getUTCDate(recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP))
+            ),
+            CustomDateFormat.getUTCDate(recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP))
+            ),
+            recipeCursor.getFloat(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME)
+            ),
+            recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_IMAGE)
+            ),
+            recipeCursor.getInt(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_TOTAL_RATING)
+            ),
+            recipeCursor.getInt(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_USERS_RATING)
+            ),
+            recipeCursor.getInt(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS)
+            ),
+            recipeCursor.getString(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE)
+            ),
+            categories,
+            ingredients,
+            directions
+        );
+
         recipeCursor.close();
 
         mDatabase.close();
@@ -667,63 +661,59 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (recipeCursor.getCount() > 0) {
             recipeCursor.moveToNext();
 
-            try {
             /* Get the value for each column for the database row pointed by
              * the cursor using the getColumnIndex method of the cursor and
              * use it to initialize a Recipe object by database row */
-                recipe = new Recipe(
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_ID)
-                        ),
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_ID)
-                        ),
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_TITLE)
-                        ),
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_OWNER)
-                        ),
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE)
-                        ),
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_TYPE_OF_DISH)
-                        ),
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY)
-                        ),
-                        dateFormat.parse(recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP))
-                        ),
-                        dateFormat.parse(recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP))
-                        ),
-                        recipeCursor.getFloat(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME)
-                        ),
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_IMAGE)
-                        ),
-                        recipeCursor.getInt(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_TOTAL_RATING)
-                        ),
-                        recipeCursor.getInt(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_USERS_RATING)
-                        ),
-                        recipeCursor.getInt(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS)
-                        ),
-                        recipeCursor.getString(recipeCursor.getColumnIndex(
-                                        RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE)
-                        ),
-                        categories,
-                        ingredients,
-                        directions
-                );
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            recipe = new Recipe(
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_ID)
+                ),
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_ID)
+                ),
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_TITLE)
+                ),
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_OWNER)
+                ),
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE)
+                ),
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_TYPE_OF_DISH)
+                ),
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY)
+                ),
+                CustomDateFormat.getUTCDate(recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_CREATED_TIMESTAMP))
+                ),
+                CustomDateFormat.getUTCDate(recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_UPDATED_TIMESTAMP))
+                ),
+                recipeCursor.getFloat(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_COOKING_TIME)
+                ),
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_IMAGE)
+                ),
+                recipeCursor.getInt(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_TOTAL_RATING)
+                ),
+                recipeCursor.getInt(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_USERS_RATING)
+                ),
+                recipeCursor.getInt(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS)
+                ),
+                recipeCursor.getString(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE)
+                ),
+                categories,
+                ingredients,
+                directions
+            );
         }
 
         recipeCursor.close();
@@ -945,10 +935,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (ingredient.getTimestamp() == null) {
             ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP,
-                dateFormat.format(new Date()));
+                CustomDateFormat.getUTCString(new Date()));
         } else {
             ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP,
-                dateFormat.format(ingredient.getTimestamp()));
+                CustomDateFormat.getUTCString(ingredient.getTimestamp()));
         }
 
         ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES,
@@ -977,10 +967,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (ingredient.getTimestamp() == null) {
             ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP,
-                dateFormat.format(new Date()));
+                CustomDateFormat.getUTCString(new Date()));
         } else {
             ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP,
-                dateFormat.format(ingredient.getTimestamp()));
+                CustomDateFormat.getUTCString(ingredient.getTimestamp()));
         }
 
         ingredientValues.put(IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES,
@@ -1035,30 +1025,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (ingredientCursor.getCount() > 0) {
             ingredientCursor.moveToNext();
 
-            try {
             /* Get the value for each column for the database row pointed by
              * the cursor using the getColumnIndex method of the cursor and
              * use it to initialize an Ingredient object by database row */
-                ingredient = new Ingredient(
-                        ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                                        IngredientContract.IngredientEntry._ID)
-                        ),
-                        ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                                        IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION)
-                        ),
-                        ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                                        IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE)
-                        ),
-                        dateFormat.parse(ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                                        IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP))
-                        ),
-                        ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                                        IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES)
-                        )
-                );
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            ingredient = new Ingredient(
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry._ID)
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION)
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE)
+                ),
+                CustomDateFormat.getUTCDate(ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP))
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES)
+                )
+            );
         }
 
         ingredientCursor.close();
@@ -1091,30 +1077,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (ingredientCursor.getCount() > 0) {
             ingredientCursor.moveToNext();
 
-            try {
             /* Get the value for each column for the database row pointed by
              * the cursor using the getColumnIndex method of the cursor and
              * use it to initialize an Ingredient object by database row */
-                ingredient = new Ingredient(
-                    ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                        IngredientContract.IngredientEntry._ID)
-                    ),
-                    ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                        IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION)
-                    ),
-                    ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                        IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE)
-                    ),
-                    dateFormat.parse(ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                        IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP))
-                    ),
-                    ingredientCursor.getString(ingredientCursor.getColumnIndex(
-                        IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES)
-                    )
-                );
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            ingredient = new Ingredient(
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry._ID)
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION)
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE)
+                ),
+                CustomDateFormat.getUTCDate(ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_TIMESTAMP))
+                ),
+                ingredientCursor.getString(ingredientCursor.getColumnIndex(
+                    IngredientContract.IngredientEntry.COLUMN_NAME_CATEGORIES)
+                )
+            );
         }
 
         ingredientCursor.close();

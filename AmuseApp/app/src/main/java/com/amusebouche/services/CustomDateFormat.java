@@ -1,6 +1,7 @@
 package com.amusebouche.services;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -20,6 +21,20 @@ public class CustomDateFormat {
         SimpleDateFormat sdf = new SimpleDateFormat(API_DATE_FORMAT, Locale.getDefault());
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(date);
+    }
+
+    public static Date getUTCDate(String string) {
+        SimpleDateFormat sdf = new SimpleDateFormat(API_DATE_FORMAT, Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        Date parse = new Date();
+        try {
+            parse = sdf.parse(string);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return parse;
     }
 
     public static String getDateTimeString(Date date) {
