@@ -1,9 +1,7 @@
 package com.amusebouche.activities;
 
 
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.os.Bundle;
@@ -30,7 +28,6 @@ import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
 import com.amusebouche.fragments.RecipeEditionThirdTabFragment;
-import com.amusebouche.loaders.SaveRecipeLoader;
 import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
@@ -47,7 +44,7 @@ import java.util.regex.Pattern;
  * Related layouts:
  * - Content: activity_add.xml
  */
-public class EditionActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
+public class EditionActivity extends AppCompatActivity {
 
     // Tab identifiers
     private static final String TAB_1 = "first_tab";
@@ -60,9 +57,6 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
     private static final String CURRENT_PAGE_KEY = "current_page";
     private static final String LIMIT_PER_PAGE_KEY = "limit";
     private static final String INTENT_KEY_TAB = "tab";
-
-    // The loader's unique id.
-    private static final int LOADER_ID = 2;
 
     // Data variables
     private Recipe mRecipe;
@@ -93,7 +87,6 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
 
     // Services variables
     private DatabaseHelper mDatabaseHelper;
-    private Loader mLoader;
 
     // LIFECYCLE METHODS
 
@@ -383,13 +376,23 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
      */
     public void onSaveClicked() {
         if (mEnableSaveButton) {
-            if (mLoader == null || !mLoader.isStarted()) {
-                mLoader = getLoaderManager().initLoader(LOADER_ID, null, this);
-                mLoader.forceLoad();
+            /* Update recipe if:
+             * - It's from API and exists a recipe with its API id in the database
+             * - It's not from API and it exists in database
+             * Otherwise, create a new recipe
+             */
+            if ((mRecipe.getIsOnline() && mDatabaseHelper.existRecipeWithAPIId(mRecipe.getId())) ||
+                    (!mRecipe.getIsOnline() && mRecipe.getDatabaseId() != null &&
+                            !mRecipe.getDatabaseId().equals(""))) {
+                mDatabaseHelper.updateRecipe(mRecipe);
             } else {
-                mLoader = getLoaderManager().restartLoader(LOADER_ID, null, this);
-                mLoader.forceLoad();
+                mDatabaseHelper.createRecipe(mRecipe);
             }
+
+            // Post save
+            Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
+                    Snackbar.LENGTH_LONG)
+                    .show();
         } else {
             Log.d("NOTE", "BUTTON DISABLED");
         }
@@ -486,22 +489,4 @@ public class EditionActivity extends AppCompatActivity implements LoaderManager.
         return true;
     }
 
-    // LOADER METHODS
-
-    @Override
-    public Loader onCreateLoader(int id, Bundle args) {
-        return new SaveRecipeLoader(getApplicationContext(), mRecipe);
-    }
-
-    @Override
-    public void onLoadFinished(Loader loader, Object data) {
-        Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
-            Snackbar.LENGTH_LONG)
-            .show();
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {
-
-    }
 }

@@ -2,9 +2,7 @@ package com.amusebouche.activities;
 
 
 import android.app.Dialog;
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
@@ -27,12 +25,8 @@ import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
 
-import com.amusebouche.data.RecipeCategory;
-import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.fragments.RecipeDetailFirstTabFragment;
 import com.amusebouche.fragments.RecipeDetailSecondTabFragment;
-import com.amusebouche.loaders.GetRecipeLoader;
-import com.amusebouche.loaders.SaveRecipeLoader;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
@@ -66,11 +60,7 @@ import retrofit2.Response;
  * - Menu: menu_recipe_detail.xml
  * - Content: activity_detail.xml
  */
-public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks {
-
-    // The loaders uniques id.
-    private static final int GET_RECIPE_LOADER_ID = 3;
-    private static final int SAVE_RECIPE_LOADER_ID = 4;
+public class DetailActivity extends AppCompatActivity {
 
     // Results
     private static final int ACTIVITY_RESULT = 1;
@@ -342,7 +332,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mRatingBar.setRating(rating);
 
         mRecipeNumberUsersRating.setText(UserFriendlyTranslationsHandler.getUsersLabel(
-            mRecipe.getUsersRating(), getApplication()));
+                mRecipe.getUsersRating(), getApplication()));
 
     }
 
@@ -522,15 +512,25 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                             mRecipe = new Recipe(jObject);
                             mRecipe.setIsOnline(true);
 
-                            Loader l = getLoaderManager().getLoader(SAVE_RECIPE_LOADER_ID);
-                            if (l != null) {
-                                getLoaderManager().restartLoader(SAVE_RECIPE_LOADER_ID, null,
-                                        DetailActivity.this);
+                            /* Update recipe if:
+                             * - It's from API and exists a recipe with its API id in the database
+                             * - It's not from API and it exists in database
+                             * Otherwise, create a new recipe
+                             */
+                            if ((mRecipe.getIsOnline() &&
+                                    mDatabaseHelper.existRecipeWithAPIId(mRecipe.getId())) ||
+                                    (!mRecipe.getIsOnline() && mRecipe.getDatabaseId() != null &&
+                                            !mRecipe.getDatabaseId().equals(""))) {
+                                mDatabaseHelper.updateRecipe(mRecipe);
                             } else {
-                                getLoaderManager().initLoader(SAVE_RECIPE_LOADER_ID, null,
-                                        DetailActivity.this);
+                                mDatabaseHelper.createRecipe(mRecipe);
                             }
 
+                            // Post save
+                            Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+                            openOptionsMenu();
                         } catch (JSONException e) {
                             e.printStackTrace();
                             fail = true;
@@ -712,11 +712,17 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         if (mRecipe.getIsOnline()) {
             mAPIRecipe = mRecipe;
 
-            Loader l = getLoaderManager().getLoader(GET_RECIPE_LOADER_ID);
-            if (l != null) {
-                getLoaderManager().restartLoader(GET_RECIPE_LOADER_ID, null, this);
+            if (mDatabaseHelper.existRecipeWithAPIId(mRecipe.getId())) {
+                mDatabaseRecipe = mDatabaseHelper.getRecipeByAPIId(mRecipe.getId());
+            }
+
+            // TODO: Check this!
+            if (mInitialDownload) {
+                mInitialDownload = false;
+                onRecipesLoaded();
             } else {
-                getLoaderManager().initLoader(GET_RECIPE_LOADER_ID, null, this);
+                onReloadView();
+                onReloadFragmentViews();
             }
         } else {
             mDatabaseRecipe = mRecipe;
@@ -750,48 +756,4 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         openOptionsMenu();
     }
 
-    // LOADER METHODS
-
-    /**
-     * Creates the loader
-     * @param id Loader id
-     * @param args Loader arguments
-     * @return Loader object
-     */
-    @Override
-    public Loader onCreateLoader(int id, Bundle args) {
-        if (id == GET_RECIPE_LOADER_ID) {
-            return new GetRecipeLoader(getApplicationContext(), mRecipe.getDatabaseId());
-        } else {
-            return new SaveRecipeLoader(getApplicationContext(), mRecipe);
-        }
-    }
-
-    /**
-     * Loader finishes its execution
-     * @param loader Loader object
-     * @param data Loader data: recipe
-     */
-    @Override
-    public void onLoadFinished(Loader loader, Object data) {
-        if (loader.getId() == GET_RECIPE_LOADER_ID) {
-            mDatabaseRecipe = (Recipe) data;
-
-            if (mInitialDownload) {
-                mInitialDownload = false;
-                onRecipesLoaded();
-            } else {
-                onReloadView();
-                onReloadFragmentViews();
-            }
-        } else if (loader.getId() == SAVE_RECIPE_LOADER_ID) {
-            Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
-                    Snackbar.LENGTH_LONG)
-                    .show();
-            openOptionsMenu();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {}
 }

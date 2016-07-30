@@ -1,9 +1,7 @@
 package com.amusebouche.fragments;
 
 
-import android.app.LoaderManager;
 import android.content.Intent;
-import android.content.Loader;
 import android.graphics.Point;
 import android.app.Activity;
 import android.app.Fragment;
@@ -25,8 +23,8 @@ import com.amusebouche.activities.EditionActivity;
 import com.amusebouche.adapters.GridviewCellAdapter;
 import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
-import com.amusebouche.loaders.GetRecipesLoader;
 import com.amusebouche.services.AmuseAPI;
+import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.RequestHandler;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.services.RetrofitServiceGenerator;
@@ -37,7 +35,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 import okhttp3.ResponseBody;
@@ -55,16 +52,11 @@ import retrofit2.Response;
  * Related layouts:
  * - Content: fragment_recipe_list.xml
  */
-public class RecipeListFragment extends Fragment implements Callback<ResponseBody>,
-    LoaderManager.LoaderCallbacks {
+public class RecipeListFragment extends Fragment implements Callback<ResponseBody> {
 
     private static final String PARCELABLE_RECIPES_KEY = "recipes";
     private static final String CURRENT_PAGE_KEY = "current_page";
     private static final String LIMIT_PER_PAGE_KEY = "limit";
-
-    // The loader's unique id. Loader ids are specific to the Activity or
-    // Fragment in which they reside.
-    private static final int LOADER_ID = 1;
 
     // Data variables
     private MainActivity mMainActivity;
@@ -80,6 +72,7 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
 
     // Services variables
     private Call<ResponseBody> mRequestCall;
+    private DatabaseHelper mDatabaseHelper;
 
     // LIFECYCLE METHODS
 
@@ -120,6 +113,7 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
         mMainActivity = (MainActivity) getActivity();
 
         mFirstLoadLaunched = false;
+        mDatabaseHelper = new DatabaseHelper(getActivity());
     }
 
     /**
@@ -243,12 +237,12 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
             default:
             case MainActivity.DOWNLOADED_RECIPES_MODE:
             case MainActivity.MY_RECIPES_MODE:
-                Loader l = getLoaderManager().getLoader(LOADER_ID);
-                if (l != null) {
-                    getLoaderManager().restartLoader(LOADER_ID, null, this);
-                } else {
-                    getLoaderManager().initLoader(LOADER_ID, null, this);
-                }
+                mMainActivity.getRecipes().addAll(mDatabaseHelper.getRecipes(
+                        mMainActivity.getLimitPerPage(),
+                        mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage(),
+                        mMainActivity.getFilterParams()));
+
+                this.onPostExecute();
                 break;
             case MainActivity.NEW_RECIPES_MODE:
                 AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class);
@@ -349,55 +343,8 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
      * Abort service handler requests (loader and retrofit call)
      */
     public void forceStop() {
-        Loader l = getLoaderManager().getLoader(LOADER_ID);
-        if (l != null) {
-            l.cancelLoad();
-            getLoaderManager().destroyLoader(l.getId());
-        }
         if (mRequestCall != null) {
             mRequestCall.cancel();
         }
     }
-
-
-    // LOADER METHODS
-
-    /**
-     * Creates the loader
-     * @param id Loader id
-     * @param args Loader arguments
-     * @return Loader object
-     */
-    @Override
-    public Loader<List<Recipe>> onCreateLoader(int id, Bundle args) {
-        if (mMainActivity.getMode() == MainActivity.DOWNLOADED_RECIPES_MODE) {
-            // Downloaded recipes
-            return new GetRecipesLoader(getActivity().getApplicationContext(),
-                mMainActivity.getCurrentPage(), mMainActivity.getLimitPerPage(),
-                mMainActivity.getFilterParams());
-        } else {
-            // My recipes
-            // TODO Get recipes with owner = me (if user is logged in) or without owner
-            return new GetRecipesLoader(getActivity().getApplicationContext(),
-                mMainActivity.getCurrentPage(), mMainActivity.getLimitPerPage(),
-                mMainActivity.getFilterParams());
-        }
-    }
-
-    /**
-     * Loader finishes its execution
-     * @param loader Loader object
-     * @param data Loader data: list of recipes
-     */
-    @Override
-    public void onLoadFinished(Loader loader, Object data) {
-        if (loader.getId() == LOADER_ID) {
-            mMainActivity.getRecipes().addAll((List<Recipe>) data);
-            this.onPostExecute();
-        }
-    }
-
-    @Override
-    public void onLoaderReset(Loader loader) {}
-
 }
