@@ -51,19 +51,10 @@ public class EditionActivity extends AppCompatActivity {
     private static final String TAB_2 = "second_tab";
     private static final String TAB_3 = "third_tab";
 
-    // Saved data keys
-    private static final String INTENT_KEY_RECIPE = "recipe";
-    private static final String PARCELABLE_RECIPES_KEY = "recipes";
-    private static final String CURRENT_PAGE_KEY = "current_page";
-    private static final String LIMIT_PER_PAGE_KEY = "limit";
-    private static final String INTENT_KEY_TAB = "tab";
-
     // Data variables
     private Recipe mRecipe;
     private ArrayList<String> mForcedCategories;
-    private ArrayList<Recipe> mRecipes;
-    private Integer mCurrentPage;
-    private Integer mLimitPerPage;
+    private String mRecipesLanguage;
 
     // UI
     private View mLayout;
@@ -105,14 +96,13 @@ public class EditionActivity extends AppCompatActivity {
 
         mRecipeUpdated = false;
 
+        mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
+
         // Get data from previous activity
         String presentTab = TAB_1;
         if (savedInstanceState == null) {
             Intent i = getIntent();
-            mRecipe = i.getParcelableExtra(INTENT_KEY_RECIPE);
-            mRecipes = i.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
-            mCurrentPage = i.getIntExtra(CURRENT_PAGE_KEY, 0);
-            mLimitPerPage = i.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+            mRecipe = i.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
 
             if (mRecipe == null) {
                 // Create an empty recipe
@@ -120,8 +110,8 @@ public class EditionActivity extends AppCompatActivity {
                         "",
                         "",
                         "",
-                        "", // TODO: Set username
-                        "es", // TODO: Set preferences language
+                        "", // Local recipes has no username declared until they are uploaded
+                        mRecipesLanguage, // Set preferences language
                         UserFriendlyTranslationsHandler.getDefaultTypeOfDish(),
                         UserFriendlyTranslationsHandler.getDefaultDifficulty(),
                         null,
@@ -137,11 +127,8 @@ public class EditionActivity extends AppCompatActivity {
                         new ArrayList<RecipeDirection>());
             }
         } else {
-            mRecipe = savedInstanceState.getParcelable(INTENT_KEY_RECIPE);
-            mRecipes = savedInstanceState.getParcelableArrayList(PARCELABLE_RECIPES_KEY);
-            mCurrentPage = savedInstanceState.getInt(CURRENT_PAGE_KEY, 0);
-            mLimitPerPage = savedInstanceState.getInt(LIMIT_PER_PAGE_KEY, 0);
-            presentTab = savedInstanceState.getString(INTENT_KEY_TAB);
+            mRecipe = savedInstanceState.getParcelable(AppData.INTENT_KEY_RECIPE);
+            presentTab = savedInstanceState.getString(AppData.INTENT_KEY_EDITION_TAG);
         }
 
         resetForcedCategories();
@@ -266,8 +253,8 @@ public class EditionActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
 
-        outState.putParcelable(INTENT_KEY_RECIPE, mRecipe);
-        outState.putString(INTENT_KEY_TAB, mTabs.getCurrentTabTag());
+        outState.putParcelable(AppData.INTENT_KEY_RECIPE, mRecipe);
+        outState.putString(AppData.INTENT_KEY_EDITION_TAG, mTabs.getCurrentTabTag());
     }
 
     /**
@@ -371,8 +358,6 @@ public class EditionActivity extends AppCompatActivity {
     /**
      * Method called when the menu item "save" is pushed.
      * It saves the recipe on the database.
-     *
-     * TODO: Not implemented yet
      */
     public void onSaveClicked() {
         if (mEnableSaveButton) {

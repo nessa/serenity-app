@@ -26,6 +26,7 @@ public class AppData {
     // Intents keys
     public static String INTENT_KEY_RECIPE = "recipe";
     public static String INTENT_KEY_DETAIL_TAG = "detail_tag";
+    public static String INTENT_KEY_EDITION_TAG = "edition_tag";
 
     // Preferences
     public static String PREFERENCE_DOWNLOAD_IMAGES = "download_images";
