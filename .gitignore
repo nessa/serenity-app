@@ -12,8 +12,8 @@
 # Gradle files
 .gradle
 AmuseApp/local.properties
-AmuseApp/.idea/workspace.xml
-AmuseApp/.idea/libraries
+AmuseApp/app/app.iml
+AmuseApp/.idea/*
 AmuseApp/build
 AmuseApp/app/build/
 AmuseApp/build/
