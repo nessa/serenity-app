@@ -88,44 +88,6 @@ public class UserFriendlyTranslationsHandler {
     }
 
     /**
-     * Return the default category string
-     *
-     * @return default category string
-     */
-    public static String getDefaultCategory() {
-        return mCategories.get(mDefaultCategoryPosition).first;
-    }
-
-    /**
-     * Translate a position integer into a category code
-     *
-     * @param position API category code
-     * @return user-friendly category string
-     */
-    public static String getCategoryTranslationByPosition(int position, Context c) {
-        return c.getString(mCategories.get(position).second);
-    }
-
-    /**
-     * Get category position by its code
-     *
-     * @param code API category code
-     * @return position integer
-     */
-    public static int getCategoryPosition(String code) {
-        int position = mDefaultCategoryPosition;
-
-        for (int i = 0; i < mCategories.size(); i++) {
-            if (mCategories.get(i).first.equals(code)) {
-                position = i;
-                break;
-            }
-        }
-
-        return position;
-    }
-
-    /**
      * Get category code by its position
      *
      * @param position API category code
@@ -144,7 +106,7 @@ public class UserFriendlyTranslationsHandler {
     public static String getCategoryTranslation(String code, Context c) {
         int position = mDefaultCategoryPosition;
 
-        for (int i = 0; i < mTypes.size(); i++) {
+        for (int i = 0; i < mCategories.size(); i++) {
             if (mCategories.get(i).first.equals(code)) {
                 position = i;
                 break;
@@ -180,16 +142,6 @@ public class UserFriendlyTranslationsHandler {
      */
     public static String getDefaultTypeOfDish() {
         return mTypes.get(mDefaultTypePosition).first;
-    }
-
-    /**
-     * Translate a position integer into a typeOfDish code
-     *
-     * @param position API type of dish code
-     * @return user-friendly type of dish string
-     */
-    public static String getTypeOfDishTranslationByPosition(int position, Context c) {
-        return c.getString(mTypes.get(position).second);
     }
 
     /**
@@ -268,16 +220,6 @@ public class UserFriendlyTranslationsHandler {
     }
 
     /**
-     * Translate a position integer into a difficulty code
-     *
-     * @param position API difficulty code
-     * @return user-friendly difficulty string
-     */
-    public static String getDifficultyTranslationByPosition(int position, Context c) {
-        return c.getString(mDifficulties.get(position).second);
-    }
-
-    /**
      * Get difficulty position by its code
      *
      * @param code API difficulty code
@@ -353,16 +295,6 @@ public class UserFriendlyTranslationsHandler {
     }
 
     /**
-     * Translate a position integer into a unit code
-     *
-     * @param position API unit code
-     * @return user-friendly unit string
-     */
-    public static String getMeasurementUnitTranslationByPosition(int position, Context c) {
-        return c.getString(mUnits.get(position).second);
-    }
-
-    /**
      * Get unit position by its code
      *
      * @param code API unit code
@@ -389,25 +321,6 @@ public class UserFriendlyTranslationsHandler {
      */
     public static String getMeasurementeUnitCodeByPosition(int position) {
         return mUnits.get(position).first;
-    }
-
-    /**
-     * Translate unit code to an understandable string
-     *
-     * @param code API unit code
-     * @return user-friendly unit string
-     */
-    public static String getMeasurementUnitTranslation(String code, Context c) {
-        int position = mDefaultUnitPosition;
-
-        for (int i = 0; i < mUnits.size(); i++) {
-            if (mUnits.get(i).first.equals(code)) {
-                position = i;
-                break;
-            }
-        }
-
-        return c.getString(mUnits.get(position).second);
     }
 
 

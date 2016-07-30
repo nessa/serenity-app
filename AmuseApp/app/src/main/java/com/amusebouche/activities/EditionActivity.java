@@ -392,8 +392,6 @@ public class EditionActivity extends AppCompatActivity {
             mForcedCategories.clear();
         }
 
-        boolean uncategorized = false;
-
         for (RecipeIngredient ingredient : mRecipe.getIngredients()) {
 
             if (mDatabaseHelper.existIngredient(ingredient.getName())) {
@@ -406,26 +404,19 @@ public class EditionActivity extends AppCompatActivity {
                 for (String c : categories) {
                     boolean found = false;
 
-                    for (RecipeCategory rc : mRecipe.getCategories()) {
-                        if (rc.getName().equals(c)) {
+                    for (String fc : mForcedCategories) {
+                        if (fc.equals(c)) {
                             found = true;
                             break;
                         }
                     }
 
                     if (!found) {
-                        mRecipe.getCategories().add(new RecipeCategory(c));
+                        mForcedCategories.add(c);
                     }
                 }
-            } else {
-                uncategorized = true;
             }
         }
-
-        if (uncategorized) {
-            mRecipe.getCategories().add(new RecipeCategory(RecipeCategory.CATEGORY_UNCATEGORIZED));
-        }
-
     }
 
     // FRAGMENT METHODS

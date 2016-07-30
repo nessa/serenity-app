@@ -856,20 +856,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ordering,
                 offset + ", " + limit);
 
-        Log.d("DB", "OFFSET "+offset+ " LIMIT "+limit);
         //"limit " + limit + " offset " + offset);
         while (recipeCursor.moveToNext()) {
             long recipeId = recipeCursor.getLong(recipeCursor.getColumnIndex(
                             RecipeContract.RecipeEntry._ID)
             );
-            Log.d("DB", "RECIPE ID "+recipeId);
 
             Recipe recipe = getRecipeByDatabaseId(Objects.toString(recipeId));
-            Log.d("DB", "RECIPE TITLE  "+recipe.getTitle());
             recipes.add(recipe);
         }
         recipeCursor.close();
-        Log.d("DB", "END");
 
         mDatabase.close();
         return recipes;

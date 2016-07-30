@@ -10,6 +10,9 @@ import com.google.gson.annotations.SerializedName;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Recipe category class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
@@ -29,7 +32,14 @@ public class RecipeCategory implements Parcelable {
     public static String CATEGORY_DIET_VEGETARIAN = "VEGETARIAN";
     public static String CATEGORY_DIET_VEGAN = "VEGAN";
     public static String CATEGORY_UNCATEGORIZED = "UNCATEGORIZED";
-    
+
+    // Manual categories
+    public static ArrayList<String> MANUAL_CATEGORIES = new ArrayList<>(Arrays.asList(
+            CATEGORY_DIET_MEDITERRANEAN,
+            CATEGORY_DIET_VEGETARIAN,
+            CATEGORY_DIET_VEGAN
+    ));
+
     // Main variables
 
     @Expose

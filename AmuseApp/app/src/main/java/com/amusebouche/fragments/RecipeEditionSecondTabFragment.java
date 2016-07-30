@@ -65,6 +65,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
     // Service
     private DatabaseHelper mDatabaseHelper;
 
+
     // LIFECYCLE METHODS
 
     /**
@@ -433,57 +434,59 @@ public class RecipeEditionSecondTabFragment extends Fragment {
      */
     private void checkCategories() {
         for (int c = mEditionActivity.getRecipe().getCategories().size() - 1; c >= 0; c--) {
-
             RecipeCategory category = mEditionActivity.getRecipe().getCategories().get(c);
-            boolean remove = true;
 
-            if (category.getName().equals(RecipeCategory.CATEGORY_UNCATEGORIZED)) {
-                // Check if there is any ingredient not set in the database. If not, remove
-                // the UNCATEGORIZED category.
-                for (RecipeIngredient i : mEditionActivity.getRecipe().getIngredients()) {
-                    if (!mDatabaseHelper.existIngredient(i.getName())) {
-                        remove = false;
-                        break;
+            if (!RecipeCategory.MANUAL_CATEGORIES.contains(category.getName())) {
+                boolean remove = true;
+
+                if (category.getName().equals(RecipeCategory.CATEGORY_UNCATEGORIZED)) {
+                    // Check if there is any ingredient not set in the database. If not, remove
+                    // the UNCATEGORIZED category.
+                    for (RecipeIngredient i : mEditionActivity.getRecipe().getIngredients()) {
+                        if (!mDatabaseHelper.existIngredient(i.getName())) {
+                            remove = false;
+                            break;
+                        }
                     }
-                }
-            } else {
-                // Check if any ingredient has this category. If not, remove it.
-                for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
-                    if (mDatabaseHelper.existIngredient(
-                        mEditionActivity.getRecipe().getIngredients().get(i).getName())) {
+                } else {
+                    // Check if any ingredient has this category. If not, remove it.
+                    for (int i = 0; i < mEditionActivity.getRecipe().getIngredients().size(); i++) {
+                        if (mDatabaseHelper.existIngredient(
+                                mEditionActivity.getRecipe().getIngredients().get(i).getName())) {
 
+                            Ingredient ing = mDatabaseHelper.getIngredientByTranslation(
+                                    mEditionActivity.getRecipe().getIngredients().get(i).getName());
 
-                        Ingredient ing = mDatabaseHelper.getIngredientByTranslation(
-                            mEditionActivity.getRecipe().getIngredients().get(i).getName());
-
-                        ArrayList<String> categories = new ArrayList<>(Arrays.asList(ing.getCategories().split(
-                            Pattern.quote(Ingredient.CATEGORY_SEPARATOR))));
-                        for (String s : categories) {
-                            if (s.equals(category.getName())) {
-                                remove = false;
-                                break;
+                            ArrayList<String> categories = new ArrayList<>(Arrays.asList(
+                                    ing.getCategories().split(Pattern.quote(
+                                            Ingredient.CATEGORY_SEPARATOR))));
+                            for (String s : categories) {
+                                if (s.equals(category.getName())) {
+                                    remove = false;
+                                    break;
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            if (remove) {
-                // Remove category from forced categories
-                int found = -1;
-                for (int index = 0; index < mEditionActivity.getForcedCategories().size(); index++) {
-                    if (mEditionActivity.getForcedCategories().get(index).equals(
-                        mEditionActivity.getRecipe().getCategories().get(c).getName())) {
-                        found = index;
-                        break;
+                if (remove) {
+                    // Remove category from forced categories
+                    int found = -1;
+                    for (int index = 0; index < mEditionActivity.getForcedCategories().size(); index++) {
+                        if (mEditionActivity.getForcedCategories().get(index).equals(
+                                mEditionActivity.getRecipe().getCategories().get(c).getName())) {
+                            found = index;
+                            break;
+                        }
                     }
-                }
-                if (found > -1) {
-                    mEditionActivity.getForcedCategories().remove(found);
-                }
+                    if (found > -1) {
+                        mEditionActivity.getForcedCategories().remove(found);
+                    }
 
-                // Remove category from recipe
-                mEditionActivity.getRecipe().getCategories().remove(c);
+                    // Remove category from recipe
+                    mEditionActivity.getRecipe().getCategories().remove(c);
+                }
             }
         }
     }

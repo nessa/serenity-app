@@ -414,15 +414,13 @@ public class DetailActivity extends AppCompatActivity {
                 mAPIRecipe != null && mAPIRecipe.getUpdatedTimestamp().getTime() >
                 mDatabaseRecipe.getUpdatedTimestamp().getTime()));
 
-        /* TODO: Check this! If someone rates or comments the recipe, may change the updated
-         * timestamp */
         /* Upload item is enabled when:
          * - Recipe doesn't exist on API
          */
         MenuItem uploadItem = menu.findItem(R.id.action_upload);
-        uploadItem.setVisible(mAPIRecipe == null || (mAPIRecipe != null && mDatabaseRecipe != null &&
-                mDatabaseRecipe.getUpdatedTimestamp().getTime() >
-                        mAPIRecipe.getUpdatedTimestamp().getTime()));
+        uploadItem.setVisible(isUserLoggedIn && (mAPIRecipe == null ||
+                (mAPIRecipe != null && mDatabaseRecipe != null &&
+                mDatabaseRecipe.getUpdatedTimestamp().getTime() > mAPIRecipe.getUpdatedTimestamp().getTime())));
 
         /* Rate item is enabled when:
          * - User is logged in
