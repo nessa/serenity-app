@@ -40,6 +40,7 @@ public class ImageHandler {
      * @param imageName Name of the image. Could be an URL, a file path or an empty string. If it's
      *                  an empty string, we will set a random sample image.
      * @param imageView Image view we want to set up.
+     * @param progressBar Loading indicator, if exists.
      * @see Picasso library: com.squareup.picasso.Picasso
      */
     public static void setCellImage(Context context, String imageName, ImageView imageView,
@@ -91,4 +92,18 @@ public class ImageHandler {
         }
     }
 
+    /**
+     * Set an image in a image view using the Picasso library.
+     * @param context Context where the image will be set.
+     * @param imageName Name of the image. Could be an URL, a file path or an empty string. If it's
+     *                  an empty string, we will set a random sample image.
+     * @param imageView Image view we want to set up.
+     * @see Picasso library: com.squareup.picasso.Picasso
+     */
+    public static void setImage(Context context, String imageName, ImageView imageView) {
+        Picasso.with(context)
+            .load(imageName)
+            .noFade()
+            .into(imageView);
+    }
 }

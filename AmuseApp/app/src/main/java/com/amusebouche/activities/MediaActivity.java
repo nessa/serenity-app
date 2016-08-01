@@ -47,16 +47,11 @@ public class MediaActivity extends AppCompatActivity {
             image.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT));
-            image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            image.setAdjustViewBounds(true);
 
-            ImageHandler.setCellImage(this, elementUri, image);
+            ImageHandler.setImage(this, elementUri, image);
 
             container.addView(image);
-        } else {
-            if (mediaType.equals("VIDEO")) {
-                Log.d("INFO", "VIDEO");
-                // TODO
-            }
         }
     }
 

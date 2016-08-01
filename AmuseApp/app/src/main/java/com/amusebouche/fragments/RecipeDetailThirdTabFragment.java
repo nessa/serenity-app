@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
@@ -253,7 +254,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         mDirectionsLayout.removeAllViews();
 
         for (int d = 0; d < mDetailActivity.getRecipe().getDirections().size(); d++) {
-            RecipeDirection presentDirection = mDetailActivity.getRecipe().getDirections().get(d);
+            final RecipeDirection presentDirection = mDetailActivity.getRecipe().getDirections().get(d);
 
             LinearLayout directionLayout = (LinearLayout) mInflater.inflate(
                 R.layout.item_detail_direction, mLayout, false);
@@ -324,7 +325,9 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 showDirectionVideoButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.d("INFO", "CLICK VIDEO BUTTON");
+                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(presentDirection.getVideo()));
+                        startActivity(intent);
                     }
                 });
             }
