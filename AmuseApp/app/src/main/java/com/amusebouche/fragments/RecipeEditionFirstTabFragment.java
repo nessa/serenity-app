@@ -176,8 +176,9 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 mEditionActivity.getRecipe().setTitle(mTitle.getText().toString());
 
-                toggleEnableSaveButton(mEditionActivity.checkRequiredValidation(mTitle) &&
-                        mEditionActivity.checkURLValidation(mImage));
+                mEditionActivity.checkRequiredValidation(mTitle);
+
+                mEditionActivity.checkEnableSaveButton();
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -190,8 +191,9 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             public void afterTextChanged(Editable s) {
                 mEditionActivity.getRecipe().setImage(mImage.getText().toString());
 
-                toggleEnableSaveButton(mEditionActivity.checkRequiredValidation(mTitle) &&
-                        mEditionActivity.checkURLValidation(mImage));
+                mEditionActivity.checkURLValidation(mImage);
+
+                mEditionActivity.checkEnableSaveButton();
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -324,8 +326,10 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         mCookingTimeLabel.setText(UserFriendlyTranslationsHandler.getCookingTimeLabel(mCookingTimeHours.getProgress(),
             mCookingTimeMinutes.getProgress(), getActivity()));
 
-        toggleEnableSaveButton(mEditionActivity.checkRequiredValidation(mTitle) &&
-            mEditionActivity.checkURLValidation(mImage));
+        mEditionActivity.checkRequiredValidation(mTitle);
+        mEditionActivity.checkURLValidation(mImage);
+
+        mEditionActivity.checkEnableSaveButton();
 
         // Set categories
         mCategories.removeAllViews();
@@ -388,10 +392,6 @@ public class RecipeEditionFirstTabFragment extends Fragment {
 
             mCategories.addView(v);
         }
-    }
-
-    private void toggleEnableSaveButton(boolean enabled) {
-        mEditionActivity.setEnableSaveButton(enabled);
     }
 
     private void setServingsLabel() {

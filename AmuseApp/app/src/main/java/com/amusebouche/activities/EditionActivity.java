@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * Add app activity (recipe creation).
  *
  * Related layouts:
- * - Content: activity_add.xml
+ * - Content: activity_edition.xml.xml
  */
 public class EditionActivity extends AppCompatActivity {
 
@@ -54,7 +54,6 @@ public class EditionActivity extends AppCompatActivity {
     // Data variables
     private Recipe mRecipe;
     private ArrayList<String> mForcedCategories;
-    private String mRecipesLanguage;
 
     // UI
     private View mLayout;
@@ -96,7 +95,7 @@ public class EditionActivity extends AppCompatActivity {
 
         mRecipeUpdated = false;
 
-        mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
+        String mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
         // Get data from previous activity
         String presentTab = TAB_1;
@@ -111,7 +110,7 @@ public class EditionActivity extends AppCompatActivity {
                         "",
                         "",
                         "", // Local recipes has no username declared until they are uploaded
-                        mRecipesLanguage, // Set preferences language
+                    mRecipesLanguage, // Set preferences language
                         UserFriendlyTranslationsHandler.getDefaultTypeOfDish(),
                         UserFriendlyTranslationsHandler.getDefaultDifficulty(),
                         null,
@@ -131,10 +130,12 @@ public class EditionActivity extends AppCompatActivity {
             presentTab = savedInstanceState.getString(AppData.INTENT_KEY_EDITION_TAG);
         }
 
+        mEnableSaveButton = false;
+
         resetForcedCategories();
 
         overridePendingTransition(R.anim.pull_in_from_left, R.anim.hold);
-        setContentView(R.layout.activity_add);
+        setContentView(R.layout.activity_edition);
 
         getSupportActionBar().setTitle(getString(R.string.activity_add_title));
         getSupportActionBar().setElevation(0);
@@ -296,7 +297,7 @@ public class EditionActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_recipe_add, menu);
+        inflater.inflate(R.menu.menu_recipe_edition, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -346,11 +347,14 @@ public class EditionActivity extends AppCompatActivity {
     // SETTERS
 
     /**
-     * Set boolean that enables save button
-     * @param enable boolean
+     * Enable save button if the recipe has a title, some ingredients and some directions.
      */
-    public void setEnableSaveButton(boolean enable) {
-        mEnableSaveButton = enable;
+    public void checkEnableSaveButton() {
+        mEnableSaveButton = mRecipe.getTitle().length() > 0 && mRecipe.getIngredients().size() > 0 &&
+            mRecipe.getDirections().size() > 0;
+        if (mRecipe.getImage().length() > 0) {
+            mEnableSaveButton = mEnableSaveButton && URLUtil.isValidUrl(mRecipe.getImage());
+        }
     }
 
     // FUNCTIONALITY METHODS
@@ -360,6 +364,7 @@ public class EditionActivity extends AppCompatActivity {
      * It saves the recipe on the database.
      */
     public void onSaveClicked() {
+        Log.d("EDITION", "ON SAVE CLICKED");
         if (mEnableSaveButton) {
             /* Update recipe if:
              * - It's from API and exists a recipe with its API id in the database
@@ -379,7 +384,10 @@ public class EditionActivity extends AppCompatActivity {
                     Snackbar.LENGTH_LONG)
                     .show();
         } else {
-            Log.d("NOTE", "BUTTON DISABLED");
+            // Button disabled
+            Snackbar.make(mLayout, getString(R.string.recipe_edition_fill_recipe_message),
+                Snackbar.LENGTH_LONG)
+                .show();
         }
     }
 

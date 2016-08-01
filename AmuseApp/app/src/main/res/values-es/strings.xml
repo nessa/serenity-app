@@ -191,6 +191,7 @@
     <string name="activity_add_title">Nueva receta</string>
     <!--   Recipe edition fragment -->
     <string name="recipe_edition_saved_recipe_message">Receta guardada</string>
+    <string name="recipe_edition_fill_recipe_message">Por favor, rellene los detalles de la receta.</string>
     <string name="recipe_edition_error_required">Obligatorio</string>
     <string name="recipe_edition_error_invalid_uri">URL inválida</string>
     <string name="recipe_edition_title_label">Título</string>

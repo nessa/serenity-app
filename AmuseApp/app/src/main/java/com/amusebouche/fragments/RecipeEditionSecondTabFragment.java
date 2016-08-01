@@ -306,6 +306,8 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                         mIngredientsArray.add(new Pair<>(Long.valueOf(ingredient.getSortNumber()), ingredient));
 
                         addCategoryForIngredient(nameTextView.getText().toString());
+
+                        mEditionActivity.checkEnableSaveButton();
                     }
 
                     mIngredientsListAdapter.notifyDataSetChanged();
@@ -347,6 +349,8 @@ public class RecipeEditionSecondTabFragment extends Fragment {
         }
 
         mIngredientsListAdapter.notifyDataSetChanged();
+
+        mEditionActivity.checkEnableSaveButton();
     }
 
     /**

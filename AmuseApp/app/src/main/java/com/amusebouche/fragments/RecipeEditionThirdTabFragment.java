@@ -325,6 +325,8 @@ public class RecipeEditionThirdTabFragment extends Fragment {
 
                     mEditionActivity.getRecipe().getDirections().add(direction);
                     mDirectionsArray.add(new Pair<>(Long.valueOf(direction.getSortNumber()), direction));
+
+                    mEditionActivity.checkEnableSaveButton();
                 }
 
                 mDirectionsListAdapter.notifyDataSetChanged();
@@ -368,6 +370,8 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         }
 
         mDirectionsListAdapter.notifyDataSetChanged();
+
+        mEditionActivity.checkEnableSaveButton();
     }
 
     /**
