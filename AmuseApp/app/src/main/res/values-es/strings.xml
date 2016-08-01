@@ -11,6 +11,7 @@
     <string name="action_search">Buscar</string>
     <string name="action_reload">Recargar</string>
     <string name="action_rate">Puntuar</string>
+    <string name="action_delete">Borrar</string>
     <string name="action_download">Descargar</string>
     <string name="action_upload">Subir</string>
     <string name="action_edit">Editar</string>
@@ -186,6 +187,9 @@
     <string name="detail_send_comment">Enviar comentario</string>
     <!-- Rating -->
     <string name="detail_rate_recipe_title">Valorar receta</string>
+    <!-- Delete -->
+    <string name="detail_delete_recipe_title">Borrar receta</string>
+    <string name="detail_delete_recipe_message">Se borrará la receta del dispositivo. ¿Está seguro?</string>
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">Nueva receta</string>

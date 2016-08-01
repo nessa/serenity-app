@@ -11,6 +11,7 @@
     <string name="action_search">Search</string>
     <string name="action_reload">Reload</string>
     <string name="action_rate">Rate</string>
+    <string name="action_delete">Delete</string>
     <string name="action_download">Download</string>
     <string name="action_upload">Upload</string>
     <string name="action_edit">Edit</string>
@@ -186,6 +187,9 @@
     <string name="detail_send_comment">Send comment</string>
     <!-- Rating -->
     <string name="detail_rate_recipe_title">Rate recipe</string>
+    <!-- Delete -->
+    <string name="detail_delete_recipe_title">Delete recipe</string>
+    <string name="detail_delete_recipe_message">The recipe will be deleted from this device. Are you sure?</string>
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">New recipe</string>

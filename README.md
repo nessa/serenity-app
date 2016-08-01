@@ -40,3 +40,8 @@ Under the following terms:
   + Owner: Lis Bokt
   + License: CC Attribution Non commercial No derivs - https://creativecommons.org/licenses/by-nc-nd/2.0/
   + No changes were made
+- erase.jpg:
+  + Downloaded from https://www.flickr.com/photos/shiningstars11/8408943093/
+  + Owner: Brandi Redd
+  + License: CC Attribution No derivs - https://creativecommons.org/licenses/by-nd/2.0/
+  + No changes were made

@@ -428,6 +428,12 @@ public class DetailActivity extends AppCompatActivity {
         MenuItem rateItem = menu.findItem(R.id.action_rate);
         rateItem.setVisible(isUserLoggedIn);
 
+        /* Delete item is enabled when:
+         * - Recipes is not online
+         */
+        MenuItem deleteItem = menu.findItem(R.id.action_delete);
+        deleteItem.setVisible(!mRecipe.getIsOnline());
+
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -448,6 +454,9 @@ public class DetailActivity extends AppCompatActivity {
                 return true;
             case R.id.action_rate:
                 rateRecipe();
+                return true;
+            case R.id.action_delete:
+                deleteRecipe();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -701,6 +710,39 @@ public class DetailActivity extends AppCompatActivity {
         });
 
         rateDialog.show();
+    }
+
+
+    /**
+     * Delete recipe from the database
+     */
+    public void deleteRecipe() {
+        final Dialog deleteDialog = new Dialog(this);
+        deleteDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
+        deleteDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        deleteDialog.setContentView(R.layout.dialog_delete_recipe);
+
+        Button cancelButton = (Button) deleteDialog.findViewById(R.id.cancel);
+        final Button acceptButton = (Button) deleteDialog.findViewById(R.id.accept);
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteDialog.dismiss();
+            }
+        });
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mDatabaseHelper.deleteRecipe(mRecipe);
+
+                deleteDialog.dismiss();
+                finish();
+            }
+        });
+
+        deleteDialog.show();
     }
 
     /**
