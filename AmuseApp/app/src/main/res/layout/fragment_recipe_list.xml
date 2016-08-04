@@ -1,86 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_layout"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/gridview_background"
-    android:gravity="bottom">
+    android:layout_height="match_parent">
 
-    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/gridview"
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/coordinator_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/progressBar"
-        android:numColumns="@integer/gridview_columns"
-        android:verticalSpacing="4dp"
-        android:horizontalSpacing="4dp"
-        android:stretchMode="columnWidth"
-        android:gravity="center" />
+        android:background="@color/gridview_background">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:indeterminate="true"
-        android:indeterminateTintMode="src_atop"
-        android:indeterminateTint="@color/theme_default_primary"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/gridview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
-    <RelativeLayout
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@+id/progressBar"
-        android:gravity="bottom|end">
-
-        <com.software.shell.fab.ActionButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/add_button"
-            android:visibility="invisible"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/fab_margin"
-            android:layout_marginBottom="@dimen/fab_margin"
-            fab:type="DEFAULT"
-            fab:button_color="@color/theme_default_accent"
-            fab:button_colorPressed="@color/theme_default_accent_dark"
-            fab:image="@drawable/ic_add_white_48dp"
-            fab:image_size="32dp"
-            fab:shadow_color="@color/gridview_background"
-            fab:shadow_radius="1.0dp"
-            fab:shadow_xOffset="0.5dp"
-            fab:shadow_yOffset="1.0dp"
-            fab:button_colorRipple="@color/theme_default_accent_light"
-            fab:rippleEffect_enabled="true"
-            fab:shadowResponsiveEffect_enabled="true"
-            fab:show_animation="@anim/fab_scale_up"
-            fab:hide_animation="@anim/fab_scale_down"
-            />
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@drawable/ic_add_white_48dp"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"
+            app:layout_anchor="@id/gridview"
+            app:layout_anchorGravity="bottom|right|end"/>
 
-    </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
-    <RelativeLayout
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
+    <TextView
+        android:id="@+id/error_message"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_vertical">
-
-        <TextView
-            android:id="@+id/error_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/recipe_list_message_padding"
-            android:textAlignment="center"
-            android:gravity="center_horizontal"
-            android:text="@string/recipe_list_no_recipes_message"
-            android:textSize="@dimen/recipe_list_message_size"
-            android:textColor="@android:color/white"
-            android:visibility="gone"/>
-
-    </RelativeLayout>
-
+        android:padding="@dimen/recipe_list_message_padding"
+        android:textAlignment="center"
+        android:gravity="center"
+        android:text="@string/recipe_list_no_recipes_message"
+        android:textSize="@dimen/recipe_list_message_size"
+        android:textColor="@android:color/white"
+        android:visibility="gone"/>
 </RelativeLayout>

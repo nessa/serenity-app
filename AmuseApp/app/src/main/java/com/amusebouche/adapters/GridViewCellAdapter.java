@@ -6,12 +6,12 @@ import android.graphics.Bitmap;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -29,37 +29,44 @@ import com.amusebouche.services.AppData;
 import com.amusebouche.services.ImageHandler;
 
 /**
- * Gridview cell adapter class.
+ * Grid view cell adapter class.
  * Author: Noelia Sales <noelia.salesmontes@gmail.com
  *
- * It declares the view of each gridview cells that contains:
+ * It declares the view of each grid view cells that contains:
  * - Recipe image.
  * - Recipe name.
- * - Fav button.
  *
  * Related layouts:
- * - Content: cell_gridview.xml
+ * - Content: cell_grid_view.xml
  */
-public class GridviewCellAdapter extends BaseAdapter {
+public class GridViewCellAdapter extends RecyclerView.Adapter<GridViewCellAdapter.ViewHolder> {
     private Context mContext;
     private RecipeListFragment mFragment;
-    private LayoutInflater mInflater;
     private int mScreenWidth;
 
-    public GridviewCellAdapter(Context c, RecipeListFragment f, int screenWidth) {
+    // Provide a reference to the views for each data item
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        // each data item is just a string in this case
+        public TextView name;
+        public ImageView image;
+        public ProgressBar progressBar;
+        public RelativeLayout fadeViews;
+
+        public ViewHolder(View v) {
+            super(v);
+            name = (TextView) v.findViewById(R.id.recipe_name);
+            image = (ImageView) v.findViewById(R.id.recipe_image);
+            progressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
+            fadeViews = (RelativeLayout) v.findViewById(R.id.fade_views);
+        }
+    }
+
+    public GridViewCellAdapter(Context c, RecipeListFragment f, int screenWidth) {
         mContext = c;
         mFragment = f;
         mScreenWidth = screenWidth;
-        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public int getCount() {
-        if (((MainActivity) mContext).getRecipes() != null) {
-            return ((MainActivity) mContext).getRecipes().size();
-        } else {
-            return 0;
-        }
-    }
 
     public Recipe getItem(int position) {
         return ((MainActivity) mContext).getRecipes().get(position);
@@ -79,36 +86,41 @@ public class GridviewCellAdapter extends BaseAdapter {
         }
     }
 
-    /**
-     * Create a new view for each item referenced by the adapter. If the view already existed, it
-     * will update it.
-     * @param position Position of this view in the gridview.
-     * @param convertView Existing view (it may not exist, so it will be null).
-     * @param parent Parent view
-     * @return New view.
-     */
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View cell;
-        final TextView name;
-        ProgressBar progressBar;
-        final ImageView image;
-        final RelativeLayout fadeViews;
-
-        // If the view didn't exist, we create a new one
-        if (convertView == null) {
-            cell = mInflater.inflate(R.layout.cell_gridview, null);
-            cell.setLayoutParams(new GridView.LayoutParams(mScreenWidth /
-                    mContext.getResources().getInteger(R.integer.gridview_columns) -
-                    mContext.getResources().getInteger(R.integer.gridview_margin),
-                    mScreenWidth / mContext.getResources().getInteger(R.integer.gridview_columns) -
-                            mContext.getResources().getInteger(R.integer.gridview_margin)));
+    @Override
+    public int getItemCount() {
+        if (((MainActivity) mContext).getRecipes() != null) {
+            return ((MainActivity) mContext).getRecipes().size();
         } else {
-            cell = convertView;
+            return 0;
         }
+    }
 
+    // Create new views (invoked by the layout manager)
+    @Override
+    public GridViewCellAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+                                                             int viewType) {
+        // create a new view
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.cell_grid_view, parent, false);
+        v.setLayoutParams(new GridView.LayoutParams(mScreenWidth /
+            mContext.getResources().getInteger(R.integer.gridview_columns) -
+            mContext.getResources().getInteger(R.integer.gridview_margin),
+            mScreenWidth / mContext.getResources().getInteger(R.integer.gridview_columns) -
+                mContext.getResources().getInteger(R.integer.gridview_margin)));
+
+        return new ViewHolder(v);
+    }
+
+
+    /**
+     * Replace the contents of a view (invoked by the layout manager)
+     * @param holder View holder
+     * @param position Position of this view in the gridview.
+     */
+    @Override
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         // Keep downloading next recipes when we show the last ones
-        if (position > ((MainActivity) mContext).getPreviousTotal() && position == getCount() -
-                mContext.getResources().getInteger(R.integer.gridview_left_items_to_reload)) {
+        if (position > ((MainActivity) mContext).getPreviousTotal() && position == getItemCount() -
+            mContext.getResources().getInteger(R.integer.gridview_left_items_to_reload)) {
             ((MainActivity) mContext).setPreviousTotal(position);
             mFragment.downloadNextRecipes();
         }
@@ -117,34 +129,21 @@ public class GridviewCellAdapter extends BaseAdapter {
         final Recipe presentRecipe = getItem(position);
 
         // Get the textview to update the string
-        name = (TextView) cell.findViewById(R.id.recipe_name);
-        name.setText(presentRecipe.getTitle());
-
-        fadeViews = (RelativeLayout) cell.findViewById(R.id.fade_views);
-
-        progressBar = (ProgressBar) cell.findViewById(R.id.progress_bar);
-        //progressBar.setVisibility(View.VISIBLE);
+        holder.name.setText(presentRecipe.getTitle());
 
         // Get the image to update the content
-        image = (ImageView) cell.findViewById(R.id.recipe_image);
-        image.setTag(position);
-        ImageHandler.setCellImage(mContext, presentRecipe.getImage(), image, progressBar);
-
-        // TODO: Set this!
-        // Save present recipe ID into the button
-        /*
-        imageButton = (ImageButton) cell.findViewById((R.id.fav_button));
-        imageButton.setTag(this.getItemId(position));*/
+        holder.image.setTag(position);
+        ImageHandler.setCellImage(mContext, presentRecipe.getImage(), holder.image, holder.progressBar);
 
         // Call transition from image (to detail image)
-        image.setOnClickListener(new View.OnClickListener() {
+        holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
 
                 // Can't compress a recycled bitmap so we copy it
-                image.buildDrawingCache(true);
-                Bitmap bitmap = image.getDrawingCache(true).copy(Bitmap.Config.RGB_565, false);
-                image.destroyDrawingCache();
+                holder.image.buildDrawingCache(true);
+                Bitmap bitmap = holder.image.getDrawingCache(true).copy(Bitmap.Config.RGB_565, false);
+                holder.image.destroyDrawingCache();
 
                 try {
                     // Save bitmap into file to prevent transactiontoolargeexception
@@ -172,9 +171,9 @@ public class GridviewCellAdapter extends BaseAdapter {
                             Intent i = new Intent(mContext, DetailActivity.class);
                             i.putExtra("recipe", ((MainActivity) mContext).getRecipes().get((int) v.getTag()));
 
-                            Pair<View, String> p1 = Pair.create((View) image, mContext.getString(R.string.transition_detail_image));
+                            Pair<View, String> p1 = Pair.create((View) holder.image, mContext.getString(R.string.transition_detail_image));
                             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                    (MainActivity) mContext, p1);
+                                (MainActivity) mContext, p1);
 
                             ActivityCompat.startActivity((MainActivity) mContext, i, options.toBundle());
                         }
@@ -184,7 +183,7 @@ public class GridviewCellAdapter extends BaseAdapter {
                         }
                     });
 
-                    fadeViews.startAnimation(fadeOutAnimation);
+                    holder.fadeViews.startAnimation(fadeOutAnimation);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -192,7 +191,6 @@ public class GridviewCellAdapter extends BaseAdapter {
             }
         });
 
-        return cell;
     }
 
 }

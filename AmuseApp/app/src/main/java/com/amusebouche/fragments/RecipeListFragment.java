@@ -6,7 +6,11 @@ import android.graphics.Point;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -14,13 +18,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amusebouche.activities.EditionActivity;
-import com.amusebouche.adapters.GridviewCellAdapter;
+import com.amusebouche.adapters.GridViewCellAdapter;
 import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AmuseAPI;
@@ -28,7 +31,6 @@ import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.RequestHandler;
 import com.amusebouche.data.Recipe;
 import com.amusebouche.services.RetrofitServiceGenerator;
-import com.software.shell.fab.ActionButton;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,9 +63,11 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     // Data variables
     private MainActivity mMainActivity;
 
-    private GridView mGridView;
-    private ProgressBar mProgressBar;
-    private ActionButton mAddButton;
+    // UI
+    private CoordinatorLayout mCoordinatorLayout;
+    private RecyclerView mGridView;
+    private Snackbar mSnackbar;
+    private FloatingActionButton mAddButton;
     private TextView mErrorMessage;
 
     // Behaviour variables
@@ -134,40 +138,37 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
         RelativeLayout mLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_recipe_list,
                 container, false);
 
+        mCoordinatorLayout = (CoordinatorLayout) mLayout.findViewById(R.id.coordinator_layout);
+
         // Set gridview parameters
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point screenSize = new Point();
         display.getSize(screenSize);
         int screenWidth = screenSize.x;
 
-        mProgressBar = (ProgressBar) mLayout.findViewById(R.id.progressBar);
-        mProgressBar.setVisibility(View.GONE);
-
-
         mErrorMessage = (TextView) mLayout.findViewById(R.id.error_message);
 
-        mGridView = (GridView) mLayout.findViewById(R.id.gridview);
-        mGridView.setAdapter(new GridviewCellAdapter(getActivity(), this, screenWidth));
+        mGridView = (RecyclerView) mLayout.findViewById(R.id.gridview);
 
-        mAddButton = (ActionButton) mLayout.findViewById(R.id.add_button);
+        GridLayoutManager mLayoutManager = new GridLayoutManager(getActivity(),
+            getResources().getInteger(R.integer.gridview_columns));
+        mGridView.setLayoutManager(mLayoutManager);
+
+        mGridView.setAdapter(new GridViewCellAdapter(getActivity(), this, screenWidth));
+
+
+
+        mAddButton = (FloatingActionButton) mLayout.findViewById(R.id.add_button);
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mAddButton.hide();
+                Intent i = new Intent(getActivity(), EditionActivity.class);
 
-                // Show FABs after a delay
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent i = new Intent(getActivity(), EditionActivity.class);
+                i.putParcelableArrayListExtra(PARCELABLE_RECIPES_KEY, mMainActivity.getRecipes());
+                i.putExtra(CURRENT_PAGE_KEY, mMainActivity.getCurrentPage());
+                i.putExtra(LIMIT_PER_PAGE_KEY, mMainActivity.getLimitPerPage());
 
-                        i.putParcelableArrayListExtra(PARCELABLE_RECIPES_KEY, mMainActivity.getRecipes());
-                        i.putExtra(CURRENT_PAGE_KEY, mMainActivity.getCurrentPage());
-                        i.putExtra(LIMIT_PER_PAGE_KEY, mMainActivity.getLimitPerPage());
-
-                        startActivity(i);
-                    }
-                }, 1200);
+                startActivity(i);
             }
         });
 
@@ -182,8 +183,6 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     @Override
     public void onStart() {
         super.onStart();
-
-        mAddButton.show();
     }
 
     /**
@@ -258,7 +257,17 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     }
 
     private void onPreExecute() {
-        mProgressBar.setVisibility(View.VISIBLE);
+        // Show loading view
+        ProgressBar progressBar = new ProgressBar(getActivity());
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF,
+            android.graphics.PorterDuff.Mode.MULTIPLY);
+
+        mSnackbar = Snackbar.make(mCoordinatorLayout, "Loading...", Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snack_view = (Snackbar.SnackbarLayout) mSnackbar.getView();
+        snack_view.addView(progressBar);
+        mSnackbar.show();
+
+        // Hide errors
         mErrorMessage.setVisibility(View.GONE);
 
         mNoConnectionError = false;
@@ -267,10 +276,10 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
 
     private void onPostExecute() {
         // Notify the adapter the new elements added
-        GridviewCellAdapter adapter = (GridviewCellAdapter) mGridView.getAdapter();
+        GridViewCellAdapter adapter = (GridViewCellAdapter) mGridView.getAdapter();
         adapter.notifyDataSetChanged();
 
-        mProgressBar.setVisibility(View.GONE);
+        mSnackbar.dismiss();
 
         if (mMainActivity.getRecipes().size() == 0) {
             if (mNoConnectionError) {

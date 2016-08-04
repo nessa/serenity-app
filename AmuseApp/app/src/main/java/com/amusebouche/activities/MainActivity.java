@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -121,7 +122,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setElevation(0);
+
+        // Set toolbar
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setHomeButtonEnabled(true);
+            ab.setElevation(0);
+        }
 
         // Set initial data
         mCurrentPage = 0;
@@ -133,10 +141,6 @@ public class MainActivity extends AppCompatActivity {
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
 
         reloadRecipesLanguage();
-
-        // Set up action bar
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
 
         if (mDrawerLayout == null || mLeftDrawerView == null || mRightDrawerView == null || mDrawerToggle == null) {
             // Set left drawer
