@@ -1,8 +1,7 @@
 package com.amusebouche.fragments;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,16 +39,6 @@ public class RecipeDetailSecondTabFragment extends Fragment {
 
 
     // LIFECYCLE METHODS
-
-    /**
-     * Called when a fragment is first attached to its activity.
-     *
-     * @param activity Fragemnt activity (DetailActivity)
-     */
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
 
     /**
      * Called when the fragment's activity has been created and this fragment's view

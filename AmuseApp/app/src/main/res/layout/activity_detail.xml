@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout"
     android:orientation="vertical"
     android:layout_height="match_parent"
@@ -97,74 +99,17 @@
         </RelativeLayout>
     </RelativeLayout>
 
-    <TabHost android:id="@android:id/tabhost"
+    <android.support.design.widget.TabLayout
+        android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        app:tabMode="fixed"
+        app:tabGravity="fill"/>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
 
-            <TabWidget android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@android:id/tabs" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="2dp"
-                android:layout_marginBottom="0dp"
-                android:background="@drawable/divider" />
-
-            <FrameLayout android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@android:id/tabcontent" >
-
-                <LinearLayout android:id="@+id/tab1"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <fragment android:name="com.amusebouche.fragments.RecipeDetailFirstTabFragment"
-                        android:id="@+id/fragment1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout android:id="@+id/tab2"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <fragment android:name="com.amusebouche.fragments.RecipeDetailSecondTabFragment"
-                        android:id="@+id/fragment2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout android:id="@+id/tab3"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <fragment android:name="com.amusebouche.fragments.RecipeDetailThirdTabFragment"
-                        android:id="@+id/fragment3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout android:id="@+id/tab4"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <fragment android:name="com.amusebouche.fragments.RecipeDetailFourthTabFragment"
-                        android:id="@+id/fragment4"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
 </LinearLayout>

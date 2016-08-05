@@ -6,9 +6,17 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -22,10 +30,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
-import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.amusebouche.fragments.RecipeDetailFirstTabFragment;
+import com.amusebouche.fragments.RecipeDetailFourthTabFragment;
 import com.amusebouche.fragments.RecipeDetailSecondTabFragment;
 import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.data.Recipe;
@@ -40,6 +48,8 @@ import org.json.JSONObject;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -65,12 +75,6 @@ public class DetailActivity extends AppCompatActivity {
     // Results
     private static final int ACTIVITY_RESULT = 1;
 
-    // Tab identifiers
-    private static final String TAB_1 = "first_tab";
-    private static final String TAB_2 = "second_tab";
-    private static final String TAB_3 = "third_tab";
-    private static final String TAB_4 = "fourth_tab";
-
     // Data variables
     private Recipe mRecipe;
     private Recipe mAPIRecipe;
@@ -78,7 +82,7 @@ public class DetailActivity extends AppCompatActivity {
 
     // UI
     private Bitmap mMainImage;
-    private TabHost mTabs;
+    private TabLayout mTabs;
     private ImageView mRecipeImage;
     private TextView mRecipeName;
     private TextView mRecipeOwner;
@@ -91,6 +95,7 @@ public class DetailActivity extends AppCompatActivity {
     private RecipeDetailFirstTabFragment mFirstFragment;
     private RecipeDetailSecondTabFragment mSecondFragment;
     private RecipeDetailThirdTabFragment mThirdFragment;
+    private RecipeDetailFourthTabFragment mFourthFragment;
 
     // User data
     private String mUsername;
@@ -126,13 +131,13 @@ public class DetailActivity extends AppCompatActivity {
         mInitialDownload = true;
 
         // Get saved data
-        String presentTab = TAB_1;
+        Integer presentTab = 0;
         if (savedInstanceState == null) {
             Intent i = getIntent();
             mRecipe = i.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
         } else {
             mRecipe = savedInstanceState.getParcelable(AppData.INTENT_KEY_RECIPE);
-            presentTab = savedInstanceState.getString(AppData.INTENT_KEY_DETAIL_TAG);
+            presentTab = savedInstanceState.getInt(AppData.INTENT_KEY_DETAIL_TAG);
         }
 
         // Get image bitmap from file
@@ -150,58 +155,84 @@ public class DetailActivity extends AppCompatActivity {
         mDatabaseRecipe = null;
 
         setContentView(R.layout.activity_detail);
-        getSupportActionBar().setElevation(0);
+
+        // Set toolbar
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setElevation(0);
+        }
 
         mLayout = findViewById(R.id.layout);
 
-        // Fragments
-        mFirstFragment = (RecipeDetailFirstTabFragment) getFragmentManager().findFragmentById(
-            R.id.fragment1);
-        mSecondFragment = (RecipeDetailSecondTabFragment) getFragmentManager().findFragmentById(
-            R.id.fragment2);
-        mThirdFragment = (RecipeDetailThirdTabFragment) getFragmentManager().findFragmentById(
-            R.id.fragment3);
-
         // Set tabs
-        mTabs = (TabHost)findViewById(android.R.id.tabhost);
-        mTabs.setup();
+        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+        setupViewPager(viewPager);
+        // TODO: Check this!
+        viewPager.setCurrentItem(presentTab);
 
-        // First tab: information
-        TabHost.TabSpec spec = mTabs.newTabSpec(TAB_1);
-        spec.setContent(R.id.tab1);
-        spec.setIndicator("", getDrawable(R.drawable.ic_description_32dp));
-        mTabs.addTab(spec);
+        mTabs = (TabLayout) findViewById(R.id.tab_layout);
+        mTabs.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        mTabs.setupWithViewPager(viewPager);
 
-        // Second tab: ingredients
-        spec = mTabs.newTabSpec(TAB_2);
-        spec.setContent(R.id.tab2);
-        spec.setIndicator("", getDrawable(R.drawable.ic_ingredients_32dp));
-        mTabs.addTab(spec);
+        // Set tab layout styles
 
-        // Third tab: directions
-        spec = mTabs.newTabSpec(TAB_3);
-        spec.setContent(R.id.tab3);
-        spec.setIndicator("", getDrawable(R.drawable.ic_cook_32dp));
-        mTabs.addTab(spec);
+        int tabIconColor = ContextCompat.getColor(this, R.color.fab_material_white);
+        Drawable d;
 
-        // Fourth tab: comments
-        spec = mTabs.newTabSpec(TAB_4);
-        spec.setContent(R.id.tab4);
-        spec.setIndicator("", getDrawable(R.drawable.ic_comments_32dp));
-        mTabs.addTab(spec);
-
-        // Show first tab at the beginning
-        mTabs.setCurrentTabByTag(presentTab);
-        resetTabColors();
-        resetBarTitle(presentTab);
-
-        mTabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            @Override
-            public void onTabChanged(String tabId) {
-                mTabs.setCurrentTabByTag(tabId);
-                resetTabColors();
-                resetBarTitle(tabId);
+        TabLayout.Tab firstTab = mTabs.getTabAt(0);
+        if (firstTab != null) {
+            d = getDrawable(R.drawable.ic_description_32dp);
+            if (d != null) {
+                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                firstTab.setIcon(d);
             }
+        }
+
+        TabLayout.Tab secondTab = mTabs.getTabAt(1);
+        if (secondTab != null) {
+            d = getDrawable(R.drawable.ic_ingredients_32dp);
+            if (d != null) {
+                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                secondTab.setIcon(d);
+            }
+        }
+
+        TabLayout.Tab thirdTab = mTabs.getTabAt(2);
+        if (thirdTab != null) {
+            d = getDrawable(R.drawable.ic_cook_32dp);
+            if (d != null) {
+                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                thirdTab.setIcon(d);
+            }
+        }
+
+        TabLayout.Tab fourthTab = mTabs.getTabAt(3);
+        if (fourthTab != null) {
+            d = getDrawable(R.drawable.ic_comments_32dp);
+            if (d != null) {
+                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                fourthTab.setIcon(d);
+            }
+        }
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                TabLayout.Tab tab = mTabs.getTabAt(position);
+                if (tab != null) {
+                    tab.select();
+                }
+                resetBarTitle(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+
         });
 
         // Set rating bar colors
@@ -258,7 +289,7 @@ public class DetailActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(AppData.INTENT_KEY_RECIPE, mRecipe);
-        outState.putString(AppData.INTENT_KEY_DETAIL_TAG, mTabs.getCurrentTabTag());
+        outState.putInt(AppData.INTENT_KEY_DETAIL_TAG, mTabs.getSelectedTabPosition());
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -275,6 +306,24 @@ public class DetailActivity extends AppCompatActivity {
     // UI METHODS
 
     /**
+     * Define fragments and add them to the view pager adapter
+     * @param viewPager Loaded view pager
+     */
+    private void setupViewPager(ViewPager viewPager) {
+        mFirstFragment = new RecipeDetailFirstTabFragment();
+        mSecondFragment = new RecipeDetailSecondTabFragment();
+        mThirdFragment = new RecipeDetailThirdTabFragment();
+        mFourthFragment = new RecipeDetailFourthTabFragment();
+
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(mFirstFragment, getString(R.string.detail_information_label));
+        adapter.addFragment(mSecondFragment, getString(R.string.detail_ingredients_label));
+        adapter.addFragment(mThirdFragment, getString(R.string.detail_direction_label));
+        adapter.addFragment(mFourthFragment, getString(R.string.detail_comments_label));
+        viewPager.setAdapter(adapter);
+    }
+
+    /**
      * Called when the activity has detected the user's press of the back key.
      */
     @Override
@@ -282,12 +331,9 @@ public class DetailActivity extends AppCompatActivity {
         Log.i(getClass().getSimpleName(), "onBackPressed()");
 
         boolean goBack = true;
-        if (mTabs.getCurrentTabTag().equals(TAB_3)) {
-            RecipeDetailThirdTabFragment frag = (RecipeDetailThirdTabFragment) getFragmentManager()
-                    .findFragmentById(R.id.fragment3);
-
-            if (frag.isInOngoingMode()) {
-                frag.exitFromOngoingMode();
+        if (mTabs.getSelectedTabPosition() == 2) {
+            if (mThirdFragment != null && mThirdFragment.isInOngoingMode()) {
+                mThirdFragment.exitFromOngoingMode();
                 goBack = false;
             }
         }
@@ -344,47 +390,28 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     /**
-     * Change the tab widget appearance.
-     * Set different styles for basic and selected tabs.
-     */
-    private void resetTabColors() {
-        for (int i = 0; i < mTabs.getTabWidget().getChildCount(); i++) {
-            // Unselected ones
-            mTabs.getTabWidget().getChildAt(i)
-                    .setBackgroundColor(getResources().getColor(android.R.color.white));
-
-            ImageView iv = (ImageView) mTabs.getTabWidget().getChildAt(i).findViewById(android.R.id.icon);
-            iv.setColorFilter(getResources().getColor(R.color.theme_default_primary), android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-
-        // Selected ones
-        mTabs.getTabWidget().getChildAt(mTabs.getCurrentTab())
-                .setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
-        ImageView iv = (ImageView) mTabs.getCurrentTabView().findViewById(android.R.id.icon);
-        iv.setColorFilter(getResources()
-                .getColor(android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
-    }
-
-    /**
      * Change action bar title every time we select a new tab.
      * @param tab Selected tab
      */
-    private void resetBarTitle(String tab) {
-        // Set
-        switch (tab) {
-            case TAB_2:
-                getSupportActionBar().setTitle(getString(R.string.detail_ingredients_label));
-                break;
-            case TAB_3:
-                getSupportActionBar().setTitle(getString(R.string.detail_directions_label));
-                break;
-            case TAB_4:
-                getSupportActionBar().setTitle(getString(R.string.detail_comments_label));
-                break;
-            default:
-            case TAB_1:
-                getSupportActionBar().setTitle(getString(R.string.detail_information_label));
-                break;
+    private void resetBarTitle(int tab) {
+        ActionBar ab = getSupportActionBar();
+
+        if (ab != null) {
+            switch (tab) {
+                case 1:
+                    ab.setTitle(getString(R.string.detail_ingredients_label));
+                    break;
+                case 2:
+                    ab.setTitle(getString(R.string.detail_directions_label));
+                    break;
+                case 3:
+                    ab.setTitle(getString(R.string.detail_comments_label));
+                    break;
+                default:
+                case 0:
+                    ab.setTitle(getString(R.string.detail_information_label));
+                    break;
+            }
         }
     }
 
@@ -410,9 +437,8 @@ public class DetailActivity extends AppCompatActivity {
          * - Recipe exist on database AND API_Recipe.updated_timestamp > DB_Recipe.updated_timestamp
          */
         MenuItem downloadItem = menu.findItem(R.id.action_download);
-        downloadItem.setVisible(mDatabaseRecipe == null || (mDatabaseRecipe != null &&
-                mAPIRecipe != null && mAPIRecipe.getUpdatedTimestamp().getTime() >
-                mDatabaseRecipe.getUpdatedTimestamp().getTime()));
+        downloadItem.setVisible(mDatabaseRecipe == null || (mAPIRecipe != null &&
+            mAPIRecipe.getUpdatedTimestamp().getTime() > mDatabaseRecipe.getUpdatedTimestamp().getTime()));
 
         /* Upload item is enabled when:
          * - Recipe doesn't exist on API
@@ -796,4 +822,32 @@ public class DetailActivity extends AppCompatActivity {
         openOptionsMenu();
     }
 
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "";
+        }
+    }
 }

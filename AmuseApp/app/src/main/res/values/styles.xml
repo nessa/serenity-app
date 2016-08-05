@@ -42,5 +42,4 @@
         <item name="android:windowEnterAnimation">@anim/bottom_to_center_enter</item>
         <item name="android:windowExitAnimation">@anim/center_to_bottom_exit</item>
     </style>
-
 </resources>

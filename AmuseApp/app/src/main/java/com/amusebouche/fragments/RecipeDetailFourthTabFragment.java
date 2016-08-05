@@ -1,8 +1,7 @@
 package com.amusebouche.fragments;
 
-import android.app.Activity;
-import android.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -61,16 +60,6 @@ public class RecipeDetailFourthTabFragment extends Fragment {
     private ProgressBar mLoadingIndicator;
 
     // LIFECYCLE METHODS
-
-    /**
-     * Called when a fragment is first attached to its activity.
-     *
-     * @param activity Fragment activity (DetailActivity)
-     */
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
 
     /**
      * Called when the fragment's activity has been created and this fragment's view

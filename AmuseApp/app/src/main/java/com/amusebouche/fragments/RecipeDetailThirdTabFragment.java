@@ -1,8 +1,6 @@
 package com.amusebouche.fragments;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -16,6 +14,7 @@ import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -36,7 +35,6 @@ import android.widget.TextView;
 import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.MediaActivity;
 import com.amusebouche.activities.R;
-import com.amusebouche.data.Recipe;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.ui.CustomNumberPicker;
 
@@ -93,16 +91,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
 
     // LIFECYCLE METHODS
-
-    /**
-     * Called when a fragment is first attached to its activity.
-     *
-     * @param activity Fragemnt activity (DetailActivity)
-     */
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-    }
 
     /**
      * Called when the fragment's activity has been created and this fragment's view
