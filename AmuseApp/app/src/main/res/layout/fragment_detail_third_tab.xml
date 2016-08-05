@@ -1,43 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- transitionGroup set to avoid exception:
      Layer exceeds max. dimensions supported by the GPU -->
-<ScrollView
+<android.support.v7.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scroll"
-    android:layout_width="fill_parent"
-    android:layout_height="match_parent"
-    android:transitionGroup="true"
-    android:background="@color/background" >
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/background"
-        android:gravity="top" >
-
-        <Button
-            android:id="@+id/startSpeakingButton"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/detail_button_start_speaking"
-            android:background="@color/theme_default_accent"
-            android:textColor="@android:color/white"
-            android:gravity="center"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
-            android:enabled="true" />
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/directions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@color/background"
-            android:gravity="top" />
-    </LinearLayout>
-
-</ScrollView>
+    android:id="@+id/directions"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>

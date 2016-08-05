@@ -2,6 +2,8 @@ package com.amusebouche.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -10,10 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.amusebouche.activities.DetailActivity;
@@ -48,16 +46,14 @@ import retrofit2.Response;
  */
 public class RecipeDetailFourthTabFragment extends Fragment {
 
-    private DetailActivity mActivity;
+    // Parent activity
+    private DetailActivity mDetailActivity;
 
     // Data variables
     private ArrayList<Comment> mComments;
 
-    // UI variables
-    private ScrollView mScroll;
-    private LinearLayout mCommentsView;
+    private RecyclerAdapterWithHeader mAdapter;
     private EditText mCommentTextView;
-    private ProgressBar mLoadingIndicator;
 
     // LIFECYCLE METHODS
 
@@ -84,7 +80,7 @@ public class RecipeDetailFourthTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
-        mActivity = (DetailActivity) getActivity();
+        mDetailActivity = (DetailActivity) getActivity();
     }
 
     /**
@@ -141,40 +137,14 @@ public class RecipeDetailFourthTabFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        // Get layouts
-        RelativeLayout mLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_detail_fourth_tab,
-                container, false);
+        RecyclerView mLayout = (RecyclerView) inflater.inflate(R.layout.fragment_detail_fourth_tab,
+            container, false);
 
-        mScroll = (ScrollView) mLayout.findViewById(R.id.scroll);
-        mLoadingIndicator = (ProgressBar) mLayout.findViewById(R.id.loading_indicator);
-        mCommentsView = (LinearLayout) mLayout.findViewById(R.id.comments);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        mLayout.setLayoutManager(linearLayoutManager);
 
-        mCommentTextView = (EditText) mLayout.findViewById(R.id.comment_text);
-        final Button sendCommentButton = (Button) mLayout.findViewById(R.id.send_comment_button);
-
-        mCommentTextView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                sendCommentButton.setEnabled(!s.toString().equals("") &&
-                        mActivity.getRecipe().getId() != null &&
-                        !mActivity.getRecipe().getId().equals("0"));
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-
-        sendCommentButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!mCommentTextView.getText().toString().equals("")) {
-                    sendComment(mCommentTextView.getText().toString());
-                }
-            }
-        });
+        mAdapter = new RecyclerAdapterWithHeader();
+        mLayout.setAdapter(mAdapter);
 
         // Get comments if needed
         reloadComments();
@@ -188,18 +158,19 @@ public class RecipeDetailFourthTabFragment extends Fragment {
         } else {
             mComments.clear();
         }
-        mCommentsView.removeAllViews();
+
         getComments();
     }
 
     private void getComments() {
-        if (mActivity.getRecipe().getId() != null && !mActivity.getRecipe().getId().equals("0")) {
+        if (mDetailActivity.getRecipe().getId() != null &&
+            !mDetailActivity.getRecipe().getId().equals("0")) {
 
-            mScroll.setVisibility(View.GONE);
-            mLoadingIndicator.setVisibility(View.VISIBLE);
+            mDetailActivity.showLoadingSnackbar("Loading...");
 
+            // Make request
             AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
-            Call<ResponseBody> call = mAPI.getComments(mActivity.getRecipe().getId());
+            Call<ResponseBody> call = mAPI.getComments(mDetailActivity.getRecipe().getId());
 
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
@@ -222,46 +193,29 @@ public class RecipeDetailFourthTabFragment extends Fragment {
                                 mComments.add(c);
                             }
 
-                            showComments();
+                            // Show comments
+                            mAdapter.notifyDataSetChanged();
+                            mDetailActivity.hideLoadingSnackbar();
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            mDetailActivity.hideLoadingSnackbar();
                         }
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    mDetailActivity.hideLoadingSnackbar();
                 }
 
             });
         }
     }
 
-    private void showComments() {
-        if (mComments != null) {
-            for (int c = 0; c < mComments.size(); c++) {
-                LinearLayout commentLayout = (LinearLayout) getActivity().getLayoutInflater().inflate(
-                    R.layout.item_detail_comment, mScroll, false);
-
-                TextView userTextView = (TextView) commentLayout.findViewById(R.id.user);
-                TextView timestampTextView = (TextView) commentLayout.findViewById(R.id.timestamp);
-                TextView commentTextView = (TextView) commentLayout.findViewById(R.id.comment);
-
-                userTextView.setText(mComments.get(c).getUser());
-                timestampTextView.setText(CustomDateFormat.getDateTimeString(mComments.get(c).getTimestamp()));
-                commentTextView.setText(mComments.get(c).getComment());
-
-                mCommentsView.addView(commentLayout);
-            }
-        }
-
-        mLoadingIndicator.setVisibility(View.GONE);
-        mScroll.setVisibility(View.VISIBLE);
-    }
-
     private void sendComment(String comment) {
-        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, mActivity.getToken());
-        Call<ResponseBody> call = mAPI.addComment(mActivity.getRecipe().getId(), comment);
+        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class,
+            mDetailActivity.getToken());
+        Call<ResponseBody> call = mAPI.addComment(mDetailActivity.getRecipe().getId(), comment);
 
         call.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -279,6 +233,123 @@ public class RecipeDetailFourthTabFragment extends Fragment {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 // TODO: Show error
             }
-        });}
+        });
+    }
 
+    /**
+     * Adapter for a recycler view with header that shows the list of comments
+     */
+    public class RecyclerAdapterWithHeader extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        private static final int TYPE_HEADER = 0;
+        private static final int TYPE_ITEM = 1;
+
+        public RecyclerAdapterWithHeader() {}
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == TYPE_ITEM) {
+                View v = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.item_detail_comment, parent, false);
+                return new VHItem(v);
+            } else if (viewType == TYPE_HEADER) {
+                View v = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.fragment_detail_fourth_tab_header, parent, false);
+                return new VHHeader(v);
+            }
+
+            return null;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (holder instanceof VHItem) {
+                VHItem itemHolder = (VHItem) holder;
+
+                final Comment presentComment = getItem(position);
+
+                itemHolder.userTextView.setText(presentComment.getUser());
+                itemHolder.timestampTextView.setText(CustomDateFormat.getDateTimeString(
+                    presentComment.getTimestamp()));
+                itemHolder.commentTextView.setText(presentComment.getComment());
+            } else if (holder instanceof VHHeader) {
+                final VHHeader headerHolder = (VHHeader) holder;
+
+                headerHolder.commentTextView.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        headerHolder.sendCommentButton.setEnabled(!s.toString().equals("") &&
+                            mDetailActivity.getRecipe().getId() != null &&
+                            !mDetailActivity.getRecipe().getId().equals("0"));
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
+
+                headerHolder.sendCommentButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!headerHolder.commentTextView.getText().toString().equals("")) {
+                            sendComment(headerHolder.commentTextView.getText().toString());
+                        }
+                    }
+                });
+
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return mComments.size() + 1;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (isPositionHeader(position)) {
+                return TYPE_HEADER;
+            }
+
+            return TYPE_ITEM;
+        }
+
+        private boolean isPositionHeader(int position) {
+            return position == 0;
+        }
+
+        private Comment getItem(int position) {
+            return mComments.get(position - 1);
+        }
+
+        class VHItem extends RecyclerView.ViewHolder {
+            private TextView userTextView;
+            private TextView timestampTextView;
+            private TextView commentTextView;
+
+            public VHItem(View itemView) {
+                super(itemView);
+
+                userTextView = (TextView) itemView.findViewById(R.id.user);
+                timestampTextView = (TextView) itemView.findViewById(R.id.timestamp);
+                commentTextView = (TextView) itemView.findViewById(R.id.comment);
+            }
+        }
+
+        class VHHeader extends RecyclerView.ViewHolder {
+            private EditText commentTextView;
+            public Button sendCommentButton;
+
+            public VHHeader(View itemView) {
+                super(itemView);
+
+                commentTextView = (EditText) itemView.findViewById(R.id.comment_text);
+                sendCommentButton = (Button) itemView.findViewById(R.id.send_comment_button);
+
+                mCommentTextView = commentTextView;
+            }
+        }
+    }
 }

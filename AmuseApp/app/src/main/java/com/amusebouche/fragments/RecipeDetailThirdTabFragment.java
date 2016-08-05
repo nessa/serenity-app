@@ -15,6 +15,8 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -24,12 +26,9 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.amusebouche.activities.DetailActivity;
@@ -70,11 +69,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     private TextToSpeech mTTS;
 
     // UI variables
-    private LayoutInflater mInflater;
-    private FrameLayout mLayout;
-    private ScrollView mScrollView;
-    private LinearLayout mDirectionsLayout;
-    private Button mStartSpeakingButton;
+    private RecyclerView mLayout;
+    private RecyclerAdapterWithHeader mDirectionsAdapter;
 
     // Timer dialog variables
     private Dialog mTimerDialog;
@@ -204,30 +200,14 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         // Get recipe from activity
         mDetailActivity = (DetailActivity) getActivity();
 
-        mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_detail_third_tab,
+        mLayout = (RecyclerView) inflater.inflate(R.layout.fragment_detail_third_tab,
                 container, false);
 
-        mInflater = inflater;
-        
-        mScrollView = (ScrollView) mLayout.findViewById(R.id.scroll);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        mLayout.setLayoutManager(linearLayoutManager);
 
-        mStartSpeakingButton = (Button) mLayout.findViewById(R.id.startSpeakingButton);
-
-        mStartSpeakingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (RecipeDetailThirdTabFragment.this.mDetailActivity.getRecipe().getDirections().size() > 0) {
-                    mOngoingMode = true;
-                    mPresentDescriptionIndex = 0;
-                    RecipeDetailThirdTabFragment.this.readDescription();
-                } else {
-                    Log.d("INFO", "No directions");
-                }
-            }
-        });
-
-        // Directions
-        mDirectionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
+        mDirectionsAdapter = new RecyclerAdapterWithHeader();
+        mLayout.setAdapter(mDirectionsAdapter);
 
         onReloadView();
 
@@ -239,200 +219,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
      * Reload all UI elements with the mRecipe data.
      */
     public void onReloadView() {
-        mDirectionsLayout.removeAllViews();
-
-        for (int d = 0; d < mDetailActivity.getRecipe().getDirections().size(); d++) {
-            final RecipeDirection presentDirection = mDetailActivity.getRecipe().getDirections().get(d);
-
-            LinearLayout directionLayout = (LinearLayout) mInflater.inflate(
-                R.layout.item_detail_direction, mLayout, false);
-            directionLayout.setTag("direction" + d);
-
-            TextView number = (TextView) directionLayout.findViewById(R.id.number);
-            number.setText(String.format(getString(R.string.detail_direction_label_with_number),
-                presentDirection.getSortNumber()));
-
-            TextView description = (TextView) directionLayout.findViewById(R.id.description);
-            description.setText(presentDirection.getDescription());
-
-            LinearLayout extraLayout = (LinearLayout) directionLayout.findViewById(R.id.extra);
-
-            ImageButton readDirectionButton = (ImageButton) extraLayout.findViewById(
-                R.id.readDescription);
-            ImageButton showDirectionImageButton = (ImageButton) extraLayout.findViewById(
-                R.id.showPhoto);
-            ImageButton showDirectionVideoButton = (ImageButton) extraLayout.findViewById(
-                R.id.showVideo);
-            ImageButton directionTimerButton = (ImageButton) extraLayout.findViewById(
-                R.id.timer);
-
-
-            readDirectionButton.setTag(d);
-            showDirectionImageButton.setTag(d);
-            showDirectionVideoButton.setTag(d);
-            directionTimerButton.setTag(d);
-
-            readDirectionButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mOngoingMode = false;
-
-                    RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
-                        (int) v.getTag());
-                    CharSequence text = dir.getDescription();
-
-                    if (text != "") {
-                        mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
-                    }
-                }
-            });
-
-            if (presentDirection.getImage().equals("")) {
-                showDirectionImageButton.setVisibility(View.GONE);
-            } else {
-                showDirectionImageButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
-                            (int) v.getTag());
-
-                        // Send selected recipe to the next activity
-                        Intent i = new Intent(getActivity(), MediaActivity.class);
-                        i.putExtra("mediaType", "IMAGE");
-                        i.putExtra("elementUri", dir.getImage());
-                        i.putExtra("directionNumber", Objects.toString(dir.getSortNumber()));
-
-                        ActivityCompat.startActivity(getActivity(), i, null);
-                    }
-                });
-            }
-
-            if (presentDirection.getVideo().equals("")) {
-                showDirectionVideoButton.setVisibility(View.GONE);
-            } else {
-                showDirectionVideoButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(presentDirection.getVideo()));
-                        startActivity(intent);
-                    }
-                });
-            }
-
-            if (presentDirection.getTime() == 0) {
-                directionTimerButton.setVisibility(View.GONE);
-            } else {
-                directionTimerButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
-                            (int) v.getTag());
-
-                        // Calc time variables
-                        Integer time = (int) dir.getTime().floatValue();
-
-                        mTimerHours = time / 3600;
-                        mTimerMinutes = (time / 60) % 60;
-                        mTimerSeconds = time % 60;
-
-                        // Set dialog attributes
-                        final Dialog selectTimeDialog = new Dialog(getActivity());
-                        selectTimeDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
-                        selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        selectTimeDialog.setContentView(R.layout.dialog_detail_timer_set_time);
-
-                        final TextView hoursTextView = (TextView) selectTimeDialog.findViewById(R.id.hours);
-                        final TextView minutesTextView = (TextView) selectTimeDialog.findViewById(R.id.minutes);
-                        final TextView secondsTextView = (TextView) selectTimeDialog.findViewById(R.id.seconds);
-
-                        hoursTextView.setText(String.valueOf(mTimerHours));
-                        minutesTextView.setText(String.valueOf(mTimerMinutes));
-                        secondsTextView.setText(String.valueOf(mTimerSeconds));
-
-                        // Number pickers for hours, minutes and seconds
-                        final CustomNumberPicker hoursPicker = (CustomNumberPicker)
-                            selectTimeDialog.findViewById(R.id.hoursPicker);
-                        hoursPicker.setMaxValue(10);
-                        hoursPicker.setMinValue(0);
-                        hoursPicker.setWrapSelectorWheel(false);
-                        hoursPicker.setValue(mTimerHours);
-
-                        hoursPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                            @Override
-                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                RecipeDetailThirdTabFragment.this.mTimerHours = newVal;
-                                hoursTextView.setText(String.valueOf(mTimerHours));
-                            }
-                        });
-
-                        final CustomNumberPicker minutesPicker = (CustomNumberPicker)
-                            selectTimeDialog.findViewById(R.id.minutesPicker);
-                        minutesPicker.setMaxValue(59);
-                        minutesPicker.setMinValue(0);
-                        minutesPicker.setWrapSelectorWheel(true);
-                        minutesPicker.setValue(mTimerMinutes);
-
-                        minutesPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                            @Override
-                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                RecipeDetailThirdTabFragment.this.mTimerMinutes = newVal;
-                                minutesTextView.setText(String.valueOf(mTimerMinutes));
-                            }
-                        });
-
-                        final CustomNumberPicker secondsPicker = (CustomNumberPicker)
-                            selectTimeDialog.findViewById(R.id.secondsPicker);
-                        secondsPicker.setMaxValue(59);
-                        secondsPicker.setMinValue(0);
-                        secondsPicker.setWrapSelectorWheel(false);
-                        secondsPicker.setValue(mTimerSeconds);
-
-                        secondsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                            @Override
-                            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                RecipeDetailThirdTabFragment.this.mTimerSeconds = newVal;
-                                secondsTextView.setText(String.valueOf(mTimerSeconds));
-                            }
-                        });
-
-                        // Buttons
-                        Button cancelButton = (Button) selectTimeDialog.findViewById(R.id.buttonCancel);
-                        Button setButton = (Button) selectTimeDialog.findViewById(R.id.buttonSet);
-
-                        setButton.setOnClickListener(new Button.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                RecipeDetailThirdTabFragment.this.mTimerHours = hoursPicker.getValue();
-                                RecipeDetailThirdTabFragment.this.mTimerMinutes = minutesPicker.getValue();
-                                RecipeDetailThirdTabFragment.this.mTimerSeconds = secondsPicker.getValue();
-
-                                RecipeDetailThirdTabFragment.this.setTimerDialog(
-                                    RecipeDetailThirdTabFragment.this.mTimerHours * 3600 +
-                                        RecipeDetailThirdTabFragment.this.mTimerMinutes * 60 +
-                                        RecipeDetailThirdTabFragment.this.mTimerSeconds);
-
-                                selectTimeDialog.dismiss();
-                                RecipeDetailThirdTabFragment.this.mTimerDialog.show();
-                                RecipeDetailThirdTabFragment.this.mCountDownTimer.start();
-                            }
-                        });
-
-                        cancelButton.setOnClickListener(new Button.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                selectTimeDialog.dismiss();
-                            }
-                        });
-
-                        selectTimeDialog.show();
-                    }
-                });
-            }
-
-            mDirectionsLayout.addView(directionLayout);
-        }
-
+        mDirectionsAdapter.notifyDataSetChanged();
     }
     
     // TEXT TO SPEECH AND DIALOGS
@@ -467,14 +254,12 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             CharSequence text = dir.getDescription();
 
             // Move view to direction box
-            final LinearLayout directionsLayout = (LinearLayout) mLayout.findViewById(R.id.directions);
-            final View directionLayout = mLayout.findViewWithTag("direction" +
-                    mPresentDescriptionIndex);
+            final View directionLayout = mLayout.getChildAt(mPresentDescriptionIndex + 1);
 
-            mScrollView.smoothScrollTo(0, directionsLayout.getTop() + directionLayout.getTop());
+            // TODO: Check this!
+            mLayout.smoothScrollToPosition(directionLayout.getTop());
 
             if (text != "") {
-
                 mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                     @Override
                     public void onStart(String utteranceId) {
@@ -969,4 +754,284 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         return mOngoingMode;
     }
 
+
+    /**
+     * Adapter for a recycler view with header that shows the list of directions
+     */
+    public class RecyclerAdapterWithHeader extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        private static final int TYPE_HEADER = 0;
+        private static final int TYPE_ITEM = 1;
+
+        public RecyclerAdapterWithHeader() {}
+
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            if (viewType == TYPE_ITEM) {
+                View v = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.item_detail_direction, parent, false);
+                return new VHItem(v);
+            } else if (viewType == TYPE_HEADER) {
+                View v = LayoutInflater.from(parent.getContext()).inflate(
+                    R.layout.fragment_detail_third_tab_header, parent, false);
+                return new VHHeader(v);
+            }
+
+            return null;
+        }
+
+        @Override
+        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+            if (holder instanceof VHItem) {
+                VHItem itemHolder = (VHItem) holder;
+
+                final RecipeDirection presentDirection = getItem(position);
+
+                itemHolder.view.setTag(position - 1);
+
+                itemHolder.number.setText(String.format(getString(R.string.detail_direction_label_with_number),
+                    presentDirection.getSortNumber()));
+
+                itemHolder.description.setText(presentDirection.getDescription());
+
+                itemHolder.readDirectionButton.setTag(position - 1);
+                itemHolder.showDirectionImageButton.setTag(position - 1);
+                itemHolder.showDirectionVideoButton.setTag(position - 1);
+                itemHolder.directionTimerButton.setTag(position - 1);
+
+                itemHolder.readDirectionButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOngoingMode = false;
+
+                        RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
+                            (int) v.getTag());
+                        CharSequence text = dir.getDescription();
+
+                        if (text != "") {
+                            mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+                        }
+                    }
+                });
+
+                if (presentDirection.getImage().equals("")) {
+                    itemHolder.showDirectionImageButton.setVisibility(View.GONE);
+                } else {
+                    itemHolder.showDirectionImageButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
+                                (int) v.getTag());
+
+                            // Send selected recipe to the next activity
+                            Intent i = new Intent(getActivity(), MediaActivity.class);
+                            i.putExtra("mediaType", "IMAGE");
+                            i.putExtra("elementUri", dir.getImage());
+                            i.putExtra("directionNumber", Objects.toString(dir.getSortNumber()));
+
+                            ActivityCompat.startActivity(getActivity(), i, null);
+                        }
+                    });
+                }
+
+                if (presentDirection.getVideo().equals("")) {
+                    itemHolder.showDirectionVideoButton.setVisibility(View.GONE);
+                } else {
+                    itemHolder.showDirectionVideoButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(presentDirection.getVideo()));
+                            startActivity(intent);
+                        }
+                    });
+                }
+
+                if (presentDirection.getTime() == 0) {
+                    itemHolder.directionTimerButton.setVisibility(View.GONE);
+                } else {
+                    itemHolder.directionTimerButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
+                                (int) v.getTag());
+
+                            // Calc time variables
+                            Integer time = (int) dir.getTime().floatValue();
+
+                            mTimerHours = time / 3600;
+                            mTimerMinutes = (time / 60) % 60;
+                            mTimerSeconds = time % 60;
+
+                            // Set dialog attributes
+                            final Dialog selectTimeDialog = new Dialog(getActivity());
+                            selectTimeDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
+                            selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                            selectTimeDialog.setContentView(R.layout.dialog_detail_timer_set_time);
+
+                            final TextView hoursTextView = (TextView) selectTimeDialog.findViewById(R.id.hours);
+                            final TextView minutesTextView = (TextView) selectTimeDialog.findViewById(R.id.minutes);
+                            final TextView secondsTextView = (TextView) selectTimeDialog.findViewById(R.id.seconds);
+
+                            hoursTextView.setText(String.valueOf(mTimerHours));
+                            minutesTextView.setText(String.valueOf(mTimerMinutes));
+                            secondsTextView.setText(String.valueOf(mTimerSeconds));
+
+                            // Number pickers for hours, minutes and seconds
+                            final CustomNumberPicker hoursPicker = (CustomNumberPicker)
+                                selectTimeDialog.findViewById(R.id.hoursPicker);
+                            hoursPicker.setMaxValue(10);
+                            hoursPicker.setMinValue(0);
+                            hoursPicker.setWrapSelectorWheel(false);
+                            hoursPicker.setValue(mTimerHours);
+
+                            hoursPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                @Override
+                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                    RecipeDetailThirdTabFragment.this.mTimerHours = newVal;
+                                    hoursTextView.setText(String.valueOf(mTimerHours));
+                                }
+                            });
+
+                            final CustomNumberPicker minutesPicker = (CustomNumberPicker)
+                                selectTimeDialog.findViewById(R.id.minutesPicker);
+                            minutesPicker.setMaxValue(59);
+                            minutesPicker.setMinValue(0);
+                            minutesPicker.setWrapSelectorWheel(true);
+                            minutesPicker.setValue(mTimerMinutes);
+
+                            minutesPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                @Override
+                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                    RecipeDetailThirdTabFragment.this.mTimerMinutes = newVal;
+                                    minutesTextView.setText(String.valueOf(mTimerMinutes));
+                                }
+                            });
+
+                            final CustomNumberPicker secondsPicker = (CustomNumberPicker)
+                                selectTimeDialog.findViewById(R.id.secondsPicker);
+                            secondsPicker.setMaxValue(59);
+                            secondsPicker.setMinValue(0);
+                            secondsPicker.setWrapSelectorWheel(false);
+                            secondsPicker.setValue(mTimerSeconds);
+
+                            secondsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                @Override
+                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                    RecipeDetailThirdTabFragment.this.mTimerSeconds = newVal;
+                                    secondsTextView.setText(String.valueOf(mTimerSeconds));
+                                }
+                            });
+
+                            // Buttons
+                            Button cancelButton = (Button) selectTimeDialog.findViewById(R.id.buttonCancel);
+                            Button setButton = (Button) selectTimeDialog.findViewById(R.id.buttonSet);
+
+                            setButton.setOnClickListener(new Button.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    RecipeDetailThirdTabFragment.this.mTimerHours = hoursPicker.getValue();
+                                    RecipeDetailThirdTabFragment.this.mTimerMinutes = minutesPicker.getValue();
+                                    RecipeDetailThirdTabFragment.this.mTimerSeconds = secondsPicker.getValue();
+
+                                    RecipeDetailThirdTabFragment.this.setTimerDialog(
+                                        RecipeDetailThirdTabFragment.this.mTimerHours * 3600 +
+                                            RecipeDetailThirdTabFragment.this.mTimerMinutes * 60 +
+                                            RecipeDetailThirdTabFragment.this.mTimerSeconds);
+
+                                    selectTimeDialog.dismiss();
+                                    RecipeDetailThirdTabFragment.this.mTimerDialog.show();
+                                    RecipeDetailThirdTabFragment.this.mCountDownTimer.start();
+                                }
+                            });
+
+                            cancelButton.setOnClickListener(new Button.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    selectTimeDialog.dismiss();
+                                }
+                            });
+
+                            selectTimeDialog.show();
+                        }
+                    });
+                }
+
+            } else if (holder instanceof VHHeader) {
+                VHHeader headerHolder = (VHHeader) holder;
+
+                headerHolder.startSpeakingButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (RecipeDetailThirdTabFragment.this.mDetailActivity.getRecipe().getDirections().size() > 0) {
+                            mOngoingMode = true;
+                            mPresentDescriptionIndex = 0;
+                            RecipeDetailThirdTabFragment.this.readDescription();
+                        } else {
+                            Log.d("INFO", "No directions");
+                        }
+                    }
+                });
+
+            }
+        }
+
+        @Override
+        public int getItemCount() {
+            return mDetailActivity.getRecipe().getDirections().size() + 1;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            if (isPositionHeader(position))
+                return TYPE_HEADER;
+
+            return TYPE_ITEM;
+        }
+
+        private boolean isPositionHeader(int position) {
+            return position == 0;
+        }
+
+        private RecipeDirection getItem(int position) {
+            return mDetailActivity.getRecipe().getDirections().get(position - 1);
+        }
+
+        class VHItem extends RecyclerView.ViewHolder {
+            public View view;
+            public TextView number;
+            public TextView description;
+            public ImageButton readDirectionButton;
+            public ImageButton showDirectionImageButton;
+            public ImageButton showDirectionVideoButton;
+            public ImageButton directionTimerButton;
+
+            public VHItem(View itemView) {
+                super(itemView);
+
+                view = itemView;
+                number = (TextView) itemView.findViewById(R.id.number);
+                description = (TextView) itemView.findViewById(R.id.description);
+
+                readDirectionButton = (ImageButton) itemView.findViewById(
+                    R.id.readDescription);
+                showDirectionImageButton = (ImageButton) itemView.findViewById(
+                    R.id.showPhoto);
+                showDirectionVideoButton = (ImageButton) itemView.findViewById(
+                    R.id.showVideo);
+                directionTimerButton = (ImageButton) itemView.findViewById(
+                    R.id.timer);
+            }
+        }
+
+        class VHHeader extends RecyclerView.ViewHolder {
+            public Button startSpeakingButton;
+
+            public VHHeader(View itemView) {
+                super(itemView);
+
+                startSpeakingButton = (Button) itemView.findViewById(R.id.startSpeakingButton);
+            }
+        }
+    }
 }

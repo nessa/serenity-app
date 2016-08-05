@@ -29,6 +29,17 @@
         <item name="android:windowSharedElementExitTransition">@android:transition/move</item>
     </style>
 
+    <style name="NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="homeAsUpIndicator">@drawable/abc_ic_ab_back_mtrl_am_alpha</item>
+        <item name="displayOptions">homeAsUp</item>
+        <item name="colorPrimary">@color/theme_default_primary</item>
+        <item name="colorPrimaryDark">@color/theme_default_primary_dark</item>
+        <item name="colorAccent">@color/theme_default_accent</item>
+        <item name="colorControlHighlight">@color/theme_default_accent_light</item>
+    </style>
+
     <style name="DetailTheme" parent="BaseDetailTheme">
         <item name="android:windowContentTransitions">true</item>
     </style>

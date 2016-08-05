@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/comment_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/detail_comments_padding"
+        android:hint="@string/detail_leave_a_comment_message"/>
+
+    <Button
+        android:id="@+id/send_comment_button"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/detail_send_comment"
+        android:background="@color/theme_default_accent"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/detail_comments_padding"
+        android:paddingStart="@dimen/detail_comments_padding"
+        android:paddingEnd="@dimen/detail_comments_padding" />
+
+</LinearLayout>

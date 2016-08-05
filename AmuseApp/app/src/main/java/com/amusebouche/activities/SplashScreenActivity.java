@@ -72,7 +72,7 @@ public class SplashScreenActivity extends Activity {
 
         setContentView(R.layout.splash_screen);
         mTextView = (TextView) findViewById(R.id.text);
-        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         // Get language from database
         mLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);

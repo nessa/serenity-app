@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -18,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +28,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -41,10 +42,10 @@ import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.AppData;
 import com.amusebouche.services.RetrofitServiceGenerator;
-import com.amusebouche.services.UserFriendlyTranslationsHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -81,6 +82,7 @@ public class DetailActivity extends AppCompatActivity {
     private Recipe mDatabaseRecipe;
 
     // UI
+    private TextView mTitle;
     private Bitmap mMainImage;
     private TabLayout mTabs;
     private ImageView mRecipeImage;
@@ -90,6 +92,7 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mRecipeNumberUsersRating;
     private RelativeLayout mFadeViews;
     private View mLayout;
+    private Snackbar mSnackbar;
 
     // Fragments
     private RecipeDetailFirstTabFragment mFirstFragment;
@@ -154,15 +157,18 @@ public class DetailActivity extends AppCompatActivity {
         mAPIRecipe = null;
         mDatabaseRecipe = null;
 
+        // Set view
         setContentView(R.layout.activity_detail);
 
-        // Set toolbar
-        final ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setElevation(0);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
         mLayout = findViewById(R.id.layout);
+
 
         // Set tabs
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
@@ -171,7 +177,7 @@ public class DetailActivity extends AppCompatActivity {
         viewPager.setCurrentItem(presentTab);
 
         mTabs = (TabLayout) findViewById(R.id.tab_layout);
-        mTabs.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
+        //mTabs.setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
         mTabs.setupWithViewPager(viewPager);
 
         // Set tab layout styles
@@ -235,11 +241,9 @@ public class DetailActivity extends AppCompatActivity {
 
         });
 
-        // Set rating bar colors
-        mRatingBar = (RatingBar) findViewById(R.id.rating_bar);
-        LayerDrawable stars = (LayerDrawable) mRatingBar.getProgressDrawable();
-        stars.getDrawable(2).setColorFilter(getResources().getColor(android.R.color.white),
-                PorterDuff.Mode.SRC_ATOP);
+        // Set title
+        mTitle = (TextView) findViewById(R.id.toolbar_title);
+        resetBarTitle(presentTab);
     }
 
     @Override
@@ -248,27 +252,8 @@ public class DetailActivity extends AppCompatActivity {
 
         // Define UI
         mRecipeImage = (ImageView) findViewById(R.id.recipe_image);
-        mRecipeName = (TextView) findViewById(R.id.recipe_name);
-        mRecipeOwner = (TextView) findViewById(R.id.recipe_owner);
-        mRecipeNumberUsersRating = (TextView) findViewById(R.id.recipe_number_users_rating);
 
         onReloadView();
-
-        // Fade in data
-        mFadeViews = (RelativeLayout) findViewById(R.id.fade_views);
-        final RelativeLayout finalFadeViews = mFadeViews;
-
-        mFadeViews.post(new Runnable() {
-            @Override
-            public void run() {
-                finalFadeViews.setVisibility(View.VISIBLE);
-                finalFadeViews.setAlpha(0);
-                finalFadeViews.animate()
-                        .alpha(1f)
-                        .setDuration(2000)
-                        .setListener(null);
-            }
-        });
     }
 
     @Override
@@ -339,26 +324,7 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         if (goBack) {
-            // Fade out title and view before go back
-            Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
-            fadeOutAnimation.setDuration(1000);
-
-            fadeOutAnimation.setAnimationListener(new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {
-                    DetailActivity.super.onBackPressed();
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-                }
-            });
-
-            mFadeViews.startAnimation(fadeOutAnimation);
+            DetailActivity.super.onBackPressed();
         }
     }
 
@@ -368,18 +334,6 @@ public class DetailActivity extends AppCompatActivity {
     public void onReloadView() {
         // Reset UI elements
         mRecipeImage.setImageBitmap(mMainImage);
-        mRecipeName.setText(mRecipe.getTitle());
-        mRecipeOwner.setText(mRecipe.getOwner());
-
-        float rating = 0;
-        if (mRecipe.getUsersRating() > 0) {
-            rating = mRecipe.getTotalRating() / mRecipe.getUsersRating();
-        }
-        mRatingBar.setRating(rating);
-
-        mRecipeNumberUsersRating.setText(UserFriendlyTranslationsHandler.getUsersLabel(
-                mRecipe.getUsersRating(), getApplication()));
-
     }
 
     public void onReloadFragmentViews() {
@@ -394,24 +348,40 @@ public class DetailActivity extends AppCompatActivity {
      * @param tab Selected tab
      */
     private void resetBarTitle(int tab) {
-        ActionBar ab = getSupportActionBar();
+        switch (tab) {
+            case 1:
+                mTitle.setText(getString(R.string.detail_ingredients_label));
+                break;
+            case 2:
+                mTitle.setText(getString(R.string.detail_directions_label));
+                break;
+            case 3:
+                mTitle.setText(getString(R.string.detail_comments_label));
+                break;
+            default:
+            case 0:
+                mTitle.setText(getString(R.string.detail_information_label));
+                break;
+        }
+    }
 
-        if (ab != null) {
-            switch (tab) {
-                case 1:
-                    ab.setTitle(getString(R.string.detail_ingredients_label));
-                    break;
-                case 2:
-                    ab.setTitle(getString(R.string.detail_directions_label));
-                    break;
-                case 3:
-                    ab.setTitle(getString(R.string.detail_comments_label));
-                    break;
-                default:
-                case 0:
-                    ab.setTitle(getString(R.string.detail_information_label));
-                    break;
-            }
+    // UI METHODS
+
+    public void showLoadingSnackbar(String message) {
+        // Show loading view
+        ProgressBar progressBar = new ProgressBar(this);
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF,
+            android.graphics.PorterDuff.Mode.MULTIPLY);
+
+        mSnackbar = Snackbar.make(mLayout, message, Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snack_view = (Snackbar.SnackbarLayout) mSnackbar.getView();
+        snack_view.addView(progressBar);
+        mSnackbar.show();
+    }
+
+    public void hideLoadingSnackbar() {
+        if (mSnackbar != null) {
+            mSnackbar.dismiss();
         }
     }
 

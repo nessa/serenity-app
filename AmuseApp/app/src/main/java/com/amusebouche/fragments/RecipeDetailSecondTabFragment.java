@@ -1,13 +1,14 @@
 package com.amusebouche.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amusebouche.activities.DetailActivity;
@@ -29,13 +30,7 @@ import com.amusebouche.services.UserFriendlyTranslationsHandler;
  */
 public class RecipeDetailSecondTabFragment extends Fragment {
 
-    // Father activity
-    private DetailActivity mDetailActivity;
-
-    // UI
-    private LayoutInflater mInflater;
-    private FrameLayout mLayout;
-    private LinearLayout mIngredientsLayout;
+    private SimpleRecyclerAdapter mIngredientsAdapter;
 
 
     // LIFECYCLE METHODS
@@ -118,14 +113,14 @@ public class RecipeDetailSecondTabFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        mDetailActivity = (DetailActivity) getActivity();
-
-        mInflater = inflater;
-
-        mLayout = (FrameLayout) inflater.inflate(R.layout.fragment_detail_second_tab,
+        RecyclerView mLayout = (RecyclerView) inflater.inflate(R.layout.fragment_detail_second_tab,
             container, false);
 
-        mIngredientsLayout = (LinearLayout) mLayout.findViewById(R.id.ingredients);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        mLayout.setLayoutManager(linearLayoutManager);
+
+        mIngredientsAdapter = new SimpleRecyclerAdapter(getActivity());
+        mLayout.setAdapter(mIngredientsAdapter);
 
         onReloadView();
 
@@ -133,26 +128,61 @@ public class RecipeDetailSecondTabFragment extends Fragment {
     }
     
     /**
-     * Reload all UI elements with the mDetailActivity.getRecipe() data.
+     * Reload all UI elements with the recipe data.
      */
     public void onReloadView() {
-        mIngredientsLayout.removeAllViews();
-        
-        for (int i = 0; i < mDetailActivity.getRecipe().getIngredients().size(); i++) {
-            RecipeIngredient presentIngredient = mDetailActivity.getRecipe().getIngredients().get(i);
+        mIngredientsAdapter.notifyDataSetChanged();
+    }
 
-            LinearLayout ingredientLayout = (LinearLayout) mInflater.inflate(
-                R.layout.item_detail_ingredient, mLayout, false);
+    /**
+     * Simple adapter for a recycler view that shows the list of ingredients
+     */
+    public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAdapter.ViewHolder> {
 
-            TextView quantity = (TextView) ingredientLayout.findViewById(R.id.quantity);
-            quantity.setText(UserFriendlyTranslationsHandler.getIngredientQuantity(
+        private DetailActivity mContext;
+
+        public SimpleRecyclerAdapter(Context context) {
+            this.mContext = (DetailActivity) context;
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+
+            public TextView name;
+            public TextView quantity;
+
+
+            public ViewHolder(final View view) {
+                super(view);
+
+                name = (TextView) view.findViewById(R.id.name);
+                quantity = (TextView) view.findViewById(R.id.quantity);
+            }
+        }
+
+        @Override
+        public SimpleRecyclerAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            // create a new view
+            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_detail_ingredient, parent, false);
+
+            // create ViewHolder
+            return new ViewHolder(v);
+        }
+
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            RecipeIngredient presentIngredient = mContext.getRecipe().getIngredients().get(position);
+
+            holder.quantity.setText(UserFriendlyTranslationsHandler.getIngredientQuantity(
                 presentIngredient.getQuantity(), presentIngredient.getMeasurementUnit(),
                 getActivity()));
 
-            TextView name = (TextView) ingredientLayout.findViewById(R.id.name);
-            name.setText(presentIngredient.getName());
+            holder.name.setText(presentIngredient.getName());
+        }
 
-            mIngredientsLayout.addView(ingredientLayout);
+        @Override
+        public int getItemCount() {
+            return mContext.getRecipe().getIngredients().size();
         }
     }
 

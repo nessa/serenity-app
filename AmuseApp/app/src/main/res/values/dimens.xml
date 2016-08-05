@@ -54,6 +54,7 @@
 
     <!-- Detail -->
     <!--   Detail: Info -->
+    <dimen name="detail_title_size">20sp</dimen>
     <dimen name="detail_info_padding">10dp</dimen>
     <dimen name="detail_info_small_padding">4dp</dimen>
     <dimen name="detail_info_text_size">16sp</dimen>
