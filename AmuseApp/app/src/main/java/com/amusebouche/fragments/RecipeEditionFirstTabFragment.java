@@ -147,7 +147,6 @@ public class RecipeEditionFirstTabFragment extends Fragment {
 
         onReloadView();
 
-
         return mLayout;
     }
 

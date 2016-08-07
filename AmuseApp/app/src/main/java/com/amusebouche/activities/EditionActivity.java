@@ -160,6 +160,7 @@ public class EditionActivity extends AppCompatActivity {
 
         // Set tabs
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.setOffscreenPageLimit(2);
         setupViewPager(viewPager);
         // TODO: Check this!
         viewPager.setCurrentItem(presentTab);

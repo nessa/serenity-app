@@ -1,6 +1,7 @@
 package com.amusebouche.fragments;
 
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -197,7 +198,8 @@ public class RecipeEditionThirdTabFragment extends Fragment {
     public void showEditionDialog(final int position) {
         Log.d("INFO", "SHOW EDITION DIALOG");
 
-        final Dialog editionDialog = new Dialog(getActivity());
+        final Dialog editionDialog = new Dialog(mEditionActivity,
+                android.R.style.Theme_DeviceDefault_Light_NoActionBar_TranslucentDecor);
         editionDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
         editionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         editionDialog.setContentView(R.layout.dialog_edition_direction);
