@@ -151,14 +151,14 @@ public class RecipeDetailFirstTabFragment extends Fragment {
     }
 
     /**
-     * Reload all UI elements with the mDetailActivity.getRecipe() data.
+     * Reload all UI elements with the recipe data.
      */
     public void onReloadView() {
         mAdapter.notifyDataSetChanged();
     }
 
     /**
-     * Simple adapter for a recycler view that shows the list of ingredients
+     * Simple adapter for a recycler view that shows the detail data
      */
     public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAdapter.ViewHolder> {
 

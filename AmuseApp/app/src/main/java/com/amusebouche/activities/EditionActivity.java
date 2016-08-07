@@ -2,10 +2,20 @@ package com.amusebouche.activities;
 
 
 import android.content.Intent;
-import android.os.Handler;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,8 +23,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.URLUtil;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.amusebouche.data.Ingredient;
@@ -28,10 +36,10 @@ import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 import com.amusebouche.fragments.RecipeEditionSecondTabFragment;
 import com.amusebouche.fragments.RecipeEditionThirdTabFragment;
-import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -46,10 +54,10 @@ import java.util.regex.Pattern;
  */
 public class EditionActivity extends AppCompatActivity {
 
-    // Tab identifiers
-    private static final String TAB_1 = "first_tab";
-    private static final String TAB_2 = "second_tab";
-    private static final String TAB_3 = "third_tab";
+    // Tabs
+    private int FIRST_TAB = 0;
+    private int SECOND_TAB = 1;
+    private int THIRD_TAB = 2;
 
     // Data variables
     private Recipe mRecipe;
@@ -57,19 +65,17 @@ public class EditionActivity extends AppCompatActivity {
 
     // UI
     private View mLayout;
-
-    // Tabs
-    private TabHost mTabs;
-    private String mLastTab;
+    private TabLayout mTabs;
 
     // FABs
-    private ActionButton mAddIngredientButton;
-    private ActionButton mAddDirectionButton;
+    private FloatingActionButton mAddIngredientButton;
+    private FloatingActionButton mAddDirectionButton;
 
     // Fragments
     private RecipeEditionFirstTabFragment mFirstFragment;
     private RecipeEditionSecondTabFragment mSecondFragment;
     private RecipeEditionThirdTabFragment mThirdFragment;
+    private int mLastTab;
 
     // Behaviour variables
     private boolean mEnableSaveButton;
@@ -98,7 +104,8 @@ public class EditionActivity extends AppCompatActivity {
         String mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
         // Get data from previous activity
-        String presentTab = TAB_1;
+        int presentTab = FIRST_TAB;
+        String title = getString(R.string.activity_edit_title);
         if (savedInstanceState == null) {
             Intent i = getIntent();
             mRecipe = i.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
@@ -124,33 +131,119 @@ public class EditionActivity extends AppCompatActivity {
                         new ArrayList<RecipeCategory>(),
                         new ArrayList<RecipeIngredient>(),
                         new ArrayList<RecipeDirection>());
+
+                title = getString(R.string.activity_add_title);
             }
         } else {
             mRecipe = savedInstanceState.getParcelable(AppData.INTENT_KEY_RECIPE);
-            presentTab = savedInstanceState.getString(AppData.INTENT_KEY_EDITION_TAG);
+            presentTab = savedInstanceState.getInt(AppData.INTENT_KEY_EDITION_TAG);
         }
 
+        mLastTab = presentTab;
         mEnableSaveButton = false;
 
         resetForcedCategories();
 
+        // Set view
         overridePendingTransition(R.anim.pull_in_from_left, R.anim.hold);
         setContentView(R.layout.activity_edition);
 
-        getSupportActionBar().setTitle(getString(R.string.activity_add_title));
-        getSupportActionBar().setElevation(0);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setTitle(title);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
 
-        mLayout = findViewById(R.id.layout);
+        mLayout = findViewById(R.id.coordinator_layout);
 
-        // Get fragments
-        mFirstFragment = (RecipeEditionFirstTabFragment) getFragmentManager().findFragmentById(R.id.fragment1);
-        mSecondFragment = (RecipeEditionSecondTabFragment) getFragmentManager().findFragmentById(R.id.fragment2);
-        mThirdFragment = (RecipeEditionThirdTabFragment) getFragmentManager().findFragmentById(R.id.fragment3);
+        // Set tabs
+        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+        setupViewPager(viewPager);
+        // TODO: Check this!
+        viewPager.setCurrentItem(presentTab);
 
-        // Get FABS
-        mAddIngredientButton = (ActionButton)findViewById(R.id.add_ingredient_button);
-        mAddDirectionButton = (ActionButton)findViewById(R.id.add_direction_button);
+        mTabs = (TabLayout) findViewById(R.id.tab_layout);
+        mTabs.setupWithViewPager(viewPager);
+
+        // Set tab layout styles
+
+        int tabIconColor = ContextCompat.getColor(this, R.color.fab_material_white);
+        Drawable d;
+
+        TabLayout.Tab firstTab = mTabs.getTabAt(FIRST_TAB);
+        if (firstTab != null) {
+            d = getDrawable(R.drawable.ic_description_32dp);
+            if (d != null) {
+                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                firstTab.setIcon(d);
+            }
+        }
+
+        TabLayout.Tab secondTab = mTabs.getTabAt(SECOND_TAB);
+        if (secondTab != null) {
+            d = getDrawable(R.drawable.ic_ingredients_32dp);
+            if (d != null) {
+                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                secondTab.setIcon(d);
+            }
+        }
+
+        TabLayout.Tab thirdTab = mTabs.getTabAt(THIRD_TAB);
+        if (thirdTab != null) {
+            d = getDrawable(R.drawable.ic_cook_32dp);
+            if (d != null) {
+                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                thirdTab.setIcon(d);
+            }
+        }
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+
+            @Override
+            public void onPageSelected(int position) {
+                // Hide previous FABs
+                if (mLastTab == SECOND_TAB) {
+                    mAddIngredientButton.hide();
+                }
+                if (mLastTab == THIRD_TAB) {
+                    mAddDirectionButton.hide();
+                }
+
+                // Select new tab
+                TabLayout.Tab tab = mTabs.getTabAt(position);
+                if (tab != null) {
+                    tab.select();
+                }
+
+                // Reload initial data
+                if (position == FIRST_TAB) {
+                    mFirstFragment.onReloadView();
+                }
+
+                // Show FABs again
+                if (position == SECOND_TAB) {
+                    mAddIngredientButton.show();
+                }
+                if (position == THIRD_TAB) {
+                    mAddDirectionButton.show();
+                }
+
+                mLastTab = position;
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+
+        });
+
+
+        // Set FABs
+        mAddIngredientButton = (FloatingActionButton) findViewById(R.id.add_ingredient_button);
+        mAddDirectionButton = (FloatingActionButton) findViewById(R.id.add_direction_button);
 
         mAddIngredientButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -163,70 +256,6 @@ public class EditionActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mThirdFragment.showAddDialog();
-            }
-        });
-
-        // Set tabs
-        mTabs = (TabHost)findViewById(android.R.id.tabhost);
-        mTabs.setup();
-
-        // First tab: information
-        TabHost.TabSpec spec = mTabs.newTabSpec(TAB_1);
-        spec.setContent(R.id.tab1);
-        spec.setIndicator("", getDrawable(R.drawable.ic_description_32dp));
-        mTabs.addTab(spec);
-
-        // Second tab: ingredients
-        spec = mTabs.newTabSpec(TAB_2);
-        spec.setContent(R.id.tab2);
-        spec.setIndicator("", getDrawable(R.drawable.ic_ingredients_32dp));
-        mTabs.addTab(spec);
-
-        // Third tab: directions
-        spec = mTabs.newTabSpec(TAB_3);
-        spec.setContent(R.id.tab3);
-        spec.setIndicator("", getDrawable(R.drawable.ic_cook_32dp));
-        mTabs.addTab(spec);
-
-        // Show first tab at the beginning
-        mTabs.setCurrentTabByTag(presentTab);
-        mLastTab = presentTab;
-        resetTabColors();
-
-        mTabs.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
-            @Override
-            public void onTabChanged(final String tabId) {
-                // Hide previous FABs
-                if (mLastTab.equals(TAB_2)) {
-                    mAddIngredientButton.hide();
-                }
-                if (mLastTab.equals(TAB_3)) {
-                    mAddDirectionButton.hide();
-                }
-
-                mTabs.setCurrentTabByTag(tabId);
-                resetTabColors();
-
-                // Reload initial data
-                if (tabId.equals(TAB_1)) {
-                    mFirstFragment.reloadInitialData();
-                }
-
-                // Show FABs after a delay
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (tabId.equals(TAB_2)) {
-                            mAddIngredientButton.show();
-                        }
-                        if (tabId.equals(TAB_3)) {
-                            mAddDirectionButton.show();
-                        }
-
-                        mLastTab = tabId;
-                    }
-                }, 400);
-
             }
         });
     }
@@ -255,7 +284,7 @@ public class EditionActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(AppData.INTENT_KEY_RECIPE, mRecipe);
-        outState.putString(AppData.INTENT_KEY_EDITION_TAG, mTabs.getCurrentTabTag());
+        outState.putInt(AppData.INTENT_KEY_EDITION_TAG, mTabs.getSelectedTabPosition());
     }
 
     /**
@@ -267,27 +296,24 @@ public class EditionActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    // UI METHODS
+
     /**
-     * Change the tab widget appearance.
-     * Set different styles for basic and selected tabs.
+     * Define fragments and add them to the view pager adapter
+     * @param viewPager Loaded view pager
      */
-    private void resetTabColors() {
-        for (int i = 0; i < mTabs.getTabWidget().getChildCount(); i++) {
-            // Unselected ones
-            mTabs.getTabWidget().getChildAt(i)
-                    .setBackgroundColor(getResources().getColor(android.R.color.white));
+    private void setupViewPager(ViewPager viewPager) {
+        mFirstFragment = new RecipeEditionFirstTabFragment();
+        mSecondFragment = new RecipeEditionSecondTabFragment();
+        mThirdFragment = new RecipeEditionThirdTabFragment();
 
-            ImageView iv = (ImageView) mTabs.getTabWidget().getChildAt(i).findViewById(android.R.id.icon);
-            iv.setColorFilter(getResources().getColor(R.color.theme_default_primary), android.graphics.PorterDuff.Mode.SRC_IN);
-        }
-
-        // Selected ones
-        mTabs.getTabWidget().getChildAt(mTabs.getCurrentTab())
-                .setBackgroundColor(getResources().getColor(R.color.theme_default_primary));
-        ImageView iv = (ImageView) mTabs.getCurrentTabView().findViewById(android.R.id.icon);
-        iv.setColorFilter(getResources()
-                .getColor(android.R.color.white), android.graphics.PorterDuff.Mode.SRC_IN);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(mFirstFragment);
+        adapter.addFragment(mSecondFragment);
+        adapter.addFragment(mThirdFragment);
+        viewPager.setAdapter(adapter);
     }
+
 
     // MENU METHODS
 
@@ -473,4 +499,30 @@ public class EditionActivity extends AppCompatActivity {
         return true;
     }
 
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment) {
+            mFragmentList.add(fragment);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return "";
+        }
+    }
 }

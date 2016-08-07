@@ -1,11 +1,10 @@
 package com.amusebouche.fragments;
 
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -64,17 +63,6 @@ public class RecipeEditionThirdTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
-    }
-
-
-    /**
-     * Called when a fragment is first attached to its activity.
-     *
-     * @param activity Fragemnt activity (DetailActivity)
-     */
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
     }
 
 

@@ -1,133 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/white"
-    android:gravity="bottom">
+    android:background="@color/background">
 
-    <TabHost android:id="@android:id/tabhost"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:elevation="0dp"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:gravity="top"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark"
+                app:layout_scrollFlags="scroll|enterAlways"
+                android:elevation="0dp"
+                app:titleMarginTop="13dp"/>
 
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="4dp"
-                android:background="@drawable/divider_action_bar" />
-
-            <TabWidget android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@android:id/tabs" />
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="2dp"
-                android:layout_marginBottom="0dp"
-                android:background="@drawable/divider" />
-
-            <FrameLayout android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@android:id/tabcontent" >
-
-                <LinearLayout android:id="@+id/tab1"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <fragment android:name="com.amusebouche.fragments.RecipeEditionFirstTabFragment"
-                        android:id="@+id/fragment1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout android:id="@+id/tab2"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <fragment android:name="com.amusebouche.fragments.RecipeEditionSecondTabFragment"
-                        android:id="@+id/fragment2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <LinearLayout android:id="@+id/tab3"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
-
-                    <fragment android:name="com.amusebouche.fragments.RecipeEditionThirdTabFragment"
-                        android:id="@+id/fragment3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:tabMode="fixed"
+                app:tabGravity="fill"
+                android:elevation="6dp"
+                android:layout_gravity="bottom"
+                app:tabBackground="@color/theme_default_primary"/>
 
 
-    <RelativeLayout
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="bottom|end">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-        <com.software.shell.fab.ActionButton
-            android:id="@+id/add_ingredient_button"
-            android:visibility="invisible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/fab_margin"
-            android:layout_marginBottom="@dimen/fab_margin"
-            fab:type="DEFAULT"
-            fab:button_color="@color/theme_default_accent"
-            fab:button_colorPressed="@color/theme_default_accent_dark"
-            fab:image="@drawable/ic_ingredients_white_32dp"
-            fab:image_size="32dp"
-            fab:shadow_color="@color/gridview_background"
-            fab:shadow_radius="1.0dp"
-            fab:shadow_xOffset="0.5dp"
-            fab:shadow_yOffset="1.0dp"
-            fab:button_colorRipple="@color/theme_default_accent_light"
-            fab:rippleEffect_enabled="true"
-            fab:shadowResponsiveEffect_enabled="true"
-            fab:show_animation="@anim/fab_scale_up"
-            fab:hide_animation="@anim/fab_scale_down"
-            />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_ingredient_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_add_white_48dp"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:layout_anchor="@id/view_pager"
+        app:layout_anchorGravity="bottom|right|end"
+        android:visibility="invisible"/>
 
-        <com.software.shell.fab.ActionButton
-            android:id="@+id/add_direction_button"
-            android:visibility="invisible"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/fab_margin"
-            android:layout_marginBottom="@dimen/fab_margin"
-            fab:type="DEFAULT"
-            fab:button_color="@color/theme_default_accent"
-            fab:button_colorPressed="@color/theme_default_accent_dark"
-            fab:image="@drawable/ic_cook_white_32dp"
-            fab:image_size="32dp"
-            fab:shadow_color="@color/gridview_background"
-            fab:shadow_radius="1.0dp"
-            fab:shadow_xOffset="0.5dp"
-            fab:shadow_yOffset="1.0dp"
-            fab:button_colorRipple="@color/theme_default_accent_light"
-            fab:rippleEffect_enabled="true"
-            fab:shadowResponsiveEffect_enabled="true"
-            fab:show_animation="@anim/fab_scale_up"
-            fab:hide_animation="@anim/fab_scale_down"
-            />
-    </RelativeLayout>
-</RelativeLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_direction_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_add_white_48dp"
+        app:elevation="6dp"
+        app:pressedTranslationZ="12dp"
+        app:layout_anchor="@id/view_pager"
+        app:layout_anchorGravity="bottom|right|end"
+        android:visibility="invisible"/>
+
+</android.support.design.widget.CoordinatorLayout>

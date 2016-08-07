@@ -193,6 +193,7 @@
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">New recipe</string>
+    <string name="activity_edit_title">Edit recipe</string>
     <!--   Recipe edition fragment -->
     <string name="recipe_edition_saved_recipe_message">Saved recipe</string>
     <string name="recipe_edition_fill_recipe_message">Please, fill in the recipe details.</string>

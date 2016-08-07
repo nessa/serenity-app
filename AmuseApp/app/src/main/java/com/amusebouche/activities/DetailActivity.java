@@ -134,7 +134,7 @@ public class DetailActivity extends AppCompatActivity {
         mInitialDownload = true;
 
         // Get saved data
-        Integer presentTab = 0;
+        int presentTab = 0;
         if (savedInstanceState == null) {
             Intent i = getIntent();
             mRecipe = i.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
@@ -301,10 +301,10 @@ public class DetailActivity extends AppCompatActivity {
         mFourthFragment = new RecipeDetailFourthTabFragment();
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(mFirstFragment, getString(R.string.detail_information_label));
-        adapter.addFragment(mSecondFragment, getString(R.string.detail_ingredients_label));
-        adapter.addFragment(mThirdFragment, getString(R.string.detail_direction_label));
-        adapter.addFragment(mFourthFragment, getString(R.string.detail_comments_label));
+        adapter.addFragment(mFirstFragment);
+        adapter.addFragment(mSecondFragment);
+        adapter.addFragment(mThirdFragment);
+        adapter.addFragment(mFourthFragment);
         viewPager.setAdapter(adapter);
     }
 
@@ -794,7 +794,6 @@ public class DetailActivity extends AppCompatActivity {
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
 
         public ViewPagerAdapter(FragmentManager manager) {
             super(manager);
@@ -810,9 +809,8 @@ public class DetailActivity extends AppCompatActivity {
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        public void addFragment(Fragment fragment) {
             mFragmentList.add(fragment);
-            mFragmentTitleList.add(title);
         }
 
         @Override

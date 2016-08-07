@@ -16,7 +16,7 @@
     </style>
 
     <style name="DetailActionBar" parent="Widget.AppCompat.Light.ActionBar">
-        <item name="background">@android:color/transparent</item>
+        <item name="background">@color/theme_default_primary</item>
         <item name="homeAsUpIndicator">@drawable/abc_ic_ab_back_mtrl_am_alpha</item>
         <item name="displayOptions">homeAsUp</item>
     </style>

@@ -193,6 +193,7 @@
 
     <!-- Recipe add activity -->
     <string name="activity_add_title">Nueva receta</string>
+    <string name="activity_edit_title">Modificar receta</string>
     <!--   Recipe edition fragment -->
     <string name="recipe_edition_saved_recipe_message">Receta guardada</string>
     <string name="recipe_edition_fill_recipe_message">Por favor, rellene los detalles de la receta.</string>
