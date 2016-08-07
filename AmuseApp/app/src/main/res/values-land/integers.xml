@@ -6,4 +6,7 @@
 
     <!-- Search view -->
     <integer name="search_scrollview_weight">4</integer>
+
+    <!-- Dialogs -->
+    <integer name="detail_direction_dialog_max_lines">5</integer>
 </resources>

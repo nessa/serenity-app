@@ -166,7 +166,7 @@ public class RecipeDetailFourthTabFragment extends Fragment {
         if (mDetailActivity.getRecipe().getId() != null &&
             !mDetailActivity.getRecipe().getId().equals("0")) {
 
-            mDetailActivity.showLoadingSnackbar("Loading...");
+            mDetailActivity.showLoadingSnackbar(getString(R.string.detail_loading_comments_message));
 
             // Make request
             AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);

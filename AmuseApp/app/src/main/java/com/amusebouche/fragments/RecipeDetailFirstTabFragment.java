@@ -227,10 +227,6 @@ public class RecipeDetailFirstTabFragment extends Fragment {
             holder.mRecipeNumberUsersRating.setText(UserFriendlyTranslationsHandler.getUsersLabel(
                 mContext.getRecipe().getUsersRating(), mContext));
 
-            LayerDrawable stars = (LayerDrawable) holder.mRatingBar.getProgressDrawable();
-            stars.getDrawable(2).setColorFilter(getResources().getColor(android.R.color.white),
-                PorterDuff.Mode.SRC_ATOP);
-
             holder.mTypeOfDishTextView.setText(UserFriendlyTranslationsHandler.getTypeOfDishTranslation(
                 mContext.getRecipe().getTypeOfDish(), getActivity()));
             holder.mDifficultyTextView.setText(UserFriendlyTranslationsHandler.getDifficultyTranslation(

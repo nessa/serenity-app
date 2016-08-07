@@ -5,12 +5,15 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Menu;
@@ -25,6 +28,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
+import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -104,6 +108,9 @@ public class MainActivity extends AppCompatActivity {
 
     // UI variables
     private Fragment mLastFragment;
+    private CoordinatorLayout mCoordinatorLayout;
+    private FloatingActionButton mAddButton;
+    private Snackbar mSnackBar;
 
     // Drawers
     private DrawerLayout mDrawerLayout;
@@ -123,13 +130,14 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        // Set toolbar
-        final ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-            ab.setHomeButtonEnabled(true);
-            ab.setElevation(0);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+
+        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
         // Set initial data
         mCurrentPage = 0;
@@ -137,9 +145,18 @@ public class MainActivity extends AppCompatActivity {
         mPreviousTotal = 0;
         mCurrentSelectedPosition = 1;
 
+        // FAB
+        mAddButton = (FloatingActionButton) findViewById(R.id.add_button);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, EditionActivity.class);
+                startActivity(i);
+            }
+        });
+
         // Get database helper
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
-
         reloadRecipesLanguage();
 
         if (mDrawerLayout == null || mLeftDrawerView == null || mRightDrawerView == null || mDrawerToggle == null) {
@@ -242,8 +259,6 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onPrepareOptionsMenu(menu);
     }
-
-    // MENU METHODS
 
     /**
      * We inflate the menu options in every fragment, but the selection
@@ -735,6 +750,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    public void showLoadingIndicator() {
+        // Show loading view
+        ProgressBar progressBar = new ProgressBar(this);
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF,
+                android.graphics.PorterDuff.Mode.MULTIPLY);
+
+        mSnackBar = Snackbar.make(mCoordinatorLayout,
+                getString(R.string.recipe_list_loading_recipes_message), Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snack_view = (Snackbar.SnackbarLayout) mSnackBar.getView();
+        snack_view.addView(progressBar);
+        mSnackBar.show();
+    }
+
+    public void hideLoadingIndicator() {
+        mSnackBar.dismiss();
+    }
+
     // NAVIGATION DRAWER METHODS
 
     private void loadLeftDrawer() {
@@ -775,8 +807,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Update the main content by replacing fragments
         Fragment fragment;
+        boolean isRecipeList = true;
         switch (position) {
             case PROFILE:
+                isRecipeList = false;
                 getSupportActionBar().setTitle(getString(R.string.lateral_menu_login));
                 fragment = new UserFragment();
                 break;
@@ -797,13 +831,30 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new RecipeListFragment();
                 break;
             case SETTINGS:
+                isRecipeList = false;
                 getSupportActionBar().setTitle(getString(R.string.lateral_menu_settings));
                 fragment = new SettingsFragment();
                 break;
             case INFO:
+                isRecipeList = false;
                 getSupportActionBar().setTitle(getString(R.string.lateral_menu_info));
                 fragment = new InformationFragment();
                 break;
+        }
+
+        // Hide add button
+        if (!isRecipeList && mAddButton.isShown()) {
+            mAddButton.hide();
+        }
+
+        // Enable or disable right drawer
+        if (mDrawerLayout != null & mRightDrawerView != null) {
+            if (isRecipeList) {
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, mRightDrawerView);
+                //mAddButton.show();
+            } else {
+                mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, mRightDrawerView);
+            }
         }
 
         if (!isFinishing()) {
@@ -818,9 +869,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void showAddButton() {
+        Log.d("MAIN", "SHOW ADD");
+        mAddButton.setVisibility(View.VISIBLE);
+        mAddButton.show();
+    }
+
     private void resetRecipesAndSetMode(int mode) {
         if (mRecipes == null) {
-            mRecipes = new ArrayList<Recipe>();
+            mRecipes = new ArrayList<>();
         } else {
             mRecipes.clear();
         }

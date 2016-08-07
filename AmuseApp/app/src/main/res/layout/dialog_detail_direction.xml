@@ -28,7 +28,7 @@
             android:id="@+id/description"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:maxLines="10"
+            android:maxLines="@integer/detail_direction_dialog_max_lines"
             android:textColor="@color/primary_text"
             android:textSize="@dimen/detail_directions_step_text"
             android:layout_margin="@dimen/detail_directions_margin" />

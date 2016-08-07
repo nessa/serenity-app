@@ -121,6 +121,7 @@
     <string name="NO">No</string>
     <!--   Recipe List fragment class -->
     <string name="please_wait_message">Please, wait…</string>
+    <string name="recipe_list_loading_recipes_message">Loading recipes…</string>
     <string name="recipe_list_no_recipes_message">No recipes found</string>
     <string name="recipe_list_no_connection_message">No connection found</string>
 
@@ -183,6 +184,7 @@
     <string name="voice_error_speech_timeout">No speech input. Please, say one of these commands:</string>
     <string name="voice_error_not_understood">Didn\'t understand. Please, say one of these commands:</string>
     <!-- Comments -->
+    <string name="detail_loading_comments_message">Loading comments…</string>
     <string name="detail_leave_a_comment_message">Leave a comment…</string>
     <string name="detail_send_comment">Send comment</string>
     <!-- Rating -->
