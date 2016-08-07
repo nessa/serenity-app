@@ -68,8 +68,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     // Services variables
     private TextToSpeech mTTS;
 
-    // UI variables
-    private RecyclerView mLayout;
     private RecyclerAdapterWithHeader mDirectionsAdapter;
 
     // Timer dialog variables
@@ -84,6 +82,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     private SpeechRecognizer mSpeechRecognizer;
     private CountDownTimer mSpeechRecognizerTimer;
     private boolean mSpeechRecognizerTimerIsRunning;
+
+    private Dialog mDirectionDialog;
 
 
     // LIFECYCLE METHODS
@@ -200,7 +200,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         // Get recipe from activity
         mDetailActivity = (DetailActivity) getActivity();
 
-        mLayout = (RecyclerView) inflater.inflate(R.layout.fragment_detail_third_tab,
+        RecyclerView mLayout = (RecyclerView) inflater.inflate(R.layout.fragment_detail_third_tab,
                 container, false);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -253,13 +253,10 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             final RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(mPresentDescriptionIndex);
             CharSequence text = dir.getDescription();
 
-            // Move view to direction box
-            final View directionLayout = mLayout.getChildAt(mPresentDescriptionIndex + 1);
-
-            // TODO: Check this!
-            mLayout.smoothScrollToPosition(directionLayout.getTop());
-
             if (text != "") {
+                // Show direction
+                showDirectionDialog();
+
                 mTTS.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                     @Override
                     public void onStart(String utteranceId) {
@@ -271,6 +268,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                RecipeDetailThirdTabFragment.this.mDirectionDialog.dismiss();
+
                                 if (mOngoingMode) {
                                     if (dir.getTime() > 0) {
 
@@ -308,6 +307,21 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                     TextToSpeech.QUEUE_FLUSH, null, null);
         }
     }
+
+    public void setDirectionDialog(Integer number, String description) {
+        mDirectionDialog = new Dialog(getActivity());
+        mDirectionDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
+        mDirectionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mDirectionDialog.setContentView(R.layout.dialog_detail_direction);
+
+        final TextView numberTextView = (TextView) mDirectionDialog.findViewById(R.id.number);
+        final TextView descriptionTextView = (TextView) mDirectionDialog.findViewById(R.id.description);
+
+        numberTextView.setText(String.format(getString(R.string.detail_direction_label_with_number),
+                number));
+        descriptionTextView.setText(description);
+    }
+
 
     /**
      * Set timer dialog
@@ -401,6 +415,17 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 return true;
             }
         });
+    }
+
+    /**
+     * Show direction dialog set up in setDirectionDialog
+     */
+    public void showDirectionDialog() {
+        RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(mPresentDescriptionIndex);
+
+        this.setDirectionDialog(dir.getSortNumber(), dir.getDescription());
+
+        mDirectionDialog.show();
     }
 
     /**
@@ -531,13 +556,13 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 String message = getString(R.string.voice_error_not_understood);
                 if (dir.getTime() > 0) {
                     message = message + " " + getString(R.string.voice_command_repeat) +
-                            ", " + getString(R.string.voice_command_timer) + " " +
+                            ", " + getString(R.string.voice_command_timer) + ", " +
                             getString(R.string.voice_command_next) +
                             getString(R.string.voice_or) + " " +
                             getString(R.string.voice_command_exit);
                 } else {
                     message = message + " " + getString(R.string.voice_command_repeat) +
-                            getString(R.string.voice_command_next) +
+                            ", " + getString(R.string.voice_command_next) +
                             " " + getString(R.string.voice_or) + " " +
                             getString(R.string.voice_command_exit);
                 }
@@ -603,6 +628,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                                     keepGoing = true;
                                 } else {
                                     Log.d("INFO", "End of automatic speech");
+                                    mCommandsDialog.dismiss();
                                     exitFromOngoingMode();
                                 }
                             }
@@ -787,10 +813,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
                 final RecipeDirection presentDirection = getItem(position);
 
-                itemHolder.view.setTag(position - 1);
-
                 itemHolder.number.setText(String.format(getString(R.string.detail_direction_label_with_number),
-                    presentDirection.getSortNumber()));
+                        presentDirection.getSortNumber()));
 
                 itemHolder.description.setText(presentDirection.getDescription());
 
@@ -998,7 +1022,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         }
 
         class VHItem extends RecyclerView.ViewHolder {
-            public View view;
             public TextView number;
             public TextView description;
             public ImageButton readDirectionButton;
@@ -1009,7 +1032,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             public VHItem(View itemView) {
                 super(itemView);
 
-                view = itemView;
                 number = (TextView) itemView.findViewById(R.id.number);
                 description = (TextView) itemView.findViewById(R.id.description);
 
