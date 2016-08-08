@@ -80,6 +80,8 @@ public class DetailActivity extends AppCompatActivity {
     private Recipe mRecipe;
     private Recipe mAPIRecipe;
     private Recipe mDatabaseRecipe;
+    private String mRecipesLanguage;
+    private boolean mRecognizerLanguageSetting;
 
     // UI
     private TextView mTitle;
@@ -125,6 +127,12 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
+
+        // Get preferences
+        mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
+
+        String recognizerLanguageString = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE);
+        mRecognizerLanguageSetting = recognizerLanguageString.equals(AppData.PREFERENCE_TRUE_VALUE);
 
         // Check if user is logged in
         mToken = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
@@ -473,6 +481,20 @@ public class DetailActivity extends AppCompatActivity {
      * @return Authorization token
      */
     public String getToken() { return mToken; }
+
+    public boolean getRecognizerLanguageSetting() {
+        return mRecognizerLanguageSetting;
+    }
+
+    public String getLocaleCountryFromCode(String code) {
+        for (int i = 0; i < AppData.LOCALE_COUNTRIES.size(); i++) {
+            if (AppData.LOCALE_COUNTRIES.get(i).first.equals(code.toLowerCase())) {
+                return AppData.LOCALE_COUNTRIES.get(i).second;
+            }
+        }
+
+        return "";
+    }
 
     // FUNCTIONALITY METHODS
 

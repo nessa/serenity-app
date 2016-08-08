@@ -49,4 +49,10 @@ public class AppData {
             new Pair<>("es", R.string.language_es),
             new Pair<>("en", R.string.language_en)
     ));
+
+    // Locale data
+    public static ArrayList<Pair<String, String>> LOCALE_COUNTRIES = new ArrayList<>(Arrays.asList(
+        new Pair<>("es", "ES"),
+        new Pair<>("en", "US")
+    ));
 }

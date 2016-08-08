@@ -68,7 +68,9 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     // Services variables
     private TextToSpeech mTTS;
 
+    // UI
     private RecyclerAdapterWithHeader mDirectionsAdapter;
+    private Dialog mDirectionDialog;
 
     // Timer dialog variables
     private Dialog mTimerDialog;
@@ -83,7 +85,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     private CountDownTimer mSpeechRecognizerTimer;
     private boolean mSpeechRecognizerTimerIsRunning;
 
-    private Dialog mDirectionDialog;
 
 
     // LIFECYCLE METHODS
@@ -127,8 +128,10 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 @Override
                 public void onInit(int status) {
                     if (status != TextToSpeech.ERROR) {
-                        Locale locSpanish = new Locale(mDetailActivity.getRecipe().getLanguage().toLowerCase());
-                        mTTS.setLanguage(locSpanish);
+                        Locale loc = new Locale(mDetailActivity.getRecipe().getLanguage().toLowerCase(),
+                            mDetailActivity.getLocaleCountryFromCode(
+                                mDetailActivity.getRecipe().getLanguage().toLowerCase()));
+                        mTTS.setLanguage(loc);
                     }
                 }
             });
@@ -507,9 +510,20 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
         mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
 
+        // Set recognizer data
         final Intent recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        // TODO: Set user language
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
+
+        // Set recognizer language
+        if (mDetailActivity.getRecognizerLanguageSetting()) {
+            // Device language
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
+        } else {
+            // Recipe language
+            Locale loc = new Locale(mDetailActivity.getRecipe().getLanguage().toLowerCase(),
+                mDetailActivity.getLocaleCountryFromCode(mDetailActivity.getRecipe().getLanguage().toLowerCase()));
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, loc);
+        }
+
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 getActivity().getPackageName());
         recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,

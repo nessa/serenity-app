@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -101,6 +100,7 @@ public class EditionActivity extends AppCompatActivity {
 
         mRecipeUpdated = false;
 
+        // Get preferences
         String mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
         // Get data from previous activity
@@ -113,24 +113,24 @@ public class EditionActivity extends AppCompatActivity {
             if (mRecipe == null) {
                 // Create an empty recipe
                 mRecipe = new Recipe(
-                        "",
-                        "",
-                        "",
-                        "", // Local recipes has no username declared until they are uploaded
+                    "",
+                    "",
+                    "",
+                    "", // Local recipes has no username declared until they are uploaded
                     mRecipesLanguage, // Set preferences language
-                        UserFriendlyTranslationsHandler.getDefaultTypeOfDish(),
-                        UserFriendlyTranslationsHandler.getDefaultDifficulty(),
-                        null,
-                        null,
-                        0.0F,
-                        "",
-                        0,
-                        0,
-                        1,
-                        "",
-                        new ArrayList<RecipeCategory>(),
-                        new ArrayList<RecipeIngredient>(),
-                        new ArrayList<RecipeDirection>());
+                    UserFriendlyTranslationsHandler.getDefaultTypeOfDish(),
+                    UserFriendlyTranslationsHandler.getDefaultDifficulty(),
+                    null,
+                    null,
+                    0.0F,
+                    "",
+                    0,
+                    0,
+                    1,
+                    "",
+                    new ArrayList<RecipeCategory>(),
+                    new ArrayList<RecipeIngredient>(),
+                    new ArrayList<RecipeDirection>());
 
                 title = getString(R.string.activity_add_title);
             }
@@ -370,6 +370,7 @@ public class EditionActivity extends AppCompatActivity {
     public ArrayList<String> getForcedCategories() {
         return mForcedCategories;
     }
+
 
     // SETTERS
 

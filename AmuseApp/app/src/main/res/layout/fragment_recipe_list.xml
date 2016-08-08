@@ -18,6 +18,6 @@
         android:gravity="center"
         android:text="@string/recipe_list_no_recipes_message"
         android:textSize="@dimen/recipe_list_message_size"
-        android:textColor="@android:color/white"
+        android:textColor="@color/primary_text"
         android:visibility="gone"/>
 </RelativeLayout>
