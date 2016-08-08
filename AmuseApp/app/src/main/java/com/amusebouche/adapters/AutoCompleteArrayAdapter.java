@@ -75,24 +75,34 @@ public class AutoCompleteArrayAdapter extends ArrayAdapter<String> implements Fi
     @Override
     public Filter getFilter() {
         return new Filter() {
+            /* In the performFiltering method which runs on a background thread, we must use
+             * a temporary list to prevent IllegalStateException: "The content of the adapter
+             * has changed but ListView did not receive a notification. Make sure the content
+             * of your adapter is not modified from a background thread, but only from the UI
+             * thread." */
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
-                if (constraint != null) {
-                    // Retrieve the autocomplete results.
-                    resultList = mDatabaseHelper.getIngredientsTranslations(10, mLanguage,
-                            constraint.toString());
+                ArrayList<String> queryResults;
 
-                    // Assign the data to the FilterResults
-                    filterResults.values = resultList;
-                    filterResults.count = resultList.size();
+                if (constraint != null && constraint.length() > 0) {
+                    queryResults = mDatabaseHelper.getIngredientsTranslations(10, mLanguage,
+                        constraint.toString());
+                } else {
+                    queryResults = new ArrayList<>();
                 }
+
+                // Assign the data to the FilterResults
+                filterResults.values = queryResults;
+                filterResults.count = queryResults.size();
+
                 return filterResults;
             }
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results != null && results.count > 0) {
+                resultList = (ArrayList<String>) results.values;
+                if (results.count > 0) {
                     notifyDataSetChanged();
                 } else {
                     notifyDataSetInvalidated();
