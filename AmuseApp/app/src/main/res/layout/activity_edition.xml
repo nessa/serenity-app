@@ -11,28 +11,27 @@
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="0dp"
         android:fitsSystemWindows="true">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:gravity="top"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                app:layout_scrollFlags="scroll|enterAlways"
-                android:elevation="0dp"
-                app:titleMarginTop="13dp"/>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:gravity="top"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:layout_scrollFlags="scroll|enterAlways"
+            android:elevation="0dp"
+            app:titleMarginTop="@dimen/detail_toolbar_margin_top"/>
 
-            <android.support.design.widget.TabLayout
-                android:id="@+id/tab_layout"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:tabMode="fixed"
-                app:tabGravity="fill"
-                android:elevation="6dp"
-                android:layout_gravity="bottom"
-                app:tabBackground="@color/theme_default_primary"/>
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:tabMode="fixed"
+            app:tabGravity="fill"
+            android:elevation="@dimen/toolbar_elevation"
+            android:layout_gravity="bottom"
+            app:tabBackground="@color/theme_default_primary"/>
 
 
     </android.support.design.widget.AppBarLayout>
@@ -50,8 +49,7 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_add_white_48dp"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"
+        app:elevation="@dimen/fab_elevation"
         app:layout_anchor="@id/view_pager"
         app:layout_anchorGravity="bottom|right|end"
         android:visibility="invisible"/>
@@ -63,8 +61,7 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_add_white_48dp"
-        app:elevation="6dp"
-        app:pressedTranslationZ="12dp"
+        app:elevation="@dimen/fab_elevation"
         app:layout_anchor="@id/view_pager"
         app:layout_anchorGravity="bottom|right|end"
         android:visibility="invisible"/>

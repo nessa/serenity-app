@@ -16,7 +16,7 @@
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="256dp"
+            android:layout_height="@dimen/detail_collapsing_height"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:contentScrim="@color/theme_default_primary"
             app:statusBarScrim="@android:color/transparent"
@@ -35,11 +35,11 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="104dp"
+                android:layout_height="@dimen/detail_toolbar_size"
                 android:gravity="top"
                 android:minHeight="?attr/actionBarSize"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                app:titleMarginTop="13dp"
+                app:titleMarginTop="@dimen/detail_toolbar_margin_top"
                 app:layout_collapseMode="pin" >
 
                 <TextView

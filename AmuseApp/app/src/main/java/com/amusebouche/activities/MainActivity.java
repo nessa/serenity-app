@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -130,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
-
 
         // Set initial data
         mCurrentPage = 0;
@@ -772,45 +770,42 @@ public class MainActivity extends AppCompatActivity {
 
         // Update the main content by replacing fragments
         Fragment fragment;
+        String title;
         boolean isRecipeList = true;
         switch (position) {
             case PROFILE:
                 isRecipeList = false;
-                getSupportActionBar().setTitle(getString(R.string.lateral_menu_login));
+                title = getString(R.string.lateral_menu_login);
                 fragment = new UserFragment();
                 break;
             default:
             case NEW_RECIPES:
-                getSupportActionBar().setTitle(getString(R.string.lateral_menu_new_recipes));
+                title = getString(R.string.lateral_menu_new_recipes);
                 this.resetRecipesAndSetMode(NEW_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case DOWNLOADED_RECIPES:
-                getSupportActionBar().setTitle(getString(R.string.lateral_menu_downloaded_recipes));
+                title = getString(R.string.lateral_menu_downloaded_recipes);
                 this.resetRecipesAndSetMode(DOWNLOADED_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case MY_RECIPES:
-                getSupportActionBar().setTitle(getString(R.string.lateral_menu_my_recipes));
+                title = getString(R.string.lateral_menu_my_recipes);
                 this.resetRecipesAndSetMode(MY_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
             case SETTINGS:
                 isRecipeList = false;
-                getSupportActionBar().setTitle(getString(R.string.lateral_menu_settings));
+                title = getString(R.string.lateral_menu_settings);
                 fragment = new SettingsFragment();
                 break;
             case INFO:
                 isRecipeList = false;
-                getSupportActionBar().setTitle(getString(R.string.lateral_menu_info));
+                title = getString(R.string.lateral_menu_info);
                 fragment = new InformationFragment();
                 break;
         }
-/*
-        // Hide add button
-        if (!isRecipeList && mAddButton.isShown()) {
-            mAddButton.hide();
-        }*/
+        getSupportActionBar().setTitle(title);
 
         // Enable or disable right drawer
         if (mDrawerLayout != null & mRightDrawerView != null) {
@@ -872,10 +867,6 @@ public class MainActivity extends AppCompatActivity {
 
     public Integer getPreviousTotal() {
         return mPreviousTotal;
-    }
-
-    public String getRecipesLanguage() {
-        return mRecipesLanguage;
     }
 
     /**

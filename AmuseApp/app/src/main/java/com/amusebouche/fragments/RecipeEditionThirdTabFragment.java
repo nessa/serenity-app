@@ -136,8 +136,7 @@ public class RecipeEditionThirdTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
 
-        LinearLayout mLayout = (LinearLayout) inflater.inflate(R.layout.fragment_edition_third_tab,
-                container, false);
+        View mLayout = inflater.inflate(R.layout.fragment_edition_third_tab, container, false);
 
         mEditionActivity = (EditionActivity) getActivity();
 

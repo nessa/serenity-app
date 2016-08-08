@@ -87,14 +87,14 @@
         android:id="@+id/cooking_time_hours"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="@dimen/edition_basic_padding"
         android:max="20"
         android:progress="0"/>
     <SeekBar
         android:id="@+id/cooking_time_minutes"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="@dimen/edition_basic_padding"
         android:max="59"
         android:progress="0"/>
 
@@ -112,7 +112,7 @@
         android:id="@+id/servings"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_margin="@dimen/edition_basic_padding"
         android:max="19"
         android:progress="0"/>
 

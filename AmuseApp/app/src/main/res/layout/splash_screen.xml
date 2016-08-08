@@ -42,12 +42,12 @@
 
             <TextView
                 android:id="@+id/text"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/splash_text_margin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 android:gravity="center"
-                android:textSize="16sp" />
+                android:textSize="@dimen/splash_text_size" />
 
         </LinearLayout>
 

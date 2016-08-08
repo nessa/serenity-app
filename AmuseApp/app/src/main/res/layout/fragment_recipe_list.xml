@@ -37,8 +37,7 @@
         android:layout_gravity="end|bottom"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_add_white_48dp"
-        app:elevation="10dp"
-        app:pressedTranslationZ="12dp"
+        app:elevation="@dimen/fab_elevation"
         app:layout_anchor="@id/content"
         app:layout_anchorGravity="bottom|right|end"/>
 

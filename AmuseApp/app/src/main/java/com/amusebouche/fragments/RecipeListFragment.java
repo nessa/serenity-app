@@ -19,7 +19,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amusebouche.activities.EditionActivity;
@@ -62,7 +61,6 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     // UI
     private RecyclerView mGridView;
     private TextView mErrorMessage;
-    private FloatingActionButton mAddButton;
     private CoordinatorLayout mCoordinatorLayout;
     private Snackbar mSnackBar;
 
@@ -158,7 +156,7 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
         }
 
         // FAB
-        mAddButton = (FloatingActionButton) mLayout.findViewById(R.id.add_button);
+        FloatingActionButton mAddButton = (FloatingActionButton) mLayout.findViewById(R.id.add_button);
         mAddButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -43,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:choiceMode="singleChoice"
-            android:dividerHeight="@dimen/drawer_left_divider_height" />
+            android:dividerHeight="0dp" />
 
     </LinearLayout>
 
@@ -62,9 +62,9 @@
             android:textColor="@color/theme_default_accent"
             android:gravity="center"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:layout_marginTop="@dimen/dialog_button_padding"
+            android:paddingStart="@dimen/dialog_button_padding"
+            android:paddingEnd="@dimen/dialog_button_padding"
             android:enabled="true" />
         <Button
             android:id="@+id/accept"
@@ -75,9 +75,9 @@
             android:textColor="@color/theme_default_accent"
             android:gravity="center"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:paddingStart="10dp"
-            android:paddingEnd="10dp"
+            android:layout_marginTop="@dimen/dialog_button_padding"
+            android:paddingStart="@dimen/dialog_button_padding"
+            android:paddingEnd="@dimen/dialog_button_padding"
             android:enabled="true" />
 
     </LinearLayout>

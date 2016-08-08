@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark"
-                android:elevation="6dp" />
+                android:elevation="@dimen/toolbar_elevation" />
 
         </android.support.design.widget.AppBarLayout>
 

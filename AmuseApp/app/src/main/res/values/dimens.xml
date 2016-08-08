@@ -14,17 +14,25 @@
 
     <!-- Common -->
     <dimen name="divider_height">1dp</dimen>
-
+    <dimen name="toolbar_elevation">6dp</dimen>
+    <dimen name="fab_elevation">12dp</dimen>
+    <dimen name="autocomplete_item_padding">10dp</dimen>
+    <dimen name="autocomplete_item_text_size">15sp</dimen>
 
     <!-- Action bar -->
     <dimen name="action_bar_underline">4dp</dimen>
 
     <!-- Drawers -->
-    <dimen name="drawer_left_divider_height">0dp</dimen>
     <dimen name="drawer_left_selected_line_width">10dp</dimen>
     <dimen name="drawer_left_cell_height">48dp</dimen>
     <dimen name="drawer_left_cell_image_size">40dp</dimen>
     <dimen name="drawer_left_text_left_margin">6dp</dimen>
+
+
+    <!-- Splash -->
+    <dimen name="splash_text_margin">20dp</dimen>
+    <dimen name="splash_text_size">16sp</dimen>
+
 
     <!-- Main -->
 
@@ -47,14 +55,23 @@
     <dimen name="gridview_cell_title_font_size">18sp</dimen>
     <dimen name="gridview_cell_title_left_margin">4dp</dimen>
     <dimen name="gridview_cell_title_bottom_margin">4dp</dimen>
+    <dimen name="gridview_cell_progress_bar_margin">20dp</dimen>
 
     <!--   Recipe's list -->
     <dimen name="recipe_list_message_padding">10dp</dimen>
     <dimen name="recipe_list_message_size">24sp</dimen>
 
     <!-- Detail -->
+    <dimen name="detail_collapsing_height">256dp</dimen>
+    <dimen name="detail_toolbar_size">104dp</dimen>
+    <dimen name="detail_toolbar_margin_top">13dp</dimen>
+
     <!--   Detail: Info -->
+    <dimen name="detail_title_margin_top">1dp</dimen>
     <dimen name="detail_title_size">20sp</dimen>
+    <dimen name="detail_info_attribute_height">24dp</dimen>
+    <dimen name="detail_info_attribute_margin_top">2dp</dimen>
+    <dimen name="detail_info_attribute_margin_end">4dp</dimen>
     <dimen name="detail_info_padding">10dp</dimen>
     <dimen name="detail_info_small_padding">4dp</dimen>
     <dimen name="detail_info_text_size">16sp</dimen>
@@ -158,4 +175,8 @@
     <dimen name="users_go_to_height">36dp</dimen>
     <dimen name="users_login_sign_up_text_size">20sp</dimen>
     <dimen name="users_login_sign_up_margin">20dp</dimen>
+
+
+    <!-- Dialogs -->
+    <dimen name="dialog_button_padding">10dp</dimen>
 </resources>
