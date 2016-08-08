@@ -6,8 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
 import android.app.Fragment;
 import android.os.Bundle;
@@ -28,7 +26,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.MultiAutoCompleteTextView;
-import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -108,9 +105,6 @@ public class MainActivity extends AppCompatActivity {
 
     // UI variables
     private Fragment mLastFragment;
-    private CoordinatorLayout mCoordinatorLayout;
-    private FloatingActionButton mAddButton;
-    private Snackbar mSnackBar;
 
     // Drawers
     private DrawerLayout mDrawerLayout;
@@ -137,23 +131,12 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        mCoordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinator_layout);
 
         // Set initial data
         mCurrentPage = 0;
         mLimitPerPage = 10;
         mPreviousTotal = 0;
         mCurrentSelectedPosition = 1;
-
-        // FAB
-        mAddButton = (FloatingActionButton) findViewById(R.id.add_button);
-        mAddButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(MainActivity.this, EditionActivity.class);
-                startActivity(i);
-            }
-        });
 
         // Get database helper
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
@@ -749,24 +732,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    public void showLoadingIndicator() {
-        // Show loading view
-        ProgressBar progressBar = new ProgressBar(this);
-        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF,
-                android.graphics.PorterDuff.Mode.MULTIPLY);
-
-        mSnackBar = Snackbar.make(mCoordinatorLayout,
-                getString(R.string.recipe_list_loading_recipes_message), Snackbar.LENGTH_INDEFINITE);
-        Snackbar.SnackbarLayout snack_view = (Snackbar.SnackbarLayout) mSnackBar.getView();
-        snack_view.addView(progressBar);
-        mSnackBar.show();
-    }
-
-    public void hideLoadingIndicator() {
-        mSnackBar.dismiss();
-    }
-
     // NAVIGATION DRAWER METHODS
 
     private void loadLeftDrawer() {
@@ -841,17 +806,16 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new InformationFragment();
                 break;
         }
-
+/*
         // Hide add button
         if (!isRecipeList && mAddButton.isShown()) {
             mAddButton.hide();
-        }
+        }*/
 
         // Enable or disable right drawer
         if (mDrawerLayout != null & mRightDrawerView != null) {
             if (isRecipeList) {
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, mRightDrawerView);
-                //mAddButton.show();
             } else {
                 mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, mRightDrawerView);
             }
@@ -868,12 +832,12 @@ public class MainActivity extends AppCompatActivity {
             mLastFragment = fragment;
         }
     }
-
+/*
     public void showAddButton() {
         Log.d("MAIN", "SHOW ADD");
-        mAddButton.setVisibility(View.VISIBLE);
+        mAddButton.clearAnimation();
         mAddButton.show();
-    }
+    }*/
 
     private void resetRecipesAndSetMode(int mode) {
         if (mRecipes == null) {

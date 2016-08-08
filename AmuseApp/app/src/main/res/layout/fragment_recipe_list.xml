@@ -1,23 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/gridview"
+    <RelativeLayout
+        android:id="@+id/content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/error_message"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="@dimen/recipe_list_message_padding"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:text="@string/recipe_list_no_recipes_message"
-        android:textSize="@dimen/recipe_list_message_size"
-        android:textColor="@color/primary_text"
-        android:visibility="gone"/>
-</RelativeLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/gridview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/error_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/recipe_list_message_padding"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:text="@string/recipe_list_no_recipes_message"
+            android:textSize="@dimen/recipe_list_message_size"
+            android:textColor="@color/primary_text"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@drawable/ic_add_white_48dp"
+        app:elevation="10dp"
+        app:pressedTranslationZ="12dp"
+        app:layout_anchor="@id/content"
+        app:layout_anchorGravity="bottom|right|end"/>
+
+</android.support.design.widget.CoordinatorLayout>

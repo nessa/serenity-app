@@ -1,10 +1,14 @@
 package com.amusebouche.fragments;
 
 
+import android.content.Intent;
 import android.graphics.Point;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,9 +18,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amusebouche.activities.EditionActivity;
 import com.amusebouche.adapters.GridViewCellAdapter;
 import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
@@ -56,6 +62,9 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     // UI
     private RecyclerView mGridView;
     private TextView mErrorMessage;
+    private FloatingActionButton mAddButton;
+    private CoordinatorLayout mCoordinatorLayout;
+    private Snackbar mSnackBar;
 
     // Behaviour variables
     private boolean mNoConnectionError;
@@ -122,8 +131,10 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        RelativeLayout mLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_recipe_list,
+        View mLayout = inflater.inflate(R.layout.fragment_recipe_list,
                 container, false);
+
+        mCoordinatorLayout = (CoordinatorLayout) mLayout.findViewById(R.id.coordinator_layout);
 
         // Set grid view parameters
         Display display = getActivity().getWindowManager().getDefaultDisplay();
@@ -146,8 +157,15 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
             mFirstLoadLaunched = true;
         }
 
-        // TODO: Check this!
-        mMainActivity.showAddButton();
+        // FAB
+        mAddButton = (FloatingActionButton) mLayout.findViewById(R.id.add_button);
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(mMainActivity, EditionActivity.class);
+                startActivity(i);
+            }
+        });
 
         return mLayout;
     }
@@ -164,8 +182,6 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     public void onResume() {
         Log.i(getClass().getSimpleName(), "onResume()");
         super.onResume();
-
-        mMainActivity.showAddButton();
     }
 
     /**
@@ -231,7 +247,16 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     }
 
     private void onPreExecute() {
-        mMainActivity.showLoadingIndicator();
+        // Show loading view
+        ProgressBar progressBar = new ProgressBar(mMainActivity);
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF,
+            android.graphics.PorterDuff.Mode.MULTIPLY);
+
+        mSnackBar = Snackbar.make(mCoordinatorLayout,
+            getString(R.string.recipe_list_loading_recipes_message), Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snack_view = (Snackbar.SnackbarLayout) mSnackBar.getView();
+        snack_view.addView(progressBar);
+        mSnackBar.show();
 
         // Hide errors
         mErrorMessage.setVisibility(View.GONE);
@@ -245,7 +270,7 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
         GridViewCellAdapter adapter = (GridViewCellAdapter) mGridView.getAdapter();
         adapter.notifyDataSetChanged();
 
-        mMainActivity.hideLoadingIndicator();
+        mSnackBar.dismiss();
 
         if (mMainActivity.getRecipes().size() == 0) {
             if (mNoConnectionError) {
