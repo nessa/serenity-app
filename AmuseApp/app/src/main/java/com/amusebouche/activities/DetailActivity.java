@@ -15,7 +15,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -24,13 +23,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amusebouche.fragments.RecipeDetailFirstTabFragment;
@@ -45,7 +41,6 @@ import com.amusebouche.services.RetrofitServiceGenerator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -80,7 +75,6 @@ public class DetailActivity extends AppCompatActivity {
     private Recipe mRecipe;
     private Recipe mAPIRecipe;
     private Recipe mDatabaseRecipe;
-    private String mRecipesLanguage;
     private boolean mRecognizerLanguageSetting;
 
     // UI
@@ -88,11 +82,6 @@ public class DetailActivity extends AppCompatActivity {
     private Bitmap mMainImage;
     private TabLayout mTabs;
     private ImageView mRecipeImage;
-    private TextView mRecipeName;
-    private TextView mRecipeOwner;
-    private RatingBar mRatingBar;
-    private TextView mRecipeNumberUsersRating;
-    private RelativeLayout mFadeViews;
     private View mLayout;
     private Snackbar mSnackbar;
 
@@ -100,7 +89,6 @@ public class DetailActivity extends AppCompatActivity {
     private RecipeDetailFirstTabFragment mFirstFragment;
     private RecipeDetailSecondTabFragment mSecondFragment;
     private RecipeDetailThirdTabFragment mThirdFragment;
-    private RecipeDetailFourthTabFragment mFourthFragment;
 
     // User data
     private String mUsername;
@@ -129,8 +117,6 @@ public class DetailActivity extends AppCompatActivity {
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
 
         // Get preferences
-        mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
-
         String recognizerLanguageString = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE);
         mRecognizerLanguageSetting = recognizerLanguageString.equals(AppData.PREFERENCE_TRUE_VALUE);
 
@@ -307,7 +293,7 @@ public class DetailActivity extends AppCompatActivity {
         mFirstFragment = new RecipeDetailFirstTabFragment();
         mSecondFragment = new RecipeDetailSecondTabFragment();
         mThirdFragment = new RecipeDetailThirdTabFragment();
-        mFourthFragment = new RecipeDetailFourthTabFragment();
+        RecipeDetailFourthTabFragment mFourthFragment = new RecipeDetailFourthTabFragment();
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(mFirstFragment);

@@ -2,8 +2,6 @@ package com.amusebouche.services;
 
 import com.amusebouche.data.Recipe;
 
-import org.json.JSONObject;
-
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
