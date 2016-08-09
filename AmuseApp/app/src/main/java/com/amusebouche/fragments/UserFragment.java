@@ -2,6 +2,7 @@ package com.amusebouche.fragments;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -139,12 +140,39 @@ public class UserFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        RelativeLayout mLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_user, container, false);
+        RelativeLayout mLayout = (RelativeLayout) inflater.inflate(R.layout.fragment_user,
+                container, false);
 
-        mLoginView = (RelativeLayout) mLayout.findViewById(R.id.login);
-        mSignUpView = (RelativeLayout) mLayout.findViewById(R.id.sign_up);
-        mUserView = (LinearLayout) mLayout.findViewById(R.id.user);
-        mLoadingIndicator = (LinearLayout) mLayout.findViewById(R.id.loading_indicator);
+        populateViewForOrientation(inflater, mLayout);
+
+        return mLayout;
+    }
+
+    /**
+     * Called when the configuration changes (like orientation).
+     * @param newConfig The new configuration.
+     */
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        LayoutInflater inflater = LayoutInflater.from(mMainActivity);
+        populateViewForOrientation(inflater, (ViewGroup) getView());
+    }
+
+    /**
+     * Redefine all user interface elements. Needed in case orientation changes.
+     * @param inflater Layout constructor
+     * @param viewGroup Last view
+     */
+    private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+        viewGroup.removeAllViewsInLayout();
+        View subview = inflater.inflate(R.layout.fragment_user, viewGroup);
+
+        mLoginView = (RelativeLayout) subview.findViewById(R.id.login);
+        mSignUpView = (RelativeLayout) subview.findViewById(R.id.sign_up);
+        mUserView = (LinearLayout) subview.findViewById(R.id.user);
+        mLoadingIndicator = (LinearLayout) subview.findViewById(R.id.loading_indicator);
 
         // Show loading indicator
         mLoadingIndicator.setVisibility(View.VISIBLE);
@@ -156,12 +184,10 @@ public class UserFragment extends Fragment {
         } else {
             loadUser(mAuthToken);
         }
-        
-        return mLayout;
+
     }
 
-
-    // Views
+        // Views
 
     /**
      * Set login view content and show it

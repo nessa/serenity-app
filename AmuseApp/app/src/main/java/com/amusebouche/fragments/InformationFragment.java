@@ -96,15 +96,23 @@ public class InformationFragment extends Fragment {
         return layout;
     }
 
+    /**
+     * Called when the configuration changes (like orientation).
+     * @param newConfig The new configuration.
+     */
     @Override
-    public void onConfigurationChanged(Configuration newConfig)
-    {
+    public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        LayoutInflater inflater = LayoutInflater.from(mMainActivity);
         populateViewForOrientation(inflater, (ViewGroup) getView());
     }
 
+    /**
+     * Redefine all user interface elements. Needed in case orientation changes.
+     * @param inflater Layout constructor
+     * @param viewGroup Last view
+     */
     private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
         viewGroup.removeAllViewsInLayout();
         View subview = inflater.inflate(R.layout.fragment_information, viewGroup);
