@@ -6,8 +6,8 @@
               android:layout_height="match_parent">
     <WebView
         android:id="@+id/web_view"
-        android:layout_width="300dp"
-        android:layout_height="400dp"/>
+        android:layout_width="@dimen/info_dialog_web_view_width"
+        android:layout_height="@dimen/info_dialog_web_view_height"/>
 
     <Button
         android:id="@+id/accept_button"

@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amusebouche.activities.MainActivity;
@@ -86,12 +88,31 @@ public class InformationFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        View layout = inflater.inflate(R.layout.fragment_information, container, false);
+        LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.fragment_information,
+                container, false);
+
+        populateViewForOrientation(inflater, layout);
+
+        return layout;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig)
+    {
+        super.onConfigurationChanged(newConfig);
+
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        populateViewForOrientation(inflater, (ViewGroup) getView());
+    }
+
+    private void populateViewForOrientation(LayoutInflater inflater, ViewGroup viewGroup) {
+        viewGroup.removeAllViewsInLayout();
+        View subview = inflater.inflate(R.layout.fragment_information, viewGroup);
 
         String version = "";
         try {
             PackageInfo pInfo = mMainActivity.getPackageManager().getPackageInfo(
-                mMainActivity.getPackageName(), 0);
+                    mMainActivity.getPackageName(), 0);
             version = pInfo.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
@@ -99,24 +120,31 @@ public class InformationFragment extends Fragment {
 
         version = getString(R.string.info_app_name) + " " + version;
 
-        TextView appName = (TextView) layout.findViewById(R.id.app_name);
+        TextView appName = (TextView) subview.findViewById(R.id.app_name);
         appName.setText(version);
 
 
-        Button licensesButton = (Button) layout.findViewById(R.id.licenses_button);
+        Button licensesButton = (Button) subview.findViewById(R.id.license_button);
         licensesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog licensesDialog = new LicensesDialog(getActivity());
+                Dialog licensesDialog = new WebViewDialog(getActivity(), "license.html");
                 licensesDialog.show();
             }
         });
 
-        return layout;
+        Button thirdPartyLicensesButton = (Button) subview.findViewById(R.id.third_party_licenses_button);
+        thirdPartyLicensesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog licensesDialog = new WebViewDialog(getActivity(), "third_party_licenses.html");
+                licensesDialog.show();
+            }
+        });
     }
 
 
-    public class LicensesDialog extends Dialog {
+    public class WebViewDialog extends Dialog {
 
         // UI elements
         protected WebView webView;
@@ -125,28 +153,28 @@ public class InformationFragment extends Fragment {
         /**
          * Dialog constructor
          *
-         * @param context        Application context
+         * @param context Application context
          */
-        public LicensesDialog(final Context context) {
+        public WebViewDialog(final Context context, String file) {
             // Set your theme here
             super(context);
 
             this.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
             this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            this.setContentView(R.layout.dialog_licenses);
+            this.setContentView(R.layout.dialog_webview);
 
             // Get layout elements
             webView = (WebView) findViewById(R.id.web_view);
             acceptButton = (Button) findViewById(R.id.accept_button);
 
             // Set web view
-            webView.loadUrl("file:///android_asset/license.html");
+            webView.loadUrl("file:///android_asset/" + file);
 
             // Set buttons' listeners
             acceptButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    LicensesDialog.this.dismiss();
+                    WebViewDialog.this.dismiss();
                 }
             });
         }

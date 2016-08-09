@@ -31,4 +31,8 @@
     <!-- Settings -->
     <dimen name="settings_languages_list_height">100dp</dimen>
 
+    <!-- Info -->
+    <dimen name="info_dialog_web_view_width">400dp</dimen>
+    <dimen name="info_dialog_web_view_height">220dp</dimen>
+
 </resources>
