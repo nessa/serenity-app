@@ -1,14 +1,22 @@
 package com.amusebouche.fragments;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.view.Window;
+import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.TextView;
 
+import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
 
 /**
@@ -22,6 +30,9 @@ import com.amusebouche.activities.R;
  * - Content: fragment_information.xml
  */
 public class InformationFragment extends Fragment {
+
+    // Data variables
+    private MainActivity mMainActivity;
 
     // LIFECYCLE METHODS
 
@@ -55,6 +66,8 @@ public class InformationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate()");
+
+        mMainActivity = (MainActivity) getActivity();
     }
 
 
@@ -73,7 +86,70 @@ public class InformationFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
-        return (LinearLayout) inflater.inflate(R.layout.fragment_information,
-                container, false);
+        View layout = inflater.inflate(R.layout.fragment_information, container, false);
+
+        String version = "";
+        try {
+            PackageInfo pInfo = mMainActivity.getPackageManager().getPackageInfo(
+                mMainActivity.getPackageName(), 0);
+            version = pInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        version = getString(R.string.info_app_name) + " " + version;
+
+        TextView appName = (TextView) layout.findViewById(R.id.app_name);
+        appName.setText(version);
+
+
+        Button licensesButton = (Button) layout.findViewById(R.id.licenses_button);
+        licensesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog licensesDialog = new LicensesDialog(getActivity());
+                licensesDialog.show();
+            }
+        });
+
+        return layout;
     }
+
+
+    public class LicensesDialog extends Dialog {
+
+        // UI elements
+        protected WebView webView;
+        protected Button acceptButton;
+
+        /**
+         * Dialog constructor
+         *
+         * @param context        Application context
+         */
+        public LicensesDialog(final Context context) {
+            // Set your theme here
+            super(context);
+
+            this.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
+            this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            this.setContentView(R.layout.dialog_licenses);
+
+            // Get layout elements
+            webView = (WebView) findViewById(R.id.web_view);
+            acceptButton = (Button) findViewById(R.id.accept_button);
+
+            // Set web view
+            webView.loadUrl("file:///android_asset/license.html");
+
+            // Set buttons' listeners
+            acceptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LicensesDialog.this.dismiss();
+                }
+            });
+        }
+    }
+
 }

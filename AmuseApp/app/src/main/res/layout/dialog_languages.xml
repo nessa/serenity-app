@@ -66,6 +66,7 @@
             android:paddingStart="@dimen/dialog_button_padding"
             android:paddingEnd="@dimen/dialog_button_padding"
             android:enabled="true" />
+
         <Button
             android:id="@+id/accept"
             style="?android:attr/borderlessButtonStyle"

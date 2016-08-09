@@ -1157,35 +1157,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // REST OF METHODS
 
     /**
-     * Initialize example data to show when the application is first installed.
-     */
-    public void initializeExampleData() {
-        String jsonData;
-        try {
-            InputStream is = mContext.getAssets().open("recipes.json");
-
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-
-            jsonData = new String(buffer, "UTF-8");
-
-            try {
-                JSONArray results = new JSONArray(jsonData);
-                for (int i = 0; i < results.length(); i++) {
-                    Recipe recipe = new Recipe(results.getJSONObject(i));
-                    this.createRecipe(recipe);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    /**
      * Creates the underlying database with the SQL_CREATE_TABLE queries from
      * the contract classes to create the tables and initialize the data.
      * The onCreate is triggered the first time someone tries to access

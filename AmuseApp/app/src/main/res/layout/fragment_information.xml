@@ -1,14 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_height="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coordinator_layout"
     android:layout_width="match_parent"
-    android:background="@android:color/white">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher"
+        android:layout_marginTop="@dimen/info_icon_margin"
+        android:contentDescription="@string/app_name"/>
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/app_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="1dp"
-        android:text="INFO"/>
+        android:text="@string/info_app_name"
+        android:layout_margin="@dimen/info_app_name_margin"
+        android:textSize="@dimen/info_app_name_text_size"
+        android:textColor="@color/primary_text"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/info_app_subtitle"
+        android:layout_margin="@dimen/info_app_subtitle_margin"
+        android:textSize="@dimen/info_app_subtitle_text_size"
+        android:textColor="@color/primary_text"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/info_app_software_libre"
+        android:layout_margin="@dimen/info_app_subtitle_margin"
+        android:textSize="@dimen/info_app_subtitle_text_size"
+        android:textColor="@color/primary_text"/>
+
+
+    <Button
+        android:id="@+id/licenses_button"
+        style="?android:attr/buttonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/info_licenses"
+        android:background="@color/theme_default_accent"
+        android:textColor="@android:color/white"
+        android:padding="@dimen/info_button_padding"
+        android:layout_margin="@dimen/info_button_margin"
+        android:textSize="@dimen/info_button_text_size"
+        android:enabled="true" />
+
+    <Button
+        android:id="@+id/donate_button"
+        style="?android:attr/buttonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/info_donate"
+        android:background="@color/theme_default_accent"
+        android:textColor="@android:color/white"
+        android:padding="@dimen/info_button_padding"
+        android:layout_margin="@dimen/info_button_margin"
+        android:textSize="@dimen/info_button_text_size"
+        android:enabled="true" />
 
 </LinearLayout>

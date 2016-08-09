@@ -288,4 +288,10 @@
     <string name="users_sing_up_error_password_required">Contraseña obligatoria. Por favor, añada una.</string>
     <string name="users_sing_up_error_valid_email">Introduzca una dirección de email válida.</string>
 
+    <!-- Info activity -->
+    <string name="info_app_name">Amuse Bouche</string>
+    <string name="info_app_subtitle">©2016 Noelia Sales Montes</string>
+    <string name="info_app_software_libre">Esta app es software libre</string>
+    <string name="info_licenses">Licencias</string>
+    <string name="info_donate">Dona vía Paypal</string>
 </resources>
