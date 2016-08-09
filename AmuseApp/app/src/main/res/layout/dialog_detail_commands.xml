@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
     android:layout_height="@dimen/detail_directions_order_dialog_total_height"
     android:background="@color/theme_default_primary"
@@ -119,30 +119,22 @@
     </LinearLayout>
 
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:fab="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="top|end">
 
-        <com.software.shell.fab.ActionButton
-            android:id="@+id/listeningFab"
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/listening_fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="16dp"
-            fab:type="DEFAULT"
-            fab:image="@drawable/ic_settings_voice_white_48dp"
-            fab:button_colorRipple="@color/theme_default_accent_light"
-            fab:button_color="@color/theme_default_accent"
-            fab:button_colorPressed="@color/theme_default_accent_dark"
-            fab:rippleEffect_enabled="true"
-            fab:shadow_radius="4.0dp"
-            fab:shadow_xOffset="0.5dp"
-            fab:shadow_yOffset="1.0dp"
-            />
+            android:layout_gravity="end|bottom"
+            android:layout_margin="@dimen/fab_offset"
+            android:src="@drawable/ic_settings_voice_white_48dp"
+            app:elevation="@dimen/fab_elevation"
+            app:layout_anchor="@id/view_pager"
+            app:layout_anchorGravity="bottom|right|end"
+            android:visibility="invisible"/>
+
 
     </RelativeLayout>
 </RelativeLayout>

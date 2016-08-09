@@ -110,6 +110,8 @@ public class SplashScreenActivity extends Activity {
      */
     private void preLoadIngredients() {
         if (mOfflineModeSetting) {
+            goToMainView();
+        } else {
             // Set info message
             mProgressBar.setVisibility(View.VISIBLE);
             mTextView.setText(getString(R.string.splash_screen_loading_ingredients_message));
@@ -123,8 +125,6 @@ public class SplashScreenActivity extends Activity {
             // Create a new retrofit service and load ingredients
             mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
             loadIngredients();
-        } else {
-            goToMainView();
         }
     }
 

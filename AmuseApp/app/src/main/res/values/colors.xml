@@ -24,6 +24,8 @@
     <color name="detail_direction_shadow">#B6B6B6</color>
     <color name="detail_direction_content">#FFFFFF</color>
 
+    <color name="error">#CC0000</color>
+
     <!-- Edition activity -->
     <color name="bottom_gradient_start_color">#00ffffff</color>
     <color name="bottom_gradient_middle_color">#00ffffff</color>

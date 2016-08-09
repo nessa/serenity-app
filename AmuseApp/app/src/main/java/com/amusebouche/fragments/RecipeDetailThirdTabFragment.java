@@ -13,6 +13,7 @@ import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,7 +39,6 @@ import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.services.AppData;
 import com.amusebouche.ui.CustomNumberPicker;
 
-import com.software.shell.fab.ActionButton;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -461,8 +461,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         ImageButton timerButton = (ImageButton) mCommandsDialog.findViewById(R.id.timer);
         ImageButton nextButton = (ImageButton) mCommandsDialog.findViewById(R.id.next);
 
-        final ActionButton fab = (ActionButton)
-                mCommandsDialog.findViewById(R.id.listeningFab);
+        final FloatingActionButton fab = (FloatingActionButton)
+                mCommandsDialog.findViewById(R.id.listening_fab);
 
         final TextView mainText = (TextView) mCommandsDialog.findViewById(R.id.mainText);
         final TextView errorText = (TextView) mCommandsDialog.findViewById(R.id.errorText);

@@ -183,7 +183,7 @@ public class DetailActivity extends AppCompatActivity {
 
         // Set tab layout styles
 
-        int tabIconColor = ContextCompat.getColor(this, R.color.fab_material_white);
+        int tabIconColor = ContextCompat.getColor(this, android.R.color.white);
         Drawable d;
 
         TabLayout.Tab firstTab = mTabs.getTabAt(0);
