@@ -29,7 +29,8 @@ public class AppData {
     public static String INTENT_KEY_EDITION_TAG = "edition_tag";
 
     // Preferences
-    public static String PREFERENCE_DOWNLOAD_IMAGES = "download_images";
+    public static String PREFERENCE_OFFLINE_MODE = "offline_mode";
+    public static String PREFERENCE_WIFI_MODE = "wifi_mode";
     public static String PREFERENCE_RECIPES_LANGUAGE = "recipes_language";
     public static String PREFERENCE_RECOGNIZER_LANGUAGE = "recognizer_language";
 
@@ -55,4 +56,15 @@ public class AppData {
         new Pair<>("es", "ES"),
         new Pair<>("en", "US")
     ));
+
+
+    public static String getLocaleCountryFromCode(String code) {
+        for (int i = 0; i < AppData.LOCALE_COUNTRIES.size(); i++) {
+            if (AppData.LOCALE_COUNTRIES.get(i).first.equals(code.toLowerCase())) {
+                return AppData.LOCALE_COUNTRIES.get(i).second;
+            }
+        }
+
+        return "";
+    }
 }

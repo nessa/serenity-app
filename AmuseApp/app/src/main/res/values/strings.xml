@@ -222,11 +222,15 @@
     <string name="recipe_edition_direction_title_update">Edit direction</string>
 
     <!-- Settings fragment -->
-    <string name="settings_download_images_primary_text">Download images</string>
-    <string name="settings_download_images_secondary_text">If enabled, when a recipe is stored
-        locally, your images will also be downloaded, so they will be available without internet
-        connection.</string>
-    <string name="settings_recipes_languages_primary_text">Idioma de las recetas</string>
+    <string name="settings_general_section">General</string>
+    <string name="settings_languages_section">Languages</string>
+    <string name="settings_offline_mode_primary_text">Offline mode</string>
+    <string name="settings_offline_mode_secondary_text">If enabled, you only will see downloaded
+        recipes and you won\'t access automatic reading unless you download the language packages.</string>
+    <string name="settings_wifi_mode_primary_text">WiFi only</string>
+    <string name="settings_wifi_mode_secondary_text">If enabled, you only will see uploaded
+        recipes if you have WiFi connection.</string>
+    <string name="settings_recipes_languages_primary_text">Recipes languages</string>
     <string name="settings_recipes_languages_secondary_text">Attention! If you choose multiple
         languages and you desire to use automatic reading, you should remember to download the
         language packages or always have internet connection. Otherwise, the automatic reading will
@@ -235,6 +239,8 @@
     <string name="settings_recognizer_language_primary_text">Recognizer language</string>
     <string name="settings_recognizer_language_secondary_text">If enabled, the speech recognizer
         language will be the device one. Otherwise, it will be the current recipe language.</string>
+    <string name="settings_download_language_primary_text">Download language packages</string>
+    <string name="settings_language_downloaded_message">Languages already installed</string>
 
     <!--   Languages dialog -->
     <string name="settings_language_title">Recipes language</string>

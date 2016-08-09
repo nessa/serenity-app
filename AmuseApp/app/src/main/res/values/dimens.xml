@@ -134,6 +134,7 @@
 
 
     <!-- Settings -->
+    <dimen name="settings_section_text_size">16sp</dimen>
     <dimen name="settings_item_basic_padding">14dp</dimen>
     <dimen name="settings_item_texts_right_margin">64dp</dimen>
     <dimen name="settings_item_primary_text_margin">4dp</dimen>

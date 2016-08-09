@@ -35,6 +35,7 @@ import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.MediaActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.data.RecipeDirection;
+import com.amusebouche.services.AppData;
 import com.amusebouche.ui.CustomNumberPicker;
 
 import com.software.shell.fab.ActionButton;
@@ -129,7 +130,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 public void onInit(int status) {
                     if (status != TextToSpeech.ERROR) {
                         Locale loc = new Locale(mDetailActivity.getRecipe().getLanguage().toLowerCase(),
-                            mDetailActivity.getLocaleCountryFromCode(
+                            AppData.getLocaleCountryFromCode(
                                 mDetailActivity.getRecipe().getLanguage().toLowerCase()));
                         mTTS.setLanguage(loc);
                     }
@@ -520,7 +521,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         } else {
             // Recipe language
             Locale loc = new Locale(mDetailActivity.getRecipe().getLanguage().toLowerCase(),
-                mDetailActivity.getLocaleCountryFromCode(mDetailActivity.getRecipe().getLanguage().toLowerCase()));
+                AppData.getLocaleCountryFromCode(mDetailActivity.getRecipe().getLanguage().toLowerCase()));
             recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, loc);
         }
 

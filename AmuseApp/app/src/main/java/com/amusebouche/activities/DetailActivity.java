@@ -472,16 +472,6 @@ public class DetailActivity extends AppCompatActivity {
         return mRecognizerLanguageSetting;
     }
 
-    public String getLocaleCountryFromCode(String code) {
-        for (int i = 0; i < AppData.LOCALE_COUNTRIES.size(); i++) {
-            if (AppData.LOCALE_COUNTRIES.get(i).first.equals(code.toLowerCase())) {
-                return AppData.LOCALE_COUNTRIES.get(i).second;
-            }
-        }
-
-        return "";
-    }
-
     // FUNCTIONALITY METHODS
 
     /**

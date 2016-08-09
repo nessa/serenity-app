@@ -222,6 +222,15 @@
     <string name="recipe_edition_direction_title_update">Editar paso</string>
 
     <!-- Settings fragment -->
+    <string name="settings_general_section">General</string>
+    <string name="settings_languages_section">Idiomas</string>
+    <string name="settings_offline_mode_primary_text">Modo sin conexión</string>
+    <string name="settings_offline_mode_secondary_text">Si está habilitado, solo se podrá acceder a
+        las recetas ya descargadas y no tendrás acceso a la lectura automática a menos que  hayas
+        descargado los paquetes de idiomas necesarios.</string>
+    <string name="settings_wifi_mode_primary_text">Solo WiFi</string>
+    <string name="settings_wifi_mode_secondary_text">Si está habilitado, solo se podrá acceder a las
+        recetas no descargadas si se tiene conexión por WiFi.</string>
     <string name="settings_download_images_primary_text">Descargar imágenes</string>
     <string name="settings_download_images_secondary_text">Si está habilitado, cuando se guarde una
         receta en local, se descargarán sus imágenes también, para tenerlas disponibles cuando no
@@ -235,6 +244,8 @@
     <string name="settings_recognizer_language_primary_text">Idioma del reconocedor</string>
     <string name="settings_recognizer_language_secondary_text">Si está habilitado, el idioma del
         reconocedor de voz será el del dispositivo. En caso contrario, será el de la receta actual.</string>
+    <string name="settings_download_language_primary_text">Descargar paquetes de idiomas</string>
+    <string name="settings_language_downloaded_message">Idiomas ya instalados</string>
 
     <!--   Languages dialog -->
     <string name="settings_language_title">Idiomas de las recetas</string>
