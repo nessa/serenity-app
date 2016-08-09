@@ -251,27 +251,66 @@
 
 
         <!-- Fifth setting -->
-        <LinearLayout
-            android:id="@+id/setting_download_languages_item"
-            android:layout_width="match_parent"
+        <RelativeLayout
+            android:id="@+id/setting_download_ingredients_item"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/settings_item_basic_padding"
-            android:layout_marginTop="@dimen/settings_item_basic_padding"
-            android:layout_marginStart="@dimen/settings_item_basic_padding"
-            android:layout_marginBottom="@dimen/settings_item_basic_padding"
-            android:orientation="vertical"
             android:clickable="true"
             android:background="?attr/selectableItemBackground">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
-                android:textSize="@dimen/settings_item_primary_text_size"
-                android:textColor="@color/primary_text"
-                android:text="@string/settings_download_language_primary_text"/>
+                android:layout_marginEnd="@dimen/settings_item_basic_padding"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_marginStart="@dimen/settings_item_basic_padding"
+                android:layout_marginBottom="@dimen/settings_item_basic_padding"
+                android:orientation="vertical">
 
-        </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
+                    android:textSize="@dimen/settings_item_primary_text_size"
+                    android:textColor="@color/primary_text"
+                    android:text="@string/settings_download_ingredients_primary_text"/>
 
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/settings_item_divider_height"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_alignParentBottom="true"
+                android:background="@color/divider"/>
+        </RelativeLayout>
+
+        <!-- Fifth setting -->
+        <RelativeLayout
+            android:id="@+id/setting_download_languages_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/settings_item_basic_padding"
+                android:layout_marginTop="@dimen/settings_item_basic_padding"
+                android:layout_marginStart="@dimen/settings_item_basic_padding"
+                android:layout_marginBottom="@dimen/settings_item_basic_padding"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/settings_item_primary_text_margin"
+                    android:textSize="@dimen/settings_item_primary_text_size"
+                    android:textColor="@color/primary_text"
+                    android:text="@string/settings_download_language_primary_text"/>
+
+            </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 </ScrollView>

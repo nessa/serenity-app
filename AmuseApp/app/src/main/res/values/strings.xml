@@ -122,6 +122,9 @@
     <!--   Recipe List fragment class -->
     <string name="please_wait_message">Please, wait…</string>
     <string name="recipe_list_loading_recipes_message">Loading recipes…</string>
+    <string name="recipe_list_offline_mode_disabled_message">Disabled in offline mode</string>
+    <string name="recipe_list_offline_mode_message">Offline mode: recipes download disabled</string>
+    <string name="recipe_list_wifi_mode_message">Recipes download is only available for WiFi</string>
     <string name="recipe_list_no_recipes_message">No recipes found</string>
     <string name="recipe_list_no_connection_message">No connection found</string>
 
@@ -129,6 +132,7 @@
     <string name="detail_recipe_created_message">Recipe created</string>
     <string name="detail_recipe_updated_message">Recipe updated</string>
     <string name="detail_recipe_rated_message">Rating uploaded</string>
+    <string name="detail_recipe_wifi_only_message">Only available for WiFi connections</string>
     <!--   Recipe detail fragment -->
     <string name="image">Image</string>
     <string name="detail_users">users</string>
@@ -240,7 +244,14 @@
     <string name="settings_recognizer_language_secondary_text">If enabled, the speech recognizer
         language will be the device one. Otherwise, it will be the current recipe language.</string>
     <string name="settings_download_language_primary_text">Download language packages</string>
+    <string name="settings_download_ingredients_primary_text">Update ingredients</string>
     <string name="settings_language_downloaded_message">Languages already installed</string>
+    <string name="settings_ingredients_downloaded_message">Ingredients updated</string>
+    <string name="settings_ingredients_downloaded_error">Ingredients update error</string>
+    <string name="settings_ingredients_downloaded_offline_mode_message">Offline mode: ingredients
+        download disabled</string>
+    <string name="settings_ingredients_downloaded_wifi_mode_message">Ingredients download is only
+        available for WiFi</string>
 
     <!--   Languages dialog -->
     <string name="settings_language_title">Recipes language</string>

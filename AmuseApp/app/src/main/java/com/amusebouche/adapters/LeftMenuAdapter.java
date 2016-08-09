@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AppData;
 import com.amusebouche.services.DatabaseHelper;
@@ -26,11 +27,11 @@ import com.amusebouche.services.DatabaseHelper;
  * - Content: cell_left_menu
  */
 public class LeftMenuAdapter extends BaseAdapter {
-    private Context mContext = null;
+    private MainActivity mContext = null;
 
     private DatabaseHelper mDatabaseHelper;
 
-    public LeftMenuAdapter(Context context) {
+    public LeftMenuAdapter(MainActivity context) {
         this.mContext = context;
         mDatabaseHelper = new DatabaseHelper(context);
     }
@@ -92,45 +93,61 @@ public class LeftMenuAdapter extends BaseAdapter {
         }
     }
 
+    private boolean getSectionEnabled(int position) {
+        return !((position == 0 || position == 1) && mContext.getOfflineModeSetting());
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         if (convertView == null) {
             convertView = new DrawerView(mContext);
         }
 
-        ((DrawerView) convertView).setTag(getSectionString(position), getSectionIcon(position));
+        ((DrawerView) convertView).setTag(getSectionString(position), getSectionIcon(position),
+            getSectionEnabled(position));
 
         return convertView;
     }
 
     public class DrawerView extends RelativeLayout implements Checkable {
+        private View mCell;
         private TextView mTitleTextView;
         private ImageView mImageView;
         private View mColoredView;
+        private boolean isEnabled;
         private boolean isChecked;
 
         public DrawerView(Context context) {
             super(context);
             inflate(context, R.layout.cell_left_menu, this);
 
+            mCell = findViewById(R.id.drawer_relative);
             mTitleTextView = (TextView) findViewById(R.id.title);
             mImageView = (ImageView) findViewById(R.id.image);
             mColoredView = findViewById(R.id.line);
         }
 
-        public void setTag(String title, int imageId) {
+        public void setTag(String title, int imageId, boolean enabled) {
             mTitleTextView.setText(title);
             mImageView.setImageResource(imageId);
+            isEnabled = enabled;
+
+            mCell.setClickable(!isEnabled);
         }
 
-        private void highlightCell(boolean checked) {
-            if (checked) {
+        private void highlightCell() {
+            if (isChecked) {
                 mTitleTextView.setTextColor(getResources().getColor(R.color.theme_default_accent));
                 mImageView.setColorFilter(getResources().getColor(R.color.theme_default_accent));
                 mColoredView.setVisibility(View.VISIBLE);
             } else {
-                mTitleTextView.setTextColor(getResources().getColor(R.color.drawer_text_color));
-                mImageView.setColorFilter(getResources().getColor(R.color.drawer_text_color));
+                if (isEnabled) {
+                    mTitleTextView.setTextColor(getResources().getColor(R.color.drawer_text_color));
+                    mImageView.setColorFilter(getResources().getColor(R.color.drawer_text_color));
+                } else {
+                    mTitleTextView.setTextColor(getResources().getColor(R.color.secondary_text));
+                    mImageView.setColorFilter(getResources().getColor(R.color.secondary_text));
+                }
                 mColoredView.setVisibility(View.INVISIBLE);
             }
         }
@@ -147,15 +164,14 @@ public class LeftMenuAdapter extends BaseAdapter {
 
         @Override
         public void setChecked(boolean checked) {
-            isChecked = checked;
-            highlightCell(checked);
-
+            isChecked = isEnabled && checked;
+            highlightCell();
         }
 
         @Override
         public void toggle() {
             this.isChecked = !this.isChecked;
-            highlightCell(isChecked);
+            highlightCell();
         }
     }
 }

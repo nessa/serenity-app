@@ -1,5 +1,6 @@
 package com.amusebouche.services;
 
+
 import android.util.Pair;
 
 import com.amusebouche.activities.R;
@@ -35,7 +36,7 @@ public class AppData {
     public static String PREFERENCE_RECOGNIZER_LANGUAGE = "recognizer_language";
 
     // App info
-    public static String INGREDIENTS_LAST_UPDATE = "ingredients_last_update";
+    public static String INGREDIENTS_LAST_UPDATE = "ingredients_last_update_";
 
     // User data
     public static String USER_AUTH_TOKEN = "user_auth_token";
@@ -57,7 +58,11 @@ public class AppData {
         new Pair<>("en", "US")
     ));
 
-
+    /**
+     * Get locale country for a given code
+     * @param code Language code
+     * @return String for locale country
+     */
     public static String getLocaleCountryFromCode(String code) {
         for (int i = 0; i < AppData.LOCALE_COUNTRIES.size(); i++) {
             if (AppData.LOCALE_COUNTRIES.get(i).first.equals(code.toLowerCase())) {

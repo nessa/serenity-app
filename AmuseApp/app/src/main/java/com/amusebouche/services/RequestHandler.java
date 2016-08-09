@@ -1,5 +1,8 @@
 package com.amusebouche.services;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Pair;
 
 import java.util.ArrayList;
@@ -91,5 +94,18 @@ public class RequestHandler {
         }
 
         return paramString;
+    }
+
+    /**
+     * Check WiFi connectivity
+     * @param context Activity context
+     * @return True if WiFi is connected. False, otherwise.
+     */
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(
+            Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+
+        return wifi.isConnected();
     }
 }

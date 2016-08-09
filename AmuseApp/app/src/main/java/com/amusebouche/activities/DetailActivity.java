@@ -37,6 +37,7 @@ import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.AppData;
+import com.amusebouche.services.RequestHandler;
 import com.amusebouche.services.RetrofitServiceGenerator;
 
 import org.json.JSONException;
@@ -96,8 +97,9 @@ public class DetailActivity extends AppCompatActivity {
     private boolean isUserLoggedIn;
 
     // Behaviour variables
-    private boolean mDownloadEnabled = false;
     private boolean mInitialDownload = true;
+    private boolean mOfflineModeSetting;
+    private boolean mWifiModeSetting;
 
     // Services
     private DatabaseHelper mDatabaseHelper;
@@ -118,7 +120,11 @@ public class DetailActivity extends AppCompatActivity {
 
         // Get preferences
         String recognizerLanguageString = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE);
+        String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
+        String wifiModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
         mRecognizerLanguageSetting = recognizerLanguageString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        mWifiModeSetting = wifiModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
 
         // Check if user is logged in
         mToken = mDatabaseHelper.getAppData(AppData.USER_AUTH_TOKEN);
@@ -402,22 +408,22 @@ public class DetailActivity extends AppCompatActivity {
          * - Recipe exist on database AND API_Recipe.updated_timestamp > DB_Recipe.updated_timestamp
          */
         MenuItem downloadItem = menu.findItem(R.id.action_download);
-        downloadItem.setVisible(mDatabaseRecipe == null || (mAPIRecipe != null &&
-            mAPIRecipe.getUpdatedTimestamp().getTime() > mDatabaseRecipe.getUpdatedTimestamp().getTime()));
+        downloadItem.setVisible(!mOfflineModeSetting && (mDatabaseRecipe == null || (mAPIRecipe != null &&
+            mAPIRecipe.getUpdatedTimestamp().getTime() > mDatabaseRecipe.getUpdatedTimestamp().getTime())));
 
         /* Upload item is enabled when:
          * - Recipe doesn't exist on API
          */
         MenuItem uploadItem = menu.findItem(R.id.action_upload);
-        uploadItem.setVisible(isUserLoggedIn && (mAPIRecipe == null ||
+        uploadItem.setVisible(!mOfflineModeSetting && (isUserLoggedIn && (mAPIRecipe == null ||
                 (mAPIRecipe != null && mDatabaseRecipe != null &&
-                mDatabaseRecipe.getUpdatedTimestamp().getTime() > mAPIRecipe.getUpdatedTimestamp().getTime())));
+                mDatabaseRecipe.getUpdatedTimestamp().getTime() > mAPIRecipe.getUpdatedTimestamp().getTime()))));
 
         /* Rate item is enabled when:
          * - User is logged in
          */
         MenuItem rateItem = menu.findItem(R.id.action_rate);
-        rateItem.setVisible(isUserLoggedIn);
+        rateItem.setVisible(!mOfflineModeSetting && isUserLoggedIn);
 
         /* Delete item is enabled when:
          * - Recipes is not online
@@ -487,73 +493,79 @@ public class DetailActivity extends AppCompatActivity {
      * Download recipe and store it into the database
      */
     public void downloadRecipe() {
-        AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
-        Call<ResponseBody> call = mAPI.getRecipe(mRecipe.getId());
+        if (!mWifiModeSetting || RequestHandler.isWifiConnected(DetailActivity.this)) {
+            AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
+            Call<ResponseBody> call = mAPI.getRecipe(mRecipe.getId());
 
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                boolean fail = false;
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    boolean fail = false;
 
-                if (response.code() == 200) {
-                    String data = "";
+                    if (response.code() == 200) {
+                        String data = "";
 
-                    // Get response data
-                    if (response.body() != null) {
-                        try {
-                            data = response.body().string();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    // Build objects from response data
-                    if (!data.equals("")) {
-                        try {
-                            JSONObject jObject = new JSONObject(data);
-                            mRecipe = new Recipe(jObject);
-                            mRecipe.setIsOnline(true);
-
-                            /* Update recipe if:
-                             * - It's from API and exists a recipe with its API id in the database
-                             * - It's not from API and it exists in database
-                             * Otherwise, create a new recipe
-                             */
-                            if ((mRecipe.getIsOnline() &&
-                                    mDatabaseHelper.existRecipeWithAPIId(mRecipe.getId())) ||
-                                    (!mRecipe.getIsOnline() && mRecipe.getDatabaseId() != null &&
-                                            !mRecipe.getDatabaseId().equals(""))) {
-                                mDatabaseHelper.updateRecipe(mRecipe);
-                            } else {
-                                mDatabaseHelper.createRecipe(mRecipe);
+                        // Get response data
+                        if (response.body() != null) {
+                            try {
+                                data = response.body().string();
+                            } catch (IOException e) {
+                                e.printStackTrace();
                             }
+                        }
 
-                            // Post save
-                            Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
-                                    Snackbar.LENGTH_LONG)
-                                    .show();
-                            openOptionsMenu();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        // Build objects from response data
+                        if (!data.equals("")) {
+                            try {
+                                JSONObject jObject = new JSONObject(data);
+                                mRecipe = new Recipe(jObject);
+                                mRecipe.setIsOnline(true);
+
+                                /* Update recipe if:
+                                 * - It's from API and exists a recipe with its API id in the database
+                                 * - It's not from API and it exists in database
+                                 * Otherwise, create a new recipe
+                                 */
+                                if ((mRecipe.getIsOnline() &&
+                                        mDatabaseHelper.existRecipeWithAPIId(mRecipe.getId())) ||
+                                        (!mRecipe.getIsOnline() && mRecipe.getDatabaseId() != null &&
+                                                !mRecipe.getDatabaseId().equals(""))) {
+                                    mDatabaseHelper.updateRecipe(mRecipe);
+                                } else {
+                                    mDatabaseHelper.createRecipe(mRecipe);
+                                }
+
+                                // Post save
+                                Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
+                                        Snackbar.LENGTH_LONG)
+                                        .show();
+                                openOptionsMenu();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                fail = true;
+                            }
+                        } else {
                             fail = true;
                         }
                     } else {
                         fail = true;
                     }
-                } else {
-                    fail = true;
+
+                    if (fail) {
+                        // TODO: Show error
+                    }
                 }
 
-                if (fail) {
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
                     // TODO: Show error
                 }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                // TODO: Show error
-            }
-        });
+            });
+        } else {
+            Snackbar.make(mLayout, getString(R.string.detail_recipe_wifi_only_message),
+                Snackbar.LENGTH_LONG)
+                .show();
+        }
     }
 
     /**
@@ -561,90 +573,96 @@ public class DetailActivity extends AppCompatActivity {
      */
     public void uploadRecipe() {
         if (isUserLoggedIn) {
-            AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken, true);
+            if (!mWifiModeSetting || RequestHandler.isWifiConnected(DetailActivity.this)) {
+                AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken, true);
 
-            if (mRecipe.getId().equals("") || mRecipe.getId().equals("0")) {
-                // Create
-                Call<ResponseBody> requestCall = api.createRecipe(mRecipe);
+                if (mRecipe.getId().equals("") || mRecipe.getId().equals("0")) {
+                    // Create
+                    Call<ResponseBody> requestCall = api.createRecipe(mRecipe);
 
-                // Asynchronous call
-                requestCall.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.code() == 201) {
-                            String data = "";
+                    // Asynchronous call
+                    requestCall.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.code() == 201) {
+                                String data = "";
 
-                            // Get response data
-                            if (response.body() != null) {
-                                try {
-                                    data = response.body().string();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
+                                // Get response data
+                                if (response.body() != null) {
+                                    try {
+                                        data = response.body().string();
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
-                            }
 
-                            // Build objects from response data
-                            if (!data.equals("")) {
-                                try {
-                                    JSONObject jObject = new JSONObject(data);
+                                // Build objects from response data
+                                if (!data.equals("")) {
+                                    try {
+                                        JSONObject jObject = new JSONObject(data);
 
-                                    if (jObject.has("owner")) {
-                                        mRecipe.setOwner(jObject.getString("owner"));
+                                        if (jObject.has("owner")) {
+                                            mRecipe.setOwner(jObject.getString("owner"));
+                                        }
+
+                                        if (jObject.has("id")) {
+                                            mRecipe.setId(jObject.getString("id"));
+                                        }
+
+                                        if (!mRecipe.getDatabaseId().equals("")) {
+                                            mDatabaseHelper.updateRecipe(mRecipe);
+                                        }
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
-
-                                    if (jObject.has("id")) {
-                                        mRecipe.setId(jObject.getString("id"));
-                                    }
-
-                                    if (!mRecipe.getDatabaseId().equals("")) {
-                                        mDatabaseHelper.updateRecipe(mRecipe);
-                                    }
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
                                 }
-                            }
 
-                            Snackbar.make(mLayout, getString(R.string.detail_recipe_created_message),
-                                Snackbar.LENGTH_LONG)
-                                .show();
-                        } else {
+                                Snackbar.make(mLayout, getString(R.string.detail_recipe_created_message),
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+                            } else {
+                                // TODO: Show error
+                                Log.d("DETAIL", "CREATE RECIPE ERROR");
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
                             // TODO: Show error
                             Log.d("DETAIL", "CREATE RECIPE ERROR");
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        // TODO: Show error
-                        Log.d("DETAIL", "CREATE RECIPE ERROR");
-                    }
+                    });
+                } else {
+                    // Update
+                    Call<ResponseBody> requestCall = api.updateRecipe(mRecipe.getId(), mRecipe);
 
-                });
-            } else {
-                // Update
-                Call<ResponseBody> requestCall = api.updateRecipe(mRecipe.getId(), mRecipe);
+                    // Asynchronous call
+                    requestCall.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.code() == 200) {
+                                Snackbar.make(mLayout, getString(R.string.detail_recipe_updated_message),
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
+                            } else {
+                                // TODO: Show error
+                                Log.d("DETAIL", "UPDATE RECIPE ERROR");
+                            }
+                        }
 
-                // Asynchronous call
-                requestCall.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.code() == 200) {
-                            Snackbar.make(mLayout, getString(R.string.detail_recipe_updated_message),
-                                Snackbar.LENGTH_LONG)
-                                .show();
-                        } else {
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
                             // TODO: Show error
                             Log.d("DETAIL", "UPDATE RECIPE ERROR");
                         }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        // TODO: Show error
-                        Log.d("DETAIL", "UPDATE RECIPE ERROR");
-                    }
-                });
+                    });
+                }
+            } else {
+                Snackbar.make(mLayout, getString(R.string.detail_recipe_wifi_only_message),
+                    Snackbar.LENGTH_LONG)
+                    .show();
             }
         }
     }
@@ -673,34 +691,40 @@ public class DetailActivity extends AppCompatActivity {
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken);
-                Call<ResponseBody> call = mAPI.rateRecipe(mRecipe.getId(), (int) ratingBar.getRating());
+                if (!mWifiModeSetting || RequestHandler.isWifiConnected(DetailActivity.this)) {
 
-                call.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.code() == 201) {
-                            Snackbar.make(mLayout, getString(R.string.detail_recipe_rated_message),
+                    AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken);
+                    Call<ResponseBody> call = mAPI.rateRecipe(mRecipe.getId(), (int) ratingBar.getRating());
+
+                    call.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            if (response.code() == 201) {
+                                Snackbar.make(mLayout, getString(R.string.detail_recipe_rated_message),
                                     Snackbar.LENGTH_LONG)
                                     .show();
 
-                            // Update view
-                            onReloadView();
-                            onReloadFragmentViews();
-                        } else {
+                                // Update view
+                                onReloadView();
+                                onReloadFragmentViews();
+                            } else {
+                                // TODO: Show error
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
                             // TODO: Show error
                         }
-                    }
+                    });
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        // TODO: Show error
-                    }
-                });
-
-
-                // We close the dialog only if the creation/update result is OK
-                rateDialog.dismiss();
+                    // We close the dialog only if the creation/update result is OK
+                    rateDialog.dismiss();
+                } else {
+                    Snackbar.make(mLayout, getString(R.string.detail_recipe_wifi_only_message),
+                        Snackbar.LENGTH_LONG)
+                        .show();
+                }
             }
         });
 
@@ -762,24 +786,27 @@ public class DetailActivity extends AppCompatActivity {
         } else {
             mDatabaseRecipe = mRecipe;
 
-            if (!mRecipe.getId().equals("") && !mRecipe.getId().equals("0")) {
-                AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class);
+            if (!mOfflineModeSetting && !mRecipe.getId().equals("") && !mRecipe.getId().equals("0")) {
 
-                Call<ResponseBody> requestCall = api.getRecipe(mRecipe.getId());
+                if (!mWifiModeSetting || RequestHandler.isWifiConnected(this)) {
+                    AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class);
 
-                // Asynchronous call
-                requestCall.enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        onRecipesLoaded();
-                    }
+                    Call<ResponseBody> requestCall = api.getRecipe(mRecipe.getId());
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        onRecipesLoaded();
-                    }
+                    // Asynchronous call
+                    requestCall.enqueue(new Callback<ResponseBody>() {
+                        @Override
+                        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                            onRecipesLoaded();
+                        }
 
-                });
+                        @Override
+                        public void onFailure(Call<ResponseBody> call, Throwable t) {
+                            onRecipesLoaded();
+                        }
+
+                    });
+                }
             }
         }
     }

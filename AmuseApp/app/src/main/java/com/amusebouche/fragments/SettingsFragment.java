@@ -12,18 +12,35 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.amusebouche.activities.MainActivity;
+import com.amusebouche.data.Ingredient;
 import com.amusebouche.dialogs.LanguagesDialog;
 import com.amusebouche.activities.R;
+import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.services.AppData;
+import com.amusebouche.services.CustomDateFormat;
 import com.amusebouche.services.DatabaseHelper;
+import com.amusebouche.services.RequestHandler;
+import com.amusebouche.services.RetrofitServiceGenerator;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Information fragment class.
@@ -38,16 +55,27 @@ import java.util.Locale;
 public class SettingsFragment extends Fragment {
 
     // Parent activity
-    private MainActivity mActivity;
+    private MainActivity mMainActivity;
 
     // UI
     private View mLayout;
     private TextView mSelectedLanguageTextView;
+    private Snackbar mSnackBar;
 
     // Services
     private DatabaseHelper mDatabaseHelper;
     private TextToSpeech mTTS;
+    private AmuseAPI mAPI;
 
+    // Data
+    private boolean mOfflineModeSetting;
+    private boolean mWifiModeSetting;
+    private String mLanguage;
+    private Integer mCurrentPage;
+    private String mLastUpdateDate;
+    private String mNewUpdateDate;
+    private boolean mIngredientsSuccess;
+    private String mIngredientsError;
 
     // LIFECYCLE METHODS
 
@@ -82,8 +110,15 @@ public class SettingsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate()");
 
-        mActivity = (MainActivity) getActivity();
+        mMainActivity = (MainActivity) getActivity();
         mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
+
+        // Get preferences
+        String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
+        String wifiModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
+        mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        mWifiModeSetting = wifiModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        mLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
     }
 
 
@@ -133,15 +168,19 @@ public class SettingsFragment extends Fragment {
         setSelectedLanguage();
 
         View downloadLanguages = mLayout.findViewById(R.id.setting_download_languages_item);
+        View downloadIngredients = mLayout.findViewById(R.id.setting_download_ingredients_item);
 
         // Listeners
         offlineModeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 offlineModeSwitch.setChecked(!offlineModeSwitch.isChecked());
+                mOfflineModeSetting = offlineModeSwitch.isChecked();
                 mDatabaseHelper.setAppData(AppData.PREFERENCE_OFFLINE_MODE,
                     offlineModeSwitch.isChecked() ? AppData.PREFERENCE_TRUE_VALUE :
                         AppData.PREFERENCE_FALSE_VALUE);
+                mMainActivity.updateOfflineModeSetting();
+                mMainActivity.reloadLeftDrawer();
             }
         });
 
@@ -149,9 +188,11 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 wifiModeSwitch.setChecked(!wifiModeSwitch.isChecked());
+                mWifiModeSetting = offlineModeSwitch.isChecked();
                 mDatabaseHelper.setAppData(AppData.PREFERENCE_WIFI_MODE,
                     wifiModeSwitch.isChecked() ? AppData.PREFERENCE_TRUE_VALUE :
                         AppData.PREFERENCE_FALSE_VALUE);
+                mMainActivity.updateWifiModeSetting();
             }
         });
 
@@ -188,6 +229,14 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        downloadIngredients.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mCurrentPage = 1;
+                preLoadIngredients();
+            }
+        });
+
         return mLayout;
     }
 
@@ -208,7 +257,7 @@ public class SettingsFragment extends Fragment {
             }
 
             mSelectedLanguageTextView.setText(language);
-            mActivity.reloadRecipesLanguage();
+            mMainActivity.reloadRecipesLanguage();
         }
     }
 
@@ -230,13 +279,11 @@ public class SettingsFragment extends Fragment {
                     if (mTTS.isLanguageAvailable(loc) == TextToSpeech.LANG_AVAILABLE &&
                         (!recognizerLanguageSetting ||
                             mTTS.isLanguageAvailable(Locale.getDefault())  == TextToSpeech.LANG_AVAILABLE )) {
-                        Log.d("SETTINGS", "SUCCESS");
 
                         Snackbar.make(mLayout, getString(R.string.settings_language_downloaded_message),
                             Snackbar.LENGTH_LONG)
                             .show();
                     } else {
-                        Log.d("SETTINGS", "INSTALL");
                         Intent installTTSIntent = new Intent();
                         installTTSIntent.setAction(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA);
                         ArrayList<String> languages = new ArrayList<>();
@@ -249,5 +296,148 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
+    }
+
+    private void showLoading() {
+        // Show loading view
+        ProgressBar progressBar = new ProgressBar(mMainActivity);
+        progressBar.getIndeterminateDrawable().setColorFilter(0xFFFFFFFF,
+            android.graphics.PorterDuff.Mode.MULTIPLY);
+
+        mSnackBar = Snackbar.make(mLayout,
+            getString(R.string.splash_screen_loading_ingredients_message), Snackbar.LENGTH_INDEFINITE);
+        Snackbar.SnackbarLayout snack_view = (Snackbar.SnackbarLayout) mSnackBar.getView();
+        snack_view.addView(progressBar);
+        mSnackBar.show();
+    }
+
+    // INGREDIENTS
+
+    /**
+     * Before load ingredients page by page.
+     * Shows loading indicator. Calculates dates. Generates a new retrofit service.
+     */
+    private void preLoadIngredients() {
+        mIngredientsSuccess = false;
+
+        if (mOfflineModeSetting) {
+            mIngredientsError = getString(R.string.settings_ingredients_downloaded_offline_mode_message);
+            finishDownload();
+        } else {
+            // Set info message
+            showLoading();
+
+            String lastUpdate = mDatabaseHelper.getAppData(AppData.INGREDIENTS_LAST_UPDATE + mLanguage);
+            mLastUpdateDate = lastUpdate.equals("") ? null : lastUpdate;
+
+            // Prepare new update date as now
+            mNewUpdateDate = CustomDateFormat.getUTCString(new Date());
+
+            // Create a new retrofit service and load ingredients
+            mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
+            loadIngredients();
+        }
+    }
+
+    /**
+     * Send requests to the API to get the ingredients and store them into the database.
+     */
+    private void loadIngredients() {
+        if (!mWifiModeSetting || RequestHandler.isWifiConnected(mMainActivity)) {
+            Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage, mLastUpdateDate);
+
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    setData(response);
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    // End
+                    finishDownload();
+                }
+            });
+        } else {
+            mIngredientsError = getString(R.string.settings_ingredients_downloaded_wifi_mode_message);
+            finishDownload();
+        }
+    }
+
+    /**
+     * Auxiliar method to help process and store every ingredient into the database.
+     */
+    private void setData(Response<ResponseBody> response) {
+
+        if (response.code() == 200) {
+            String data = "";
+
+            // Get response data
+            if (response.body() != null) {
+                try {
+                    data = response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Build objects from response data
+            if (!data.equals("")) {
+                try {
+                    JSONObject jObject = new JSONObject(data);
+                    JSONArray results = jObject.getJSONArray("results");
+
+                    for (int i = 0; i < results.length(); i++) {
+                        Ingredient ing = new Ingredient(results.getJSONObject(i));
+
+                        if (mDatabaseHelper.existIngredient(ing)) {
+                            mDatabaseHelper.updateIngredient(ing);
+                        } else {
+                            mDatabaseHelper.createIngredient(ing);
+                        }
+                    }
+
+                    if (jObject.getString("next").equals("null")) {
+                        // Set new update date as last one
+                        mDatabaseHelper.setAppData(AppData.INGREDIENTS_LAST_UPDATE + mLanguage,
+                            mNewUpdateDate);
+
+                        // Go to next step
+                        mIngredientsSuccess = true;
+                        finishDownload();
+                    } else {
+                        // Load next page of ingredients
+                        mCurrentPage += 1;
+                        loadIngredients();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    // End
+                    finishDownload();
+                }
+            } else {
+                finishDownload();
+            }
+        } else {
+            finishDownload();
+        }
+    }
+
+    private void finishDownload() {
+        if (mSnackBar != null) {
+            mSnackBar.dismiss();
+            mSnackBar = null;
+        }
+
+        if (mIngredientsSuccess) {
+            Snackbar.make(mLayout, getString(R.string.settings_ingredients_downloaded_message),
+                Snackbar.LENGTH_LONG)
+                .show();
+        } else {
+
+            Snackbar.make(mLayout, mIngredientsError.length() > 0 ? mIngredientsError :
+                getString(R.string.settings_ingredients_downloaded_error),
+                Snackbar.LENGTH_LONG).show();
+        }
     }
 }

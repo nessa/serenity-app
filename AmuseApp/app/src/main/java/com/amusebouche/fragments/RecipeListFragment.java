@@ -232,15 +232,27 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
                 this.onPostExecute();
                 break;
             case MainActivity.NEW_RECIPES_MODE:
-                AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class);
+                if (mMainActivity.getOfflineModeSetting()) {
+                    // Offline mode
+                    mErrorMessage.setText(getString(R.string.recipe_list_offline_mode_message));
+                    this.onPostExecute();
+                } else {
+                    if (!mMainActivity.getWifiModeSetting() || RequestHandler.isWifiConnected(mMainActivity)) {
+                        AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class);
 
-                mRequestCall = api.getRecipes(RequestHandler.buildGetURL(
-                    RequestHandler.API_RECIPES_ENDPOINT,
-                    RequestHandler.buildParams(mMainActivity.getCurrentPage() + 1,
-                        mMainActivity.getFilterParams())));
+                        mRequestCall = api.getRecipes(RequestHandler.buildGetURL(
+                            RequestHandler.API_RECIPES_ENDPOINT,
+                            RequestHandler.buildParams(mMainActivity.getCurrentPage() + 1,
+                                mMainActivity.getFilterParams())));
 
-                // Asynchronous call
-                mRequestCall.enqueue(this);
+                        // Asynchronous call
+                        mRequestCall.enqueue(this);
+                    } else {
+                        // Offline mode
+                        mErrorMessage.setText(getString(R.string.recipe_list_wifi_mode_message));
+                        this.onPostExecute();
+                    }
+                }
         }
     }
 
@@ -332,8 +344,6 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     public void onFailure(Call<ResponseBody> call, Throwable t) {
         if (!call.isCanceled()) {
             this.onPostExecute();
-
-            // TODO: Check connectivity
         }
     }
 

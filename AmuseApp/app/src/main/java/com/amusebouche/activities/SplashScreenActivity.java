@@ -20,6 +20,7 @@ import com.amusebouche.services.AmuseAPI;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.AppData;
 import com.amusebouche.services.CustomDateFormat;
+import com.amusebouche.services.RequestHandler;
 import com.amusebouche.services.RetrofitServiceGenerator;
 
 import org.json.JSONArray;
@@ -47,13 +48,17 @@ public class SplashScreenActivity extends Activity {
 
     // Data variables
     private Integer mCurrentPage;
+    private String mLastUpdateDate;
+    private String mNewUpdateDate;
 
+    // Services
     private DatabaseHelper mDatabaseHelper;
     private AmuseAPI mAPI;
 
-    private String mLastUpdateDate;
-    private String mNewUpdateDate;
+    // Behaviour and preferences
     private String mLanguage;
+    private boolean mOfflineModeSetting;
+    private boolean mWifiModeSetting;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +79,11 @@ public class SplashScreenActivity extends Activity {
         mTextView = (TextView) findViewById(R.id.text);
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
-        // Get language from database
+        // Get preferences
+        String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
+        String wifiModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
+        mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        mWifiModeSetting = wifiModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
         mLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
         // If there are no set languages, ask for them
@@ -100,39 +109,47 @@ public class SplashScreenActivity extends Activity {
      * Shows loading indicator. Calculates dates. Generates a new retrofit service.
      */
     private void preLoadIngredients() {
-        // Set info message
-        mProgressBar.setVisibility(View.VISIBLE);
-        mTextView.setText(getString(R.string.splash_screen_loading_ingredients_message));
+        if (mOfflineModeSetting) {
+            // Set info message
+            mProgressBar.setVisibility(View.VISIBLE);
+            mTextView.setText(getString(R.string.splash_screen_loading_ingredients_message));
 
-        String lastUpdate = mDatabaseHelper.getAppData(AppData.INGREDIENTS_LAST_UPDATE);
-        mLastUpdateDate = lastUpdate.equals("") ? null : lastUpdate;
+            String lastUpdate = mDatabaseHelper.getAppData(AppData.INGREDIENTS_LAST_UPDATE + mLanguage);
+            mLastUpdateDate = lastUpdate.equals("") ? null : lastUpdate;
 
-        // Prepare new update date as now
-        mNewUpdateDate = CustomDateFormat.getUTCString(new Date());
+            // Prepare new update date as now
+            mNewUpdateDate = CustomDateFormat.getUTCString(new Date());
 
-        // Create a new retrofit service and load ingredients
-        mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
-        loadIngredients();
+            // Create a new retrofit service and load ingredients
+            mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
+            loadIngredients();
+        } else {
+            goToMainView();
+        }
     }
 
     /**
      * Send requests to the API to get the ingredients and store them into the database.
      */
     private void loadIngredients() {
-        Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage, mLastUpdateDate);
+        if (!mWifiModeSetting || RequestHandler.isWifiConnected(this)) {
+            Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage, mLastUpdateDate);
 
-        call.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                setData(response);
-            }
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    setData(response);
+                }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                // End
-                checkIfUserIsLoggedIn();
-            }
-        });
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    // End
+                    checkIfUserIsLoggedIn();
+                }
+            });
+        } else {
+            checkIfUserIsLoggedIn();
+        }
     }
 
     /**
@@ -170,7 +187,8 @@ public class SplashScreenActivity extends Activity {
 
                     if (jObject.getString("next").equals("null")) {
                         // Set new update date as last one
-                        mDatabaseHelper.setAppData(AppData.INGREDIENTS_LAST_UPDATE, mNewUpdateDate);
+                        mDatabaseHelper.setAppData(AppData.INGREDIENTS_LAST_UPDATE + mLanguage,
+                            mNewUpdateDate);
 
                         // Go to next step
                         checkIfUserIsLoggedIn();

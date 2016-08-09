@@ -101,8 +101,9 @@ public class MainActivity extends AppCompatActivity {
     private Integer mPreviousTotal;
     private ArrayList<Pair<String, ArrayList<String>>> mFilterParams;
     private String mRecipesLanguage;
+    private boolean mOfflineModeSetting;
+    private boolean mWifiModeSetting;
 
-    // UI variables
     private Fragment mLastFragment;
 
     // Drawers
@@ -123,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
+        View mLayout = findViewById(R.id.layout);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -130,15 +133,22 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        // Set initial data
-        mCurrentPage = 0;
-        mLimitPerPage = 10;
-        mPreviousTotal = 0;
-        mCurrentSelectedPosition = 1;
 
         // Get database helper
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
         reloadRecipesLanguage();
+
+        // Get offline preference
+        String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
+        String wifiModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
+        mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        mWifiModeSetting = wifiModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+
+        // Set initial data
+        mCurrentPage = 0;
+        mLimitPerPage = 10;
+        mPreviousTotal = 0;
+        mCurrentSelectedPosition = mOfflineModeSetting ? DOWNLOADED_RECIPES : NEW_RECIPES;
 
         if (mDrawerLayout == null || mLeftDrawerView == null || mRightDrawerView == null || mDrawerToggle == null) {
             // Set left drawer
@@ -821,18 +831,12 @@ public class MainActivity extends AppCompatActivity {
                 getFragmentManager().beginTransaction().add(R.id.container, fragment).commit();
             } else {
                 getFragmentManager().beginTransaction().remove(mLastFragment)
-                        .add(R.id.container, fragment).commit();
+                    .add(R.id.container, fragment).commit();
             }
 
             mLastFragment = fragment;
         }
     }
-/*
-    public void showAddButton() {
-        Log.d("MAIN", "SHOW ADD");
-        mAddButton.clearAnimation();
-        mAddButton.show();
-    }*/
 
     private void resetRecipesAndSetMode(int mode) {
         if (mRecipes == null) {
@@ -869,6 +873,15 @@ public class MainActivity extends AppCompatActivity {
         return mPreviousTotal;
     }
 
+    public boolean getOfflineModeSetting() {
+        return mOfflineModeSetting;
+    }
+
+    public boolean getWifiModeSetting() {
+        return mWifiModeSetting;
+    }
+
+
     /**
      * Returns the filter parameters.
      * Needed to transfer this information to the list fragment.
@@ -892,6 +905,15 @@ public class MainActivity extends AppCompatActivity {
         mPreviousTotal = previousTotal;
     }
 
+    public void updateOfflineModeSetting() {
+        String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
+        mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+    }
+
+    public void updateWifiModeSetting() {
+        String wifiModeSetting = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
+        mWifiModeSetting = wifiModeSetting.equals(AppData.PREFERENCE_TRUE_VALUE);
+    }
 
     // OTHERS
 
