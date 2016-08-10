@@ -158,7 +158,7 @@ public class GridViewCellAdapter extends RecyclerView.Adapter<GridViewCellAdapte
 
                     // Fade out title and view
                     Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
-                    fadeOutAnimation.setDuration(500);
+                    fadeOutAnimation.setDuration(250);
 
                     fadeOutAnimation.setAnimationListener(new Animation.AnimationListener() {
                         @Override
