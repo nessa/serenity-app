@@ -17,8 +17,8 @@
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="splash.svg"
    inkscape:export-filename="/home/nessa/Proyectos/serenity-app/Resources/splash.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90">
+   inkscape:export-xdpi="180"
+   inkscape:export-ydpi="180">
   <defs
      id="defs4">
     <linearGradient
@@ -92,15 +92,6 @@
        fx="367.4375"
        fy="451"
        r="135" />
-    <filter
-       inkscape:collect="always"
-       id="filter4011"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.8058318"
-         id="feGaussianBlur4013" />
-    </filter>
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient3972"
@@ -262,10 +253,10 @@
      inkscape:cx="91.706885"
      inkscape:cy="109.37865"
      inkscape:document-units="px"
-     inkscape:current-layer="g3254"
+     inkscape:current-layer="g4087"
      showgrid="false"
-     inkscape:window-width="1366"
-     inkscape:window-height="702"
+     inkscape:window-width="1440"
+     inkscape:window-height="845"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1" />
@@ -289,13 +280,6 @@
     <g
        id="g4087"
        transform="matrix(2.4763768,0,0,2.4763768,-339.56665,-1214.1165)">
-      <rect
-         style="fill:#89c34a;fill-opacity:1;stroke:none"
-         id="rect4800"
-         width="80.763153"
-         height="80.763153"
-         x="137.12236"
-         y="834.47668" />
       <g
          transform="matrix(0.16104544,0,0,0.16104544,113.66949,794.03712)"
          id="layer1-0"
