@@ -568,7 +568,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             public void onReadyForSpeech(Bundle arg0) {
 
                 // Restart animation and default texts
-                String message = getString(R.string.voice_error_not_understood);
+                String message = getString(R.string.voice_commands_list);
                 if (dir.getTime() > 0) {
                     message = message + " " + getString(R.string.voice_command_repeat) +
                             ", " + getString(R.string.voice_command_timer) + ", " +
@@ -655,7 +655,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
                 if (keepGoing) {
                     // Continue waiting for orders
-                    String message = getString(R.string.voice_error_not_understood);
+                    String message = getString(R.string.voice_error_not_understood) + " " +
+                            getString(R.string.voice_commands_list);
                     if (dir.getTime() > 0) {
                         message = message + " " + getString(R.string.voice_command_repeat) +
                                 ", " + getString(R.string.voice_command_timer) + " " +
@@ -739,7 +740,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                         message = getString(R.string.voice_error_server);
                         break;
                     case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                        message = getString(R.string.voice_error_speech_timeout);
+                        message = getString(R.string.voice_error_speech_timeout) + " " +
+                                getString(R.string.voice_commands_list);
                         if (dir.getTime() > 0) {
                             message = message + " " + getString(R.string.voice_command_repeat) +
                                     ", " + getString(R.string.voice_command_timer) + " " +
@@ -754,10 +756,11 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                         }
                         break;
                     default:
-                        message = getString(R.string.voice_error_not_understood);
+                        message = getString(R.string.voice_error_not_understood) + " " +
+                                getString(R.string.voice_commands_list);
                         if (dir.getTime() > 0) {
                             message = message + " " + getString(R.string.voice_command_repeat) +
-                                    ", " + getString(R.string.voice_command_timer) + " " +
+                                    ", " + getString(R.string.voice_command_timer) + ", " +
                                     getString(R.string.voice_command_next) +
                                     getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);

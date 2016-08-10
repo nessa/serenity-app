@@ -185,8 +185,9 @@
     <string name="voice_error_no_match">No match</string>
     <string name="voice_error_recognizer_busy">Recognition service is busy</string>
     <string name="voice_error_server">Error from server</string>
-    <string name="voice_error_speech_timeout">No speech input. Please, say one of these commands:</string>
-    <string name="voice_error_not_understood">Didn\'t understand. Please, say one of these commands:</string>
+    <string name="voice_error_speech_timeout">No speech input.</string>
+    <string name="voice_error_not_understood">Didn\'t understand.</string>
+    <string name="voice_commands_list">Please, say one of these commands:</string>
     <!-- Comments -->
     <string name="detail_loading_comments_message">Loading comments…</string>
     <string name="detail_leave_a_comment_message">Leave a comment…</string>
@@ -230,7 +231,8 @@
     <string name="settings_languages_section">Languages</string>
     <string name="settings_offline_mode_primary_text">Offline mode</string>
     <string name="settings_offline_mode_secondary_text">If enabled, you only will see downloaded
-        recipes and you won\'t access automatic reading unless you download the language packages.</string>
+        recipes and you won\'t access automatic reading unless you download the language
+        packages.</string>
     <string name="settings_wifi_mode_primary_text">WiFi only</string>
     <string name="settings_wifi_mode_secondary_text">If enabled, you only will see uploaded
         recipes if you have WiFi connection.</string>
@@ -290,5 +292,4 @@
     <string name="info_license">GPLv3 License</string>
     <string name="info_third_party_licenses">Third-party licenses</string>
     <string name="info_donate">Donate via Paypal</string>
-
 </resources>
