@@ -235,10 +235,6 @@
     <string name="settings_wifi_mode_primary_text">Solo WiFi</string>
     <string name="settings_wifi_mode_secondary_text">Si está habilitado, solo se podrá acceder a las
         recetas no descargadas si se tiene conexión por WiFi.</string>
-    <string name="settings_download_images_primary_text">Descargar imágenes</string>
-    <string name="settings_download_images_secondary_text">Si está habilitado, cuando se guarde una
-        receta en local, se descargarán sus imágenes también, para tenerlas disponibles cuando no
-        haya conexión a internet</string>
     <string name="settings_recipes_languages_primary_text">Idioma de las recetas</string>
     <string name="settings_recipes_languages_secondary_text">¡Atención! Si elige varios idiomas y
         desea utilizar la lectura automática, debe recordar descargar los paquetes de idiomas
