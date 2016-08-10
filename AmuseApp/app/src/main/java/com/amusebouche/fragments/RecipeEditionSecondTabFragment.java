@@ -224,7 +224,7 @@ public class RecipeEditionSecondTabFragment extends Fragment {
     public void showEditionDialog(final int position) {
         Log.d("INFO", "SHOW EDITION DIALOG");
 
-        final Dialog editionDialog = new Dialog(getActivity());
+        final Dialog editionDialog = new Dialog(mEditionActivity);
         editionDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
         editionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         editionDialog.setContentView(R.layout.dialog_edition_ingredient);

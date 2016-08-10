@@ -55,7 +55,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:layout_margin="@dimen/info_big_margin"
+        android:layout_marginTop="@dimen/info_big_margin"
         android:background="@color/background"
         android:gravity="center_horizontal">
 

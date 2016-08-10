@@ -197,8 +197,7 @@ public class RecipeEditionThirdTabFragment extends Fragment {
     public void showEditionDialog(final int position) {
         Log.d("INFO", "SHOW EDITION DIALOG");
 
-        final Dialog editionDialog = new Dialog(mEditionActivity,
-                android.R.style.Theme_DeviceDefault_Light_NoActionBar_TranslucentDecor);
+        final Dialog editionDialog = new Dialog(mEditionActivity);
         editionDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
         editionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         editionDialog.setContentView(R.layout.dialog_edition_direction);

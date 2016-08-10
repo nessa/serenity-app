@@ -2,7 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="match_parent"
+    android:layout_width="@dimen/edition_dialog_width"
     android:layout_height="match_parent">
 
     <RelativeLayout
@@ -34,20 +34,23 @@
 
     </RelativeLayout>
 
-    <EditText android:id="@+id/description"
+    <EditText
+        android:id="@+id/description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="4"
         android:hint="@string/recipe_edition_direction_description_hint" />
 
-    <EditText android:id="@+id/image"
+    <EditText
+        android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textUri"
         android:maxLines="1"
         android:hint="@string/recipe_edition_direction_image_hint" />
 
-    <EditText android:id="@+id/video"
+    <EditText
+        android:id="@+id/video"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="1"
@@ -65,18 +68,18 @@
         android:textStyle="normal" />
     <SeekBar
         android:id="@+id/cooking_time_hours"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:max="20"
         android:progress="0"/>
     <SeekBar
         android:id="@+id/cooking_time_minutes"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:max="59"
         android:progress="0"/>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
