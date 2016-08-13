@@ -198,6 +198,8 @@
     <string name="detail_loading_comments_message">Cargando comentarios…</string>
     <string name="detail_leave_a_comment_message">Deje un comentario…</string>
     <string name="detail_send_comment">Enviar comentario</string>
+    <string name="detail_comment_recipe_message">Añadiendo comentario a receta…</string>
+    <string name="detail_comment_error_message">Error al añadir comentario a receta</string>
     <!-- Rating -->
     <string name="detail_rate_recipe_title">Valorar receta</string>
     <!-- Delete -->
