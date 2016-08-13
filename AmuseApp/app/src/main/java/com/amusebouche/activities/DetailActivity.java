@@ -368,6 +368,10 @@ public class DetailActivity extends AppCompatActivity {
 
     // UI METHODS
 
+    public void showBasicSnackbar(String message) {
+        Snackbar.make(mLayout, message, Snackbar.LENGTH_LONG).show();
+    }
+
     public void showLoadingSnackbar(String message) {
         // Show loading view
         ProgressBar progressBar = new ProgressBar(this);
@@ -494,6 +498,8 @@ public class DetailActivity extends AppCompatActivity {
      */
     public void downloadRecipe() {
         if (!mWifiModeSetting || RequestHandler.isWifiConnected(DetailActivity.this)) {
+            showLoadingSnackbar(getString(R.string.detail_saving_recipe_message));
+
             AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class);
             Call<ResponseBody> call = mAPI.getRecipe(mRecipe.getId());
 
@@ -536,6 +542,7 @@ public class DetailActivity extends AppCompatActivity {
                                 }
 
                                 // Post save
+                                hideLoadingSnackbar();
                                 Snackbar.make(mLayout, getString(R.string.recipe_edition_saved_recipe_message),
                                         Snackbar.LENGTH_LONG)
                                         .show();
@@ -552,13 +559,21 @@ public class DetailActivity extends AppCompatActivity {
                     }
 
                     if (fail) {
-                        // TODO: Show error
+                        // Show error
+                        hideLoadingSnackbar();
+                        Snackbar.make(mLayout, getString(R.string.detail_saving_error_message),
+                                Snackbar.LENGTH_LONG)
+                                .show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    // TODO: Show error
+                    // Show error
+                    hideLoadingSnackbar();
+                    Snackbar.make(mLayout, getString(R.string.detail_saving_error_message),
+                            Snackbar.LENGTH_LONG)
+                            .show();
                 }
             });
         } else {
@@ -574,6 +589,8 @@ public class DetailActivity extends AppCompatActivity {
     public void uploadRecipe() {
         if (isUserLoggedIn) {
             if (!mWifiModeSetting || RequestHandler.isWifiConnected(DetailActivity.this)) {
+                showLoadingSnackbar(getString(R.string.detail_uploading_recipe_message));
+
                 AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken, true);
 
                 if (mRecipe.getId().equals("") || mRecipe.getId().equals("0")) {
@@ -618,19 +635,27 @@ public class DetailActivity extends AppCompatActivity {
                                     }
                                 }
 
+                                // Post upload
+                                hideLoadingSnackbar();
                                 Snackbar.make(mLayout, getString(R.string.detail_recipe_created_message),
                                     Snackbar.LENGTH_LONG)
                                     .show();
                             } else {
-                                // TODO: Show error
-                                Log.d("DETAIL", "CREATE RECIPE ERROR");
+                                // Show error
+                                hideLoadingSnackbar();
+                                Snackbar.make(mLayout, getString(R.string.detail_uploading_error_message),
+                                        Snackbar.LENGTH_LONG)
+                                        .show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            // TODO: Show error
-                            Log.d("DETAIL", "CREATE RECIPE ERROR");
+                            // Show error
+                            hideLoadingSnackbar();
+                            Snackbar.make(mLayout, getString(R.string.detail_uploading_error_message),
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
                         }
 
                     });
@@ -643,19 +668,26 @@ public class DetailActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.code() == 200) {
+                                hideLoadingSnackbar();
                                 Snackbar.make(mLayout, getString(R.string.detail_recipe_updated_message),
                                     Snackbar.LENGTH_LONG)
                                     .show();
                             } else {
-                                // TODO: Show error
-                                Log.d("DETAIL", "UPDATE RECIPE ERROR");
+                                // Show error
+                                hideLoadingSnackbar();
+                                Snackbar.make(mLayout, getString(R.string.detail_uploading_error_message),
+                                        Snackbar.LENGTH_LONG)
+                                        .show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            // TODO: Show error
-                            Log.d("DETAIL", "UPDATE RECIPE ERROR");
+                            // Show error
+                            hideLoadingSnackbar();
+                            Snackbar.make(mLayout, getString(R.string.detail_uploading_error_message),
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
                         }
                     });
                 }
@@ -692,6 +724,7 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!mWifiModeSetting || RequestHandler.isWifiConnected(DetailActivity.this)) {
+                    showLoadingSnackbar(getString(R.string.detail_rating_recipe_message));
 
                     AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class, mToken);
                     Call<ResponseBody> call = mAPI.rateRecipe(mRecipe.getId(), (int) ratingBar.getRating());
@@ -700,6 +733,7 @@ public class DetailActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                             if (response.code() == 201) {
+                                hideLoadingSnackbar();
                                 Snackbar.make(mLayout, getString(R.string.detail_recipe_rated_message),
                                     Snackbar.LENGTH_LONG)
                                     .show();
@@ -708,13 +742,21 @@ public class DetailActivity extends AppCompatActivity {
                                 onReloadView();
                                 onReloadFragmentViews();
                             } else {
-                                // TODO: Show error
+                                // Show error
+                                hideLoadingSnackbar();
+                                Snackbar.make(mLayout, getString(R.string.detail_uploading_error_message),
+                                        Snackbar.LENGTH_LONG)
+                                        .show();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ResponseBody> call, Throwable t) {
-                            // TODO: Show error
+                            // Show error
+                            hideLoadingSnackbar();
+                            Snackbar.make(mLayout, getString(R.string.detail_uploading_error_message),
+                                    Snackbar.LENGTH_LONG)
+                                    .show();
                         }
                     });
 

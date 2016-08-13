@@ -133,6 +133,12 @@
     <string name="detail_recipe_updated_message">Receta actualizada</string>
     <string name="detail_recipe_rated_message">Puntuación enviada</string>
     <string name="detail_recipe_wifi_only_message">Solo disponible para conexiones por WiFi</string>
+    <string name="detail_saving_recipe_message">Guardando receta…</string>
+    <string name="detail_uploading_recipe_message">Subiendo receta…</string>
+    <string name="detail_rating_recipe_message">Puntuando receta…</string>
+    <string name="detail_saving_error_message">Error al guardar la receta</string>
+    <string name="detail_uploading_error_message">Error al subir la receta</string>
+    <string name="detail_rating_error_message">Error al puntuar la receta</string>
     <!--   Recipe detail fragment -->
     <string name="image">Imagen</string>
     <string name="detail_users">usuarios</string>

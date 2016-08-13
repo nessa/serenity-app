@@ -133,6 +133,12 @@
     <string name="detail_recipe_updated_message">Recipe updated</string>
     <string name="detail_recipe_rated_message">Rating uploaded</string>
     <string name="detail_recipe_wifi_only_message">Only available for WiFi connections</string>
+    <string name="detail_saving_recipe_message">Saving recipe…</string>
+    <string name="detail_uploading_recipe_message">Uploading recipe…</string>
+    <string name="detail_rating_recipe_message">Rating recipe…</string>
+    <string name="detail_saving_error_message">Saving the recipe failed</string>
+    <string name="detail_uploading_error_message">Uploading the recipe failed</string>
+    <string name="detail_rating_error_message">Rating the recipe failed</string>
     <!--   Recipe detail fragment -->
     <string name="image">Image</string>
     <string name="detail_users">users</string>
@@ -192,6 +198,8 @@
     <string name="detail_loading_comments_message">Loading comments…</string>
     <string name="detail_leave_a_comment_message">Leave a comment…</string>
     <string name="detail_send_comment">Send comment</string>
+    <string name="detail_comment_recipe_message">Adding comment to recipe…</string>
+    <string name="detail_comment_error_message">Adding comment to recipe failed</string>
     <!-- Rating -->
     <string name="detail_rate_recipe_title">Rate recipe</string>
     <!-- Delete -->

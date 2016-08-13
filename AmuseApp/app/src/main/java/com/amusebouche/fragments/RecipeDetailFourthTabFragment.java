@@ -213,6 +213,8 @@ public class RecipeDetailFourthTabFragment extends Fragment {
     }
 
     private void sendComment(String comment) {
+        mDetailActivity.showLoadingSnackbar(getString(R.string.detail_comment_recipe_message));
+
         AmuseAPI mAPI = RetrofitServiceGenerator.createService(AmuseAPI.class,
             mDetailActivity.getToken());
         Call<ResponseBody> call = mAPI.addComment(mDetailActivity.getRecipe().getId(), comment);
@@ -221,17 +223,23 @@ public class RecipeDetailFourthTabFragment extends Fragment {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (response.code() == 201) {
+                    mDetailActivity.hideLoadingSnackbar();
+
                     // Reset comment text and reload comments
                     mCommentTextView.setText("");
                     reloadComments();
                 } else {
-                    // TODO: Show error
+                    // Show error
+                    mDetailActivity.hideLoadingSnackbar();
+                    mDetailActivity.showBasicSnackbar(getString(R.string.detail_comment_error_message));
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {
-                // TODO: Show error
+                // Show error
+                mDetailActivity.hideLoadingSnackbar();
+                mDetailActivity.showBasicSnackbar(getString(R.string.detail_comment_error_message));
             }
         });
     }
