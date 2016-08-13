@@ -88,7 +88,7 @@ public class SplashScreenActivity extends Activity {
 
         // If there are no set languages, ask for them
         if (mLanguage.equals("")) {
-            Dialog languagesDialog = new LanguagesDialog(this, mDatabaseHelper);
+            Dialog languagesDialog = new LanguagesDialog(this, mDatabaseHelper, true);
 
             languagesDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override

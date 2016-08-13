@@ -209,7 +209,7 @@ public class SettingsFragment extends Fragment {
         languageSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog languages = new LanguagesDialog(getActivity(), mDatabaseHelper);
+                Dialog languages = new LanguagesDialog(getActivity(), mDatabaseHelper, false);
 
                 languages.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override

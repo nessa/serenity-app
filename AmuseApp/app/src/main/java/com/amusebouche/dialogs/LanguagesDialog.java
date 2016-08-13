@@ -39,19 +39,28 @@ public class LanguagesDialog extends Dialog {
     protected Button acceptButton;
     protected Button cancelButton;
 
+    // Behaviour
+    protected boolean cancelable;
+
     /**
      * Dialog constructor
      *
      * @param context Application context
      * @param databaseHelper Present active database helper
+     * @param forceResponse Indicates if dialog must remain opened while the response isn't inserted
      */
-    public LanguagesDialog(final Context context, final DatabaseHelper databaseHelper) {
+    public LanguagesDialog(final Context context, final DatabaseHelper databaseHelper,
+                           boolean forceResponse) {
         // Set your theme here
         super(context);
+
+        this.cancelable = !forceResponse;
 
         this.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.setContentView(R.layout.dialog_languages);
+        this.setCancelable(cancelable);
+        this.setCanceledOnTouchOutside(cancelable);
 
         // Get languages from shared preferences
         String mSelectedLanguage = databaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
@@ -67,12 +76,17 @@ public class LanguagesDialog extends Dialog {
         list.setAdapter(adapter);
 
         // Set buttons' listeners
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LanguagesDialog.this.dismiss();
-            }
-        });
+
+        if (cancelable) {
+            cancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LanguagesDialog.this.dismiss();
+                }
+            });
+        } else {
+            cancelButton.setVisibility(View.GONE);
+        }
 
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
