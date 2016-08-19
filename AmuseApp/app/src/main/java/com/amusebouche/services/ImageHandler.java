@@ -1,15 +1,10 @@
 package com.amusebouche.services;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.amusebouche.activities.R;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import com.bumptech.glide.Glide;
 
 /**
  * Image handler class.
@@ -20,23 +15,21 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ImageHandler {
 
-    private static final AtomicInteger RESIZE_PIXELS = new AtomicInteger(500);
-
     /**
      * Set an image in a image view using the Picasso library.
      * @param context Context where the image will be set.
      * @param imageName Name of the image. Could be an URL, a file path or an empty string. If it's
      *                  an empty string, we will set a random sample image.
      * @param imageView Image view we want to set up.
-     * @param progressBar Loading indicator, if exists.
-     * @see Picasso library: com.squareup.picasso.Picasso
+     * @param position Integer position of the image in the list of elements
+     * @see Glide library: com.github.bumptech.glide
      */
     public static void setCellImage(Context context, String imageName, ImageView imageView,
-                                    final ProgressBar progressBar) {
+                                    int position) {
         // Get a default image from the image position
         int resource;
-        int position = (int)imageView.getTag() % 3;
-        switch (position) {
+        int resourceId = position % 3;
+        switch (resourceId) {
             default:
             case 0:
                 resource = R.drawable.fake_food_1;
@@ -53,30 +46,11 @@ public class ImageHandler {
         if (imageName == null || imageName.equals("")) {
             imageView.setImageDrawable(context.getDrawable(resource));
         } else {
-            // Define callback for progress bar and enable it if it's defined
-            Callback callback = null;
-            if (progressBar != null) {
-                progressBar.setVisibility(View.VISIBLE);
-
-                callback = new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        progressBar.setVisibility(View.GONE);
-                    }
-
-                    @Override
-                    public void onError() {
-                    }
-                };
-            }
-
-            Picasso.with(context)
+            Glide.with(context)
                     .load(imageName)
-                    .resize(RESIZE_PIXELS.get(), RESIZE_PIXELS.get())
-                    .centerInside()
-                    .noFade()
+                    .centerCrop()
                     .error(resource)
-                    .into(imageView, callback);
+                    .into(imageView);
         }
     }
 
@@ -86,12 +60,11 @@ public class ImageHandler {
      * @param imageName Name of the image. Could be an URL, a file path or an empty string. If it's
      *                  an empty string, we will set a random sample image.
      * @param imageView Image view we want to set up.
-     * @see Picasso library: com.squareup.picasso.Picasso
+     * @see Glide library: com.github.bumptech.glide
      */
     public static void setImage(Context context, String imageName, ImageView imageView) {
-        Picasso.with(context)
+        Glide.with(context)
             .load(imageName)
-            .noFade()
             .into(imageView);
     }
 }

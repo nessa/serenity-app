@@ -14,7 +14,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -44,19 +43,17 @@ public class GridViewCellAdapter extends RecyclerView.Adapter<GridViewCellAdapte
     private RecipeListFragment mFragment;
     private int mScreenWidth;
 
-    // Provide a reference to the views for each data item
     public class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
+        public View view;
         public TextView name;
         public ImageView image;
-        public ProgressBar progressBar;
         public RelativeLayout fadeViews;
 
         public ViewHolder(View v) {
             super(v);
+            view = v;
             name = (TextView) v.findViewById(R.id.recipe_name);
             image = (ImageView) v.findViewById(R.id.recipe_image);
-            progressBar = (ProgressBar) v.findViewById(R.id.progress_bar);
             fadeViews = (RelativeLayout) v.findViewById(R.id.fade_views);
         }
     }
@@ -128,17 +125,19 @@ public class GridViewCellAdapter extends RecyclerView.Adapter<GridViewCellAdapte
         // Get the item in the adapter
         final Recipe presentRecipe = getItem(position);
 
-        // Get the textview to update the string
+        // Set position as tag in the view
+        holder.view.setTag(position);
+
+        // Get the text view to update the string
         holder.name.setText(presentRecipe.getTitle());
 
         // Get the image to update the content
-        holder.image.setTag(position);
-        ImageHandler.setCellImage(mContext, presentRecipe.getImage(), holder.image, holder.progressBar);
+        ImageHandler.setCellImage(mContext, presentRecipe.getImage(), holder.image, position);
 
         // Call transition from image (to detail image)
-        holder.image.setOnClickListener(new View.OnClickListener() {
+        holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(final View v) {
+            public void onClick(final View clickedView) {
 
                 // Can't compress a recycled bitmap so we copy it
                 holder.image.buildDrawingCache(true);
@@ -169,7 +168,8 @@ public class GridViewCellAdapter extends RecyclerView.Adapter<GridViewCellAdapte
                         public void onAnimationEnd(Animation animation) {
                             // Send selected recipe to the next activity
                             Intent i = new Intent(mContext, DetailActivity.class);
-                            i.putExtra("recipe", ((MainActivity) mContext).getRecipes().get((int) v.getTag()));
+                            i.putExtra("recipe", ((MainActivity) mContext).getRecipes().get(
+                                (int) clickedView.getTag()));
 
                             Pair<View, String> p1 = Pair.create((View) holder.image, mContext.getString(R.string.transition_detail_image));
                             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
