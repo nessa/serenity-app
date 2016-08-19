@@ -74,6 +74,8 @@ public class RecipeEditionFirstTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
 
+        mEditionActivity = (EditionActivity)getActivity();
+
         categories = UserFriendlyTranslationsHandler.getCategories(getActivity());
         typesOfDish = UserFriendlyTranslationsHandler.getTypes(getActivity());
         difficulties = UserFriendlyTranslationsHandler.getDifficulties(getActivity());
