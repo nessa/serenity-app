@@ -19,8 +19,9 @@ public class RequestHandler {
     // Basic
     public static String API_GET_SEPARATOR = "?";
     public static String API_PARAM_SEPARATOR = "&";
+    public static String API_PARAM_VALUE_SEPARATOR = ",";
     public static String API_PARAM_EQUAL = "=";
-    public static String API_PARAM_NOT_EQUAL = "!=";
+    public static String API_PARAM_EXCLUDE = "exclude_";
 
     // Endpoints
     public static String API_RECIPES_ENDPOINT = "recipes/";
@@ -62,31 +63,40 @@ public class RequestHandler {
      * @return Parameter's string
      */
     static public String buildParams(int page, ArrayList<Pair<String, ArrayList<String>>> params) {
+
+
         String paramString = String.format(Locale.getDefault(), "%s%s%d", API_PARAM_PAGE,
             API_PARAM_EQUAL, page);
 
         if (params != null) {
             for (Pair item : params) {
+                paramString += API_PARAM_SEPARATOR;
+
+                boolean firstValue = true;
                 String key = (String) item.first;
 
-                for (String value : (ArrayList<String>) item.second) {
-                    paramString += API_PARAM_SEPARATOR;
+                if (key.startsWith(API_PARAM_DISLIKE_PREFIX)) {
 
-                    if (key.startsWith(API_PARAM_DISLIKE_PREFIX)) {
+                    paramString += API_PARAM_EXCLUDE;
 
-                        if (key.equals(API_PARAM_DISLIKE_CATEGORY)) {
-                            paramString += API_PARAM_CATEGORY;
-                        }
-
-                        if (key.equals(API_PARAM_DISLIKE_INGREDIENT)) {
-                            paramString += API_PARAM_INGREDIENT;
-                        }
-
-                        paramString += API_PARAM_NOT_EQUAL;
-                    } else {
-                        paramString += key;
-                        paramString += API_PARAM_EQUAL;
+                    if (key.equals(API_PARAM_DISLIKE_CATEGORY)) {
+                        paramString += API_PARAM_CATEGORY;
                     }
+
+                    if (key.equals(API_PARAM_DISLIKE_INGREDIENT)) {
+                        paramString += API_PARAM_INGREDIENT;
+                    }
+                } else {
+                    paramString += key;
+                }
+
+                paramString += API_PARAM_EQUAL;
+
+                for (String value : (ArrayList<String>) item.second) {
+                    if (!firstValue) {
+                        paramString += API_PARAM_VALUE_SEPARATOR;
+                    }
+                    firstValue = false;
 
                     paramString += value;
                 }
