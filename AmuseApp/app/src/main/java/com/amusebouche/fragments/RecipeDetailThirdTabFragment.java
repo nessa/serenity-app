@@ -137,6 +137,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 }
             });
         }
+
+        onReloadView();
     }
 
 
@@ -212,8 +214,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
         mDirectionsAdapter = new RecyclerAdapterWithHeader();
         mLayout.setAdapter(mDirectionsAdapter);
-
-        onReloadView();
 
         return mLayout;
     }

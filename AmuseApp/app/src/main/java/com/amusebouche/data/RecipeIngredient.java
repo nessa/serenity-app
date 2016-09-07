@@ -172,6 +172,19 @@ public class RecipeIngredient implements Parcelable {
     // Parcelable methods
 
     /**
+     * Check if this ingredient is different from a given one
+     * @param i The given recipe ingredient
+     * @return True if the ingredient is different. Otherwise, false.
+     */
+    public Boolean diff(RecipeIngredient i) {
+        boolean equals = mSortNumber.equals(i.getSortNumber());
+        equals = equals && mName.equals(i.getName());
+        equals = equals && mQuantity.equals(i.getQuantity());
+        equals = equals && mMeasurementUnit.equals(i.getMeasurementUnit());
+        return !equals;
+    }
+
+    /**
      * Method used to give additional hints on how to process the received parcel.
      * @return 0
      */

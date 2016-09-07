@@ -60,6 +60,7 @@ public class EditionActivity extends AppCompatActivity {
 
     // Data variables
     private Recipe mRecipe;
+    private Recipe mControlRecipe;
     private ArrayList<String> mForcedCategories;
 
     // UI
@@ -78,7 +79,6 @@ public class EditionActivity extends AppCompatActivity {
 
     // Behaviour variables
     private boolean mEnableSaveButton;
-    private boolean mRecipeUpdated;
 
     // Services variables
     private DatabaseHelper mDatabaseHelper;
@@ -97,8 +97,6 @@ public class EditionActivity extends AppCompatActivity {
 
         // Get database helper
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
-
-        mRecipeUpdated = false;
 
         // Get preferences
         String mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
@@ -128,14 +126,18 @@ public class EditionActivity extends AppCompatActivity {
                     0,
                     1,
                     "",
+                    false,
                     new ArrayList<RecipeCategory>(),
                     new ArrayList<RecipeIngredient>(),
                     new ArrayList<RecipeDirection>());
+
+                mControlRecipe = null;
 
                 title = getString(R.string.activity_add_title);
             }
         } else {
             mRecipe = savedInstanceState.getParcelable(AppData.INTENT_KEY_RECIPE);
+            mControlRecipe = mRecipe;
             presentTab = savedInstanceState.getInt(AppData.INTENT_KEY_EDITION_TAG);
         }
 
@@ -352,7 +354,7 @@ public class EditionActivity extends AppCompatActivity {
     private void onBack() {
         Intent intent = new Intent();
         intent.putExtra(AppData.INTENT_KEY_RECIPE, mRecipe);
-        setResult(RESULT_OK, intent);
+        this.setResult(RESULT_OK, intent);
     }
 
 
@@ -399,6 +401,8 @@ public class EditionActivity extends AppCompatActivity {
              * - It's not from API and it exists in database
              * Otherwise, create a new recipe
              */
+            mRecipe.setIsUpdated(mRecipe.diff(mControlRecipe));
+
             if ((mRecipe.getIsOnline() && mDatabaseHelper.existRecipeWithAPIId(mRecipe.getId())) ||
                     (!mRecipe.getIsOnline() && mRecipe.getDatabaseId() != null &&
                             !mRecipe.getDatabaseId().equals(""))) {

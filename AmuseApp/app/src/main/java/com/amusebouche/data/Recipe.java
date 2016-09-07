@@ -86,6 +86,7 @@ public class Recipe implements Parcelable {
 
     // Local variables
     private transient Boolean mIsOnline;
+    private transient Boolean mIsUpdated;
 
     // List variables
 
@@ -122,14 +123,15 @@ public class Recipe implements Parcelable {
      * @param servings Number of persons we can serve this recipe (with the given amount of
      *                 ingredients)
      * @param source URL to the source of this recipe
-     * @param categories List of categories associated to this recipe. @see Category clas
+     * @param isUpdated Boolean that indicates if the recipe has been recently updated
+     * @param categories List of categories associated to this recipe. @see Category class
      * @param ingredients List of ingredients associated to this recipe. @see Ingredient class
      * @param directions List of directions associated to this recipe. @see Direction class
      */
     public Recipe(String databaseId, String id, String title, String owner, String language,
                   String typeOfDish, String difficulty, Date createdTimestamp,
                   Date updatedTimestamp, Float cookingTime, String image, Integer totalRating,
-                  Integer usersRating, Integer servings, String source,
+                  Integer usersRating, Integer servings, String source, Boolean isUpdated,
                   ArrayList<RecipeCategory> categories, ArrayList<RecipeIngredient> ingredients,
                   ArrayList<RecipeDirection> directions) {
         this.mDatabaseId = databaseId;
@@ -147,6 +149,7 @@ public class Recipe implements Parcelable {
         this.mUsersRating = usersRating;
         this.mServings = servings;
         this.mSource = source;
+        this.mIsUpdated = isUpdated;
         this.mCategories = categories;
         this.mIngredients = ingredients;
         this.mDirections = directions;
@@ -174,6 +177,7 @@ public class Recipe implements Parcelable {
      * @param servings Number of persons we can serve this recipe (with the given amount of
      *                 ingredients)
      * @param source URL to the source of this recipe
+     * @param isUpdated Boolean that indicates if the recipe has been recently updated
      * @param categories List of categories associated to this recipe. @see Category clas
      * @param ingredients List of ingredients associated to this recipe. @see Ingredient class
      * @param directions List of directions associated to this recipe. @see Direction class
@@ -181,8 +185,9 @@ public class Recipe implements Parcelable {
     public Recipe(String id, String title, String owner, String language, String typeOfDish,
                   String difficulty, Date createdTimestamp, Date updatedTimestamp,
                   Float cookingTime, String image, Integer totalRating, Integer usersRating,
-                  Integer servings, String source, ArrayList<RecipeCategory> categories,
-                  ArrayList<RecipeIngredient> ingredients, ArrayList<RecipeDirection> directions) {
+                  Integer servings, String source, Boolean isUpdated,
+                  ArrayList<RecipeCategory> categories, ArrayList<RecipeIngredient> ingredients,
+                  ArrayList<RecipeDirection> directions) {
         this.mDatabaseId = "";
         this.mId = id;
         this.mTitle = title;
@@ -198,6 +203,7 @@ public class Recipe implements Parcelable {
         this.mUsersRating = usersRating;
         this.mServings = servings;
         this.mSource = source;
+        this.mIsUpdated = isUpdated;
         this.mCategories = categories;
         this.mIngredients = ingredients;
         this.mDirections = directions;
@@ -251,6 +257,7 @@ public class Recipe implements Parcelable {
             // Default values
             this.mLocalImage = "";
             this.mIsOnline = false;
+            this.mIsUpdated = false;
 
             // Create empty arrays for these variables
             mCategories = new ArrayList<>();
@@ -301,6 +308,7 @@ public class Recipe implements Parcelable {
         this.mServings = source.readInt();
         this.mSource = source.readString();
         this.mIsOnline = source.readByte() != 0;
+        this.mIsUpdated = source.readByte() != 0;
 
         mCategories = new ArrayList<>();
         mIngredients = new ArrayList<>();
@@ -450,6 +458,14 @@ public class Recipe implements Parcelable {
     }
 
     /**
+     * Get method for isUpdated variable
+     * @return boolean If true, recipe has been updated recently
+     */
+    public boolean getIsUpdated() {
+        return mIsUpdated;
+    }
+
+    /**
      * Get method for categories variable
      * @return List of recipe categories
      */
@@ -560,7 +576,71 @@ public class Recipe implements Parcelable {
         this.mIsOnline = isOnline;
     }
 
+    /**
+     * Set method for isUpdated variable
+     */
+    public void setIsUpdated(boolean isUpdated) {
+        this.mIsUpdated = isUpdated;
+    }
+
     // Parcelable methods
+
+    /**
+     * Check if this recipe is different from a given one
+     * @param r The given recipe
+     * @return True if the recipe is different. Otherwise, false.
+     */
+    public Boolean diff(Recipe r) {
+        boolean equals = mId.equals(r.getId());
+
+        if (equals) {
+            equals = mDatabaseId.equals(r.getDatabaseId());
+
+            if (equals) {
+                equals = mTitle.equals(r.getTitle());
+                equals = equals && mOwner.equals(r.getOwner());
+                equals = equals && mTypeOfDish.equals(r.getTypeOfDish());
+                equals = equals && mDifficulty.equals(r.getDifficulty());
+                equals = equals && mCookingTime.equals(r.getCookingTime());
+                equals = equals && mImage.equals(r.getImage());
+                equals = equals && mServings.equals(r.getServings());
+                equals = equals && mSource.equals(r.getSource());
+                equals = equals && mIsOnline.equals(r.getIsOnline());
+
+                if (equals) {
+                    equals = mCategories.size() == r.getCategories().size();
+
+                    if (equals) {
+                        for (int i = 0; i < mCategories.size(); i++) {
+                            equals = equals && mCategories.get(i).diff(r.getCategories().get(i));
+                        }
+                    }
+
+                    if (equals) {
+                        equals = mIngredients.size() == r.getIngredients().size();
+
+                        if (equals) {
+                            for (int i = 0; i < mIngredients.size(); i++) {
+                                equals = equals && mIngredients.get(i).diff(r.getIngredients().get(i));
+                            }
+                        }
+
+                        if (equals) {
+                            equals = mDirections.size() == r.getDirections().size();
+
+                            if (equals) {
+                                for (int i = 0; i < mDirections.size(); i++) {
+                                    equals = equals && mDirections.get(i).diff(r.getDirections().get(i));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return !equals;
+    }
 
     /**
      * Method used to give additional hints on how to process the received parcel.
@@ -599,6 +679,7 @@ public class Recipe implements Parcelable {
         dest.writeInt(this.mServings);
         dest.writeString(this.mSource);
         dest.writeByte((byte) (this.mIsOnline ? 1 : 0));
+        dest.writeByte((byte) (this.mIsUpdated ? 1 : 0));
 
         dest.writeList(mCategories);
         dest.writeList(mIngredients);

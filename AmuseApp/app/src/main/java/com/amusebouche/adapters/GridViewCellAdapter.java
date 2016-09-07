@@ -168,14 +168,16 @@ public class GridViewCellAdapter extends RecyclerView.Adapter<GridViewCellAdapte
                         public void onAnimationEnd(Animation animation) {
                             // Send selected recipe to the next activity
                             Intent i = new Intent(mContext, DetailActivity.class);
-                            i.putExtra("recipe", ((MainActivity) mContext).getRecipes().get(
-                                (int) clickedView.getTag()));
+                            i.putExtra(AppData.INTENT_KEY_RECIPE,
+                                    ((MainActivity) mContext).getRecipes().get((int) clickedView.getTag()));
+                            i.putExtra(AppData.INTENT_KEY_RECIPE_POSITION, (int) clickedView.getTag());
 
                             Pair<View, String> p1 = Pair.create((View) holder.image, mContext.getString(R.string.transition_detail_image));
                             ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
                                 (MainActivity) mContext, p1);
 
-                            ActivityCompat.startActivity((MainActivity) mContext, i, options.toBundle());
+                            ActivityCompat.startActivityForResult((MainActivity) mContext, i,
+                                    AppData.REQUEST_FROM_DETAIL_TO_LIST_CODE, options.toBundle());
                         }
 
                         @Override

@@ -171,6 +171,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 recipe.getUsersRating());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS, recipe.getServings());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE, recipe.getSource());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_IS_UPDATED, recipe.getIsUpdated() ? 1 : 0);
 
         long recipeId;
         recipeId = mDatabase.insert(RecipeContract.TABLE_NAME, null, recipeValues);
@@ -274,6 +275,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 recipe.getUsersRating());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS, recipe.getServings());
         recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE, recipe.getSource());
+        recipeValues.put(RecipeContract.RecipeEntry.COLUMN_NAME_IS_UPDATED, recipe.getIsUpdated() ? 1 : 0);
 
         mDatabase.update(RecipeContract.TABLE_NAME,
                 recipeValues,
@@ -529,6 +531,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             recipeCursor.getString(recipeCursor.getColumnIndex(
                 RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE)
             ),
+            recipeCursor.getInt(recipeCursor.getColumnIndex(
+                RecipeContract.RecipeEntry.COLUMN_NAME_IS_UPDATED)
+            ) == 1,
             categories,
             ingredients,
             directions
@@ -710,6 +715,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 recipeCursor.getString(recipeCursor.getColumnIndex(
                     RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE)
                 ),
+                recipeCursor.getInt(recipeCursor.getColumnIndex(
+                    RecipeContract.RecipeEntry.COLUMN_NAME_IS_UPDATED)
+                ) == 1,
                 categories,
                 ingredients,
                 directions

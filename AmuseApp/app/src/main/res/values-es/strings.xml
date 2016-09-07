@@ -143,6 +143,7 @@
     <string name="image">Imagen</string>
     <string name="detail_users">usuarios</string>
     <string name="detail_user">usuario</string>
+    <string name="detail_user_you">Tú</string>
     <string name="detail_information_label">Información</string>
     <string name="detail_ingredients_label">Ingredientes</string>
     <string name="detail_directions_label">Pasos</string>

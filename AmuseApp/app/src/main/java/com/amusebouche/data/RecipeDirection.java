@@ -199,6 +199,20 @@ public class RecipeDirection implements Parcelable {
     // Parcelable methods
 
     /**
+     * Check if this direction is different from a given one
+     * @param d The given recipe direction
+     * @return True if the direction is different. Otherwise, false.
+     */
+    public Boolean diff(RecipeDirection d) {
+        boolean equals = mSortNumber.equals(d.getSortNumber());
+        equals = equals && mDescription.equals(d.getDescription());
+        equals = equals && mImage.equals(d.getImage());
+        equals = equals && mVideo.equals(d.getVideo());
+        equals = equals && mTime.equals(d.getTime());
+        return !equals;
+    }
+
+    /**
      * Method used to give additional hints on how to process the received parcel.
      * @return 0
      */

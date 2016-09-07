@@ -109,6 +109,15 @@ public class RecipeCategory implements Parcelable {
     // Parcelable methods
 
     /**
+     * Check if this category is different from a given one
+     * @param c The given recipe category
+     * @return True if the category is different. Otherwise, false.
+     */
+    public Boolean diff(RecipeCategory c) {
+        return !mName.equals(c.getName());
+    }
+
+    /**
      * Method used to give additional hints on how to process the received parcel.
      * @return 0
      */

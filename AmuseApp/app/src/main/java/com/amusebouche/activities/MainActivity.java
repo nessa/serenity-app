@@ -195,11 +195,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            mRecipes = data.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
-            mCurrentPage = data.getIntExtra(CURRENT_PAGE_KEY, 0);
-            mLimitPerPage = data.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
-            mPreviousTotal = data.getIntExtra(PREVIOUS_TOTAL_KEY, 0);
+            if (requestCode == AppData.REQUEST_FROM_DETAIL_TO_LIST_CODE) {
+                // Coming back from detail view
+                Recipe recipe = data.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
+                int position = data.getIntExtra(AppData.INTENT_KEY_RECIPE_POSITION, -1);
+
+                if (position > -1 && mRecipes.size() > 0) {
+                    mRecipes.set(position, recipe);
+                }
+            } else {
+                mRecipes = data.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);
+                mCurrentPage = data.getIntExtra(CURRENT_PAGE_KEY, 0);
+                mLimitPerPage = data.getIntExtra(LIMIT_PER_PAGE_KEY, 0);
+                mPreviousTotal = data.getIntExtra(PREVIOUS_TOTAL_KEY, 0);
+            }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

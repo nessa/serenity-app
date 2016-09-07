@@ -51,7 +51,9 @@ public final class RecipeContract {
             " FLOAT DEFAULT 0,"
             + RecipeContract.RecipeEntry.COLUMN_NAME_SERVINGS +
             " INTEGER DEFAULT 0,"
-            + RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE + " TEXT);";
+            + RecipeContract.RecipeEntry.COLUMN_NAME_SOURCE + " TEXT,"
+            + RecipeContract.RecipeEntry.COLUMN_NAME_IS_UPDATED +
+            " INTEGER DEFAULT 0);";
 
 
     /**
@@ -104,5 +106,8 @@ public final class RecipeContract {
 
         // Source of this recipe
         public static final String COLUMN_NAME_SOURCE = "source";
+
+        // Flag that indicates if this recipe has been updated locally
+        public static final String COLUMN_NAME_IS_UPDATED = "is_updated";
     }
 }

@@ -26,8 +26,13 @@ public class AppData {
 
     // Intents keys
     public static String INTENT_KEY_RECIPE = "recipe";
+    public static String INTENT_KEY_RECIPE_POSITION = "recipe_position";
     public static String INTENT_KEY_DETAIL_TAG = "detail_tag";
     public static String INTENT_KEY_EDITION_TAG = "edition_tag";
+
+    // Requests' codes
+    public static int REQUEST_FROM_DETAIL_TO_LIST_CODE = 10;
+    public static int REQUEST_FROM_EDITION_TO_DETAIL_CODE = 20;
 
     // Preferences
     public static String PREFERENCE_OFFLINE_MODE = "offline_mode";

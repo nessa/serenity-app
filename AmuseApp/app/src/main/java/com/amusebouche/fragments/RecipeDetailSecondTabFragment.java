@@ -66,6 +66,8 @@ public class RecipeDetailSecondTabFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.i(getClass().getSimpleName(), "onResume()");
+
+        onReloadView();
     }
 
 
@@ -121,8 +123,6 @@ public class RecipeDetailSecondTabFragment extends Fragment {
 
         mIngredientsAdapter = new SimpleRecyclerAdapter(getActivity());
         mLayout.setAdapter(mIngredientsAdapter);
-
-        onReloadView();
 
         return mLayout;
     }

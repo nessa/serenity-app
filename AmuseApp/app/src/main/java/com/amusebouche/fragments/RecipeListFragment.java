@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -105,12 +106,12 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
         super.onCreate(savedInstanceState);
         Log.i(getClass().getSimpleName(), "onCreate()");
 
-        // Gets the database helper to access the database for the application
-        //mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
 
         mMainActivity = (MainActivity) getActivity();
 
         mFirstLoadLaunched = false;
+
+        // Gets the database helper to access the database for the application
         mDatabaseHelper = new DatabaseHelper(getActivity());
     }
 
@@ -180,6 +181,10 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     public void onResume() {
         Log.i(getClass().getSimpleName(), "onResume()");
         super.onResume();
+
+        // Notify the adapter the new elements added
+        GridViewCellAdapter adapter = (GridViewCellAdapter) mGridView.getAdapter();
+        adapter.notifyDataSetChanged();
     }
 
     /**
@@ -276,9 +281,18 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
     }
 
     private void onPostExecute() {
-        // Notify the adapter the new elements added
-        GridViewCellAdapter adapter = (GridViewCellAdapter) mGridView.getAdapter();
-        adapter.notifyDataSetChanged();
+        /// Notify the adapter the new elements added
+        Handler handler = new Handler();
+
+        final Runnable r = new Runnable() {
+            public void run() {
+                // Notify the adapter the new elements added
+                GridViewCellAdapter adapter = (GridViewCellAdapter) mGridView.getAdapter();
+                adapter.notifyDataSetChanged();
+            }
+        };
+
+        handler.post(r);
 
         mSnackBar.dismiss();
 

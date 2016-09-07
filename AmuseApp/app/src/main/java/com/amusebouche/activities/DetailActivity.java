@@ -37,6 +37,7 @@ import com.amusebouche.data.Recipe;
 import com.amusebouche.fragments.RecipeDetailThirdTabFragment;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.AppData;
+import com.amusebouche.services.ImageHandler;
 import com.amusebouche.services.RequestHandler;
 import com.amusebouche.services.RetrofitServiceGenerator;
 
@@ -69,10 +70,8 @@ import retrofit2.Response;
  */
 public class DetailActivity extends AppCompatActivity {
 
-    // Results
-    private static final int ACTIVITY_RESULT = 1;
-
     // Data variables
+    private int mRecipePosition;
     private Recipe mRecipe;
     private Recipe mAPIRecipe;
     private Recipe mDatabaseRecipe;
@@ -138,8 +137,10 @@ public class DetailActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             Intent i = getIntent();
             mRecipe = i.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
+            mRecipePosition = i.getIntExtra(AppData.INTENT_KEY_RECIPE_POSITION, -1);
         } else {
             mRecipe = savedInstanceState.getParcelable(AppData.INTENT_KEY_RECIPE);
+            mRecipePosition = savedInstanceState.getInt(AppData.INTENT_KEY_RECIPE_POSITION, -1);
             presentTab = savedInstanceState.getInt(AppData.INTENT_KEY_DETAIL_TAG);
         }
 
@@ -275,17 +276,17 @@ public class DetailActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable(AppData.INTENT_KEY_RECIPE, mRecipe);
+        outState.putInt(AppData.INTENT_KEY_RECIPE_POSITION, mRecipePosition);
         outState.putInt(AppData.INTENT_KEY_DETAIL_TAG, mTabs.getSelectedTabPosition());
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ACTIVITY_RESULT) {
+        if (requestCode == AppData.REQUEST_FROM_EDITION_TO_DETAIL_CODE) {
             if (resultCode == RESULT_OK) {
                 mRecipe = data.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
             }
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -325,6 +326,10 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         if (goBack) {
+            Intent intent = new Intent();
+            intent.putExtra(AppData.INTENT_KEY_RECIPE, mRecipe);
+            intent.putExtra(AppData.INTENT_KEY_RECIPE_POSITION, mRecipePosition);
+            setResult(RESULT_OK, intent);
             DetailActivity.super.onBackPressed();
         }
     }
@@ -335,13 +340,25 @@ public class DetailActivity extends AppCompatActivity {
     public void onReloadView() {
         // Reset UI elements
         mRecipeImage.setImageBitmap(mMainImage);
+        /* TODO: Update image when recipe changes
+        if (!mRecipe.getImage().equals("")) {
+            ImageHandler.setCellImage(this, mRecipe.getImage(), mRecipeImage, mRecipePosition);
+        } else {
+            mRecipeImage.setImageBitmap(mMainImage);
+        }*/
     }
 
     public void onReloadFragmentViews() {
         // Reset fragment components
-        mFirstFragment.onReloadView();
-        mSecondFragment.onReloadView();
-        mThirdFragment.onReloadView();
+        if (mFirstFragment != null) {
+            mFirstFragment.onReloadView();
+        }
+        if (mSecondFragment != null) {
+            mSecondFragment.onReloadView();
+        }
+        if (mThirdFragment != null) {
+            mThirdFragment.onReloadView();
+        }
     }
 
     /**
@@ -419,9 +436,8 @@ public class DetailActivity extends AppCompatActivity {
          * - Recipe doesn't exist on API
          */
         MenuItem uploadItem = menu.findItem(R.id.action_upload);
-        uploadItem.setVisible(!mOfflineModeSetting && (isUserLoggedIn && (mAPIRecipe == null ||
-                (mAPIRecipe != null && mDatabaseRecipe != null &&
-                mDatabaseRecipe.getUpdatedTimestamp().getTime() > mAPIRecipe.getUpdatedTimestamp().getTime()))));
+        uploadItem.setVisible(!mOfflineModeSetting && isUserLoggedIn && mDatabaseRecipe != null &&
+                mDatabaseRecipe.getIsUpdated());
 
         /* Rate item is enabled when:
          * - User is logged in
@@ -490,7 +506,7 @@ public class DetailActivity extends AppCompatActivity {
     public void editRecipe() {
         Intent i = new Intent(this, EditionActivity.class);
         i.putExtra(AppData.INTENT_KEY_RECIPE, mRecipe);
-        startActivityForResult(i, ACTIVITY_RESULT);
+        startActivityForResult(i, AppData.REQUEST_FROM_EDITION_TO_DETAIL_CODE);
     }
 
     /**
@@ -625,6 +641,9 @@ public class DetailActivity extends AppCompatActivity {
                                         if (jObject.has("id")) {
                                             mRecipe.setId(jObject.getString("id"));
                                         }
+
+                                        // Restore updated value
+                                        mRecipe.setIsUpdated(false);
 
                                         if (!mRecipe.getDatabaseId().equals("")) {
                                             mDatabaseHelper.updateRecipe(mRecipe);

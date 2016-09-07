@@ -99,6 +99,7 @@ public class RecipeDetailFirstTabFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.i(getClass().getSimpleName(), "onResume()");
+        onReloadView();
     }
 
 
@@ -164,9 +165,6 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         mCategoriesTextView = (TextView) mLayout.findViewById(R.id.categories_label);
         mCategoriesLayout = (LinearLayout)  mLayout.findViewById(R.id.categories);
 
-        onReloadView();
-
-
         return mLayout;
     }
 
@@ -175,7 +173,11 @@ public class RecipeDetailFirstTabFragment extends Fragment {
      */
     public void onReloadView() {
         mRecipeName.setText(mDetailActivity.getRecipe().getTitle());
-        mRecipeOwner.setText(mDetailActivity.getRecipe().getOwner());
+        if (mDetailActivity.getRecipe().getOwner().equals("")) {
+            mRecipeOwner.setText(getString(R.string.detail_user_you));
+        } else {
+            mRecipeOwner.setText(mDetailActivity.getRecipe().getOwner());
+        }
 
         float rating = 0;
         if (mDetailActivity.getRecipe().getUsersRating() > 0) {
