@@ -529,6 +529,11 @@ public class MainActivity extends AppCompatActivity {
                         RecipeCategory.CATEGORY_ALLERGY_DRIED_FRUIT_CODE, false);
                 }
 
+                // Uncategorized (only if user has selected another dislike category previously)
+                if (checkFilterInFilterParams(RequestHandler.API_PARAM_DISLIKE_CATEGORY)) {
+                    addFilterToFilterParams(RequestHandler.API_PARAM_DISLIKE_CATEGORY,
+                            RecipeCategory.CATEGORY_UNCATEGORIZED, false);
+                }
 
                 // Set  categories filter
                 removeFilterFromFilterParams(RequestHandler.API_PARAM_CATEGORY);
@@ -674,6 +679,24 @@ public class MainActivity extends AppCompatActivity {
                 mFilterParams.add(Pair.create(key, new ArrayList<>(Collections.singletonList(value))));
             }
         }
+    }
+
+    /**
+     * Check if a given parameter has value or some values set
+     *
+     * @param key Parameter key
+     */
+    private boolean checkFilterInFilterParams(String key) {
+        if (mFilterParams != null) {
+            for (int i = 0; i < mFilterParams.size(); i++) {
+
+                if (key.equals(mFilterParams.get(i).first)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
