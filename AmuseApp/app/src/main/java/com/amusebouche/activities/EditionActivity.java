@@ -401,7 +401,11 @@ public class EditionActivity extends AppCompatActivity {
              * - It's not from API and it exists in database
              * Otherwise, create a new recipe
              */
-            mRecipe.setIsUpdated(mRecipe.diff(mControlRecipe));
+            if (mControlRecipe != null) {
+                mRecipe.setIsUpdated(mRecipe.diff(mControlRecipe));
+            } else {
+                mRecipe.setIsUpdated(true);
+            }
 
             if ((mRecipe.getIsOnline() && mDatabaseHelper.existRecipeWithAPIId(mRecipe.getId())) ||
                     (!mRecipe.getIsOnline() && mRecipe.getDatabaseId() != null &&
