@@ -27,6 +27,7 @@ import com.amusebouche.adapters.GridViewCellAdapter;
 import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.services.AmuseAPI;
+import com.amusebouche.services.AppData;
 import com.amusebouche.services.DatabaseHelper;
 import com.amusebouche.services.RequestHandler;
 import com.amusebouche.data.Recipe;
@@ -58,6 +59,7 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
 
     // Data variables
     private MainActivity mMainActivity;
+    private String mUsername;
 
     // UI
     private RecyclerView mGridView;
@@ -113,6 +115,8 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
 
         // Gets the database helper to access the database for the application
         mDatabaseHelper = new DatabaseHelper(getActivity());
+
+        mUsername = mDatabaseHelper.getAppData(AppData.USER_LOGGED_USERNAME);
     }
 
     /**
@@ -228,11 +232,18 @@ public class RecipeListFragment extends Fragment implements Callback<ResponseBod
         switch (mMainActivity.getMode()) {
             default:
             case MainActivity.DOWNLOADED_RECIPES_MODE:
-            case MainActivity.MY_RECIPES_MODE:
                 mMainActivity.getRecipes().addAll(mDatabaseHelper.getRecipes(
                         mMainActivity.getLimitPerPage(),
                         mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage(),
                         mMainActivity.getFilterParams()));
+
+                this.onPostExecute();
+                break;
+            case MainActivity.MY_RECIPES_MODE:
+                mMainActivity.getRecipes().addAll(mDatabaseHelper.getMyRecipes(
+                        mMainActivity.getLimitPerPage(),
+                        mMainActivity.getCurrentPage() * mMainActivity.getLimitPerPage(),
+                        mMainActivity.getFilterParams(), mUsername));
 
                 this.onPostExecute();
                 break;

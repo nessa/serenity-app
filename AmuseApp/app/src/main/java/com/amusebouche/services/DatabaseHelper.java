@@ -1,9 +1,9 @@
 package com.amusebouche.services;
 
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
 
@@ -12,6 +12,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
@@ -27,8 +28,6 @@ import com.amusebouche.data.RecipeDirectionContract;
 import com.amusebouche.data.RecipeIngredient;
 import com.amusebouche.data.RecipeIngredientContract;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 
 /**
  * RecipesDatabaseHelper class.
@@ -47,11 +46,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static SQLiteDatabase mDatabase;
 
-    private static Context mContext;
-
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-        mContext = context;
     }
 
     // APP DATA
@@ -387,7 +383,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Recipe getRecipeByDatabaseId(String databaseRecipeId) {
         // Gets the database in the current database helper in read-only mode
         mDatabase = this.getReadableDatabase();
-        Recipe recipe = null;
+        Recipe recipe;
 
         ArrayList<RecipeCategory> categories = new ArrayList<>();
         ArrayList<RecipeIngredient> ingredients = new ArrayList<>();
@@ -550,7 +546,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String count = "SELECT count(*) FROM " + RecipeContract.TABLE_NAME +
                 " WHERE " + RecipeContract.RecipeEntry.COLUMN_NAME_ID +
-                " = '" + id + "'";;
+                " = '" + id + "'";
         Cursor mCursor = mDatabase.rawQuery(count, null);
         mCursor.moveToFirst();
         int recipesCount = mCursor.getInt(0);
@@ -745,6 +741,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      * @param limit Max number of results to return
      * @param offset Position of the first element to return
      * @param whereParams Conditions to match
+     * @param username Username of present user
+     * @return the current recipes from the database.
+     */
+    public ArrayList<Recipe> getMyRecipes(Integer limit, Integer offset,
+                                          ArrayList<Pair<String, ArrayList<String>>> whereParams,
+                                          String username) {
+
+        ArrayList<Pair<String, ArrayList<String>>> myParams = new ArrayList<>(whereParams);
+
+        if (username.equals("")) {
+            myParams.add(Pair.create(RequestHandler.API_PARAM_OWNER,
+                    new ArrayList<>(Collections.singletonList(""))));
+        } else {
+            myParams.add(Pair.create(RequestHandler.API_PARAM_OWNER,
+                    new ArrayList<>(Arrays.asList("", username))));
+        }
+
+        return getRecipes(limit, offset, myParams);
+    }
+
+    /**
+     * Gets the list of recipes from the database.
+     *
+     * @param limit Max number of results to return
+     * @param offset Position of the first element to return
+     * @param whereParams Conditions to match
      * @return the current recipes from the database.
      */
     public ArrayList<Recipe> getRecipes(Integer limit, Integer offset,
@@ -755,11 +777,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // Gets the database in the current database helper in read-only mode
         mDatabase = getReadableDatabase();
 
-        String where = "";
         String ordering = "";
-        int count = 0;
+        String where = "";
+        ArrayList<String> whereArray = new ArrayList<>();
+
         if (whereParams != null) {
             for (Pair item : whereParams) {
+                ArrayList<String> valuesArray = new ArrayList<>();
                 String key = (String) item.first;
 
                 for (String value : (ArrayList<String>) item.second) {
@@ -773,83 +797,90 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                             } else {
                                 ordering = value + " ASC";
                             }
-                        } else {
-                            // If the key is not ORDERING, then we will set a new WHERE condition,
-                            // so we need to add an AND to join it
-                            if (count > 0) {
-                                where += " AND ";
-                            }
-
-                            // Add new parameter to the count
-                            count += 1;
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_LANGUAGE)) {
-                            where += "UPPER(" + RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE +
-                                    ") = UPPER('" + value + "') ";
+                            valuesArray.add("UPPER(" + RecipeContract.RecipeEntry.COLUMN_NAME_LANGUAGE +
+                                    ") = UPPER('" + value + "') ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_TITLE)) {
-                            where += RecipeContract.RecipeEntry.COLUMN_NAME_TITLE +
-                                    " LIKE LOWER('%" + value + "%') ";
+                            valuesArray.add(RecipeContract.RecipeEntry.COLUMN_NAME_TITLE +
+                                    " LIKE LOWER('%" + value + "%') ");
+                        }
+
+                        if (key.equals(RequestHandler.API_PARAM_OWNER)) {
+                            valuesArray.add(RecipeContract.RecipeEntry.COLUMN_NAME_OWNER +
+                                    " LIKE LOWER('" + value + "') ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_DIFFICULTY)) {
-                            where += RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY +
-                                    " = '" + value + "' ";
+                            valuesArray.add(RecipeContract.RecipeEntry.COLUMN_NAME_DIFFICULTY +
+                                    " = '" + value + "' ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_TYPE_OF_DISH)) {
-                            where += RecipeContract.RecipeEntry.COLUMN_NAME_TYPE_OF_DISH +
-                                    " = '" + value + "' ";
+                            valuesArray.add(RecipeContract.RecipeEntry.COLUMN_NAME_TYPE_OF_DISH +
+                                    " = '" + value + "' ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_CATEGORY)) {
-                            where += "EXISTS (SELECT " +
+                            valuesArray.add("EXISTS (SELECT " +
                                     RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
                                     " FROM " + RecipeCategoryContract.TABLE_NAME +
                                     " WHERE " + RecipeContract.TABLE_NAME + "." +
                                     RecipeContract.RecipeEntry._ID + " = " +
                                     RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
                                     " AND " + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME +
-                                    " LIKE ('%" + value + "%')) ";
+                                    " LIKE ('%" + value + "%')) ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_DISLIKE_CATEGORY)) {
-                            where += "NOT EXISTS (SELECT " +
+                            valuesArray.add("NOT EXISTS (SELECT " +
                                     RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
                                     " FROM " + RecipeCategoryContract.TABLE_NAME +
                                     " WHERE " + RecipeContract.TABLE_NAME + "." +
                                     RecipeContract.RecipeEntry._ID + " = " +
                                     RecipeCategoryContract.RecipeCategoryEntry._COLUMN_NAME_RECIPE_ID +
                                     " AND " + RecipeCategoryContract.RecipeCategoryEntry.COLUMN_NAME_CATEGORY_NAME +
-                                    " LIKE ('%" + value + "%')) ";
+                                    " LIKE ('%" + value + "%')) ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_DISLIKE_INGREDIENT)) {
-                            where += "NOT EXISTS (SELECT " +
+                            valuesArray.add("NOT EXISTS (SELECT " +
                                     RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
                                     " FROM " + RecipeIngredientContract.TABLE_NAME +
                                     " WHERE " + RecipeContract.TABLE_NAME + "." +
                                     RecipeContract.RecipeEntry._ID + " = " +
                                     RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
                                     " AND " + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME +
-                                    " LIKE ('%" + value + "%')) ";
+                                    " LIKE ('%" + value + "%')) ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_INGREDIENT)) {
-                            where += "EXISTS (SELECT " +
+                            valuesArray.add("EXISTS (SELECT " +
                                     RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
                                     " FROM " + RecipeIngredientContract.TABLE_NAME +
                                     " WHERE " + RecipeContract.TABLE_NAME + "." +
                                     RecipeContract.RecipeEntry._ID + " = " +
                                     RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
                                     " AND " + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME +
-                                    " LIKE ('%" + value + "%')) ";
+                                    " LIKE ('%" + value + "%')) ");
                         }
+                    }
+
+                }
+
+                if (valuesArray.size() > 0) {
+                    if (key.equals(RequestHandler.API_PARAM_OWNER)) {
+                        whereArray.add("(" + TextUtils.join(" OR ", valuesArray) + ")");
+                    } else {
+                        whereArray.add("(" + TextUtils.join(" AND ", valuesArray) + ")");
                     }
                 }
             }
+
+            where = TextUtils.join(" AND ", whereArray);
         }
 
         // After the query, the cursor points to the first database row
@@ -902,7 +933,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String count = "SELECT count(*) FROM " + IngredientContract.TABLE_NAME +
             " WHERE " + IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
-            " LIKE ('" + ingredient.getTranslation() + "')";;
+            " LIKE ('" + ingredient.getTranslation() + "')";
         Cursor mCursor = mDatabase.rawQuery(count, null);
         mCursor.moveToFirst();
         int ingredientsCount = mCursor.getInt(0);
@@ -917,7 +948,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String count = "SELECT count(*) FROM " + IngredientContract.TABLE_NAME +
             " WHERE " + IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
-            " LIKE ('" + translation + "')";;
+            " LIKE ('" + translation + "')";
         Cursor mCursor = mDatabase.rawQuery(count, null);
         mCursor.moveToFirst();
         int ingredientsCount = mCursor.getInt(0);

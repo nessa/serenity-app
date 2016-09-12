@@ -32,6 +32,7 @@ public class RequestHandler {
 
     // Recipe filters
     public static String API_PARAM_TITLE = "title";
+    public static String API_PARAM_OWNER = "owner";
     public static String API_PARAM_CATEGORY = "category";
     public static String API_PARAM_DIFFICULTY = "difficulty";
     public static String API_PARAM_TYPE_OF_DISH = "type_of_dish";
