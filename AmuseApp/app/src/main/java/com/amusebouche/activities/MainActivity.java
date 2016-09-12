@@ -69,14 +69,6 @@ import java.util.Collections;
  */
 public class MainActivity extends AppCompatActivity {
 
-    // MENU
-    private static final int PROFILE = 0;
-    private static final int NEW_RECIPES = 1;
-    private static final int DOWNLOADED_RECIPES = 2;
-    private static final int MY_RECIPES = 3;
-    private static final int SETTINGS = 4;
-    private static final int INFO = 5;
-
     // MODES
     private static int mRecipeListMode;
     public static final int NEW_RECIPES_MODE = 1;
@@ -148,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
         mCurrentPage = 0;
         mLimitPerPage = 10;
         mPreviousTotal = 0;
-        mCurrentSelectedPosition = mOfflineModeSetting ? DOWNLOADED_RECIPES : NEW_RECIPES;
+        mCurrentSelectedPosition = mOfflineModeSetting ? AppData.DOWNLOADED_RECIPES : AppData.NEW_RECIPES;
 
         if (mDrawerLayout == null || mLeftDrawerView == null || mRightDrawerView == null || mDrawerToggle == null) {
             // Set left drawer
@@ -794,33 +786,33 @@ public class MainActivity extends AppCompatActivity {
         String title;
         boolean isRecipeList = true;
         switch (position) {
-            case PROFILE:
+            case AppData.PROFILE:
                 isRecipeList = false;
                 title = getString(R.string.lateral_menu_login);
                 fragment = new UserFragment();
                 break;
             default:
-            case NEW_RECIPES:
+            case AppData.NEW_RECIPES:
                 title = getString(R.string.lateral_menu_new_recipes);
                 this.resetRecipesAndSetMode(NEW_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
-            case DOWNLOADED_RECIPES:
+            case AppData.DOWNLOADED_RECIPES:
                 title = getString(R.string.lateral_menu_downloaded_recipes);
                 this.resetRecipesAndSetMode(DOWNLOADED_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
-            case MY_RECIPES:
+            case AppData.MY_RECIPES:
                 title = getString(R.string.lateral_menu_my_recipes);
                 this.resetRecipesAndSetMode(MY_RECIPES_MODE);
                 fragment = new RecipeListFragment();
                 break;
-            case SETTINGS:
+            case AppData.SETTINGS:
                 isRecipeList = false;
                 title = getString(R.string.lateral_menu_settings);
                 fragment = new SettingsFragment();
                 break;
-            case INFO:
+            case AppData.INFO:
                 isRecipeList = false;
                 title = getString(R.string.lateral_menu_info);
                 fragment = new InformationFragment();

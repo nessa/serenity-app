@@ -43,6 +43,14 @@ public class AppData {
     // App info
     public static String INGREDIENTS_LAST_UPDATE = "ingredients_last_update_";
 
+    // Menu
+    public static final int PROFILE = 0;
+    public static final int NEW_RECIPES = 1;
+    public static final int DOWNLOADED_RECIPES = 2;
+    public static final int MY_RECIPES = 3;
+    public static final int SETTINGS = 4;
+    public static final int INFO = 5;
+
     // User data
     public static String USER_AUTH_TOKEN = "user_auth_token";
     public static String USER_REMEMBER_CREDENTIALS = "user_remember_credentials";

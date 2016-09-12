@@ -51,26 +51,25 @@ public class LeftMenuAdapter extends BaseAdapter {
         return position;
     }
 
-
     private String getSectionString(int position) {
         switch (position) {
             default:
-            case 0:
+            case AppData.PROFILE:
                 String user = mDatabaseHelper.getAppData(AppData.USER_SHOW_TEXT);
                 if (user.equals("")) {
                     return mContext.getResources().getString(R.string.lateral_menu_login);
                 } else {
                     return user;
                 }
-            case 1:
+            case AppData.NEW_RECIPES:
                 return mContext.getResources().getString(R.string.lateral_menu_new_recipes);
-            case 2:
+            case AppData.DOWNLOADED_RECIPES:
                 return mContext.getResources().getString(R.string.lateral_menu_downloaded_recipes);
-            case 3:
+            case AppData.MY_RECIPES:
                 return mContext.getResources().getString(R.string.lateral_menu_my_recipes);
-            case 4:
+            case AppData.SETTINGS:
                 return mContext.getResources().getString(R.string.lateral_menu_settings);
-            case 5:
+            case AppData.INFO:
                 return mContext.getResources().getString(R.string.lateral_menu_info);
         }
     }
@@ -78,23 +77,24 @@ public class LeftMenuAdapter extends BaseAdapter {
     private int getSectionIcon(int position) {
         switch (position) {
             default:
-            case 0:
+            case AppData.PROFILE:
                 return R.drawable.ic_user_white_48dp;
-            case 1:
+            case AppData.NEW_RECIPES:
                 return R.drawable.ic_cook_white_48dp;
-            case 2:
+            case AppData.DOWNLOADED_RECIPES:
                 return R.drawable.ic_download_white_48dp;
-            case 3:
+            case AppData.MY_RECIPES:
                 return R.drawable.ic_tag_white_48dp;
-            case 4:
+            case AppData.SETTINGS:
                 return R.drawable.ic_settings_white_48dp;
-            case 5:
+            case AppData.INFO:
                 return R.drawable.ic_info_white_48dp;
         }
     }
 
     private boolean getSectionEnabled(int position) {
-        return !((position == 0 || position == 1) && mContext.getOfflineModeSetting());
+        return !((position == AppData.PROFILE || position == AppData.NEW_RECIPES) &&
+                mContext.getOfflineModeSetting());
     }
 
     @Override
