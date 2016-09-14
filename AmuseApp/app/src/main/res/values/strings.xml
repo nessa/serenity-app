@@ -166,6 +166,7 @@
     <string name="detail_timer_label">Timer</string>
     <string name="detail_timer_cancel_button">Cancel</string>
     <string name="detail_timer_start_button">Start</string>
+    <string name="detail_timer_edit_button">Edit</string>
     <string name="detail_timer_skip_button">Skip</string>
     <string name="detail_timer_hours_initial">h</string>
     <string name="detail_timer_minutes_initial">m</string>

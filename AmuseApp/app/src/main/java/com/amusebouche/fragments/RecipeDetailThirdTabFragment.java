@@ -75,6 +75,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
     // Timer dialog variables
     private Dialog mTimerDialog;
+    private Dialog mEditTimeDialog;
     private CountDownTimer mCountDownTimer;
     private Integer mTimerHours;
     private Integer mTimerMinutes;
@@ -334,7 +335,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
      *
      * @param time Time to count down
      */
-    public void setTimerDialog(Integer time) {
+    public void setTimerDialog(final Integer time) {
         mTimerDialog = new Dialog(getActivity());
         mTimerDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
         mTimerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -342,6 +343,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
         final TextView minutesTextView = (TextView) mTimerDialog.findViewById(R.id.minutes);
         final TextView secondsTextView = (TextView) mTimerDialog.findViewById(R.id.seconds);
+        Button editButton = (Button) mTimerDialog.findViewById(R.id.buttonEdit);
         Button skipButton = (Button) mTimerDialog.findViewById(R.id.buttonSkip);
         final ProgressBar progressBar = (ProgressBar) mTimerDialog.findViewById(R.id.progressBar);
 
@@ -397,6 +399,23 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             }
         };
 
+        editButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mTimerHours = time / 3600;
+                mTimerMinutes = (time / 60) % 60;
+                mTimerSeconds = time % 60;
+
+                // Hide this dialog
+                mCountDownTimer.cancel();
+                mTimerDialog.dismiss();
+
+                // Show edit time dialog
+                RecipeDetailThirdTabFragment.this.setEditTimeDialog();
+            }
+        });
+
+
         skipButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -422,6 +441,101 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             }
         });
     }
+
+    private void setEditTimeDialog() {
+
+        // Set dialog attributes
+        mEditTimeDialog = new Dialog(getActivity());
+        mEditTimeDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
+        mEditTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        mEditTimeDialog.setContentView(R.layout.dialog_detail_timer_set_time);
+
+        final TextView hoursTextView = (TextView) mEditTimeDialog.findViewById(R.id.hours);
+        final TextView minutesTextView = (TextView) mEditTimeDialog.findViewById(R.id.minutes);
+        final TextView secondsTextView = (TextView) mEditTimeDialog.findViewById(R.id.seconds);
+
+        hoursTextView.setText(String.valueOf(mTimerHours));
+        minutesTextView.setText(String.valueOf(mTimerMinutes));
+        secondsTextView.setText(String.valueOf(mTimerSeconds));
+
+        // Number pickers for hours, minutes and seconds
+        final CustomNumberPicker hoursPicker = (CustomNumberPicker)
+                mEditTimeDialog.findViewById(R.id.hoursPicker);
+        hoursPicker.setMaxValue(10);
+        hoursPicker.setMinValue(0);
+        hoursPicker.setWrapSelectorWheel(false);
+        hoursPicker.setValue(mTimerHours);
+
+        hoursPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                RecipeDetailThirdTabFragment.this.mTimerHours = newVal;
+                hoursTextView.setText(String.valueOf(mTimerHours));
+            }
+        });
+
+        final CustomNumberPicker minutesPicker = (CustomNumberPicker)
+                mEditTimeDialog.findViewById(R.id.minutesPicker);
+        minutesPicker.setMaxValue(59);
+        minutesPicker.setMinValue(0);
+        minutesPicker.setWrapSelectorWheel(true);
+        minutesPicker.setValue(mTimerMinutes);
+
+        minutesPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                RecipeDetailThirdTabFragment.this.mTimerMinutes = newVal;
+                minutesTextView.setText(String.valueOf(mTimerMinutes));
+            }
+        });
+
+        final CustomNumberPicker secondsPicker = (CustomNumberPicker)
+                mEditTimeDialog.findViewById(R.id.secondsPicker);
+        secondsPicker.setMaxValue(59);
+        secondsPicker.setMinValue(0);
+        secondsPicker.setWrapSelectorWheel(false);
+        secondsPicker.setValue(mTimerSeconds);
+
+        secondsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                RecipeDetailThirdTabFragment.this.mTimerSeconds = newVal;
+                secondsTextView.setText(String.valueOf(mTimerSeconds));
+            }
+        });
+
+        // Buttons
+        Button cancelButton = (Button) mEditTimeDialog.findViewById(R.id.buttonCancel);
+        Button setButton = (Button) mEditTimeDialog.findViewById(R.id.buttonSet);
+
+        setButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RecipeDetailThirdTabFragment.this.mTimerHours = hoursPicker.getValue();
+                RecipeDetailThirdTabFragment.this.mTimerMinutes = minutesPicker.getValue();
+                RecipeDetailThirdTabFragment.this.mTimerSeconds = secondsPicker.getValue();
+
+                RecipeDetailThirdTabFragment.this.setTimerDialog(
+                        RecipeDetailThirdTabFragment.this.mTimerHours * 3600 +
+                                RecipeDetailThirdTabFragment.this.mTimerMinutes * 60 +
+                                RecipeDetailThirdTabFragment.this.mTimerSeconds);
+
+                mEditTimeDialog.dismiss();
+                RecipeDetailThirdTabFragment.this.mTimerDialog.show();
+                RecipeDetailThirdTabFragment.this.mCountDownTimer.start();
+            }
+        });
+
+        cancelButton.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEditTimeDialog.dismiss();
+            }
+        });
+
+        mEditTimeDialog.show();
+    }
+
 
     /**
      * Show direction dialog set up in setDirectionDialog
@@ -458,6 +572,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         mCommandsDialog.getWindow().setWindowAnimations(R.style.UpAndDownDialogAnimation);
         mCommandsDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mCommandsDialog.setContentView(R.layout.dialog_detail_commands);
+
 
         ImageButton repeatButton = (ImageButton) mCommandsDialog.findViewById(R.id.repeat);
         ImageButton timerButton = (ImageButton) mCommandsDialog.findViewById(R.id.timer);
@@ -778,14 +893,26 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             }
         });
 
+        mCommandsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                // Disable speech recognizer
+                mSpeechRecognizer.cancel();
+                mSpeechRecognizer.destroy();
+            }
+        });
 
         mCommandsDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
 
             @Override
             public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    // Disable speech recognizer
                     mSpeechRecognizer.cancel();
                     mSpeechRecognizer.destroy();
+
+                    // Close this dialog
                     mCommandsDialog.dismiss();
                 }
                 return true;
@@ -907,96 +1034,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                             mTimerMinutes = (time / 60) % 60;
                             mTimerSeconds = time % 60;
 
-                            // Set dialog attributes
-                            final Dialog selectTimeDialog = new Dialog(getActivity());
-                            selectTimeDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
-                            selectTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                            selectTimeDialog.setContentView(R.layout.dialog_detail_timer_set_time);
-
-                            final TextView hoursTextView = (TextView) selectTimeDialog.findViewById(R.id.hours);
-                            final TextView minutesTextView = (TextView) selectTimeDialog.findViewById(R.id.minutes);
-                            final TextView secondsTextView = (TextView) selectTimeDialog.findViewById(R.id.seconds);
-
-                            hoursTextView.setText(String.valueOf(mTimerHours));
-                            minutesTextView.setText(String.valueOf(mTimerMinutes));
-                            secondsTextView.setText(String.valueOf(mTimerSeconds));
-
-                            // Number pickers for hours, minutes and seconds
-                            final CustomNumberPicker hoursPicker = (CustomNumberPicker)
-                                selectTimeDialog.findViewById(R.id.hoursPicker);
-                            hoursPicker.setMaxValue(10);
-                            hoursPicker.setMinValue(0);
-                            hoursPicker.setWrapSelectorWheel(false);
-                            hoursPicker.setValue(mTimerHours);
-
-                            hoursPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                                @Override
-                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                    RecipeDetailThirdTabFragment.this.mTimerHours = newVal;
-                                    hoursTextView.setText(String.valueOf(mTimerHours));
-                                }
-                            });
-
-                            final CustomNumberPicker minutesPicker = (CustomNumberPicker)
-                                selectTimeDialog.findViewById(R.id.minutesPicker);
-                            minutesPicker.setMaxValue(59);
-                            minutesPicker.setMinValue(0);
-                            minutesPicker.setWrapSelectorWheel(true);
-                            minutesPicker.setValue(mTimerMinutes);
-
-                            minutesPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                                @Override
-                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                    RecipeDetailThirdTabFragment.this.mTimerMinutes = newVal;
-                                    minutesTextView.setText(String.valueOf(mTimerMinutes));
-                                }
-                            });
-
-                            final CustomNumberPicker secondsPicker = (CustomNumberPicker)
-                                selectTimeDialog.findViewById(R.id.secondsPicker);
-                            secondsPicker.setMaxValue(59);
-                            secondsPicker.setMinValue(0);
-                            secondsPicker.setWrapSelectorWheel(false);
-                            secondsPicker.setValue(mTimerSeconds);
-
-                            secondsPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-                                @Override
-                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                                    RecipeDetailThirdTabFragment.this.mTimerSeconds = newVal;
-                                    secondsTextView.setText(String.valueOf(mTimerSeconds));
-                                }
-                            });
-
-                            // Buttons
-                            Button cancelButton = (Button) selectTimeDialog.findViewById(R.id.buttonCancel);
-                            Button setButton = (Button) selectTimeDialog.findViewById(R.id.buttonSet);
-
-                            setButton.setOnClickListener(new Button.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    RecipeDetailThirdTabFragment.this.mTimerHours = hoursPicker.getValue();
-                                    RecipeDetailThirdTabFragment.this.mTimerMinutes = minutesPicker.getValue();
-                                    RecipeDetailThirdTabFragment.this.mTimerSeconds = secondsPicker.getValue();
-
-                                    RecipeDetailThirdTabFragment.this.setTimerDialog(
-                                        RecipeDetailThirdTabFragment.this.mTimerHours * 3600 +
-                                            RecipeDetailThirdTabFragment.this.mTimerMinutes * 60 +
-                                            RecipeDetailThirdTabFragment.this.mTimerSeconds);
-
-                                    selectTimeDialog.dismiss();
-                                    RecipeDetailThirdTabFragment.this.mTimerDialog.show();
-                                    RecipeDetailThirdTabFragment.this.mCountDownTimer.start();
-                                }
-                            });
-
-                            cancelButton.setOnClickListener(new Button.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    selectTimeDialog.dismiss();
-                                }
-                            });
-
-                            selectTimeDialog.show();
+                            RecipeDetailThirdTabFragment.this.setEditTimeDialog();
                         }
                     });
                 }

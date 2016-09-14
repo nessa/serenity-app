@@ -166,6 +166,7 @@
     <string name="detail_timer_label">Temporizador</string>
     <string name="detail_timer_cancel_button">Cancelar</string>
     <string name="detail_timer_start_button">Iniciar</string>
+    <string name="detail_timer_edit_button">Editar</string>
     <string name="detail_timer_skip_button">Saltar</string>
     <string name="detail_timer_hours_initial">h</string>
     <string name="detail_timer_minutes_initial">m</string>
