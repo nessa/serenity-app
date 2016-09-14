@@ -48,6 +48,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -757,8 +758,7 @@ public class DetailActivity extends AppCompatActivity {
                                     .show();
 
                                 // Update view
-                                onReloadView();
-                                onReloadFragmentViews();
+                                reloadAPIRecipe();
                             } else {
                                 // Show error
                                 hideLoadingSnackbar();
@@ -857,7 +857,32 @@ public class DetailActivity extends AppCompatActivity {
                     requestCall.enqueue(new Callback<ResponseBody>() {
                         @Override
                         public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                            onRecipesLoaded();
+                            String data = "";
+
+                            // Get response data
+                            if (response.body() != null) {
+                                try {
+                                    data = response.body().string();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            // Build objects from response data
+                            if (!Objects.equals(data, "")) {
+
+                                try {
+                                    JSONObject jObject = new JSONObject(data);
+                                    mAPIRecipe = new Recipe(jObject);
+
+                                    onRecipesLoaded();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            } else {
+                                onRecipesLoaded();
+                            }
+
                         }
 
                         @Override
@@ -868,6 +893,49 @@ public class DetailActivity extends AppCompatActivity {
                     });
                 }
             }
+        }
+    }
+
+    private void reloadAPIRecipe() {
+        if (!mWifiModeSetting || RequestHandler.isWifiConnected(this)) {
+            AmuseAPI api = RetrofitServiceGenerator.createService(AmuseAPI.class);
+
+            Call<ResponseBody> requestCall = api.getRecipe(mRecipe.getId());
+
+            // Asynchronous call
+            requestCall.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    String data = "";
+
+                    // Get response data
+                    if (response.body() != null) {
+                        try {
+                            data = response.body().string();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    // Build objects from response data
+                    if (!Objects.equals(data, "")) {
+
+                        try {
+                            JSONObject jObject = new JSONObject(data);
+                            mRecipe = new Recipe(jObject);
+
+                            onReloadView();
+                            onReloadFragmentViews();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {}
+
+            });
         }
     }
 
