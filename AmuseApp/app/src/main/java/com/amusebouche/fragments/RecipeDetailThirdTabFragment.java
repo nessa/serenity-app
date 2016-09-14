@@ -345,9 +345,9 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
         final TextView minutesTextView = (TextView) mTimerDialog.findViewById(R.id.minutes);
         final TextView secondsTextView = (TextView) mTimerDialog.findViewById(R.id.seconds);
-        Button editButton = (Button) mTimerDialog.findViewById(R.id.buttonEdit);
-        Button skipButton = (Button) mTimerDialog.findViewById(R.id.buttonSkip);
-        final ProgressBar progressBar = (ProgressBar) mTimerDialog.findViewById(R.id.progressBar);
+        Button editButton = (Button) mTimerDialog.findViewById(R.id.edit_button);
+        Button skipButton = (Button) mTimerDialog.findViewById(R.id.skip_button);
+        final ProgressBar progressBar = (ProgressBar) mTimerDialog.findViewById(R.id.progress_bar);
 
         minutesTextView.setText(String.valueOf((time / 60)));
         secondsTextView.setText(String.valueOf((time % 60)));
@@ -509,8 +509,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         });
 
         // Buttons
-        Button cancelButton = (Button) mEditTimeDialog.findViewById(R.id.buttonCancel);
-        Button setButton = (Button) mEditTimeDialog.findViewById(R.id.buttonSet);
+        Button cancelButton = (Button) mEditTimeDialog.findViewById(R.id.cancel_button);
+        Button setButton = (Button) mEditTimeDialog.findViewById(R.id.set_button);
 
         setButton.setOnClickListener(new Button.OnClickListener() {
             @Override

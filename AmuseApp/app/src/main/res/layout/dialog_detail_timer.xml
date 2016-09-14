@@ -27,7 +27,7 @@
         android:layout_height="@dimen/timer_bar_size">
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/progress_bar"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -68,26 +68,38 @@
 
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/settings_languages_buttons_height"
         android:orientation="horizontal"
-        android:gravity="end" >
+        android:layout_gravity="end">
 
         <Button
-            android:id="@+id/buttonEdit"
+            android:id="@+id/edit_button"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@null"
-            android:textColor="@color/theme_default_primary_dark"
-            android:text="@string/detail_timer_edit_button" />
+            android:text="@string/detail_timer_edit_button"
+            android:textColor="@color/theme_default_accent"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dialog_button_padding"
+            android:paddingStart="@dimen/dialog_button_padding"
+            android:paddingEnd="@dimen/dialog_button_padding"
+            android:enabled="true" />
 
         <Button
-            android:id="@+id/buttonSkip"
+            android:id="@+id/skip_button"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@null"
-            android:textColor="@color/theme_default_primary_dark"
-            android:text="@string/detail_timer_skip_button" />
+            android:text="@string/detail_timer_skip_button"
+            android:textColor="@color/theme_default_accent"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/dialog_button_padding"
+            android:paddingStart="@dimen/dialog_button_padding"
+            android:paddingEnd="@dimen/dialog_button_padding"
+            android:enabled="true" />
 
     </LinearLayout>
 

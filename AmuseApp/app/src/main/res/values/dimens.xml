@@ -115,6 +115,7 @@
     <!--   Dialogs -->
     <dimen name="edition_dialog_width">300dp</dimen>
     <dimen name="edition_dialog_image_height">100dp</dimen>
+    <dimen name="detail_direction_dialog_header_height">60dp</dimen>
     <dimen name="edition_dialog_title_margin_left">8dp</dimen>
     <dimen name="edition_dialog_title_margin_bottom">4dp</dimen>
     <dimen name="edition_dialog_title_size">24sp</dimen>

@@ -16,7 +16,7 @@
         <TextView
             android:id="@+id/number"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/edition_dialog_image_height"
+            android:layout_height="@dimen/detail_direction_dialog_header_height"
             android:background="@color/theme_default_primary"
             android:textColor="@android:color/white"
             android:textSize="@dimen/detail_directions_step_text"
