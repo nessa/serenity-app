@@ -70,6 +70,7 @@ public class SettingsFragment extends Fragment {
     // Data
     private boolean mOfflineModeSetting;
     private boolean mWifiModeSetting;
+    private boolean mRecognizerLanguageSetting;
     private String mLanguage;
     private Integer mCurrentPage;
     private String mLastUpdateDate;
@@ -116,8 +117,10 @@ public class SettingsFragment extends Fragment {
         // Get preferences
         String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
         String wifiModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
+        String recognizerLanguageString = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE);
         mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
         mWifiModeSetting = wifiModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        mRecognizerLanguageSetting = recognizerLanguageString.equals(AppData.PREFERENCE_TRUE_VALUE);
         mLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
     }
 
@@ -139,27 +142,19 @@ public class SettingsFragment extends Fragment {
 
         mLayout = inflater.inflate(R.layout.fragment_settings, container, false);
 
-        // Get preferences
-        String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
-        String wifiModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
-        String recognizerLanguageString = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE);
-        final boolean offlineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
-        final boolean wifiModeSetting = wifiModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
-        boolean recognizerLanguageSetting = recognizerLanguageString.equals(AppData.PREFERENCE_TRUE_VALUE);
-
         // Get views and set its values
         View offlineModeView = mLayout.findViewById(R.id.setting_offline_mode_item);
         final Switch offlineModeSwitch = (Switch) mLayout.findViewById(R.id.setting_offline_mode_enabled);
-        offlineModeSwitch.setChecked(offlineModeSetting);
+        offlineModeSwitch.setChecked(mOfflineModeSetting);
 
         View wifiModeView = mLayout.findViewById(R.id.setting_wifi_mode_item);
         final Switch wifiModeSwitch = (Switch) mLayout.findViewById(R.id.setting_wifi_mode_enabled);
-        wifiModeSwitch.setChecked(wifiModeSetting);
+        wifiModeSwitch.setChecked(mWifiModeSetting);
 
         View recognizerLanguageView = mLayout.findViewById(R.id.setting_recognizer_language_item);
         final Switch recognizerLanguageSwitch = (Switch) mLayout.findViewById(
             R.id.setting_recognizer_language_enabled);
-        recognizerLanguageSwitch.setChecked(recognizerLanguageSetting);
+        recognizerLanguageSwitch.setChecked(mRecognizerLanguageSetting);
 
         RelativeLayout languageSetting = (RelativeLayout) mLayout.findViewById(
             R.id.setting_recipes_languages_item);
@@ -177,10 +172,9 @@ public class SettingsFragment extends Fragment {
                 offlineModeSwitch.setChecked(!offlineModeSwitch.isChecked());
                 mOfflineModeSetting = offlineModeSwitch.isChecked();
                 mDatabaseHelper.setAppData(AppData.PREFERENCE_OFFLINE_MODE,
-                    offlineModeSwitch.isChecked() ? AppData.PREFERENCE_TRUE_VALUE :
+                        mOfflineModeSetting ? AppData.PREFERENCE_TRUE_VALUE :
                         AppData.PREFERENCE_FALSE_VALUE);
                 mMainActivity.updateOfflineModeSetting();
-                mMainActivity.reloadLeftDrawer();
             }
         });
 
@@ -190,7 +184,7 @@ public class SettingsFragment extends Fragment {
                 wifiModeSwitch.setChecked(!wifiModeSwitch.isChecked());
                 mWifiModeSetting = offlineModeSwitch.isChecked();
                 mDatabaseHelper.setAppData(AppData.PREFERENCE_WIFI_MODE,
-                    wifiModeSwitch.isChecked() ? AppData.PREFERENCE_TRUE_VALUE :
+                        mWifiModeSetting ? AppData.PREFERENCE_TRUE_VALUE :
                         AppData.PREFERENCE_FALSE_VALUE);
                 mMainActivity.updateWifiModeSetting();
             }
@@ -200,8 +194,9 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 recognizerLanguageSwitch.setChecked(!recognizerLanguageSwitch.isChecked());
+                mRecognizerLanguageSetting = recognizerLanguageSwitch.isChecked();
                 mDatabaseHelper.setAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE,
-                    recognizerLanguageSwitch.isChecked() ? AppData.PREFERENCE_TRUE_VALUE :
+                        mRecognizerLanguageSetting ? AppData.PREFERENCE_TRUE_VALUE :
                         AppData.PREFERENCE_FALSE_VALUE);
             }
         });

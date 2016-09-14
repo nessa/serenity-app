@@ -939,6 +939,7 @@ public class MainActivity extends AppCompatActivity {
     public void updateOfflineModeSetting() {
         String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
         mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        this.reloadLeftDrawer();
     }
 
     public void updateWifiModeSetting() {
