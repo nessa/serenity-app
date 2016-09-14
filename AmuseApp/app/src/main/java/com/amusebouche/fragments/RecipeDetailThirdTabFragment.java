@@ -317,6 +317,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         mDirectionDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
         mDirectionDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mDirectionDialog.setContentView(R.layout.dialog_detail_direction);
+        mDirectionDialog.setCancelable(false);
+        mDirectionDialog.setCanceledOnTouchOutside(false);
 
         final TextView numberTextView = (TextView) mDirectionDialog.findViewById(R.id.number);
         final TextView descriptionTextView = (TextView) mDirectionDialog.findViewById(R.id.description);
