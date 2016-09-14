@@ -80,7 +80,7 @@ public class LeftMenuAdapter extends BaseAdapter {
             case AppData.PROFILE:
                 return R.drawable.ic_user_white_48dp;
             case AppData.NEW_RECIPES:
-                return R.drawable.ic_cook_white_48dp;
+                return R.drawable.ic_restaurant_menu_white_48dp;
             case AppData.DOWNLOADED_RECIPES:
                 return R.drawable.ic_download_white_48dp;
             case AppData.MY_RECIPES:
