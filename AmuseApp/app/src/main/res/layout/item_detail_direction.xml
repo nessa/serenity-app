@@ -47,6 +47,16 @@
         android:gravity="end" >
 
         <ImageButton
+            android:id="@+id/commandsMode"
+            android:contentDescription="@string/image"
+            android:src="@drawable/ic_restaurant_menu_white_48dp"
+            android:tint="@android:color/white"
+            android:layout_height="@dimen/detail_directions_button_size"
+            android:layout_width="@dimen/detail_directions_button_size"
+            android:layout_marginEnd="@dimen/detail_directions_button_margin"
+            android:background="@drawable/detail_direction_special_button" />
+
+        <ImageButton
             android:id="@+id/readDescription"
             android:contentDescription="@string/image"
             android:src="@drawable/ic_hearing_black_48dp"

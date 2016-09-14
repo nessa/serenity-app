@@ -965,10 +965,20 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
                 itemHolder.description.setText(presentDirection.getDescription());
 
+                itemHolder.commandsModeButton.setTag(position - 1);
                 itemHolder.readDirectionButton.setTag(position - 1);
                 itemHolder.showDirectionImageButton.setTag(position - 1);
                 itemHolder.showDirectionVideoButton.setTag(position - 1);
                 itemHolder.directionTimerButton.setTag(position - 1);
+
+                itemHolder.commandsModeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mOngoingMode = true;
+                        mPresentDescriptionIndex = (int) v.getTag();
+                        RecipeDetailThirdTabFragment.this.readDescription();
+                    }
+                });
 
                 itemHolder.readDirectionButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -1082,6 +1092,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         class VHItem extends RecyclerView.ViewHolder {
             public TextView number;
             public TextView description;
+            public ImageButton commandsModeButton;
             public ImageButton readDirectionButton;
             public ImageButton showDirectionImageButton;
             public ImageButton showDirectionVideoButton;
@@ -1093,8 +1104,10 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 number = (TextView) itemView.findViewById(R.id.number);
                 description = (TextView) itemView.findViewById(R.id.description);
 
+                commandsModeButton = (ImageButton) itemView.findViewById(
+                        R.id.commandsMode);
                 readDirectionButton = (ImageButton) itemView.findViewById(
-                    R.id.readDescription);
+                        R.id.readDescription);
                 showDirectionImageButton = (ImageButton) itemView.findViewById(
                     R.id.showPhoto);
                 showDirectionVideoButton = (ImageButton) itemView.findViewById(

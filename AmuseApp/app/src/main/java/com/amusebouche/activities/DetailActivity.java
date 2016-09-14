@@ -207,9 +207,8 @@ public class DetailActivity extends AppCompatActivity {
 
         TabLayout.Tab thirdTab = mTabs.getTabAt(2);
         if (thirdTab != null) {
-            d = getDrawable(R.drawable.ic_cook_32dp);
+            d = getDrawable(R.drawable.ic_restaurant_menu_white_36dp);
             if (d != null) {
-                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
                 thirdTab.setIcon(d);
             }
         }
