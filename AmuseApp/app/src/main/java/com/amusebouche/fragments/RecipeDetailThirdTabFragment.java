@@ -572,13 +572,13 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 if (dir.getTime() > 0) {
                     message = message + " " + getString(R.string.voice_command_repeat) +
                             ", " + getString(R.string.voice_command_timer) + ", " +
-                            getString(R.string.voice_command_next) +
+                            getString(R.string.voice_command_next) + " " +
                             getString(R.string.voice_or) + " " +
                             getString(R.string.voice_command_exit);
                 } else {
                     message = message + " " + getString(R.string.voice_command_repeat) +
                             ", " + getString(R.string.voice_command_next) +
-                            " " + getString(R.string.voice_or) + " " +
+                            getString(R.string.voice_or) + " " +
                             getString(R.string.voice_command_exit);
                 }
 
@@ -660,13 +660,13 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                     if (dir.getTime() > 0) {
                         message = message + " " + getString(R.string.voice_command_repeat) +
                                 ", " + getString(R.string.voice_command_timer) + " " +
-                                getString(R.string.voice_command_next) +
+                                getString(R.string.voice_command_next) + " " +
                                 getString(R.string.voice_or) + " " +
                                 getString(R.string.voice_command_exit);
                     } else {
                         message = message + " " + getString(R.string.voice_command_repeat) +
-                                getString(R.string.voice_command_next) +
-                                " " + getString(R.string.voice_or) + " " +
+                                getString(R.string.voice_command_next) + " " +
+                                getString(R.string.voice_or) + " " +
                                 getString(R.string.voice_command_exit);
                     }
 
@@ -745,13 +745,13 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                         if (dir.getTime() > 0) {
                             message = message + " " + getString(R.string.voice_command_repeat) +
                                     ", " + getString(R.string.voice_command_timer) + " " +
-                                    getString(R.string.voice_command_next) +
+                                    getString(R.string.voice_command_next) + " " +
                                     getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);
                         } else {
                             message = message + " " + getString(R.string.voice_command_repeat) +
-                                    getString(R.string.voice_command_next) +
-                                    " " + getString(R.string.voice_or) + " " +
+                                    getString(R.string.voice_command_next) + " " +
+                                    getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);
                         }
                         break;
@@ -761,13 +761,13 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                         if (dir.getTime() > 0) {
                             message = message + " " + getString(R.string.voice_command_repeat) +
                                     ", " + getString(R.string.voice_command_timer) + ", " +
-                                    getString(R.string.voice_command_next) +
+                                    getString(R.string.voice_command_next) + " " +
                                     getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);
                         } else {
                             message = message + " " + getString(R.string.voice_command_repeat) +
-                                    getString(R.string.voice_command_next) +
-                                    " " + getString(R.string.voice_or) + " " +
+                                    getString(R.string.voice_command_next) + " " +
+                                    getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);
                         }
                         break;
