@@ -817,6 +817,11 @@ public class DetailActivity extends AppCompatActivity {
                 mDatabaseHelper.deleteRecipe(mRecipe);
 
                 deleteDialog.dismiss();
+
+                Intent intent = new Intent();
+                intent.putExtra(AppData.INTENT_KEY_RECIPE_POSITION, mRecipePosition);
+                intent.putExtra(AppData.INTENT_KEY_RECIPE_DELETED, true);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });

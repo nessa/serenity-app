@@ -189,11 +189,16 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == AppData.REQUEST_FROM_DETAIL_TO_LIST_CODE) {
                 // Coming back from detail view
-                Recipe recipe = data.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
                 int position = data.getIntExtra(AppData.INTENT_KEY_RECIPE_POSITION, -1);
+                boolean deleted = data.getBooleanExtra(AppData.INTENT_KEY_RECIPE_DELETED, false);
 
                 if (position > -1 && mRecipes.size() > 0) {
-                    mRecipes.set(position, recipe);
+                    if (deleted) {
+                        mRecipes.remove(position);
+                    } else {
+                        Recipe recipe = data.getParcelableExtra(AppData.INTENT_KEY_RECIPE);
+                        mRecipes.set(position, recipe);
+                    }
                 }
             } else {
                 mRecipes = data.getParcelableArrayListExtra(PARCELABLE_RECIPES_KEY);

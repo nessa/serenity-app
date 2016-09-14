@@ -27,6 +27,7 @@ public class AppData {
     // Intents keys
     public static String INTENT_KEY_RECIPE = "recipe";
     public static String INTENT_KEY_RECIPE_POSITION = "recipe_position";
+    public static String INTENT_KEY_RECIPE_DELETED = "recipe_deleted";
     public static String INTENT_KEY_DETAIL_TAG = "detail_tag";
     public static String INTENT_KEY_EDITION_TAG = "edition_tag";
 
