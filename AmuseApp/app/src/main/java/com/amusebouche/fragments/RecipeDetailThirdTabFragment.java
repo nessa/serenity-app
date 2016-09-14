@@ -340,6 +340,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         mTimerDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
         mTimerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mTimerDialog.setContentView(R.layout.dialog_detail_timer);
+        mTimerDialog.setCancelable(false);
+        mTimerDialog.setCanceledOnTouchOutside(false);
 
         final TextView minutesTextView = (TextView) mTimerDialog.findViewById(R.id.minutes);
         final TextView secondsTextView = (TextView) mTimerDialog.findViewById(R.id.seconds);
@@ -449,6 +451,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         mEditTimeDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
         mEditTimeDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mEditTimeDialog.setContentView(R.layout.dialog_detail_timer_set_time);
+        mEditTimeDialog.setCancelable(false);
+        mEditTimeDialog.setCanceledOnTouchOutside(false);
 
         final TextView hoursTextView = (TextView) mEditTimeDialog.findViewById(R.id.hours);
         final TextView minutesTextView = (TextView) mEditTimeDialog.findViewById(R.id.minutes);
@@ -694,7 +698,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                             getString(R.string.voice_command_exit);
                 } else {
                     message = message + " " + getString(R.string.voice_command_repeat) +
-                            ", " + getString(R.string.voice_command_next) +
+                            ", " + getString(R.string.voice_command_next) + " " +
                             getString(R.string.voice_or) + " " +
                             getString(R.string.voice_command_exit);
                 }
