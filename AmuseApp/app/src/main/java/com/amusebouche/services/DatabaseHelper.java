@@ -806,12 +806,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
                         if (key.equals(RequestHandler.API_PARAM_TITLE)) {
                             valuesArray.add(RecipeContract.RecipeEntry.COLUMN_NAME_TITLE +
-                                    " LIKE LOWER('%" + value + "%') ");
+                                    " LIKE LOWER(\"%" + value + "%\") ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_OWNER)) {
                             valuesArray.add(RecipeContract.RecipeEntry.COLUMN_NAME_OWNER +
-                                    " LIKE LOWER('" + value + "') ");
+                                    " LIKE LOWER(\"" + value + "\") ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_DIFFICULTY)) {
@@ -854,7 +854,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     RecipeContract.RecipeEntry._ID + " = " +
                                     RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
                                     " AND " + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME +
-                                    " LIKE ('%" + value + "%')) ");
+                                    " LIKE (\"%" + value + "%\")) ");
                         }
 
                         if (key.equals(RequestHandler.API_PARAM_INGREDIENT)) {
@@ -865,7 +865,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     RecipeContract.RecipeEntry._ID + " = " +
                                     RecipeIngredientContract.RecipeIngredientEntry._COLUMN_NAME_RECIPE_ID +
                                     " AND " + RecipeIngredientContract.RecipeIngredientEntry.COLUMN_NAME_INGREDIENT_NAME +
-                                    " LIKE ('%" + value + "%')) ");
+                                    " LIKE (\"%" + value + "%\")) ");
                         }
                     }
 
@@ -933,7 +933,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String count = "SELECT count(*) FROM " + IngredientContract.TABLE_NAME +
             " WHERE " + IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
-            " LIKE ('" + ingredient.getTranslation() + "')";
+            " LIKE (\"" + ingredient.getTranslation() + "\")";
         Cursor mCursor = mDatabase.rawQuery(count, null);
         mCursor.moveToFirst();
         int ingredientsCount = mCursor.getInt(0);
@@ -948,7 +948,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String count = "SELECT count(*) FROM " + IngredientContract.TABLE_NAME +
             " WHERE " + IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
-            " LIKE ('" + translation + "')";
+            " LIKE (\"" + translation + "\")";
         Cursor mCursor = mDatabase.rawQuery(count, null);
         mCursor.moveToFirst();
         int ingredientsCount = mCursor.getInt(0);
@@ -1162,7 +1162,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ArrayList<String> ingredients = new ArrayList<>();
 
         String where = IngredientContract.IngredientEntry.COLUMN_NAME_TRANSLATION +
-                " LIKE ('%" + matchString + "%') AND UPPER(" +
+                " LIKE (\"%" + matchString + "%\") AND UPPER(" +
                 IngredientContract.IngredientEntry.COLUMN_NAME_LANGUAGE +
                 ") = UPPER('" + language + "') ";
 

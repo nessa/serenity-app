@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Get database helper
         mDatabaseHelper = new DatabaseHelper(getApplicationContext());
-        reloadRecipesLanguage();
+        mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
         // Get offline preference
         String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
@@ -948,6 +948,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void reloadRecipesLanguage() {
         mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
+        resetFilterParams();
     }
 
 }
