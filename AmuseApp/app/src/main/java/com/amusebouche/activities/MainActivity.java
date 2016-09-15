@@ -95,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
     private String mRecipesLanguage;
     private boolean mOfflineModeSetting;
     private boolean mWifiModeSetting;
+    private boolean mRecognizerLanguageSetting;
 
     private Fragment mLastFragment;
 
@@ -116,8 +117,6 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        View mLayout = findViewById(R.id.layout);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -133,8 +132,10 @@ public class MainActivity extends AppCompatActivity {
         // Get offline preference
         String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
         String wifiModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
+        String recognizerLanguageString = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE);
         mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
         mWifiModeSetting = wifiModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+        mRecognizerLanguageSetting = recognizerLanguageString.equals(AppData.PREFERENCE_TRUE_VALUE);
 
         // Set initial data
         mCurrentPage = 0;
@@ -912,6 +913,10 @@ public class MainActivity extends AppCompatActivity {
         return mWifiModeSetting;
     }
 
+    public boolean getRecognizerLanguageSetting() {
+        return mRecognizerLanguageSetting;
+    }
+
 
     /**
      * Returns the filter parameters.
@@ -936,24 +941,30 @@ public class MainActivity extends AppCompatActivity {
         mPreviousTotal = previousTotal;
     }
 
-    public void updateOfflineModeSetting() {
-        String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
-        mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
+    public void setOfflineModeSetting(boolean setting) {
+        mOfflineModeSetting = setting;
         this.reloadLeftDrawer();
+        mDatabaseHelper.setAppData(AppData.PREFERENCE_OFFLINE_MODE,
+                mOfflineModeSetting ? AppData.PREFERENCE_TRUE_VALUE :
+                        AppData.PREFERENCE_FALSE_VALUE);
     }
 
-    public void updateWifiModeSetting() {
-        String wifiModeSetting = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
-        mWifiModeSetting = wifiModeSetting.equals(AppData.PREFERENCE_TRUE_VALUE);
+    public void setWifiModeSetting(boolean setting) {
+        mWifiModeSetting = setting;
+        mDatabaseHelper.setAppData(AppData.PREFERENCE_WIFI_MODE,
+                mWifiModeSetting ? AppData.PREFERENCE_TRUE_VALUE :
+                        AppData.PREFERENCE_FALSE_VALUE);
     }
 
-    // OTHERS
+    public void setRecognizerLanguageSetting(boolean setting) {
+        mRecognizerLanguageSetting = setting;
+        mDatabaseHelper.setAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE,
+                mRecognizerLanguageSetting ? AppData.PREFERENCE_TRUE_VALUE :
+                        AppData.PREFERENCE_FALSE_VALUE);
+    }
 
-    /**
-     * Reload recipes language preference
-     */
-    public void reloadRecipesLanguage() {
-        mRecipesLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
+    public void setRecipesLanguage(String language) {
+        mRecipesLanguage = language;
         resetFilterParams();
     }
 

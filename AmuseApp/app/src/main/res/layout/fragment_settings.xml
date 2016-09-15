@@ -63,7 +63,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/settings_item_switch_margin"
                 android:layout_marginEnd="@dimen/settings_item_switch_margin"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentEnd="true"
+                android:clickable="false" />
 
             <View
                 android:layout_width="match_parent"
@@ -115,7 +116,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/settings_item_switch_margin"
                 android:layout_marginEnd="@dimen/settings_item_switch_margin"
-                android:layout_alignParentEnd="true" />
+                android:layout_alignParentEnd="true"
+                android:clickable="false" />
         </RelativeLayout>
 
 

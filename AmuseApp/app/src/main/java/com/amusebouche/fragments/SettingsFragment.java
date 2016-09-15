@@ -68,9 +68,6 @@ public class SettingsFragment extends Fragment {
     private AmuseAPI mAPI;
 
     // Data
-    private boolean mOfflineModeSetting;
-    private boolean mWifiModeSetting;
-    private boolean mRecognizerLanguageSetting;
     private String mLanguage;
     private Integer mCurrentPage;
     private String mLastUpdateDate;
@@ -115,12 +112,6 @@ public class SettingsFragment extends Fragment {
         mDatabaseHelper = new DatabaseHelper(getActivity().getApplicationContext());
 
         // Get preferences
-        String offlineModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_OFFLINE_MODE);
-        String wifiModeString = mDatabaseHelper.getAppData(AppData.PREFERENCE_WIFI_MODE);
-        String recognizerLanguageString = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE);
-        mOfflineModeSetting = offlineModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
-        mWifiModeSetting = wifiModeString.equals(AppData.PREFERENCE_TRUE_VALUE);
-        mRecognizerLanguageSetting = recognizerLanguageString.equals(AppData.PREFERENCE_TRUE_VALUE);
         mLanguage = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
     }
 
@@ -145,22 +136,18 @@ public class SettingsFragment extends Fragment {
         // Get views and set its values
         View offlineModeView = mLayout.findViewById(R.id.setting_offline_mode_item);
         final Switch offlineModeSwitch = (Switch) mLayout.findViewById(R.id.setting_offline_mode_enabled);
-        offlineModeSwitch.setChecked(mOfflineModeSetting);
 
         View wifiModeView = mLayout.findViewById(R.id.setting_wifi_mode_item);
         final Switch wifiModeSwitch = (Switch) mLayout.findViewById(R.id.setting_wifi_mode_enabled);
-        wifiModeSwitch.setChecked(mWifiModeSetting);
 
         View recognizerLanguageView = mLayout.findViewById(R.id.setting_recognizer_language_item);
         final Switch recognizerLanguageSwitch = (Switch) mLayout.findViewById(
             R.id.setting_recognizer_language_enabled);
-        recognizerLanguageSwitch.setChecked(mRecognizerLanguageSetting);
 
         RelativeLayout languageSetting = (RelativeLayout) mLayout.findViewById(
             R.id.setting_recipes_languages_item);
         mSelectedLanguageTextView = (TextView) mLayout.findViewById(
             R.id.setting_recipes_language_selected);
-        setSelectedLanguage();
 
         View downloadLanguages = mLayout.findViewById(R.id.setting_download_languages_item);
         View downloadIngredients = mLayout.findViewById(R.id.setting_download_ingredients_item);
@@ -170,11 +157,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 offlineModeSwitch.setChecked(!offlineModeSwitch.isChecked());
-                mOfflineModeSetting = offlineModeSwitch.isChecked();
-                mDatabaseHelper.setAppData(AppData.PREFERENCE_OFFLINE_MODE,
-                        mOfflineModeSetting ? AppData.PREFERENCE_TRUE_VALUE :
-                        AppData.PREFERENCE_FALSE_VALUE);
-                mMainActivity.updateOfflineModeSetting();
+                mMainActivity.setOfflineModeSetting(offlineModeSwitch.isChecked());
             }
         });
 
@@ -182,11 +165,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 wifiModeSwitch.setChecked(!wifiModeSwitch.isChecked());
-                mWifiModeSetting = offlineModeSwitch.isChecked();
-                mDatabaseHelper.setAppData(AppData.PREFERENCE_WIFI_MODE,
-                        mWifiModeSetting ? AppData.PREFERENCE_TRUE_VALUE :
-                        AppData.PREFERENCE_FALSE_VALUE);
-                mMainActivity.updateWifiModeSetting();
+                mMainActivity.setWifiModeSetting(wifiModeSwitch.isChecked());
             }
         });
 
@@ -194,10 +173,7 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 recognizerLanguageSwitch.setChecked(!recognizerLanguageSwitch.isChecked());
-                mRecognizerLanguageSetting = recognizerLanguageSwitch.isChecked();
-                mDatabaseHelper.setAppData(AppData.PREFERENCE_RECOGNIZER_LANGUAGE,
-                        mRecognizerLanguageSetting ? AppData.PREFERENCE_TRUE_VALUE :
-                        AppData.PREFERENCE_FALSE_VALUE);
+                mMainActivity.setRecognizerLanguageSetting(recognizerLanguageSwitch.isChecked());
             }
         });
 
@@ -209,7 +185,7 @@ public class SettingsFragment extends Fragment {
                 languages.setOnDismissListener(new DialogInterface.OnDismissListener() {
                     @Override
                     public void onDismiss(DialogInterface dialog) {
-                        setSelectedLanguage();
+                        setSelectedLanguage(true);
                     }
                 });
 
@@ -232,13 +208,20 @@ public class SettingsFragment extends Fragment {
             }
         });
 
+        // Set values
+        offlineModeSwitch.setChecked(mMainActivity.getOfflineModeSetting());
+        wifiModeSwitch.setChecked(mMainActivity.getWifiModeSetting());
+        recognizerLanguageSwitch.setChecked(mMainActivity.getRecognizerLanguageSetting());
+        setSelectedLanguage(false);
+
         return mLayout;
     }
 
     /**
      * Show preferences languages in text view
+     * @param bubbling If true, send data to parent activity
      */
-    private void setSelectedLanguage() {
+    private void setSelectedLanguage(boolean bubbling) {
         // Get language from shared preferences
         String languageCode = mDatabaseHelper.getAppData(AppData.PREFERENCE_RECIPES_LANGUAGE);
 
@@ -252,7 +235,9 @@ public class SettingsFragment extends Fragment {
             }
 
             mSelectedLanguageTextView.setText(language);
-            mMainActivity.reloadRecipesLanguage();
+            if (bubbling) {
+                mMainActivity.setRecipesLanguage(languageCode);
+            }
         }
     }
 
@@ -315,7 +300,7 @@ public class SettingsFragment extends Fragment {
     private void preLoadIngredients() {
         mIngredientsSuccess = false;
 
-        if (mOfflineModeSetting) {
+        if (mMainActivity.getOfflineModeSetting()) {
             mIngredientsError = getString(R.string.settings_ingredients_downloaded_offline_mode_message);
             finishDownload();
         } else {
@@ -338,7 +323,7 @@ public class SettingsFragment extends Fragment {
      * Send requests to the API to get the ingredients and store them into the database.
      */
     private void loadIngredients() {
-        if (!mWifiModeSetting || RequestHandler.isWifiConnected(mMainActivity)) {
+        if (!mMainActivity.getWifiModeSetting() || RequestHandler.isWifiConnected(mMainActivity)) {
             Call<ResponseBody> call = mAPI.getIngredients(mCurrentPage, mLanguage, mLastUpdateDate);
 
             call.enqueue(new Callback<ResponseBody>() {
