@@ -72,6 +72,21 @@ public class AppData {
         new Pair<>("en", "US")
     ));
 
+    public static ArrayList<Pair<String, String>> LOCALE_DIRECTION_STRINGS = new ArrayList<>(Arrays.asList(
+            new Pair<>("es", "PASO %1$d"),
+            new Pair<>("en", "DIRECTION %1$d")
+    ));
+
+    public static ArrayList<Pair<String, String>> LOCALE_TIMER_INIT_STRINGS = new ArrayList<>(Arrays.asList(
+            new Pair<>("es", "Iniciando temporizador"),
+            new Pair<>("en", "Starting timer")
+    ));
+
+    public static ArrayList<Pair<String, String>> LOCALE_FINISH_STRINGS = new ArrayList<>(Arrays.asList(
+            new Pair<>("es", "Fin de la receta. !A comer!"),
+            new Pair<>("en", "The recipe is complete. Let us eat!")
+    ));
+
     /**
      * Get locale country for a given code
      * @param code Language code
@@ -81,6 +96,51 @@ public class AppData {
         for (int i = 0; i < AppData.LOCALE_COUNTRIES.size(); i++) {
             if (AppData.LOCALE_COUNTRIES.get(i).first.equals(code.toLowerCase())) {
                 return AppData.LOCALE_COUNTRIES.get(i).second;
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * Get locale direction string for a given code
+     * @param code Language code
+     * @return String for locale direction string
+     */
+    public static String getLocaleDirectionFromCode(String code) {
+        for (int i = 0; i < AppData.LOCALE_DIRECTION_STRINGS.size(); i++) {
+            if (AppData.LOCALE_DIRECTION_STRINGS.get(i).first.equals(code.toLowerCase())) {
+                return AppData.LOCALE_DIRECTION_STRINGS.get(i).second;
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * Get locale timer string for a given code
+     * @param code Language code
+     * @return String for locale timer string
+     */
+    public static String getLocaleTimerInitFromCode(String code) {
+        for (int i = 0; i < AppData.LOCALE_TIMER_INIT_STRINGS.size(); i++) {
+            if (AppData.LOCALE_TIMER_INIT_STRINGS.get(i).first.equals(code.toLowerCase())) {
+                return AppData.LOCALE_TIMER_INIT_STRINGS.get(i).second;
+            }
+        }
+
+        return "";
+    }
+
+    /**
+     * Get locale timer string for a given code
+     * @param code Language code
+     * @return String for locale finish string
+     */
+    public static String getLocaleFinishFromCode(String code) {
+        for (int i = 0; i < AppData.LOCALE_FINISH_STRINGS.size(); i++) {
+            if (AppData.LOCALE_FINISH_STRINGS.get(i).first.equals(code.toLowerCase())) {
+                return AppData.LOCALE_FINISH_STRINGS.get(i).second;
             }
         }
 

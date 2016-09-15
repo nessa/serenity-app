@@ -279,7 +279,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                                     if (dir.getTime() > 0) {
 
                                         // No need to make the listener work
-                                        mTTS.speak(getString(R.string.detail_direction_speak_start_timer_message),
+                                        mTTS.speak(AppData.getLocaleTimerInitFromCode(
+                                                mDetailActivity.getRecipe().getLanguage().toLowerCase()),
                                                 TextToSpeech.QUEUE_FLUSH, null, null);
 
                                         RecipeDetailThirdTabFragment.this.showTimerDialog();
@@ -298,7 +299,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 });
 
                 // Utterance ID is needed to make the listener work
-                mTTS.speak(String.format(getString(R.string.detail_direction_label_with_number),
+                mTTS.speak(String.format(AppData.getLocaleDirectionFromCode(
+                        mDetailActivity.getRecipe().getLanguage().toLowerCase()),
                     dir.getSortNumber()) + ". " + text, TextToSpeech.QUEUE_FLUSH, null,
                         TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID);
             }
@@ -308,7 +310,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             exitFromOngoingMode();
 
             // No need to make the listener work
-            mTTS.speak(getString(R.string.detail_direction_speak_end_of_recipe_message),
+            mTTS.speak(AppData.getLocaleFinishFromCode(mDetailActivity.getRecipe().getLanguage().toLowerCase()),
                     TextToSpeech.QUEUE_FLUSH, null, null);
         }
     }
