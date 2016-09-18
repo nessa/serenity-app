@@ -257,7 +257,7 @@ public class RecipeEditionFirstTabFragment extends Fragment {
             public void onStopTrackingTouch(SeekBar seekBar) {}
         };
 
-        mCookingTimeMinutes.setOnSeekBarChangeListener(cookingTimeListener);
+        mCookingTimeHours.setOnSeekBarChangeListener(cookingTimeListener);
         mCookingTimeMinutes.setOnSeekBarChangeListener(cookingTimeListener);
 
         // Servings
