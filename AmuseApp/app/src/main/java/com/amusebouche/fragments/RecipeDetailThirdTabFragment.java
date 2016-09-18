@@ -153,6 +153,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
         if (mTTS != null) {
             mTTS.shutdown();
+            mTTS = null;
         }
 
         if (mSpeechRecognizer != null) {
