@@ -164,6 +164,7 @@ public class RecipeDetailFourthTabFragment extends Fragment {
 
     private void getComments() {
         if (mDetailActivity.getRecipe().getId() != null &&
+            !mDetailActivity.getRecipe().getId().equals("") &&
             !mDetailActivity.getRecipe().getId().equals("0")) {
 
             mDetailActivity.showLoadingSnackbar(getString(R.string.detail_loading_comments_message));
@@ -291,6 +292,7 @@ public class RecipeDetailFourthTabFragment extends Fragment {
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
                         headerHolder.sendCommentButton.setEnabled(!s.toString().equals("") &&
                             mDetailActivity.getRecipe().getId() != null &&
+                            !mDetailActivity.getRecipe().getId().equals("") &&
                             !mDetailActivity.getRecipe().getId().equals("0"));
                     }
 
@@ -306,7 +308,6 @@ public class RecipeDetailFourthTabFragment extends Fragment {
                         }
                     }
                 });
-
             }
         }
 

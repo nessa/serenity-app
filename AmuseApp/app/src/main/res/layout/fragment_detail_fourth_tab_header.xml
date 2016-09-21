@@ -24,6 +24,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="@dimen/detail_comments_padding"
         android:paddingStart="@dimen/detail_comments_padding"
-        android:paddingEnd="@dimen/detail_comments_padding" />
+        android:paddingEnd="@dimen/detail_comments_padding"
+        android:enabled="false"/>
 
 </LinearLayout>
