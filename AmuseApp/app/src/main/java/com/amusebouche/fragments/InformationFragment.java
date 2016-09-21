@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.MainActivity;
 import com.amusebouche.activities.R;
+import com.amusebouche.services.AppData;
 
 /**
  * Information fragment class.
@@ -147,6 +150,15 @@ public class InformationFragment extends Fragment {
             public void onClick(View view) {
                 Dialog licensesDialog = new WebViewDialog(getActivity(), "third_party_licenses.html");
                 licensesDialog.show();
+            }
+        });
+
+        Button donateButton = (Button) subview.findViewById(R.id.donate_button);
+        donateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(AppData.DONATE_URL));
+                startActivity(intent);
             }
         });
     }

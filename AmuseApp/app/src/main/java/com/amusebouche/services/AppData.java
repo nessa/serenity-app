@@ -44,6 +44,9 @@ public class AppData {
     // App info
     public static String INGREDIENTS_LAST_UPDATE = "ingredients_last_update_";
 
+    // URLs
+    public static String DONATE_URL = "https://www.paypal.me/noeliarcado";
+
     // Menu
     public static final int PROFILE = 0;
     public static final int NEW_RECIPES = 1;
