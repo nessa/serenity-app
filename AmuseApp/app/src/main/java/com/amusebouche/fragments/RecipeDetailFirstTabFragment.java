@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.amusebouche.activities.DetailActivity;
 import com.amusebouche.activities.R;
+import com.amusebouche.data.RecipeCategory;
 import com.amusebouche.services.UserFriendlyTranslationsHandler;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -216,8 +217,13 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         }
 
         // Categories
-        mCategoriesTextView.setVisibility((mDetailActivity.getRecipe().getCategories().size() > 0) ?
-            View.VISIBLE : View.GONE);
+        boolean categoriesVisible = mDetailActivity.getRecipe().getCategories().size() > 0;
+        if (mDetailActivity.getRecipe().getCategories().size() == 1) {
+            categoriesVisible = !mDetailActivity.getRecipe().getCategories().get(0).getName().equals(
+                    RecipeCategory.CATEGORY_UNCATEGORIZED);
+        }
+
+        mCategoriesTextView.setVisibility(categoriesVisible ? View.VISIBLE : View.GONE);
 
         mCategoriesLayout.removeAllViews();
         mCategoriesLayout.setOrientation(LinearLayout.VERTICAL);
@@ -232,42 +238,46 @@ public class RecipeDetailFirstTabFragment extends Fragment {
         int widthSoFar = 0;
 
         for (int i = 0; i < mDetailActivity.getRecipe().getCategories().size(); i++) {
-            LinearLayout LL = new LinearLayout(getActivity());
-            LL.setOrientation(LinearLayout.HORIZONTAL);
-            LL.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-            LL.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
+            Log.d("FIRST", "CATEGORY "+mDetailActivity.getRecipe().getCategories().get(i).getName());
+            if (!mDetailActivity.getRecipe().getCategories().get(i).getName().equals(
+                    RecipeCategory.CATEGORY_UNCATEGORIZED)) {
+                LinearLayout LL = new LinearLayout(getActivity());
+                LL.setOrientation(LinearLayout.HORIZONTAL);
+                LL.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+                LL.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
 
-            //Create new tag view
-            View tagView = mInflater.inflate(R.layout.item_detail_category, mCategoriesLayout, false);
+                //Create new tag view
+                View tagView = mInflater.inflate(R.layout.item_detail_category, mCategoriesLayout, false);
 
-            TextView tagText = (TextView) tagView.findViewById(R.id.text);
-            tagText.setText(UserFriendlyTranslationsHandler.getCategoryTranslation(
-                mDetailActivity.getRecipe().getCategories().get(i).getName(),
-                getActivity()).toUpperCase());
+                TextView tagText = (TextView) tagView.findViewById(R.id.text);
+                tagText.setText(UserFriendlyTranslationsHandler.getCategoryTranslation(
+                        mDetailActivity.getRecipe().getCategories().get(i).getName(),
+                        getActivity()).toUpperCase());
 
-            tagView.measure(0, 0);
+                tagView.measure(0, 0);
 
-            params = new LinearLayout.LayoutParams(tagView.getMeasuredWidth(),
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-            params.setMargins(LATERAL_MARGIN, TOP_BOTTOM_MARGIN.get(), LATERAL_MARGIN, TOP_BOTTOM_MARGIN.get());
+                params = new LinearLayout.LayoutParams(tagView.getMeasuredWidth(),
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(LATERAL_MARGIN, TOP_BOTTOM_MARGIN.get(), LATERAL_MARGIN, TOP_BOTTOM_MARGIN.get());
 
-            LL.addView(tagView, params);
-            LL.measure(0, 0);
-            widthSoFar += tagView.getMeasuredWidth();
-            if (widthSoFar >= maxWidth) {
-                mCategoriesLayout.addView(newLL);
+                LL.addView(tagView, params);
+                LL.measure(0, 0);
+                widthSoFar += tagView.getMeasuredWidth();
+                if (widthSoFar >= maxWidth) {
+                    mCategoriesLayout.addView(newLL);
 
-                newLL = new LinearLayout(getActivity());
-                newLL.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
-                newLL.setOrientation(LinearLayout.HORIZONTAL);
-                newLL.setGravity(Gravity.START);
-                params = new LinearLayout.LayoutParams(LL.getMeasuredWidth(), LL.getMeasuredHeight());
-                newLL.addView(LL, params);
-                widthSoFar = LL.getMeasuredWidth();
-            } else {
-                newLL.addView(LL);
+                    newLL = new LinearLayout(getActivity());
+                    newLL.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT));
+                    newLL.setOrientation(LinearLayout.HORIZONTAL);
+                    newLL.setGravity(Gravity.START);
+                    params = new LinearLayout.LayoutParams(LL.getMeasuredWidth(), LL.getMeasuredHeight());
+                    newLL.addView(LL, params);
+                    widthSoFar = LL.getMeasuredWidth();
+                } else {
+                    newLL.addView(LL);
+                }
             }
         }
 

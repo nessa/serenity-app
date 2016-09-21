@@ -394,7 +394,6 @@ public class EditionActivity extends AppCompatActivity {
      * It saves the recipe on the database.
      */
     public void onSaveClicked() {
-        Log.d("EDITION", "ON SAVE CLICKED");
         if (mEnableSaveButton) {
             /* Update recipe if:
              * - It's from API and exists a recipe with its API id in the database

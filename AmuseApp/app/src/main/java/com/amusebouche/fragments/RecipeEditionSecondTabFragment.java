@@ -390,24 +390,26 @@ public class RecipeEditionSecondTabFragment extends Fragment {
             // If ingredient exists in database, we add all its categories to the recipe
             Ingredient ing = mDatabaseHelper.getIngredientByTranslation(name);
 
-            ArrayList<String> categories = new ArrayList<>(Arrays.asList(ing.getCategories().split(
-                Pattern.quote(Ingredient.CATEGORY_SEPARATOR))));
+            if (!ing.getCategories().equals("")) {
+                ArrayList<String> categories = new ArrayList<>(Arrays.asList(ing.getCategories().split(
+                        Pattern.quote(Ingredient.CATEGORY_SEPARATOR))));
 
-            for (int c = 0; c < categories.size(); c++) {
-                boolean found = false;
+                for (int c = 0; c < categories.size(); c++) {
+                    boolean found = false;
 
-                for (int ci = 0; ci < mEditionActivity.getRecipe().getCategories().size(); ci++) {
-                    if (categories.get(c).equals(mEditionActivity.getRecipe().getCategories().get(ci).getName())) {
-                        found = true;
+                    for (int ci = 0; ci < mEditionActivity.getRecipe().getCategories().size(); ci++) {
+                        if (categories.get(c).equals(mEditionActivity.getRecipe().getCategories().get(ci).getName())) {
+                            found = true;
+                        }
                     }
-                }
 
-                if (!found) {
-                    // Add category to recipe
-                    mEditionActivity.getRecipe().getCategories().add(new RecipeCategory(categories.get(c)));
+                    if (!found) {
+                        // Add category to recipe
+                        mEditionActivity.getRecipe().getCategories().add(new RecipeCategory(categories.get(c)));
 
-                    // Add category to forced recipes
-                    mEditionActivity.getForcedCategories().add(categories.get(c));
+                        // Add category to forced recipes
+                        mEditionActivity.getForcedCategories().add(categories.get(c));
+                    }
                 }
             }
         } else {
@@ -460,13 +462,15 @@ public class RecipeEditionSecondTabFragment extends Fragment {
                             Ingredient ing = mDatabaseHelper.getIngredientByTranslation(
                                     mEditionActivity.getRecipe().getIngredients().get(i).getName());
 
-                            ArrayList<String> categories = new ArrayList<>(Arrays.asList(
-                                    ing.getCategories().split(Pattern.quote(
-                                            Ingredient.CATEGORY_SEPARATOR))));
-                            for (String s : categories) {
-                                if (s.equals(category.getName())) {
-                                    remove = false;
-                                    break;
+                            if (!ing.getCategories().equals("")) {
+                                ArrayList<String> categories = new ArrayList<>(Arrays.asList(
+                                        ing.getCategories().split(Pattern.quote(
+                                                Ingredient.CATEGORY_SEPARATOR))));
+                                for (String s : categories) {
+                                    if (s.equals(category.getName())) {
+                                        remove = false;
+                                        break;
+                                    }
                                 }
                             }
                         }

@@ -28,9 +28,10 @@
     <string name="category_allergy_shellfish">Alergia al marisco</string>
     <string name="category_allergy_fish">Alergia al pescado</string>
     <string name="category_allergy_dried_fruit">Alergia a los frutos secos</string>
-    <string name="category_allergy_mediterranean">Mediterránea</string>
-    <string name="category_allergy_vegetarian">Vegetariana</string>
-    <string name="category_allergy_vegan">Vegana</string>
+    <string name="category_uncategorized">Sin categorizar</string>
+    <string name="category_mediterranean">Mediterránea</string>
+    <string name="category_vegetarian">Vegetariana</string>
+    <string name="category_vegan">Vegana</string>
     <!--   Types of dish -->
     <string name="type_of_dish_appetizer">Entrante</string>
     <string name="type_of_dish_first_course">Primer plato</string>

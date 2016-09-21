@@ -19,9 +19,9 @@ public class UserFriendlyTranslationsHandler {
     private static int mDefaultCategoryPosition = 0;
 
     private static ArrayList<Pair<String, Integer>> mCategories = new ArrayList<>(Arrays.asList(
-        new Pair<>(RecipeCategory.CATEGORY_DIET_MEDITERRANEAN, R.string.category_allergy_mediterranean),
-        new Pair<>(RecipeCategory.CATEGORY_DIET_VEGETARIAN, R.string.category_allergy_vegetarian),
-        new Pair<>(RecipeCategory.CATEGORY_DIET_VEGAN, R.string.category_allergy_vegan),
+        new Pair<>(RecipeCategory.CATEGORY_DIET_MEDITERRANEAN, R.string.category_mediterranean),
+        new Pair<>(RecipeCategory.CATEGORY_DIET_VEGETARIAN, R.string.category_vegetarian),
+        new Pair<>(RecipeCategory.CATEGORY_DIET_VEGAN, R.string.category_vegan),
         new Pair<>(RecipeCategory.CATEGORY_ALLERGY_GLUTEN_CODE, R.string.category_allergy_gluten),
         new Pair<>(RecipeCategory.CATEGORY_ALLERGY_LACTOSE_CODE, R.string.category_allergy_lactose),
         new Pair<>(RecipeCategory.CATEGORY_ALLERGY_SHELLFISH_CODE, R.string.category_allergy_shellfish),
