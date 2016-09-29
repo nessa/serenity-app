@@ -169,9 +169,12 @@
     <string name="detail_timer_start_button">Start</string>
     <string name="detail_timer_edit_button">Edit</string>
     <string name="detail_timer_skip_button">Skip</string>
+    <string name="detail_timer_continue_button">Continue</string>
     <string name="detail_timer_hours_initial">h</string>
     <string name="detail_timer_minutes_initial">m</string>
     <string name="detail_timer_seconds_initial">s</string>
+    <string name="detail_timer_notification_time_message">Time left: %1$s:%2$s</string>
+    <string name="detail_timer_notification_finished">Direction finished. Tap here to continue with the recipe.</string>
     <!--   Commands -->
     <string name="detail_button_start_speaking">Start speaking</string>
     <string name="detail_commands_listening_message">Listening…</string>

@@ -1,13 +1,17 @@
 package com.amusebouche.fragments;
 
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.IBinder;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -16,6 +20,7 @@ import android.speech.tts.UtteranceProgressListener;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -37,6 +42,8 @@ import com.amusebouche.activities.MediaActivity;
 import com.amusebouche.activities.R;
 import com.amusebouche.data.RecipeDirection;
 import com.amusebouche.services.AppData;
+import com.amusebouche.services.CountdownService;
+import com.amusebouche.services.CountdownServiceBinder;
 import com.amusebouche.ui.CustomNumberPicker;
 
 
@@ -59,15 +66,17 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
     // Father activity
     private DetailActivity mDetailActivity;
-    
-    // Data variables
-    private Integer mPresentDescriptionIndex;
 
     // Behaviour variables
+    private Integer mPresentDescriptionIndex;
     private boolean mOngoingMode;
 
     // Services variables
     private TextToSpeech mTTS;
+    private BroadcastReceiver mBroadcastReceiver;
+    private ServiceConnection mServiceConnection;
+    private CountdownService mCountdownService;
+    private Intent mServiceIntent;
 
     // UI
     private RecyclerAdapterWithHeader mDirectionsAdapter;
@@ -76,7 +85,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     // Timer dialog variables
     private Dialog mTimerDialog;
     private Dialog mEditTimeDialog;
-    private CountDownTimer mCountDownTimer;
     private Integer mTimerHours;
     private Integer mTimerMinutes;
     private Integer mTimerSeconds;
@@ -113,6 +121,9 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(getClass().getSimpleName(), "onCreate()");
         super.onCreate(savedInstanceState);
+
+        mDetailActivity = (DetailActivity) getActivity();
+        this.mServiceIntent = new Intent(mDetailActivity, CountdownService.class);
     }
 
     /**
@@ -139,6 +150,88 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             });
         }
 
+        this.startAndBindCountdownService();
+
+        // Receive broadcast from countdown service to update UI.
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                if (intent.getAction() != null && intent.getAction().equals(AppData.BROADCAST_ACTION)) {
+
+                    boolean tick = intent.getBooleanExtra(AppData.INTENT_KEY_COUNTDOWN_TICK, false);
+                    boolean finished = intent.getBooleanExtra(AppData.INTENT_KEY_COUNTDOWN_FINISHED, false);
+                    boolean beepingAlarm = intent.getBooleanExtra(AppData.INTENT_KEY_COUNTDOWN_ALARM_BEEPING, false);
+                    boolean stopAlarm = intent.getBooleanExtra(AppData.INTENT_KEY_COUNTDOWN_ALARM_STOP, false);
+
+                    if (mTimerDialog != null && mTimerDialog.isShowing()) {
+
+                        TextView minutesTextView = (TextView) mTimerDialog.findViewById(R.id.minutes);
+                        TextView secondsTextView = (TextView) mTimerDialog.findViewById(R.id.seconds);
+                        ProgressBar progressBar = (ProgressBar) mTimerDialog.findViewById(R.id.progress_bar);
+
+                        if (tick) {
+                            long millis = intent.getLongExtra(AppData.INTENT_KEY_COUNTDOWN_TICK_TIME, 0);
+
+                            progressBar.setProgress((int) (millis / 1000));
+
+                            Integer m = (int) ((millis / 1000) / 60);
+                            Integer s = (int) (millis / 1000) % 60;
+                            String mString = m + "";
+                            String sString = s + "";
+                            if (sString.length() == 1) {
+                                sString = "0" + sString;
+                            }
+                            minutesTextView.setText(String.format("%s", mString));
+                            secondsTextView.setText(String.format("%s", sString));
+                        } else {
+                            if (finished) {
+
+                                progressBar.setProgress(0);
+
+                                minutesTextView.setText(String.format("%s", "0"));
+                                secondsTextView.setText(String.format("%s", "00"));
+
+                                Button editButton = (Button) mTimerDialog.findViewById(R.id.edit_button);
+                                Button skipButton = (Button) mTimerDialog.findViewById(R.id.skip_button);
+
+                                editButton.setVisibility(View.GONE);
+                                skipButton.setText(getString(R.string.detail_timer_continue_button));
+                            } else {
+                                if (beepingAlarm) {
+                                    TextView colonTextView = (TextView) mTimerDialog.findViewById(R.id.colon);
+
+                                    if (minutesTextView.getVisibility() == View.VISIBLE) {
+                                        minutesTextView.setVisibility(View.INVISIBLE);
+                                        secondsTextView.setVisibility(View.INVISIBLE);
+                                        colonTextView.setVisibility(View.INVISIBLE);
+                                    } else {
+                                        minutesTextView.setVisibility(View.VISIBLE);
+                                        secondsTextView.setVisibility(View.VISIBLE);
+                                        colonTextView.setVisibility(View.VISIBLE);
+                                    }
+                                } else {
+                                    if (stopAlarm) {
+                                        // Hide dialog
+                                        mTimerDialog.dismiss();
+
+                                        // Wait for command
+                                        if (mOngoingMode) {
+                                            RecipeDetailThirdTabFragment.this.showCommandsDialog();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(AppData.BROADCAST_ACTION);
+        LocalBroadcastManager.getInstance(mDetailActivity).registerReceiver(mBroadcastReceiver, filter);
+
         onReloadView();
     }
 
@@ -161,9 +254,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             mSpeechRecognizer.destroy();
         }
 
-        if (mCountDownTimer != null) {
-            mCountDownTimer.cancel();
-        }
+        this.unbindCountdownService();
+        LocalBroadcastManager.getInstance(mDetailActivity).unregisterReceiver(mBroadcastReceiver);
 
         if (mSpeechRecognizerTimer != null) {
             mSpeechRecognizerTimer.cancel();
@@ -206,8 +298,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         Log.i(getClass().getSimpleName(), "onCreateView()");
 
         // Get recipe from activity
-        mDetailActivity = (DetailActivity) getActivity();
-
         RecyclerView mLayout = (RecyclerView) inflater.inflate(R.layout.fragment_detail_third_tab,
                 container, false);
 
@@ -227,7 +317,64 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     public void onReloadView() {
         mDirectionsAdapter.notifyDataSetChanged();
     }
-    
+
+
+    // SERVICE METHODS
+
+    /**
+     * Checks if the service is currently bound to the activity.
+     *
+     * @return true if and only if the service is bound to the activity
+     */
+    protected final boolean isServiceBound() {
+        return this.mCountdownService != null;
+    }
+
+    /**
+     * Bind countdown service if it's not bound yet
+     */
+    private void startAndBindCountdownService() {
+        if (!this.isServiceBound()) {
+            this.startCountdownService();
+            this.initServiceConnection();
+            mDetailActivity.bindService(this.mServiceIntent, this.mServiceConnection, 0);
+        }
+    }
+
+    private void startCountdownService() {
+        ComponentName result = mDetailActivity.startService(this.mServiceIntent);
+        Log.d(this.getTag(), "has been called: startService - result: "
+            + result);
+    }
+
+    private void initServiceConnection() {
+        this.mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName className, IBinder service) {
+                CountdownServiceBinder binder = (CountdownServiceBinder) service;
+                RecipeDetailThirdTabFragment.this.mCountdownService = binder.getCountdownService();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                RecipeDetailThirdTabFragment.this.mCountdownService = null;
+                RecipeDetailThirdTabFragment.this.mServiceConnection = null;
+            }
+        };
+    }
+
+    /**
+     * Bind countdown service if it's bound
+     */
+    protected void unbindCountdownService() {
+        if (this.isServiceBound()) {
+            mDetailActivity.unbindService(this.mServiceConnection);
+            this.mCountdownService = null;
+            this.mServiceConnection = null;
+        }
+    }
+
+
     // TEXT TO SPEECH AND DIALOGS
 
     /**
@@ -239,10 +386,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         if (mSpeechRecognizer != null) {
             mSpeechRecognizer.cancel();
             mSpeechRecognizer.destroy();
-        }
-
-        if (mCountDownTimer != null) {
-            mCountDownTimer.cancel();
         }
 
         if (mSpeechRecognizerTimer != null) {
@@ -338,7 +481,7 @@ public class RecipeDetailThirdTabFragment extends Fragment {
      *
      * @param time Time to count down
      */
-    public void setTimerDialog(final Integer time) {
+    public void setTimerDialog(final int time) {
         mTimerDialog = new Dialog(getActivity());
         mTimerDialog.getWindow().setWindowAnimations(R.style.LateralDialogAnimation);
         mTimerDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -358,52 +501,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         progressBar.setMax(time);
         progressBar.setProgress(time);
 
-        mCountDownTimer = new CountDownTimer(time * 1000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                progressBar.setProgress((int) (millisUntilFinished / 1000));
-
-                Integer m = (int) ((millisUntilFinished / 1000) / 60);
-                Integer s = (int) (millisUntilFinished / 1000) % 60;
-                String mString = m + "";
-                String sString = s + "";
-                if (sString.length() == 1) {
-                    sString = "0" + sString;
-                }
-                minutesTextView.setText(String.format("%s", mString));
-                secondsTextView.setText(String.format("%s", sString));
-            }
-
-            public void onFinish() {
-                progressBar.setProgress(0);
-
-                minutesTextView.setText(String.format("%s", "0"));
-                secondsTextView.setText(String.format("%s", "00"));
-
-                // TODO: Pause before dismiss & play an alarm during x seconds
-
-                MediaPlayer mp = MediaPlayer.create(getActivity(), R.raw.alarm);
-                mp.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mp.start();
-
-                mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.release();
-
-                        // Hide dialog
-                        mTimerDialog.dismiss();
-
-                        // Wait for command
-                        if (mOngoingMode) {
-                            RecipeDetailThirdTabFragment.this.showCommandsDialog();
-                        }
-                    }
-                });
-            }
-        };
-
         editButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -411,8 +508,10 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 mTimerMinutes = (time / 60) % 60;
                 mTimerSeconds = time % 60;
 
+                // Cancel countdown service
+                RecipeDetailThirdTabFragment.this.mCountdownService.stopCountdown();
+
                 // Hide this dialog
-                mCountDownTimer.cancel();
                 mTimerDialog.dismiss();
 
                 // Show edit time dialog
@@ -424,7 +523,9 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         skipButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCountDownTimer.cancel();
+                // Cancel countdown service
+                RecipeDetailThirdTabFragment.this.mCountdownService.stopCountdown();
+
                 mTimerDialog.dismiss();
 
                 // Wait for command
@@ -439,12 +540,18 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             @Override
             public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    mCountDownTimer.cancel();
+                    // Cancel countdown service
+                    RecipeDetailThirdTabFragment.this.mCountdownService.stopCountdown();
+
                     mTimerDialog.dismiss();
                 }
                 return true;
             }
         });
+
+
+        // Start countdown service
+        this.mCountdownService.startCountdown(time);
     }
 
     private void setEditTimeDialog() {
@@ -529,7 +636,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
                 mEditTimeDialog.dismiss();
                 RecipeDetailThirdTabFragment.this.mTimerDialog.show();
-                RecipeDetailThirdTabFragment.this.mCountDownTimer.start();
             }
         });
 
@@ -566,7 +672,6 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
             // Show timer directly
             mTimerDialog.show();
-            mCountDownTimer.start();
         }
     }
 

@@ -169,9 +169,12 @@
     <string name="detail_timer_start_button">Iniciar</string>
     <string name="detail_timer_edit_button">Editar</string>
     <string name="detail_timer_skip_button">Saltar</string>
+    <string name="detail_timer_continue_button">Continuar</string>
     <string name="detail_timer_hours_initial">h</string>
     <string name="detail_timer_minutes_initial">m</string>
     <string name="detail_timer_seconds_initial">s</string>
+    <string name="detail_timer_notification_time_message">Tiempo restante: %1$s:%2$s</string>
+    <string name="detail_timer_notification_finished">Paso completo. Pulse aquí para continuar con la receta.</string>
     <!--   Commands -->
     <string name="detail_button_start_speaking">Empieza a hablar</string>
     <string name="detail_commands_listening_message">Escuchando…</string>

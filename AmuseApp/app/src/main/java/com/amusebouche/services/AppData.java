@@ -30,6 +30,11 @@ public class AppData {
     public static String INTENT_KEY_RECIPE_DELETED = "recipe_deleted";
     public static String INTENT_KEY_DETAIL_TAG = "detail_tag";
     public static String INTENT_KEY_EDITION_TAG = "edition_tag";
+    public static String INTENT_KEY_COUNTDOWN_TICK = "countdown_tick";
+    public static String INTENT_KEY_COUNTDOWN_TICK_TIME = "countdown_tick_time";
+    public static String INTENT_KEY_COUNTDOWN_FINISHED = "countdown_finished";
+    public static String INTENT_KEY_COUNTDOWN_ALARM_BEEPING = "countdown_alarm_beeping";
+    public static String INTENT_KEY_COUNTDOWN_ALARM_STOP = "countdown_alarm_stop";
 
     // Requests' codes
     public static int REQUEST_FROM_DETAIL_TO_LIST_CODE = 10;
@@ -43,6 +48,8 @@ public class AppData {
 
     // App info
     public static String INGREDIENTS_LAST_UPDATE = "ingredients_last_update_";
+
+    public static String BROADCAST_ACTION = "com.amusebouche.broadcast.countdown";
 
     // URLs
     public static String DONATE_URL = "https://www.paypal.me/noeliarcado";
