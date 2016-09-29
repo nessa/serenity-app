@@ -231,13 +231,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
         outState.putParcelableArrayList(PARCELABLE_RECIPES_KEY, mRecipes);
         outState.putInt(CURRENT_PAGE_KEY, mCurrentPage);
         outState.putInt(LIMIT_PER_PAGE_KEY, mLimitPerPage);
         outState.putInt(PREVIOUS_TOTAL_KEY, 0);
         outState.putInt(SELECTED_DRAWER_VIEW_KEY, mCurrentSelectedPosition);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override

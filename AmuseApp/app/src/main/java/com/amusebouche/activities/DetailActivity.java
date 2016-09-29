@@ -272,12 +272,12 @@ public class DetailActivity extends AppCompatActivity {
      * @param outState Bundle in which to place the saved state.
      */
     @Override
-    public void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
-
+    public void onSaveInstanceState(Bundle outState) {
         outState.putParcelable(AppData.INTENT_KEY_RECIPE, mRecipe);
         outState.putInt(AppData.INTENT_KEY_RECIPE_POSITION, mRecipePosition);
         outState.putInt(AppData.INTENT_KEY_DETAIL_TAG, mTabs.getSelectedTabPosition());
+
+        super.onSaveInstanceState(outState);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
