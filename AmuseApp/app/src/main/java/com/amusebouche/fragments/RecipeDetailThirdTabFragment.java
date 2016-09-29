@@ -965,12 +965,10 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             if (holder instanceof VHItem) {
                 VHItem itemHolder = (VHItem) holder;
 
-                final RecipeDirection presentDirection = getItem(position);
-
                 itemHolder.number.setText(String.format(getString(R.string.detail_direction_label_with_number),
-                        presentDirection.getSortNumber()));
+                    getItem(position).getSortNumber()));
 
-                itemHolder.description.setText(presentDirection.getDescription());
+                itemHolder.description.setText(getItem(position).getDescription());
 
                 itemHolder.commandsModeButton.setTag(position - 1);
                 itemHolder.readDirectionButton.setTag(position - 1);
@@ -1002,9 +1000,10 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                     }
                 });
 
-                if (presentDirection.getImage().equals("")) {
+                if (getItem(position).getImage().equals("")) {
                     itemHolder.showDirectionImageButton.setVisibility(View.GONE);
                 } else {
+                    itemHolder.showDirectionImageButton.setVisibility(View.VISIBLE);
                     itemHolder.showDirectionImageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -1022,22 +1021,26 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                     });
                 }
 
-                if (presentDirection.getVideo().equals("")) {
+                if (getItem(position).getVideo().equals("")) {
                     itemHolder.showDirectionVideoButton.setVisibility(View.GONE);
                 } else {
+                    itemHolder.showDirectionVideoButton.setVisibility(View.VISIBLE);
                     itemHolder.showDirectionVideoButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(presentDirection.getVideo()));
+                            RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
+                                (int) v.getTag());
+
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(dir.getVideo()));
                             startActivity(intent);
                         }
                     });
                 }
 
-                if (presentDirection.getTime() == 0) {
+                if (getItem(position).getTime() == 0) {
                     itemHolder.directionTimerButton.setVisibility(View.GONE);
                 } else {
+                    itemHolder.directionTimerButton.setVisibility(View.VISIBLE);
                     itemHolder.directionTimerButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
