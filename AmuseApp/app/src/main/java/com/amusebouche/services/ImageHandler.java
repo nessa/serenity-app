@@ -1,6 +1,7 @@
 package com.amusebouche.services;
 
 import android.content.Context;
+import android.os.Build;
 import android.widget.ImageView;
 
 import com.amusebouche.activities.R;
@@ -44,7 +45,12 @@ public class ImageHandler {
 
         // Check if image is defined correctly. If not, load the alternative resource.
         if (imageName == null || imageName.equals("")) {
-            imageView.setImageDrawable(context.getDrawable(resource));
+            // getResources().getDrawable() is deprecated on API 22 (LOLLIPOP_MR1)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                imageView.setImageDrawable(context.getDrawable(resource));
+            } else {
+                imageView.setImageDrawable(context.getResources().getDrawable(resource));
+            }
         } else {
             Glide.with(context)
                     .load(imageName)

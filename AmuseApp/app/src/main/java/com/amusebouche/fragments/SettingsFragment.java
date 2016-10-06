@@ -10,6 +10,8 @@ import android.speech.tts.TextToSpeech;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
@@ -215,6 +217,16 @@ public class SettingsFragment extends Fragment {
         setSelectedLanguage(false);
 
         return mLayout;
+    }
+
+    /**
+     *  Inflate the menu items to use them in the action bar
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_empty, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /**

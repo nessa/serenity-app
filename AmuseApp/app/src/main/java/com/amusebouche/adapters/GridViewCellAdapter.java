@@ -3,6 +3,7 @@ package com.amusebouche.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
@@ -155,38 +156,49 @@ public class GridViewCellAdapter extends RecyclerView.Adapter<GridViewCellAdapte
                     bitmap.recycle();
 
 
-                    // Fade out title and view
-                    Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
-                    fadeOutAnimation.setDuration(250);
+                    // Material transition
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-                    fadeOutAnimation.setAnimationListener(new Animation.AnimationListener() {
-                        @Override
-                        public void onAnimationStart(Animation animation) {
-                        }
+                        // Fade out title and view
+                        Animation fadeOutAnimation = new AlphaAnimation(1.0f, 0.0f);
+                        fadeOutAnimation.setDuration(250);
 
-                        @Override
-                        public void onAnimationEnd(Animation animation) {
-                            // Send selected recipe to the next activity
-                            Intent i = new Intent(mContext, DetailActivity.class);
-                            i.putExtra(AppData.INTENT_KEY_RECIPE,
+                        fadeOutAnimation.setAnimationListener(new Animation.AnimationListener() {
+                            @Override
+                            public void onAnimationStart(Animation animation) {
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animation animation) {
+                                // Send selected recipe to the next activity
+                                Intent i = new Intent(mContext, DetailActivity.class);
+                                i.putExtra(AppData.INTENT_KEY_RECIPE,
                                     ((MainActivity) mContext).getRecipes().get((int) clickedView.getTag()));
-                            i.putExtra(AppData.INTENT_KEY_RECIPE_POSITION, (int) clickedView.getTag());
+                                i.putExtra(AppData.INTENT_KEY_RECIPE_POSITION, (int) clickedView.getTag());
 
-                            Pair<View, String> p1 = Pair.create((View) holder.image, mContext.getString(R.string.transition_detail_image));
-                            ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                                (MainActivity) mContext, p1);
+                                Pair<View, String> p1 = Pair.create((View) holder.image, mContext.getString(R.string.transition_detail_image));
+                                ActivityOptionsCompat options = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                                    (MainActivity) mContext, p1);
 
-                            ActivityCompat.startActivityForResult((MainActivity) mContext, i,
+                                ActivityCompat.startActivityForResult((MainActivity) mContext, i,
                                     AppData.REQUEST_FROM_DETAIL_TO_LIST_CODE, options.toBundle());
-                        }
+                            }
 
-                        @Override
-                        public void onAnimationRepeat(Animation animation) {
-                        }
-                    });
+                            @Override
+                            public void onAnimationRepeat(Animation animation) {
+                            }
+                        });
 
-                    holder.fadeViews.startAnimation(fadeOutAnimation);
+                        holder.fadeViews.startAnimation(fadeOutAnimation);
+                    } else{
+                        // Pre-lollipop transition
+                        Intent i = new Intent(mContext, DetailActivity.class);
+                        i.putExtra(AppData.INTENT_KEY_RECIPE,
+                            ((MainActivity) mContext).getRecipes().get((int) clickedView.getTag()));
+                        i.putExtra(AppData.INTENT_KEY_RECIPE_POSITION, (int) clickedView.getTag());
 
+                        mContext.startActivity(i);
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

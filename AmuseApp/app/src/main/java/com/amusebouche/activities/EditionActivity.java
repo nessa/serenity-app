@@ -4,6 +4,7 @@ package com.amusebouche.activities;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.os.Bundle;
@@ -175,30 +176,60 @@ public class EditionActivity extends AppCompatActivity {
         int tabIconColor = ContextCompat.getColor(this, android.R.color.white);
         Drawable d;
 
-        TabLayout.Tab firstTab = mTabs.getTabAt(FIRST_TAB);
-        if (firstTab != null) {
-            d = getDrawable(R.drawable.ic_description_32dp);
-            if (d != null) {
-                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                firstTab.setIcon(d);
+        // getResources().getDrawable() is deprecated on API 22 (LOLLIPOP_MR1)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            TabLayout.Tab firstTab = mTabs.getTabAt(FIRST_TAB);
+            if (firstTab != null) {
+                d = getDrawable(R.drawable.ic_description_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    firstTab.setIcon(d);
+                }
             }
-        }
 
-        TabLayout.Tab secondTab = mTabs.getTabAt(SECOND_TAB);
-        if (secondTab != null) {
-            d = getDrawable(R.drawable.ic_ingredients_32dp);
-            if (d != null) {
-                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                secondTab.setIcon(d);
+            TabLayout.Tab secondTab = mTabs.getTabAt(SECOND_TAB);
+            if (secondTab != null) {
+                d = getDrawable(R.drawable.ic_ingredients_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    secondTab.setIcon(d);
+                }
             }
-        }
 
-        TabLayout.Tab thirdTab = mTabs.getTabAt(THIRD_TAB);
-        if (thirdTab != null) {
-            d = getDrawable(R.drawable.ic_cook_32dp);
-            if (d != null) {
-                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                thirdTab.setIcon(d);
+            TabLayout.Tab thirdTab = mTabs.getTabAt(THIRD_TAB);
+            if (thirdTab != null) {
+                d = getDrawable(R.drawable.ic_cook_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    thirdTab.setIcon(d);
+                }
+            }
+        } else {
+            TabLayout.Tab firstTab = mTabs.getTabAt(FIRST_TAB);
+            if (firstTab != null) {
+                d = getResources().getDrawable(R.drawable.ic_description_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    firstTab.setIcon(d);
+                }
+            }
+
+            TabLayout.Tab secondTab = mTabs.getTabAt(SECOND_TAB);
+            if (secondTab != null) {
+                d = getResources().getDrawable(R.drawable.ic_ingredients_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    secondTab.setIcon(d);
+                }
+            }
+
+            TabLayout.Tab thirdTab = mTabs.getTabAt(THIRD_TAB);
+            if (thirdTab != null) {
+                d = getResources().getDrawable(R.drawable.ic_cook_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    thirdTab.setIcon(d);
+                }
             }
         }
 

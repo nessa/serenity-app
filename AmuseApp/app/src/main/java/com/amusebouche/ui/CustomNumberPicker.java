@@ -2,6 +2,7 @@ package com.amusebouche.ui;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.widget.NumberPicker;
 
@@ -37,8 +38,14 @@ public class CustomNumberPicker extends NumberPicker {
 
         try {
             selectionDivider.setAccessible(true);
-            selectionDivider.set(this,
-                context.getDrawable(com.amusebouche.activities.R.drawable.divider));
+            // getResources().getDrawable() is deprecated on API 22 (LOLLIPOP_MR1)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                selectionDivider.set(this,
+                    context.getDrawable(com.amusebouche.activities.R.drawable.divider));
+            } else {
+                selectionDivider.set(this,
+                    context.getResources().getDrawable(com.amusebouche.activities.R.drawable.divider));
+            }
         } catch (IllegalArgumentException | Resources.NotFoundException |
                 IllegalAccessException | NullPointerException e) {
             e.printStackTrace();

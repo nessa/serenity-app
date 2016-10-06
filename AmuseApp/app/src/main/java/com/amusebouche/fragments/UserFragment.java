@@ -9,6 +9,8 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -146,6 +148,16 @@ public class UserFragment extends Fragment {
         populateViewForOrientation(inflater, mLayout);
 
         return mLayout;
+    }
+
+    /**
+     *  Inflate the menu items to use them in the action bar
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.menu_empty, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     /**

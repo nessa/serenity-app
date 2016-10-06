@@ -6,10 +6,10 @@ android {
 
     defaultConfig {
         applicationId "com.amusebouche.amuseapp"
-        minSdkVersion 22
+        minSdkVersion 19
         targetSdkVersion 22
-        versionCode 24
-        versionName "1.6.0"
+        versionCode 25
+        versionName "1.7.0"
     }
     buildTypes {
         release {

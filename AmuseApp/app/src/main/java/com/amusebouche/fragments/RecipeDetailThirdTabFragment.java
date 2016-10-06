@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -48,6 +49,7 @@ import com.amusebouche.ui.CustomNumberPicker;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -95,7 +97,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
     private CountDownTimer mSpeechRecognizerTimer;
     private boolean mSpeechRecognizerTimerIsRunning;
 
-
+    private static String DIRECTION_MESSAGE_ID = "direction_message";
+    private static String INFO_MESSAGE_ID = "info_message";
 
     // LIFECYCLE METHODS
 
@@ -414,26 +417,28 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
                     @Override
                     public void onDone(String utteranceId) {
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                RecipeDetailThirdTabFragment.this.mDirectionDialog.dismiss();
+                        if (!utteranceId.equals(INFO_MESSAGE_ID)) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RecipeDetailThirdTabFragment.this.mDirectionDialog.dismiss();
 
-                                if (mOngoingMode) {
-                                    if (dir.getTime() > 0) {
+                                    if (mOngoingMode) {
+                                        if (dir.getTime() > 0) {
 
-                                        // No need to make the listener work
-                                        mTTS.speak(AppData.getLocaleTimerInitFromCode(
+                                            // No need to make the listener work
+                                            speak(AppData.getLocaleTimerInitFromCode(
                                                 mDetailActivity.getRecipe().getLanguage().toLowerCase()),
-                                                TextToSpeech.QUEUE_FLUSH, null, null);
+                                                INFO_MESSAGE_ID);
 
-                                        RecipeDetailThirdTabFragment.this.showTimerDialog();
-                                    } else {
-                                        RecipeDetailThirdTabFragment.this.showCommandsDialog();
+                                            RecipeDetailThirdTabFragment.this.showTimerDialog();
+                                        } else {
+                                            RecipeDetailThirdTabFragment.this.showCommandsDialog();
+                                        }
                                     }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
 
                     @Override
@@ -443,10 +448,9 @@ public class RecipeDetailThirdTabFragment extends Fragment {
                 });
 
                 // Utterance ID is needed to make the listener work
-                mTTS.speak(String.format(AppData.getLocaleDirectionFromCode(
-                        mDetailActivity.getRecipe().getLanguage().toLowerCase()),
-                    dir.getSortNumber()) + ". " + text, TextToSpeech.QUEUE_FLUSH, null,
-                        TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID);
+                speak(String.format(AppData.getLocaleDirectionFromCode(
+                    mDetailActivity.getRecipe().getLanguage().toLowerCase()),
+                    dir.getSortNumber()) + ". " + text, DIRECTION_MESSAGE_ID);
             }
 
         } else {
@@ -454,8 +458,8 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             exitFromOngoingMode();
 
             // No need to make the listener work
-            mTTS.speak(AppData.getLocaleFinishFromCode(mDetailActivity.getRecipe().getLanguage().toLowerCase()),
-                    TextToSpeech.QUEUE_FLUSH, null, null);
+            speak(AppData.getLocaleFinishFromCode(mDetailActivity.getRecipe().getLanguage().toLowerCase()),
+                INFO_MESSAGE_ID);
         }
     }
 
@@ -737,281 +741,290 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             }
         });
 
-
-        mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
-
         // Set recognizer data
         final Intent recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
-        // Set recognizer language
-        if (mDetailActivity.getRecognizerLanguageSetting()) {
-            // Device language
-            recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
-        } else {
-            // Recipe language
-            Locale loc = new Locale(mDetailActivity.getRecipe().getLanguage().toLowerCase(),
-                AppData.getLocaleCountryFromCode(mDetailActivity.getRecipe().getLanguage().toLowerCase()));
-            recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, loc);
-        }
+        // Check if speech recognizer is available
+        if (SpeechRecognizer.isRecognitionAvailable(getActivity())) {
+            mSpeechRecognizer = SpeechRecognizer.createSpeechRecognizer(getActivity());
 
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+            // Set recognizer language
+            if (mDetailActivity.getRecognizerLanguageSetting()) {
+                // Device language
+                recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
+            } else {
+                // Recipe language
+                Locale loc = new Locale(mDetailActivity.getRecipe().getLanguage().toLowerCase(),
+                    AppData.getLocaleCountryFromCode(mDetailActivity.getRecipe().getLanguage().toLowerCase()));
+                recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, loc);
+            }
+
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 getActivity().getPackageName());
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
-        // This is not working (it waits a random number of seconds)
-        // 'Fixed' with a countdown timer (mSpeechRecognitionTimer)
-        recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 100000);
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+            // This is not working (it waits a random number of seconds)
+            // 'Fixed' with a countdown timer (mSpeechRecognitionTimer)
+            recognizerIntent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 100000);
 
 
-        mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
-            @Override
-            public void onBeginningOfSpeech() {}
-
-            @Override
-            public void onBufferReceived(byte[] buffer) {}
-
-            @Override
-            public void onEndOfSpeech() {}
-
-            @Override
-            public void onError(final int errorCode) {
-                // Cancel animation and show errors
-                anim.cancel();
-                mainText.setText(getString(R.string.detail_commands_error_message));
-                errorText.setText(getErrorText(errorCode));
-
-                // Restart timer before restart speech recognition
-                restartSpeechRecognizerTimer();
-            }
-
-            @Override
-            public void onEvent(int arg0, Bundle arg1) {
-            }
-
-            @Override
-            public void onPartialResults(Bundle arg0) {
-            }
-
-            @Override
-            public void onReadyForSpeech(Bundle arg0) {
-
-                // Restart animation and default texts
-                String message = getString(R.string.voice_commands_list);
-                if (dir.getTime() > 0) {
-                    message = message + " " + getString(R.string.voice_command_repeat) +
-                            ", " + getString(R.string.voice_command_timer) + ", " +
-                            getString(R.string.voice_command_next) + " " +
-                            getString(R.string.voice_or) + " " +
-                            getString(R.string.voice_command_exit);
-                } else {
-                    message = message + " " + getString(R.string.voice_command_repeat) +
-                            ", " + getString(R.string.voice_command_next) + " " +
-                            getString(R.string.voice_or) + " " +
-                            getString(R.string.voice_command_exit);
+            mSpeechRecognizer.setRecognitionListener(new RecognitionListener() {
+                @Override
+                public void onBeginningOfSpeech() {
                 }
 
-                mainText.setText(getString(R.string.detail_commands_listening_message));
-                errorText.setText(message);
-                fab.startAnimation(anim);
-
-
-                // Cancel timer
-                if (mSpeechRecognizerTimer != null) {
-                    mSpeechRecognizerTimer.cancel();
-                    mSpeechRecognizerTimerIsRunning = false;
-                }
-            }
-
-            @Override
-            public void onResults(final Bundle results) {
-                boolean keepGoing = false;
-
-                // Cancel timer
-                if (mSpeechRecognizerTimer != null) {
-                    mSpeechRecognizerTimer.cancel();
+                @Override
+                public void onBufferReceived(byte[] buffer) {
                 }
 
-                // Cancel animation
-                anim.cancel();
-
-                // Get voice results
-                ArrayList<String> matches = results
-                        .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-
-                if (matches != null) {
-                    if (matches.contains(getString(R.string.voice_command_repeat))) {
-
-                        mainText.setText(getString(R.string.detail_commands_success_message));
-                        mCommandsDialog.dismiss();
-
-                        // Repeat present direction
-                        RecipeDetailThirdTabFragment.this.readDescription();
-                    } else {
-                        if (matches.contains(getString(R.string.voice_command_next))) {
-
-                            mainText.setText(getString(R.string.detail_commands_success_message));
-                            mCommandsDialog.dismiss();
-
-                            // Read next direction
-                            mPresentDescriptionIndex = mPresentDescriptionIndex + 1;
-                            RecipeDetailThirdTabFragment.this.readDescription();
-
-                        } else {
-                            if (matches.contains(getString(R.string.voice_command_timer)) &&
-                                    dir.getTime() > 0) {
-
-                                mainText.setText(getString(R.string.detail_commands_success_message));
-                                mCommandsDialog.dismiss();
-
-                                // Show timer
-                                RecipeDetailThirdTabFragment.this.showTimerDialog();
-
-                            } else {
-                                if (!matches.contains(getString(R.string.voice_command_exit))) {
-                                    keepGoing = true;
-                                } else {
-                                    Log.d("INFO", "End of automatic speech");
-                                    mCommandsDialog.dismiss();
-                                    exitFromOngoingMode();
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    keepGoing = true;
+                @Override
+                public void onEndOfSpeech() {
                 }
 
-                if (keepGoing) {
-                    // Continue waiting for orders
-                    String message = getString(R.string.voice_error_not_understood) + " " +
-                            getString(R.string.voice_commands_list);
-                    if (dir.getTime() > 0) {
-                        message = message + " " + getString(R.string.voice_command_repeat) +
-                                ", " + getString(R.string.voice_command_timer) + " " +
-                                getString(R.string.voice_command_next) + " " +
-                                getString(R.string.voice_or) + " " +
-                                getString(R.string.voice_command_exit);
-                    } else {
-                        message = message + " " + getString(R.string.voice_command_repeat) +
-                                getString(R.string.voice_command_next) + " " +
-                                getString(R.string.voice_or) + " " +
-                                getString(R.string.voice_command_exit);
-                    }
-
+                @Override
+                public void onError(final int errorCode) {
+                    // Cancel animation and show errors
+                    anim.cancel();
                     mainText.setText(getString(R.string.detail_commands_error_message));
-                    errorText.setText(message);
+                    errorText.setText(getErrorText(errorCode));
 
                     // Restart timer before restart speech recognition
                     restartSpeechRecognizerTimer();
                 }
-            }
 
-            /*
-             * Define timer basic methods if it's not setted up
-             * Reload timer if it's not running yet
-             */
-            private void restartSpeechRecognizerTimer() {
-                Log.d("INFO", "after waiting 5 seconds");
-                Log.d("Speech", "onResults: Start a timer");
-                if (mSpeechRecognizerTimer == null) {
-                    mSpeechRecognizerTimer = new CountDownTimer(2000, 500) {
-                        @Override
-                        public void onTick(long l) {
-                            mSpeechRecognizerTimerIsRunning = true;
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            Log.d("Speech", "Timer.onFinish: Timer Finished, Restart recognizer");
-                            mSpeechRecognizer.cancel();
-                            mSpeechRecognizer.startListening(recognizerIntent);
-
-                            mSpeechRecognizerTimerIsRunning = false;
-                        }
-                    };
+                @Override
+                public void onEvent(int arg0, Bundle arg1) {
                 }
 
-                if (!mSpeechRecognizerTimerIsRunning) {
-                    mSpeechRecognizerTimer.start();
+                @Override
+                public void onPartialResults(Bundle arg0) {
                 }
-            }
 
-            @Override
-            public void onRmsChanged(float rmsdB) {
-            }
+                @Override
+                public void onReadyForSpeech(Bundle arg0) {
 
-            public String getErrorText(int errorCode) {
-                String message;
-                switch (errorCode) {
-                    case SpeechRecognizer.ERROR_AUDIO:
-                        message = getString(R.string.voice_error_audio);
-                        break;
-                    case SpeechRecognizer.ERROR_CLIENT:
-                        message = getString(R.string.voice_error_client);
-                        break;
-                    case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-                        message = getString(R.string.voice_error_insufficient_permissions);
-                        break;
-                    case SpeechRecognizer.ERROR_NETWORK:
-                        message = getString(R.string.voice_error_network);
-                        break;
-                    case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
-                        message = getString(R.string.voice_error_network_timeout);
-                        break;
-                    case SpeechRecognizer.ERROR_NO_MATCH:
-                        message = getString(R.string.voice_error_no_match);
-                        break;
-                    case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
-                        message = getString(R.string.voice_error_recognizer_busy);
-                        break;
-                    case SpeechRecognizer.ERROR_SERVER:
-                        message = getString(R.string.voice_error_server);
-                        break;
-                    case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                        message = getString(R.string.voice_error_speech_timeout) + " " +
-                                getString(R.string.voice_commands_list);
+                    // Restart animation and default texts
+                    String message = getString(R.string.voice_commands_list);
+                    if (dir.getTime() > 0) {
+                        message = message + " " + getString(R.string.voice_command_repeat) +
+                            ", " + getString(R.string.voice_command_timer) + ", " +
+                            getString(R.string.voice_command_next) + " " +
+                            getString(R.string.voice_or) + " " +
+                            getString(R.string.voice_command_exit);
+                    } else {
+                        message = message + " " + getString(R.string.voice_command_repeat) +
+                            ", " + getString(R.string.voice_command_next) + " " +
+                            getString(R.string.voice_or) + " " +
+                            getString(R.string.voice_command_exit);
+                    }
+
+                    mainText.setText(getString(R.string.detail_commands_listening_message));
+                    errorText.setText(message);
+                    fab.startAnimation(anim);
+
+
+                    // Cancel timer
+                    if (mSpeechRecognizerTimer != null) {
+                        mSpeechRecognizerTimer.cancel();
+                        mSpeechRecognizerTimerIsRunning = false;
+                    }
+                }
+
+                @Override
+                public void onResults(final Bundle results) {
+                    boolean keepGoing = false;
+
+                    // Cancel timer
+                    if (mSpeechRecognizerTimer != null) {
+                        mSpeechRecognizerTimer.cancel();
+                    }
+
+                    // Cancel animation
+                    anim.cancel();
+
+                    // Get voice results
+                    ArrayList<String> matches = results
+                        .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+
+                    if (matches != null) {
+                        if (matches.contains(getString(R.string.voice_command_repeat))) {
+
+                            mainText.setText(getString(R.string.detail_commands_success_message));
+                            mCommandsDialog.dismiss();
+
+                            // Repeat present direction
+                            RecipeDetailThirdTabFragment.this.readDescription();
+                        } else {
+                            if (matches.contains(getString(R.string.voice_command_next))) {
+
+                                mainText.setText(getString(R.string.detail_commands_success_message));
+                                mCommandsDialog.dismiss();
+
+                                // Read next direction
+                                mPresentDescriptionIndex = mPresentDescriptionIndex + 1;
+                                RecipeDetailThirdTabFragment.this.readDescription();
+
+                            } else {
+                                if (matches.contains(getString(R.string.voice_command_timer)) &&
+                                    dir.getTime() > 0) {
+
+                                    mainText.setText(getString(R.string.detail_commands_success_message));
+                                    mCommandsDialog.dismiss();
+
+                                    // Show timer
+                                    RecipeDetailThirdTabFragment.this.showTimerDialog();
+
+                                } else {
+                                    if (!matches.contains(getString(R.string.voice_command_exit))) {
+                                        keepGoing = true;
+                                    } else {
+                                        Log.d("INFO", "End of automatic speech");
+                                        mCommandsDialog.dismiss();
+                                        exitFromOngoingMode();
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        keepGoing = true;
+                    }
+
+                    if (keepGoing) {
+                        // Continue waiting for orders
+                        String message = getString(R.string.voice_error_not_understood) + " " +
+                            getString(R.string.voice_commands_list);
                         if (dir.getTime() > 0) {
                             message = message + " " + getString(R.string.voice_command_repeat) +
+                                ", " + getString(R.string.voice_command_timer) + " " +
+                                getString(R.string.voice_command_next) + " " +
+                                getString(R.string.voice_or) + " " +
+                                getString(R.string.voice_command_exit);
+                        } else {
+                            message = message + " " + getString(R.string.voice_command_repeat) +
+                                getString(R.string.voice_command_next) + " " +
+                                getString(R.string.voice_or) + " " +
+                                getString(R.string.voice_command_exit);
+                        }
+
+                        mainText.setText(getString(R.string.detail_commands_error_message));
+                        errorText.setText(message);
+
+                        // Restart timer before restart speech recognition
+                        restartSpeechRecognizerTimer();
+                    }
+                }
+
+                /*
+                 * Define timer basic methods if it's not setted up
+                 * Reload timer if it's not running yet
+                 */
+                private void restartSpeechRecognizerTimer() {
+                    Log.d("INFO", "after waiting 5 seconds");
+                    Log.d("Speech", "onResults: Start a timer");
+                    if (mSpeechRecognizerTimer == null) {
+                        mSpeechRecognizerTimer = new CountDownTimer(2000, 500) {
+                            @Override
+                            public void onTick(long l) {
+                                mSpeechRecognizerTimerIsRunning = true;
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                Log.d("Speech", "Timer.onFinish: Timer Finished, Restart recognizer");
+                                mSpeechRecognizer.cancel();
+                                mSpeechRecognizer.startListening(recognizerIntent);
+
+                                mSpeechRecognizerTimerIsRunning = false;
+                            }
+                        };
+                    }
+
+                    if (!mSpeechRecognizerTimerIsRunning) {
+                        mSpeechRecognizerTimer.start();
+                    }
+                }
+
+                @Override
+                public void onRmsChanged(float rmsdB) {
+                }
+
+                public String getErrorText(int errorCode) {
+                    String message;
+                    switch (errorCode) {
+                        case SpeechRecognizer.ERROR_AUDIO:
+                            message = getString(R.string.voice_error_audio);
+                            break;
+                        case SpeechRecognizer.ERROR_CLIENT:
+                            message = getString(R.string.voice_error_client);
+                            break;
+                        case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                            message = getString(R.string.voice_error_insufficient_permissions);
+                            break;
+                        case SpeechRecognizer.ERROR_NETWORK:
+                            message = getString(R.string.voice_error_network);
+                            break;
+                        case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                            message = getString(R.string.voice_error_network_timeout);
+                            break;
+                        case SpeechRecognizer.ERROR_NO_MATCH:
+                            message = getString(R.string.voice_error_no_match);
+                            break;
+                        case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                            message = getString(R.string.voice_error_recognizer_busy);
+                            break;
+                        case SpeechRecognizer.ERROR_SERVER:
+                            message = getString(R.string.voice_error_server);
+                            break;
+                        case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                            message = getString(R.string.voice_error_speech_timeout) + " " +
+                                getString(R.string.voice_commands_list);
+                            if (dir.getTime() > 0) {
+                                message = message + " " + getString(R.string.voice_command_repeat) +
                                     ", " + getString(R.string.voice_command_timer) + " " +
                                     getString(R.string.voice_command_next) + " " +
                                     getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);
-                        } else {
-                            message = message + " " + getString(R.string.voice_command_repeat) +
+                            } else {
+                                message = message + " " + getString(R.string.voice_command_repeat) +
                                     getString(R.string.voice_command_next) + " " +
                                     getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);
-                        }
-                        break;
-                    default:
-                        message = getString(R.string.voice_error_not_understood) + " " +
+                            }
+                            break;
+                        default:
+                            message = getString(R.string.voice_error_not_understood) + " " +
                                 getString(R.string.voice_commands_list);
-                        if (dir.getTime() > 0) {
-                            message = message + " " + getString(R.string.voice_command_repeat) +
+                            if (dir.getTime() > 0) {
+                                message = message + " " + getString(R.string.voice_command_repeat) +
                                     ", " + getString(R.string.voice_command_timer) + ", " +
                                     getString(R.string.voice_command_next) + " " +
                                     getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);
-                        } else {
-                            message = message + " " + getString(R.string.voice_command_repeat) +
+                            } else {
+                                message = message + " " + getString(R.string.voice_command_repeat) +
                                     getString(R.string.voice_command_next) + " " +
                                     getString(R.string.voice_or) + " " +
                                     getString(R.string.voice_command_exit);
-                        }
-                        break;
+                            }
+                            break;
+                    }
+                    return message;
                 }
-                return message;
-            }
-        });
+            });
+        } else {
+            mSpeechRecognizer = null;
+        }
 
         mCommandsDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
             @Override
             public void onDismiss(DialogInterface dialog) {
-                // Disable speech recognizer
-                mSpeechRecognizer.cancel();
-                mSpeechRecognizer.destroy();
+                if (mSpeechRecognizer != null) {
+                    // Disable speech recognizer
+                    mSpeechRecognizer.cancel();
+                    mSpeechRecognizer.destroy();
+                }
             }
         });
 
@@ -1020,9 +1033,11 @@ public class RecipeDetailThirdTabFragment extends Fragment {
             @Override
             public boolean onKey(DialogInterface arg0, int keyCode, KeyEvent event) {
                 if (keyCode == KeyEvent.KEYCODE_BACK) {
-                    // Disable speech recognizer
-                    mSpeechRecognizer.cancel();
-                    mSpeechRecognizer.destroy();
+                    if (mSpeechRecognizer != null) {
+                        // Disable speech recognizer
+                        mSpeechRecognizer.cancel();
+                        mSpeechRecognizer.destroy();
+                    }
 
                     // Close this dialog
                     mCommandsDialog.dismiss();
@@ -1032,13 +1047,25 @@ public class RecipeDetailThirdTabFragment extends Fragment {
         });
 
         mCommandsDialog.show();
-        mSpeechRecognizer.startListening(recognizerIntent);
+        if (mSpeechRecognizer != null) {
+            mSpeechRecognizer.startListening(recognizerIntent);
+        }
     }
 
     public boolean isInOngoingMode() {
         return mOngoingMode;
     }
 
+    @SuppressWarnings("deprecation")
+    private void speak(String text, String utteranceId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+        } else {
+            HashMap<String, String> map = new HashMap<>();
+            map.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, utteranceId);
+            mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, map);
+        }
+    }
 
     /**
      * Adapter for a recycler view with header that shows the list of directions
@@ -1097,10 +1124,9 @@ public class RecipeDetailThirdTabFragment extends Fragment {
 
                         RecipeDirection dir = mDetailActivity.getRecipe().getDirections().get(
                             (int) v.getTag());
-                        CharSequence text = dir.getDescription();
 
-                        if (text != "") {
-                            mTTS.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+                        if (!dir.getDescription().equals("")) {
+                            speak(dir.getDescription(), DIRECTION_MESSAGE_ID);
                         }
                     }
                 });

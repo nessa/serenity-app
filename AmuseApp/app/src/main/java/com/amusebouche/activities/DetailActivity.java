@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -188,38 +189,76 @@ public class DetailActivity extends AppCompatActivity {
         int tabIconColor = ContextCompat.getColor(this, android.R.color.white);
         Drawable d;
 
-        TabLayout.Tab firstTab = mTabs.getTabAt(0);
-        if (firstTab != null) {
-            d = getDrawable(R.drawable.ic_description_32dp);
-            if (d != null) {
-                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                firstTab.setIcon(d);
+        // getResources().getDrawable() is deprecated on API 22 (LOLLIPOP_MR1)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+            TabLayout.Tab firstTab = mTabs.getTabAt(0);
+            if (firstTab != null) {
+                d = getDrawable(R.drawable.ic_description_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    firstTab.setIcon(d);
+                }
             }
-        }
 
-        TabLayout.Tab secondTab = mTabs.getTabAt(1);
-        if (secondTab != null) {
-            d = getDrawable(R.drawable.ic_ingredients_32dp);
-            if (d != null) {
-                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                secondTab.setIcon(d);
+            TabLayout.Tab secondTab = mTabs.getTabAt(1);
+            if (secondTab != null) {
+                d = getDrawable(R.drawable.ic_ingredients_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    secondTab.setIcon(d);
+                }
             }
-        }
 
-        TabLayout.Tab thirdTab = mTabs.getTabAt(2);
-        if (thirdTab != null) {
-            d = getDrawable(R.drawable.ic_restaurant_menu_white_36dp);
-            if (d != null) {
-                thirdTab.setIcon(d);
+            TabLayout.Tab thirdTab = mTabs.getTabAt(2);
+            if (thirdTab != null) {
+                d = getDrawable(R.drawable.ic_restaurant_menu_white_36dp);
+                if (d != null) {
+                    thirdTab.setIcon(d);
+                }
             }
-        }
 
-        TabLayout.Tab fourthTab = mTabs.getTabAt(3);
-        if (fourthTab != null) {
-            d = getDrawable(R.drawable.ic_comments_32dp);
-            if (d != null) {
-                d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                fourthTab.setIcon(d);
+            TabLayout.Tab fourthTab = mTabs.getTabAt(3);
+            if (fourthTab != null) {
+                d = getDrawable(R.drawable.ic_comments_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    fourthTab.setIcon(d);
+                }
+            }
+        } else {
+            TabLayout.Tab firstTab = mTabs.getTabAt(0);
+            if (firstTab != null) {
+                d = getResources().getDrawable(R.drawable.ic_description_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    firstTab.setIcon(d);
+                }
+            }
+
+            TabLayout.Tab secondTab = mTabs.getTabAt(1);
+            if (secondTab != null) {
+                d = getResources().getDrawable(R.drawable.ic_ingredients_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    secondTab.setIcon(d);
+                }
+            }
+
+            TabLayout.Tab thirdTab = mTabs.getTabAt(2);
+            if (thirdTab != null) {
+                d = getResources().getDrawable(R.drawable.ic_restaurant_menu_white_36dp);
+                if (d != null) {
+                    thirdTab.setIcon(d);
+                }
+            }
+
+            TabLayout.Tab fourthTab = mTabs.getTabAt(3);
+            if (fourthTab != null) {
+                d = getResources().getDrawable(R.drawable.ic_comments_32dp);
+                if (d != null) {
+                    d.setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
+                    fourthTab.setIcon(d);
+                }
             }
         }
 
