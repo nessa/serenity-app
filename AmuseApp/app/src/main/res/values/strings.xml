@@ -303,6 +303,7 @@
     <string name="info_app_name">Amuse Bouche</string>
     <string name="info_app_subtitle">©2016 Noelia Sales Montes</string>
     <string name="info_app_software_libre">This app is libre software</string>
+    <string name="info_privacy_policy">Privacy policy</string>
     <string name="info_license">GPLv3 License</string>
     <string name="info_third_party_licenses">Third-party licenses</string>
     <string name="info_donate">Donate via Paypal</string>

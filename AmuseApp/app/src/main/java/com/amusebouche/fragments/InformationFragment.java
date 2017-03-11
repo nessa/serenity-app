@@ -146,6 +146,14 @@ public class InformationFragment extends Fragment {
         TextView appName = (TextView) subview.findViewById(R.id.app_name);
         appName.setText(version);
 
+        TextView privacyPolicy = (TextView) subview.findViewById(R.id.privacy_policy_button);
+        privacyPolicy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(AppData.PRIVACY_POLICY_URL));
+                startActivity(intent);
+            }
+        });
 
         Button licensesButton = (Button) subview.findViewById(R.id.license_button);
         licensesButton.setOnClickListener(new View.OnClickListener() {

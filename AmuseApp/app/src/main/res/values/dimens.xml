@@ -189,6 +189,7 @@
     <dimen name="info_app_subtitle_text_size">16sp</dimen>
     <dimen name="info_app_subtitle_margin">2dp</dimen>
     <dimen name="info_button_width">220dp</dimen>
+    <dimen name="info_privacy_policy_text_size">18sp</dimen>
     <dimen name="info_button_text_size">16sp</dimen>
     <dimen name="info_button_padding">6dp</dimen>
     <dimen name="info_button_margin">6dp</dimen>

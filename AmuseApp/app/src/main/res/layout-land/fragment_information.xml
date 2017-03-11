@@ -42,6 +42,16 @@
             android:textSize="@dimen/info_app_subtitle_text_size"
             android:textColor="@color/primary_text"/>
 
+        <TextView
+            android:id="@+id/privacy_policy_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/info_privacy_policy"
+            android:layout_marginTop="@dimen/info_app_subtitle_margin"
+            android:layout_marginBottom="@dimen/info_app_subtitle_margin"
+            android:textSize="@dimen/info_privacy_policy_text_size"
+            android:textColor="@color/theme_default_accent"/>
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

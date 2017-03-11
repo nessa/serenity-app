@@ -52,6 +52,7 @@ public class AppData {
     public static String BROADCAST_ACTION = "com.amusebouche.broadcast.countdown";
 
     // URLs
+    public static String PRIVACY_POLICY_URL = "http://noeliarcado.es/amuse-bouche-privacy-policy/";
     public static String DONATE_URL = "https://www.paypal.me/noeliarcado";
 
     // Menu
