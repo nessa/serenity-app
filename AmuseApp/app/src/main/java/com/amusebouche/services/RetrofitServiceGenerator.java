@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * It creates a new retrofit service with or without token authentication.
  */
 public class RetrofitServiceGenerator {
-    public static final String API_BASE_URL = "http://amuse-bouche.noeliarcado.es/";
+    public static final String API_BASE_URL = "https://amuse-bouche.noeliarcado.es/";
 
 
     /**
